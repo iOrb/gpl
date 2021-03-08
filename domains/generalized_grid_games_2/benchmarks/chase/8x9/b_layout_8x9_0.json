@@ -1,0 +1,9 @@
+[["wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"],
+  ["wall", "empty", "empty", "empty", "empty", "empty", "empty", "wall"],
+  ["wall", "empty", "empty", "empty", "empty", "agent", "empty", "wall"],
+  ["wall", "empty", "target", "empty", "empty", "empty", "empty",  "wall"],
+  ["wall", "empty", "empty", "empty", "empty", "empty", "empty", "wall"],
+  ["wall", "empty", "empty", "empty", "empty", "empty", "empty", "wall"],
+  ["wall", "empty", "empty", "empty", "empty", "empty", "empty", "wall"],
+  ["wall", "wall", "wall", "wall", "wall", "wall", "wall", "wall"],
+  ["wall", "right_arrow", "left_arrow", "wall", "down_arrow", "wall", "up_arrow", "wall"]]
