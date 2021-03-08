@@ -1,2 +1,1 @@
-# gpl
-GPL: General Polizy Learner
+# GPL: General Polizy Learner
