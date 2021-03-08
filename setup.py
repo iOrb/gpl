@@ -19,7 +19,7 @@ def get_description():
 
 def get_version():
     import sys
-    sys.path.insert(0, os.path.join(here, "src", "lgp"))
+    sys.path.insert(0, os.path.join(here, "src", "gpl"))
     import version
     v = version.get_version()
     sys.path = sys.path[1:]
@@ -28,12 +28,12 @@ def get_version():
 
 def main():
     setup(
-        name='lgp',
+        name='gpl',
         python_requires='>=3.6.9',
         version=get_version(),
         description='The SLTP Generalized Planning Framework: Sample, Learn, Transform & Plan',
         long_description=get_description(),
-        url='https://github.com/iOrb/learning-generalized-policies',
+        url='https://github.com/iOrb/gpl',
         author='Jordi Moreno',
         author_email='-',
 
@@ -62,7 +62,7 @@ def main():
             'imageio',
             'tqdm',
             # 'generalization_grid_games@git+git://github.com/iOrb/generalization_grid_games_2#egg==generalization_grid_games',
-            'sltp@git+git://github.com/rleap-project/d2l#egg==sltp',
+            # 'sltp@git+git://github.com/rleap-project/d2l#egg==sltp',
         ],
 
         extras_require={

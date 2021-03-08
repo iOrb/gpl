@@ -1,9 +1,9 @@
 import sys
 import string
 
-from lgp.utils import get_operators
+from gpl.utils import get_operators
 
-from lgp.grammar.state_to_atoms import state_to_atoms, atom_tuples_to_string
+from gpl.grammar.state_to_atoms import state_to_atoms, atom_tuples_to_string
 
 ASCII = string.printable
 # ASCII = ''.join(chr(x) for x in range(50, 1000))
