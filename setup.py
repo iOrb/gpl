@@ -65,8 +65,8 @@ def main():
             # 'generalization_grid_games@git+git://github.com/iOrb/generalization_grid_games_2#egg==generalization_grid_games',
             # git clone git://github.com/iOrb/generalization_grid_games_2 && cd generalization_grid_games_2 && pip install -e .
 
-            # 'sltp@git+git://github.com/rleap-project/d2l#egg==sltp',
-            # git clone --branch v2 git://github.com/rleap-project/d2l && cd d2l && pip install -e .
+            # 'generalization_grid_games@git+git://github.com/tomsilver/generalization_grid_games#egg==generalization_grid_games',
+            # git clone git://github.com/iOrb/generalization_grid_games && cd generalization_grid_games && pip install -e .
         ],
 
         extras_require={
