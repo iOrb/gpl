@@ -66,7 +66,7 @@ def main():
             # git clone git://github.com/iOrb/generalization_grid_games_2 && cd generalization_grid_games_2 && pip install -e .
 
             # 'generalization_grid_games@git+git://github.com/tomsilver/generalization_grid_games#egg==generalization_grid_games',
-            # git clone git://github.com/iOrb/generalization_grid_games && cd generalization_grid_games && pip install -e .
+            # git clone git://github.com/tomsilver/generalization_grid_games && cd generalization_grid_games && pip install -e .
         ],
 
         extras_require={

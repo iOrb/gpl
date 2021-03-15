@@ -1,4 +1,4 @@
 import os
 
-LGP_SRC_DIR = os.path.dirname(os.path.realpath(__file__))
+GPL_SRC_DIR = os.path.dirname(os.path.realpath(__file__))
 
