@@ -32,9 +32,6 @@ def experiments():
         distinguish_goals=True,
         use_incremental_refinement=False,
 
-        # A function to create the FOL language, used to be able to parse the features.
-        # language_generator=programmatic_language_creator,
-
     )
 
     exps = dict()
