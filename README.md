@@ -5,7 +5,7 @@ Work in progress: Allow stochastic environments (FOND extension).
 
 ## Installation
 We recommend using a Python virtual environment.
-Install the entire pipeline by running `pip install -e .` and `pip install gpl`.
+Install the entire pipeline by running `pip install -e .` and `pip install gpl`.\\
 Then `cd src\d2l && pip install -e .`.
 
 Install:\
