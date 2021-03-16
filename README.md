@@ -4,7 +4,7 @@ Learn and test generalized policies from planning examples.
 Work in progress: Allow stochastic environments (FOND extension).
 
 ## Installation
-We recommend using a Python virtual environment.
+We recommend using a Python virtual environment.\\
 Install the entire pipeline by running `pip install -e .` and `pip install gpl`.\\
 Then `cd src\d2l && pip install -e .`.
 
