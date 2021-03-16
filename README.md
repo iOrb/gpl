@@ -6,7 +6,7 @@ Work in progress: Allow stochastic environments (FOND extension).
 ## Installation
 We recommend using a Python virtual environment.  
 Install the entire pipeline by running `pip install -e .` and `pip install gpl`.  
-Then `cd src\d2l && pip install -e .`.  
+Then `pip install -e src\d2l`.  
 
 Install:\
 https://github.com/tomsilver/generalization_grid_games
