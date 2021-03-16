@@ -4,8 +4,6 @@ import logging
 import random
 from pathlib import Path
 
-from lgp.domains import generate_language, generate_problem
-from lgp.utils import unserialize_layout
 from sltp.features import InstanceInformation
 from sltp.models import FeatureModel, DLModelFactory
 from sltp.returncodes import ExitCode
@@ -13,8 +11,6 @@ from sltp.separation import generate_user_provided_policy, TransitionClassificat
 from sltp.tester import PolicySearchException
 from sltp.util.misc import compute_universe_from_pddl_model, state_as_atoms, types_as_atoms
 from tarski.dl import compute_dl_vocabulary
-
-from lgp.task import Task
 
 
 def apply_policy_on_test_instances(config, create_policy):
@@ -26,7 +22,8 @@ def apply_policy_on_test_instances(config, create_policy):
 
         try:
             """ Run a search on the test instances that follows the given policy """
-            lang, static_predicates = generate_language(config.domain)
+            lang, static_predicates = config.domain.generate_language()
+            # lang, static_predicates = generate_language(config.domain)
             vocabulary = compute_dl_vocabulary(lang)
 
             # We interpret as DL nominals all constants that are defined on the entire domain, i.e. instance-independent
@@ -38,7 +35,7 @@ def apply_policy_on_test_instances(config, create_policy):
             # We clone the language so that objects from different instances don't get registered all in the same language;
             # if that happened, we'd be unable to properly compute the universe of each instance.
             pl = copy.deepcopy(lang)
-            problem = generate_problem(config.domain, pl, instance_name, unserialize_layout(instance))
+            problem = config.domain.generate_problem(pl, instance_name)
 
             # Compute the universe of each instance: a set with all objects in the universe
             universe = compute_universe_from_pddl_model(problem.language)
@@ -56,7 +53,7 @@ def apply_policy_on_test_instances(config, create_policy):
             search_policy = create_policy(model_factory, static_atoms)
 
             # define the Task
-            task = Task(config.domain, instance)
+            task = config.domain.generate_task(instance)
 
             # And now we inject our desired search and heuristic functions
             run_policy_based_search(search_policy, task=task)

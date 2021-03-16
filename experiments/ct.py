@@ -1,13 +1,24 @@
-from lgp.defaults import ct_names
+
+from generalization_grid_games.envs import checkmate_tactic as ct
+
 from sltp.util.misc import update_dict
-from lgp.teach_policies import expert_checkmate_tactic_policy
+from sltp.util.misc import extend_namer_to_all_features
+
+from domains.generalized_grid_games.checkmate_tactic.domain import Domain
+from domains.generalized_grid_games.checkmate_tactic.teach_policies import expert_checkmate_tactic_policy
 
 from instances.ct_instances import four_four_instances, all_instances, \
     break_instances
 
+from gpl.defaults import ct_names
+
+DOMAIN_NAME = "checkmate_tactic"
+
+
 def experiments():
     base = dict(
-        domain="checkmate_tactic",
+        domain=Domain(DOMAIN_NAME),
+
         feature_namer=ct_names,
         maxsat_encoding="d2l",
         num_states="all",
@@ -20,6 +31,10 @@ def experiments():
 
         distinguish_goals=True,
         use_incremental_refinement=False,
+
+        # A function to create the FOL language, used to be able to parse the features.
+        # language_generator=programmatic_language_creator,
+
     )
 
     exps = dict()
@@ -32,7 +47,7 @@ def experiments():
                        all_instances('a') +
                        break_instances('a'),
 
-        policies=[expert_checkmate_tactic_policy],
+        teach_policies=[expert_checkmate_tactic_policy],
 
         max_concept_size=5,
         distance_feature_max_complexity=5,
@@ -51,7 +66,7 @@ def experiments():
                        all_instances('a') +
                        break_instances('a'),
 
-        policies=[expert_checkmate_tactic_policy],
+        teach_policies=[expert_checkmate_tactic_policy],
 
         max_concept_size=5,
         distance_feature_max_complexity=5,
@@ -176,3 +191,6 @@ def experiments():
     ) # 93.94%
 
     return exps
+
+
+

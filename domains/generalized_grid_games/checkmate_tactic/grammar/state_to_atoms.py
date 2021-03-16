@@ -13,11 +13,11 @@ GRID_DIRECTIONS = up, rightup, right, rightdown, down, leftdown, left, leftup =\
 def state_to_atoms(domain_name, state, info):
     return {
 
-        'ReachForTheStar': state_to_atoms_rfts,
-        'StopTheFall': state_to_atoms_stf,
-        'Chase': state_to_atoms_ec,
-        'CheckmateTactic': state_to_atoms_ct,
-        'TwoPileNim': state_to_atoms_tpn,
+        'reach_for_the_star': state_to_atoms_rfts,
+        'stop_the_fall': state_to_atoms_stf,
+        'chase': state_to_atoms_ec,
+        'checkmate_tactic': state_to_atoms_ct,
+        'two_pile_nim': state_to_atoms_tpn,
 
     }.get(domain_name)(state, info)
 

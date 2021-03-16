@@ -1,8 +1,7 @@
 import os
 
-from lgp import LGP_SRC_DIR
-from lgp.domains import generate_language
-from lgp.steps import LGP_PIPELINE
+from gpl import GPL_SRC_DIR
+from gpl.steps import GPL_PIPELINE
 from sltp import SLTP_SRC_DIR
 from sltp.steps import generate_pipeline
 from sltp.util.command import create_experiment_workspace
@@ -10,14 +9,12 @@ from sltp.util.defaults import get_experiment_class
 from sltp.util.misc import extend_namer_to_all_features
 
 from generalization_grid_games.envs import two_pile_nim as tpn
-from generalization_grid_games.envs import checkmate_tactic as ct
 from generalization_grid_games.envs import stop_the_fall as stf
 from generalization_grid_games.envs import chase as ec
 from generalization_grid_games.envs import reach_for_the_star as rfts
 
 BASEDIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 BENCHMARK_DIR = os.path.join(BASEDIR, 'benchmarks')
-
 
 
 def generate_experiment(expid, **kwargs):
@@ -29,11 +26,11 @@ def generate_experiment(expid, **kwargs):
     kwargs["test_instances"] = [os.path.join(BENCHMARK_DIR, i) for i in kwargs['test_instances']]
 
     defaults = dict(
-        pipeline=LGP_PIPELINE,
+        pipeline=GPL_PIPELINE,
 
         # Some directories of external tools needed by the pipeline
         # Note that we use our own generators, not SLTP's
-        generators_path=os.path.join(os.path.dirname(LGP_SRC_DIR), "generators"),
+        generators_path=os.path.join(os.path.dirname(SLTP_SRC_DIR), "generators"),
         pyperplan_path=os.path.join(os.path.dirname(SLTP_SRC_DIR), "pyperplan"),
 
         # The directory where the experiment outputs will be left
@@ -142,8 +139,6 @@ def generate_experiment(expid, **kwargs):
         # In the transition-separation encoding, whether to force any V-descending transition to be labeled as Good
         decreasing_transitions_must_be_good=False,
 
-        # A function to create the FOL language, used to be able to parse the features.
-        language_creator=programmatic_language_creator,
     )
 
     parameters = {**defaults, **kwargs}  # Copy defaults, overwrite with user-specified parameters
@@ -186,18 +181,13 @@ def ec_names(feature):
     return extend_namer_to_all_features(base).get(s, s)
 
 
-def ct_names(feature):
-    base = {f'Exists(hv,Nominal({t}))': f'cell-with-{t}' for t in ct.ALL_TOKENS}
-    s = str(feature)
-    return extend_namer_to_all_features(base).get(s, s)
-
-
 def tpn_names(feature):
     base = {f'Exists(hv,Nominal({t}))': f'cell-with-{t}' for t in tpn.ALL_TOKENS}
     s = str(feature)
     return extend_namer_to_all_features(base).get(s, s)
 
 
-def programmatic_language_creator(config):
-    lang, _ = generate_language(config.domain)
-    return lang
+def ct_names(feature):
+    base = {f'Exists(hv,Nominal({t}))': f'cell-with-{t}' for t in ct.ALL_TOKENS}
+    s = str(feature)
+    return extend_namer_to_all_features(base).get(s, s)

@@ -1,10 +1,11 @@
+
 class ITask:
     """
     General Task
     """
     def __init__(self, domain_name, instance_file_name):
-        self.__domain_name = domain_name
-        self.__instance_file_name = instance_file_name
+        self._domain_name = domain_name
+        self._instance_file_name = instance_file_name
 
     def encode_state(self, state, info):
         raise NotImplementedError()
@@ -32,3 +33,6 @@ class ITask:
 
     def is_operator_applicable(self, state=None, operaror=None):
         raise NotImplementedError()
+
+    def get_instance_filename(self):
+        return self._instance_file_name

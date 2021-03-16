@@ -9,9 +9,6 @@ from sltp.returncodes import ExitCode
 from sltp.util.misc import compute_universe_from_pddl_model, state_as_atoms, types_as_atoms
 from tarski.dl import compute_dl_vocabulary
 
-from .domains import generate_language, generate_problem
-from .utils import unserialize_layout
-
 
 def run(config, data, rng):
     return generate_feature_pool(config, data.sample)
@@ -37,7 +34,8 @@ def generate_feature_pool(config, sample):
     transform_generator_output(
         config, sample,
         os.path.join(config.experiment_dir, "feature-matrix.io"),
-        os.path.join(config.experiment_dir, "feature-info.io"),)
+        os.path.join(config.experiment_dir, "feature-info.io"),
+    )
 
     return ExitCode.Success, dict(model_cache=model_cache, in_goal_features=None)
 
@@ -50,7 +48,7 @@ def prepare_generator_input(config, sample):
     all_objects = []  # We'll collect here the set of objects used in each instance
     infos = []
     for i in config.instances:
-        lang, static_predicates = generate_language(config.domain)
+        lang, static_predicates = config.domain.generate_language()
         vocabulary = compute_dl_vocabulary(lang)
 
         # We interpret as DL nominals all constants that are defined on the entire domain, i.e. instance-independent
@@ -66,7 +64,7 @@ def prepare_generator_input(config, sample):
         # We clone the language so that objects from different instances don't get registered all in the same language;
         # if that happened, we'd be unable to properly compute the universe of each instace.
         pl = copy.deepcopy(lang)
-        problem = generate_problem(config.domain, pl, instance_name, unserialize_layout(i))
+        problem = config.domain.generate_problem(pl, instance_name)
 
         # Compute the universe of each instance: a set with all objects in the universe
         universe = compute_universe_from_pddl_model(problem.language)

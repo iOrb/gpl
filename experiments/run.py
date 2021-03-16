@@ -2,7 +2,7 @@
 
 import sys
 
-from lgp.defaults import generate_experiment
+from gpl.defaults import generate_experiment
 from sltp.util import console
 from sltp.util.bootstrap import setup_argparser
 from sltp.util.runner import report_and_exit, import_experiment_file

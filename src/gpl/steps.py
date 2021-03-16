@@ -2,7 +2,7 @@ import os
 
 from sltp.driver import Step, check_int_parameter, InvalidConfigParameter
 from sltp.returncodes import ExitCode
-from sltp.steps import CPPMaxsatProblemGenerationStep, D2LPolicyTestingStep
+from sltp.steps import CPPMaxsatProblemGenerationStep
 from sltp.util.naming import compute_sample_filenames, compute_test_sample_filenames, compute_info_filename
 
 
@@ -60,7 +60,7 @@ class TransitionSamplingStep(Step):
         return "Generation of the training sample"
 
     def get_step_runner(self):
-        from . import sampling
+        from sltp import sampling
         return sampling.run
 
 
@@ -92,10 +92,10 @@ class FeatureGenerationStep(Step):
         return run
 
 
-class LGPPolicyTesting(Step):
-    """  """
+class GPLPolicyTesting(Step):
+    """ Test the policy """
     def get_required_attributes(self):
-        return ["experiment_dir", "test_instances", "policies"]
+        return ["experiment_dir", "test_instances"]
 
     def process_config(self, config):
         if any(not os.path.isfile(i) for i in config["test_instances"]):
@@ -114,19 +114,19 @@ class LGPPolicyTesting(Step):
 
 
 def state_space_expander(config, data, rng):
-    from .expand_state_space import expand_state_space
     for i in range(0, len(config.instances)):
-        expand_state_space(domain_name=config.domain, instance_filename=config.instances[i],
-             output=config.sample_files[i], policies=config.policies)
+        config.domain.expand_state_space(instance_filename=config.instances[i],
+                                         teach_policies=config.teach_policies,
+                                         output=config.sample_files[i],)
     return ExitCode.Success, dict()
 
 
-LGP_PIPELINE = [
+GPL_PIPELINE = [
     StateSpaceExplorationStep,
     TransitionSamplingStep,
     FeatureGenerationStep,
     CPPMaxsatProblemGenerationStep,
-    LGPPolicyTesting
+    GPLPolicyTesting
 ]
 
 

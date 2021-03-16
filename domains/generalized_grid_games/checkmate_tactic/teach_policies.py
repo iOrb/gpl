@@ -976,4 +976,3 @@ def general_policy_rfts_old(layout, mode):
         return [agent_row_emptys[0]]
     else:
         return [random.choice(agent_row_emptys)]
-

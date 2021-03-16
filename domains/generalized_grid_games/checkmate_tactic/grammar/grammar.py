@@ -1,9 +1,7 @@
 import sys
 import string
 
-from gpl.utils import get_operators
-
-from gpl.grammar.state_to_atoms import state_to_atoms, atom_tuples_to_string
+from .state_to_atoms import state_to_atoms, atom_tuples_to_string
 
 ASCII = string.printable
 # ASCII = ''.join(chr(x) for x in range(50, 1000))
@@ -13,11 +11,11 @@ class Grammar:
     Wrapper of some grammar utils
     """
 
-    def __init__(self, domain, instance):
+    def __init__(self, domain_name, objects, operators):
 
-        self.domain_name = domain.base_name
-        self.objects = domain.objects
-        self.actions = get_operators(instance)
+        self.domain_name = domain_name
+        self.objects = objects
+        self.actions = operators
         self.object_bytes = self.objects_to_bytes()
 
     def state_to_atoms(self, state, info):

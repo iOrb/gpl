@@ -1,22 +1,26 @@
 
-from lgp.grammar.grammar import Grammar
-from .domains import get_domain_data
-from lgp.utils import unserialize_layout, create_gym_env, get_operators, infer_info_from_state
+from gpl.task import ITask
+from .grammar.grammar import Grammar
+from ..utils import unserialize_layout, create_gym_env, get_operators, infer_info_from_state
 from collections import defaultdict
+
+from generalization_grid_games.envs import CheckmateTactic
 
 import numpy as np
 
+from .expand_state_space import expand_state_space
 
-class Task:
+
+class Task(ITask):
     """
     General Grid planning task
     """
-    def __init__(self, domain_name, instance_file_name):
-        self.domain = get_domain_data(domain_name)
-        self.initial_state = unserialize_layout(instance_file_name)
-        self.grammar = Grammar(self.domain, self.initial_state)
-        self.env = create_gym_env(self.domain.base_class, self.initial_state)
+    def __init__(self, domain_name, instance_file_name, objects):
+        super().__init__(domain_name, instance_file_name)
+        self.initial_state = unserialize_layout(self._instance_file_name)
+        self.env = create_gym_env(CheckmateTactic, self.initial_state)
         self.actions = get_operators(self.initial_state)
+        self.grammar = Grammar(self._domain_name, objects, self.actions)
 
     def encode_state(self, state, info):
         return self.grammar.encode_state(state, info)
@@ -62,3 +66,9 @@ class Task:
     def infer_info_from_state(self, state0, operator, state1):
         is_goal, is_dead_end, reward = infer_info_from_state(self.env, state0, operator, state1)
         return is_goal, is_dead_end, reward
+
+    def get_all_possible_operators(self, state=None):
+        return get_operators(state)
+
+    def expand_state_space(self, teach_policies, output):
+        expand_state_space(self, teach_policies, output)
