@@ -149,6 +149,20 @@ def print_sample_info(sample, infos, model_cache, all_predicates, all_functions,
         open(nominals_fn, 'w').close()  # Just write an empty file
 
 
+def transform_generator_output(config, sample, matrix_filename):
+    logging.info(f"Reading feature denotation matrix from {matrix_filename}")
+
+    with open(matrix_filename, "r") as f:
+        # Line #0: comment line, simply ignore
+        f.readline()
+
+        # Line #1: feature names
+        names = f.readline().rstrip().split(" ")
+
+        # Line #2: feature complexities
+        complexities = [int(x) for x in f.readline().rstrip().split(" ")]
+
+
 def generate_output_from_handcrafted_features(sample, config, features, model_cache):
     # These next 3 lines just to print the denotation of all features for debugging purposes
     if config.print_denotations:

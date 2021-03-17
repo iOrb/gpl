@@ -139,6 +139,20 @@ def generate_experiment(expid, **kwargs):
         # In the transition-separation encoding, whether to force any V-descending transition to be labeled as Good
         decreasing_transitions_must_be_good=False,
 
+        # OTHERS:
+        print_hstar_in_feature_matrix=True,
+        initial_sample_size=10,
+        refinement_batch_size=20,
+        seed=0,
+        verbosity=0,
+        acyclicity='topological',
+        encodings_dir='~/Desktop/encodings_d2l',
+        sampling_strategy='random',
+        optimal_steps=3,
+        consistency_bound=2,
+        n_features=2,
+        closed=True,
+        solve=True,
     )
 
     parameters = {**defaults, **kwargs}  # Copy defaults, overwrite with user-specified parameters

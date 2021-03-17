@@ -2,7 +2,6 @@
 from generalization_grid_games.envs import checkmate_tactic as ct
 
 from sltp.util.misc import update_dict
-from sltp.util.misc import extend_namer_to_all_features
 
 from domains.generalized_grid_games.checkmate_tactic.domain import Domain
 from domains.generalized_grid_games.checkmate_tactic.teach_policies import expert_checkmate_tactic_policy
@@ -17,7 +16,7 @@ DOMAIN_NAME = "checkmate_tactic"
 
 def experiments():
     base = dict(
-        domain=Domain(DOMAIN_NAME),
+        domain=Domain("checkmate_tactic"),
 
         feature_namer=ct_names,
         maxsat_encoding="d2l",
@@ -37,12 +36,15 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-                  all_instances([15, 16, 18]) +
-                  break_instances('a'),
-        test_instances=four_four_instances('a') +
-                       all_instances('a') +
-                       break_instances('a'),
+        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+        #           all_instances([15, 16, 18]) +
+        #           break_instances('a'),
+        # test_instances=four_four_instances('a') +
+        #                all_instances('a') +
+        #                break_instances('a'),
+
+        instances=four_four_instances([1,]),
+        test_instances=four_four_instances([1,]),
 
         teach_policies=[expert_checkmate_tactic_policy],
 

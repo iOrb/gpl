@@ -34,7 +34,6 @@ def generate_feature_pool(config, sample):
     transform_generator_output(
         config, sample,
         os.path.join(config.experiment_dir, "feature-matrix.io"),
-        os.path.join(config.experiment_dir, "feature-info.io"),
     )
 
     return ExitCode.Success, dict(model_cache=model_cache, in_goal_features=None)
@@ -47,7 +46,7 @@ def prepare_generator_input(config, sample):
 
     all_objects = []  # We'll collect here the set of objects used in each instance
     infos = []
-    for i in config.instances:
+    for instance_name in config.instances:
         lang, static_predicates = config.domain.generate_language()
         vocabulary = compute_dl_vocabulary(lang)
 
@@ -58,8 +57,6 @@ def prepare_generator_input(config, sample):
         # For our DL grammar we'll use all predicates declared in the problem, plus type predicates
         dl_predicates = {(p.name, p.arity) for p in lang.predicates if not p.builtin} | \
                         {(p.name, 1) for p in lang.sorts if not p.builtin and p != lang.Object}
-
-        instance_name = Path(i).stem
 
         # We clone the language so that objects from different instances don't get registered all in the same language;
         # if that happened, we'd be unable to properly compute the universe of each instace.
