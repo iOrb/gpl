@@ -17,8 +17,8 @@ def apply_policy_on_test_instances(config, create_policy):
 
     solved_instances, unsolved_instances = list(), list()
 
-    for instance in config.test_instances:
-        logging.info(f'Testing policy on instance "{instance}"')
+    for instance_name in config.test_instances:
+        logging.info(f'Testing policy on instance "{instance_name}"')
 
         try:
             """ Run a search on the test instances that follows the given policy """
@@ -30,7 +30,7 @@ def apply_policy_on_test_instances(config, create_policy):
             nominals = lang.constants()
             static_predicates |= {s.name for s in lang.sorts}  # Add unary predicates coming from types!
 
-            instance_name = Path(instance).stem
+            # instance_name = Path(instance).stem
 
             # We clone the language so that objects from different instances don't get registered all in the same language;
             # if that happened, we'd be unable to properly compute the universe of each instance.
@@ -53,13 +53,13 @@ def apply_policy_on_test_instances(config, create_policy):
             search_policy = create_policy(model_factory, static_atoms)
 
             # define the Task
-            task = config.domain.generate_task(instance)
+            task = config.domain.generate_task(instance_name)
 
             # And now we inject our desired search and heuristic functions
             run_policy_based_search(search_policy, task=task)
 
             # Add instance to solved instances
-            solved_instances.append(os.path.splitext(os.path.basename(instance))[0])
+            solved_instances.append(os.path.splitext(os.path.basename(instance_name))[0])
 
         except PolicySearchException as e:
             logging.warning(f"Testing of policy failed with code: {e.code}")
@@ -106,9 +106,8 @@ def run_policy_based_search(search_policy, task):
         successors = task.get_successor_states(node[0])
 
         # Show the successors to our D2L-type policy to let it pick one
-        op = search_policy(task, node, successors)
+        op, succ = search_policy(task, node, successors)
 
-        succ = task.transition(node[0], op)
         (succ_layout, info) = succ
         succ_encoded = task.encode_state(succ_layout, info)
         solution.append(op)
@@ -137,16 +136,13 @@ def create_action_selection_function_from_transition_policy(config, model_factor
     def _policy(task, state, successors):
         m0 = generate_model_from_state(task, model_factory, state, static_atoms)
 
-        for op, succs in successors.items():
-            labeled_transitions = set()
-            for _, succ in succs:
-                m1 = generate_model_from_state(task, model_factory, succ, static_atoms)
-                labeled_transitions.add(policy.transition_is_good(m0, m1))
-            if all(labeled_transitions):
-                return op
+        for op, succ in successors:
+            m1 = generate_model_from_state(task, model_factory, succ, static_atoms)
+            if policy.transition_is_good(m0, m1):
+                return op, succ
 
         # op, succ = random.choice(successors)
-        # return [op], [succ]
+        # return op, succ
 
         # if config.policy_depth == 2:
         #     # Do not surrender!

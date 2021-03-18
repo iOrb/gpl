@@ -11,6 +11,7 @@ from sltp.util.misc import extend_namer_to_all_features
 from generalization_grid_games.envs import two_pile_nim as tpn
 from generalization_grid_games.envs import stop_the_fall as stf
 from generalization_grid_games.envs import chase as ec
+from generalization_grid_games.envs import checkmate_tactic as ct
 from generalization_grid_games.envs import reach_for_the_star as rfts
 
 BASEDIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -139,8 +140,11 @@ def generate_experiment(expid, **kwargs):
         # In the transition-separation encoding, whether to force any V-descending transition to be labeled as Good
         decreasing_transitions_must_be_good=False,
 
+        # A function to create the FOL language, used to be able to parse the features.
+        language_creator=programmatic_language_creator,
+
         # OTHERS:
-        print_hstar_in_feature_matrix=True,
+        print_hstar_in_feature_matrix=False,
         initial_sample_size=10,
         refinement_batch_size=20,
         seed=0,
@@ -205,3 +209,8 @@ def ct_names(feature):
     base = {f'Exists(hv,Nominal({t}))': f'cell-with-{t}' for t in ct.ALL_TOKENS}
     s = str(feature)
     return extend_namer_to_all_features(base).get(s, s)
+
+
+def programmatic_language_creator(config):
+    lang, _ = config.domain.generate_language()
+    return lang

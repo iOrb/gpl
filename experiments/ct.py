@@ -16,7 +16,7 @@ DOMAIN_NAME = "checkmate_tactic"
 
 def experiments():
     base = dict(
-        domain=Domain("checkmate_tactic"),
+        domain=Domain(DOMAIN_NAME),
 
         feature_namer=ct_names,
         maxsat_encoding="d2l",
@@ -36,15 +36,12 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-        #           all_instances([15, 16, 18]) +
-        #           break_instances('a'),
-        # test_instances=four_four_instances('a') +
-        #                all_instances('a') +
-        #                break_instances('a'),
-
-        instances=four_four_instances([1,]),
-        test_instances=four_four_instances([1,]),
+        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+                  all_instances([15, 16, 18]) +
+                  break_instances('a'),
+        test_instances=four_four_instances('a') +
+                       all_instances('a') +
+                       break_instances('a'),
 
         teach_policies=[expert_checkmate_tactic_policy],
 

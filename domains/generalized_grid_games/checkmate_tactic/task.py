@@ -32,25 +32,24 @@ class Task(ITask):
         return self.grammar.atom_tuples_to_string(self.state_to_atom_tuples(state, info))
 
     def get_successor_states(self, state0):
-        successors = defaultdict(list)
-        tmp_succ_encoded = defaultdict(set)
+        successors = []
+        tmp_succ_encoded = set()
         for action in self.actions:
-            states1 = self.env.possible_transitions(state0, action)
-            for state1 in states1:
-                is_goal, is_dead_end, reward = infer_info_from_state(self.env, state0, action, state1)
-                info = {'reward': reward,
-                        'is_goal': is_goal,
-                        'is_dead_end': is_dead_end,
-                        'prev_layout': state0,
-                        'clicked': action}
-                state1_encoded = self.encode_state(state1, info)
-                if state0.shape == state1.shape:
-                    if np.array_equal(state0, state1):
-                        continue
-                if state1_encoded in tmp_succ_encoded[action]:
+            state1 = self.env.transition(state0, action)
+            is_goal, is_dead_end, reward = infer_info_from_state(self.env, state0, action, state1)
+            info = {'reward': reward,
+                    'is_goal': is_goal,
+                    'is_dead_end': is_dead_end,
+                    'prev_layout': state0,
+                    'clicked': action}
+            state1_encoded = self.encode_state(state1, info)
+            if state0.shape == state1.shape:
+                if np.array_equal(state0, state1):
                     continue
-                tmp_succ_encoded[action].add(state1_encoded)
-                successors[action].append((action, (state1, info)))
+            if state1_encoded in tmp_succ_encoded:
+                continue
+            tmp_succ_encoded.add(state1_encoded)
+            successors.append((action, (state1, info)))
         return successors
 
     def transition(self, state0, action):

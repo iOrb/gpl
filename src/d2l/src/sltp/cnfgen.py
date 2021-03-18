@@ -62,6 +62,7 @@ def parse_dnf_policy(config):
         "DEC": FeatureValueChange.DEC,
         "NIL": FeatureValueChange.NIL,
     }
+    # language = config.domain.generate_language()
     language = config.language_creator(config)
     policy = None
     fmap = {}
