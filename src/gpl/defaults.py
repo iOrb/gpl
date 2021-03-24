@@ -31,7 +31,7 @@ def generate_experiment(expid, **kwargs):
 
         # Some directories of external tools needed by the pipeline
         # Note that we use our own generators, not SLTP's
-        generators_path=os.path.join(os.path.dirname(SLTP_SRC_DIR), "generators"),
+        generators_path=os.path.join(os.path.dirname(GPL_SRC_DIR), "generators"),
         pyperplan_path=os.path.join(os.path.dirname(SLTP_SRC_DIR), "pyperplan"),
 
         # The directory where the experiment outputs will be left

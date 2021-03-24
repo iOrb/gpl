@@ -1,9 +1,8 @@
 import os
 
-from sltp.driver import Step, check_int_parameter, InvalidConfigParameter
+from sltp.driver import check_int_parameter, InvalidConfigParameter
 from sltp.returncodes import ExitCode
-from sltp.steps import CPPMaxsatProblemGenerationStep
-from sltp.util.naming import compute_sample_filenames, compute_test_sample_filenames, compute_info_filename
+from sltp.util.naming import compute_sample_filenames, compute_test_sample_filenames, compute_info_filename, compute_maxsat_filename
 
 
 class StateSpaceExplorationStep:
@@ -26,6 +25,12 @@ class StateSpaceExplorationStep:
     def get_step_runner(self):
         return state_space_expander
 
+def state_space_expander(config, data, rng):
+    for i in range(0, len(config.instances)):
+        config.domain.expand_state_space(instance_filename=config.instances[i],
+                                         teach_policies=config.teach_policies,
+                                         output=config.sample_files[i],)
+    return ExitCode.Success, dict()
 
 # class StateSpaceExplorationStep:
 #     """ Expand the entire state space """
@@ -113,12 +118,29 @@ class FeatureGenerationStep:
         return run
 
 
-def state_space_expander(config, data, rng):
-    for i in range(0, len(config.instances)):
-        config.domain.expand_state_space(instance_filename=config.instances[i],
-                                         teach_policies=config.teach_policies,
-                                         output=config.sample_files[i],)
-    return ExitCode.Success, dict()
+class CPPMaxsatProblemGenerationStep:
+    """ Generate the standard SLTP Max-sat CNF encoding """
+    def get_required_attributes(self):
+        return ["experiment_dir"]
+
+    def get_required_data(self):
+        return ["model_cache"]
+
+    def process_config(self, config):
+        config["top_filename"] = compute_info_filename(config, "top.dat")
+        config["cnf_filename"] = compute_maxsat_filename(config)
+        config["good_transitions_filename"] = compute_info_filename(config, "good_transitions.io")
+        config["good_features_filename"] = compute_info_filename(config, "good_features.io")
+        config["wsat_varmap_filename"] = compute_info_filename(config, "varmap.wsat")
+        config["wsat_allvars_filename"] = compute_info_filename(config, "allvars.wsat")
+        return config
+
+    def description(self):
+        return "C++ CNF generation module"
+
+    def get_step_runner(self):
+        from sltp import cnfgen
+        return cnfgen.run
 
 
 

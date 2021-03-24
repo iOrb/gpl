@@ -2,7 +2,6 @@ import os
 
 from sltp.driver import Step, check_int_parameter, InvalidConfigParameter
 from sltp.returncodes import ExitCode
-from sltp.steps import CPPMaxsatProblemGenerationStep
 from sltp.util.naming import compute_sample_filenames, compute_test_sample_filenames, compute_info_filename
 
 
