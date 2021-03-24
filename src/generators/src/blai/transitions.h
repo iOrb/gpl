@@ -102,10 +102,15 @@ public:
 
     // readers
     void read(std::istream &is) {
+
+        // read number of states that have been expanded, for which we'll have one state per line next
+        unsigned n_read_transitions = 0;
+
         // read transitions, in format: source_id, num_successors, succ_1, succ_2, ...
         for (unsigned i = 0; i < num_states_; ++i) {
             unsigned src = 0, count = 0, act_id = 0, dst = 0;
             is >> src >> count;
+            assert(i==src);
             assert(src < num_states_ && 0 <= count);
             if (count > 0) {
                 std::vector<bool> seen(num_states_, false);
@@ -116,6 +121,7 @@ public:
                     assert(dst < num_states_);
                     all_s_successors.insert(dst);
                     nondet_transitions.emplace_back(src, act_id, dst);
+                    n_read_transitions++;
                 }
 
                 assert(trdata_[src].empty());
@@ -123,11 +129,12 @@ public:
             }
         }
 
+        assert(n_read_transitions==num_transitions_);
+
         // Store the value of V^*(s) for each state s
-        unsigned s = 0;
         int vstar = 0;
         vstar_.reserve(num_states_);
-        for (s=0; s < num_states_; ++s) {
+        for (unsigned s=0; s < num_states_; ++s) {
             is >> vstar;
             vstar_.push_back(vstar);
             if (vstar>0) {
@@ -140,6 +147,7 @@ public:
                 is_state_goal_[s] = true;
             }
         }
+        std::cout << "Read " << alive_states_.size() << " alive states" << std::endl;
     }
 
     static TransitionSample read_dump(std::istream &is, bool verbose) {
