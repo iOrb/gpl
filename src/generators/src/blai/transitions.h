@@ -19,7 +19,12 @@ protected:
     const std::size_t num_states_;
     const std::size_t num_transitions_;
 
-    //! trdata_[s] contains the IDs of all neighbors of s in the state space
+    //! nondet_transitions represents the entire non-deterministic transition function by storing a vector of
+    //! possible tuples (s, a, s').
+    std::vector<std::tuple<unsigned, unsigned, unsigned>> nondet_transitions;
+
+    //! trdata_[s] contains a vector with all state IDs of the states s' that can be reached in the state space
+    //! in one single step from s
     std::vector<std::vector<unsigned>> trdata_;
 
     std::vector<bool> is_state_alive_;
@@ -99,20 +104,23 @@ public:
     void read(std::istream &is) {
         // read transitions, in format: source_id, num_successors, succ_1, succ_2, ...
         for (unsigned i = 0; i < num_states_; ++i) {
-            unsigned src = 0, count = 0, dst = 0;
+            unsigned src = 0, count = 0, act_id = 0, dst = 0;
             is >> src >> count;
             assert(src < num_states_ && 0 <= count);
             if (count > 0) {
                 std::vector<bool> seen(num_states_, false);
                 trdata_[src].reserve(count);
+                std::unsorted_set<unsigned> all_s_successors;
                 for (unsigned j = 0; j < count; ++j) {
-                    is >> dst;
+                    is >> act_id >> dst;
                     assert(dst < num_states_);
-                    if (seen.at(dst)) throw std::runtime_error("Duplicate transition");
-                    trdata_[src].push_back(dst);
-                    seen[dst] = true;
+                    all_s_successors.insert(dst);
+                    nondet_transitions.emplace_back(src, act_id, dst);
                 }
             }
+
+            assert(trdata_[src].empty());
+            trdata_[src].insert(trdata_[src].end(), all_s_successors.begin(), all_s_successors.end());
         }
 
         // Store the value of V^*(s) for each state s
