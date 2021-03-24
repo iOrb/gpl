@@ -24,7 +24,7 @@ class TrainStep(Step):
         return config
 
     def description(self):
-        return "Train exploring the state space of the training instances"
+        return "Train: Explore the state space of the training instances"
 
     def get_step_runner(self):
         from .train import run

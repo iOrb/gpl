@@ -52,13 +52,18 @@ def run(config, data, rng):
 def train(config, data, rng, train_steps=[], show_steps_only=False):
 
     for episode in range(config.num_episodes):
-        print_important_message('(START Episode {})'.format(episode))
         # TODO: check some policy convergence parameter
+
+        print_important_message('(START Episode {})'.format(episode))
 
         for step in TRAIN_STEPS:
             step = step()
             print_important_message("{}:".format(step.description()))
+
+            # Process the requirements of the trainning step
             config, data = process_requirements(step, config, data)
+
+            # Run the trainnin step
             exitcode, config, data = run_step(step, config, data, rng)
 
         print_important_message('(END Episode {})'.format(episode))
@@ -70,18 +75,6 @@ def run_step(step, config, data, rng):
         raise RuntimeError(_create_exception_msg(step, exitcode))
     data.update(data_)
     return exitcode, config, data
-
-
-def check_requirements(step, config, data):
-    attributes = step.get_required_attributes()
-    for att in attributes:
-        if att not in config:
-            raise RuntimeError(_create_exception_msg(step, "Missing attribute {}".format(att)))
-
-    data = step.get_required_data()
-    for d in data:
-        if d not in data:
-            raise RuntimeError(_create_exception_msg(step, "Missing data {}".format(d)))
 
 
 def process_requirements(step, config, data):
@@ -96,3 +89,13 @@ def process_requirements(step, config, data):
     return config, data
 
 
+def check_requirements(step, config, data):
+    attributes = step.get_required_attributes()
+    for att in attributes:
+        if att not in config:
+            raise RuntimeError(_create_exception_msg(step, "Missing attribute {}".format(att)))
+
+    data = step.get_required_data()
+    for d in data:
+        if d not in data:
+            raise RuntimeError(_create_exception_msg(step, "Missing data {}".format(d)))

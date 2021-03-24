@@ -1,3 +1,4 @@
+
 from collections import deque
 import time
 
@@ -33,15 +34,13 @@ def expand_state_space(task, teach_policies, output):
     start = time.time()
     id, num_explored, num_transitions, num_goals = [0]*4
 
-    initial_state_encoded = grammar.encode_state(initial_state, {'reward': False,
-                                                                 'is_goal': False,
+    initial_state_encoded = grammar.encode_state(initial_state, {'reward': False, 'is_goal': False,
                                                                  'is_dead_end': False})
     visited[initial_state_encoded] = id
 
     # Assume that initial state is not a goal nor dead_end
     queue.append((initial_state, initial_state_encoded, 0, 0))
-    atoms = grammar.state_to_atoms_string(initial_state, {'reward': False,
-                                                          'is_goal': False,
+    atoms = grammar.state_to_atoms_string(initial_state, {'reward': False, 'is_goal': False,
                                                           'is_dead_end': False})
     f.write(f'(N) {id} 0 0 {atoms}\n')
 
@@ -54,7 +53,7 @@ def expand_state_space(task, teach_policies, output):
             # We do not expand the goal or dead_end states
             continue
 
-        adjacent = dict()
+        adjacent = set()
 
         if teach_policies:
             recommended_actions = compute_actions_from_policies(teach_policies, state=expanded)
@@ -65,36 +64,30 @@ def expand_state_space(task, teach_policies, output):
 
         for action in recommended_actions:
             generated = env.transition(expanded, action)
-
             is_goal, is_dead_end, reward = infer_info_from_state(env, expanded, action, generated)
-            info = {'reward': reward,
-                    'is_goal': is_goal,
-                    'is_dead_end': is_dead_end,
-                    'prev_layout': expanded,
-                    'clicked': action}
-            gen_encoded = grammar.encode_state(generated, info)
+            gen_encoded = grammar.encode_state(generated, {'reward': reward, 'is_goal': is_goal,
+                                                           'is_dead_end': is_dead_end, 'prev_layout': expanded,
+                                                           'clicked': action})
 
             if gen_encoded == exp_encoded:
                 # At the moment we ignore self-loop transitions, i.e. proceed as if the action was not applicable
                 continue
 
-            if action not in adjacent:
-                adjacent[action] = set()
-
             if gen_encoded not in visited:  # The state is a new state
                 id += 1
                 visited[gen_encoded] = id
                 queue.append((generated, gen_encoded, is_goal, is_dead_end))
-                atoms = grammar.state_to_atoms_string(generated, info)
+                atoms = grammar.state_to_atoms_string(generated, {'reward': reward, 'is_goal': is_goal,
+                                                                  'is_dead_end': is_dead_end, 'prev_layout': expanded,
+                                                                  'clicked': action})
                 f.write(f'(N) {str(id)} {str(is_goal)} {str(is_dead_end)} {atoms}\n')
-                adjacent[action].add(str(id),)
-                # adjacent.add(id)
+                adjacent.add(id)
 
             else:  # The state has already been visited, but we still want to record the incoming edge
-                adjacent[action].add(str(visited[gen_encoded]),)
+                adjacent.add(visited[gen_encoded])
 
-        for _, oids in adjacent.items():
-            f.write(f'(E) {id_expanded} {" ".join(sorted(oids))}\n')
+        for oid in adjacent:
+            f.write(f'(E) {id_expanded} {oid}\n')
         num_transitions += len(adjacent)
 
         num_explored += 1
@@ -109,45 +102,41 @@ def expand_state_space(task, teach_policies, output):
             # We do not expand the goal or dead_end states
             continue
 
-        adjacent = dict()
+        adjacent = set()
 
         for action in not_recommended_actions:
             generated = env.transition(expanded, action)
-
             is_goal, is_dead_end, reward = infer_info_from_state(env, expanded, action, generated)
-            info = {'reward': reward,
-                    'is_goal':is_goal,
-                    'is_dead_end':is_dead_end,
-                    'prev_layout': expanded,
-                    'clicked': action}
-            gen_encoded = grammar.encode_state(generated, info)
+            gen_encoded = grammar.encode_state(generated, {'reward': reward, 'is_goal':is_goal,
+                                                           'is_dead_end':is_dead_end, 'prev_layout': expanded,
+                                                           'clicked': action})
 
             if gen_encoded == exp_encoded:
                 # At the moment we ignore self-loop transitions, i.e. proceed as if the action was not applicable
                 continue
 
-            if action not in adjacent:
-                adjacent[action] = set()
-
             if gen_encoded not in visited:  # The state is a new state
                 id += 1
                 visited[gen_encoded] = id
-                atoms = grammar.state_to_atoms_string(generated, info)
-                f.write(f'(N) {str(id)} {str(is_goal)} {str(is_dead_end)} {atoms}\n')
-                adjacent[action].add(str(id),)
+                atoms = grammar.state_to_atoms_string(generated, {'reward': reward, 'is_goal':is_goal,
+                                                                  'is_dead_end':is_dead_end, 'prev_layout': expanded,
+                                                                  'clicked': action})
+                f.write(f"(N) {str(id)} {str(is_goal)} {str(is_dead_end)} {atoms}\n")
+                adjacent.add(id)
 
             else:  # The state has already been visited, but we still want to record the incoming edge
-                adjacent[action].add(str(visited[gen_encoded]),)
+                adjacent.add(visited[gen_encoded])
 
-        for _, oids in adjacent.items():
-            f.write(f'(E) {id_expanded} {" ".join(sorted(oids))}\n')
+        for oid in adjacent:
+            f.write(f'(E) {id_expanded} {oid}\n')
         num_transitions += len(adjacent)
+
         num_explored += 1
         pbar.update(1)
 
     total_time = time.time() - start
     pbar.close()
     print(f'State space of instance "{task.get_instance_filename()}" stored in "{f.name}"')
-    print(
-        f"[# nodes: {id + 1}, # goals: {num_goals}, # edges: {num_transitions}, total time: {round(total_time, 5)} seconds]")
+    print(f"[# nodes: {id+1}, # goals: {num_goals}, # edges: {num_transitions}, total time: {round(total_time, 5)} seconds]")
     f.close()
+
