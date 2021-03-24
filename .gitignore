@@ -4,4 +4,5 @@ build
 dist
 *.egg-info
 .tox
-src/lgp/old
+src/generators/CMakeCache.txt
+src/generators/CMakeFiles
