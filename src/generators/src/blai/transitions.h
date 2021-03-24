@@ -110,17 +110,17 @@ public:
             if (count > 0) {
                 std::vector<bool> seen(num_states_, false);
                 trdata_[src].reserve(count);
-                std::unsorted_set<unsigned> all_s_successors;
+                std::unordered_set<unsigned> all_s_successors;
                 for (unsigned j = 0; j < count; ++j) {
                     is >> act_id >> dst;
                     assert(dst < num_states_);
                     all_s_successors.insert(dst);
                     nondet_transitions.emplace_back(src, act_id, dst);
                 }
-            }
 
-            assert(trdata_[src].empty());
-            trdata_[src].insert(trdata_[src].end(), all_s_successors.begin(), all_s_successors.end());
+                assert(trdata_[src].empty());
+                trdata_[src].insert(trdata_[src].end(), all_s_successors.begin(), all_s_successors.end());
+            }
         }
 
         // Store the value of V^*(s) for each state s
