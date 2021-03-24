@@ -40,19 +40,21 @@ def experiments():
 
     exps["1"] = update_dict(
         base,
-        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-                  all_instances([15, 16, 18]) +
-                  break_instances('a'),
-        test_instances=four_four_instances('a') +
-                       all_instances('a') +
-                       break_instances('a'),
+        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+        #           all_instances([15, 16, 18]) +
+        #           break_instances('a'),
+        # test_instances=four_four_instances('a') +
+        #                all_instances('a') +
+        #                break_instances('a'),
+
+        instances=four_four_instances([1]),
+        test_instances=four_four_instances([1]),
 
         teach_policies=[expert_checkmate_tactic_policy],
 
         max_concept_size=5,
         distance_feature_max_complexity=5,
-
-        policy_depth=1,
+        concept_generation_timeout=120,
 
         parameter_generator=None,
     )

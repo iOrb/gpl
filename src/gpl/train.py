@@ -4,12 +4,11 @@ import sys
 
 from gpl.defaults import generate_experiment
 from sltp.util import console
-from sltp.util.bootstrap import setup_argparser
-from sltp.util.runner import report_and_exit, import_experiment_file
-from sltp.util.defaults import get_experiment_class
-from sltp.steps import generate_pipeline
+from sltp.returncodes import ExitCode
 
+from .utils import Bunch, _create_exception_msg, print_important_message
 from .train_steps import TRAIN_STEPS
+
 
 """
 TRAIN:
@@ -47,45 +46,53 @@ process:
 
 
 def run(config, data, rng):
-    return train(config, data, train_steps=[], show_steps_only=False)
+    return train(config, data, rng, train_steps=[], show_steps_only=False)
 
 
-def train(config, data, train_steps=[], show_steps_only=False):
+def train(config, data, rng, train_steps=[], show_steps_only=False):
 
-    trainning = generate_train(config)
-
-    if show_steps_only:
-        print(f'Trainning is configured with the following steps:')
-        print(trainning.print_description())
-        return
-
-    for _ in range(config.num_episodes):
+    for episode in range(config.num_episodes):
+        print_important_message('(START Episode {})'.format(episode))
         # TODO: check some policy convergence parameter
-        trainning.run(train_steps)
+
+        for step in TRAIN_STEPS:
+            step = step()
+            print_important_message("{}:".format(step.description()))
+            config, data = process_requirements(step, config, data)
+            exitcode, config, data = run_step(step, config, data, rng)
+
+        print_important_message('(END Episode {})'.format(episode))
 
 
-def generate_train(config):
-
-    config_ = config.to_dict()
-
-    defaults = dict(
-        pipeline=TRAIN_STEPS,
-
-        experiment_class=get_experiment_class(config_)
-    )
-
-    parameters = {**config_, **defaults}  # Copy config, overwrite with train parameters
-
-    steps = generate_pipeline(**parameters)
-    exp = parameters["experiment_class"](steps, parameters)
-    return exp
+def run_step(step, config, data, rng):
+    exitcode, data_ = step.get_step_runner()(config, data, rng)
+    if exitcode is not ExitCode.Success:
+        raise RuntimeError(_create_exception_msg(step, exitcode))
+    data.update(data_)
+    return exitcode, config, data
 
 
+def check_requirements(step, config, data):
+    attributes = step.get_required_attributes()
+    for att in attributes:
+        if att not in config:
+            raise RuntimeError(_create_exception_msg(step, "Missing attribute {}".format(att)))
+
+    data = step.get_required_data()
+    for d in data:
+        if d not in data:
+            raise RuntimeError(_create_exception_msg(step, "Missing data {}".format(d)))
 
 
+def process_requirements(step, config, data):
+    config = config.to_dict()
+    data = data.to_dict() if data else dict()
 
+    # Check if the requirements of the step are satisfied
+    check_requirements(step, config, data)
 
-
-
+    config = Bunch(step.process_config(config))
+    data = Bunch(data)
+    return config, data
 
 

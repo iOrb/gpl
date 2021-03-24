@@ -460,9 +460,7 @@ def print_transition_matrix(sample, transitions_filename):
 
 
 def run(config, data, rng):
-    assert not data
     sample = sample_generated_states(config, rng)
     log_sampled_states(sample, config.resampled_states_filename)
     print_transition_matrix(sample, config.transitions_info_filename)
-
     return ExitCode.Success, dict(sample=sample)
