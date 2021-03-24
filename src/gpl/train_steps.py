@@ -7,24 +7,61 @@ from sltp.util.naming import compute_sample_filenames, compute_test_sample_filen
 
 
 class StateSpaceExplorationStep(Step):
-    """ Expand the entire state space """
-
+    """ Generate the sample of transitions from the set of solved planning instances """
     def get_required_attributes(self):
-        return ["instances", "domain", "num_states", "test_instances",]
+        return ["sample_files", "experiment_dir"]
 
     def get_required_data(self):
         return []
 
     def process_config(self, config):
-        config["sample_files"] = compute_sample_filenames(**config)
-        config["test_sample_files"] = compute_test_sample_filenames(**config)
+        config["resampled_states_filename"] = os.path.join(config["experiment_dir"], 'sample.txt')
+        config["transitions_info_filename"] = compute_info_filename(config, "transitions-info.io")
+
+        ns = config["num_sampled_states"]
+        if ns is not None:
+            if isinstance(ns, int):
+                ns = [ns]
+
+            if len(config["instances"]) != len(ns):
+                if len(ns) == 1:
+                    ns = ns * len(config["instances"])
+                else:
+                    raise InvalidConfigParameter('"num_sampled_states" should have same length as "instances"')
+            config["num_sampled_states"] = ns
+
+        if config["sampling"] == "random" and config["num_sampled_states"] is None:
+            raise InvalidConfigParameter('sampling="random" requires that option "num_sampled_states" is set')
+
         return config
 
     def description(self):
-        return "Expand the state space of the training instances"
+        return "Exploration of the training sample"
 
     def get_step_runner(self):
-        return state_space_expander
+        from .sampling import run
+        return run
+
+
+# class StateSpaceExplorationStep(Step):
+#     """ Expand the entire state space """
+#
+#     def get_required_attributes(self):
+#         return ["instances", "domain", "num_states", "test_instances",]
+#
+#     def get_required_data(self):
+#         return []
+#
+#     def process_config(self, config):
+#         config["sample_files"] = compute_sample_filenames(**config)
+#         config["test_sample_files"] = compute_test_sample_filenames(**config)
+#         return config
+#
+#     def description(self):
+#         return "Expand the state space of the training instances"
+#
+#     def get_step_runner(self):
+#         return state_space_expander
 
 
 class TransitionSamplingStep(Step):
@@ -60,8 +97,8 @@ class TransitionSamplingStep(Step):
         return "Generation of the training sample"
 
     def get_step_runner(self):
-        from sltp import sampling
-        return sampling.run
+        from .sampling import run
+        return run
 
 
 class FeatureGenerationStep(Step):
@@ -92,27 +129,6 @@ class FeatureGenerationStep(Step):
         return run
 
 
-class GPLPolicyTesting(Step):
-    """ Test the policy """
-    def get_required_attributes(self):
-        return ["experiment_dir", "test_instances"]
-
-    def process_config(self, config):
-        if any(not os.path.isfile(i) for i in config["test_instances"]):
-            raise InvalidConfigParameter('"test_instances" must point to existing files')
-        return config
-
-    def get_required_data(self):
-        return ["d2l_policy"]
-
-    def description(self):
-        return "Testing of the D2L policy"
-
-    def get_step_runner(self):
-        from . import tester
-        return tester.test_d2l_policy_on_gym_env
-
-
 def state_space_expander(config, data, rng):
     for i in range(0, len(config.instances)):
         config.domain.expand_state_space(instance_filename=config.instances[i],
@@ -121,13 +137,10 @@ def state_space_expander(config, data, rng):
     return ExitCode.Success, dict()
 
 
-GPL_PIPELINE = [
+
+TRAIN_STEPS=[
     StateSpaceExplorationStep,
     TransitionSamplingStep,
     FeatureGenerationStep,
     CPPMaxsatProblemGenerationStep,
-    GPLPolicyTesting
 ]
-
-
-

@@ -6,14 +6,14 @@ from sltp.util.misc import update_dict
 from domains.generalized_grid_games.checkmate_tactic.domain import Domain
 from domains.generalized_grid_games.checkmate_tactic.teach_policies import expert_checkmate_tactic_policy
 
-from instances.ct_instances import four_four_instances, all_instances, \
+from .instances.ct_instances import four_four_instances, all_instances, \
     break_instances
 
 from gpl.defaults import ct_names
 
 DOMAIN_NAME = "checkmate_tactic"
 
-def experiments():
+def get_config(id):
     base = dict(
         domain=Domain(DOMAIN_NAME),
 
@@ -31,14 +31,13 @@ def experiments():
         use_incremental_refinement=False,
 
         # new
-        num_episodes=2,
+        epochs=2,
         num_rollouts=1,
         rollout_depth=5,
     )
 
     exps = dict()
-
-    exps["1"] = update_dict(
+    exps[1] = update_dict(
         base,
         instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
                   all_instances([15, 16, 18]) +
@@ -57,7 +56,4 @@ def experiments():
         parameter_generator=None,
     )
 
-    return exps
-
-
-
+    return exps[id]

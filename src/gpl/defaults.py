@@ -1,7 +1,7 @@
 import os
 
 from gpl import GPL_SRC_DIR
-from gpl.steps import GPL_PIPELINE
+from gpl.pipeline_steps import GPL_PIPELINE
 from sltp import SLTP_SRC_DIR
 from sltp.steps import generate_pipeline
 from sltp.util.command import create_experiment_workspace
@@ -166,6 +166,9 @@ def generate_experiment(expid, **kwargs):
 
     steps = generate_pipeline(**parameters)
     exp = parameters["experiment_class"](steps, parameters)
+
+    # train_steps = generate_train(**parameters)
+    # exp = generate_train(**parameters)
     return exp
 
 
