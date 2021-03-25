@@ -19,9 +19,9 @@ protected:
     const std::size_t num_states_;
     const std::size_t num_transitions_;
 
-    //! nondet_transitions represents the entire non-deterministic transition function by storing a vector of
+    //! nondet_transitions_ represents the entire non-deterministic transition function by storing a vector of
     //! possible tuples (s, a, s').
-    std::vector<std::tuple<unsigned, unsigned, unsigned>> nondet_transitions;
+    std::vector<std::tuple<unsigned, unsigned, unsigned>> nondet_transitions_;
 
     //! trdata_[s] contains a vector with all state IDs of the states s' that can be reached in the state space
     //! in one single step from s
@@ -62,6 +62,10 @@ public:
 
     std::size_t num_states() const { return num_states_; }
     std::size_t num_transitions() const { return num_transitions_; }
+
+    const std::vector<std::tuple<unsigned, unsigned, unsigned>>& nondet_transitions() const {
+        return nondet_transitions_;
+    }
 
     int vstar(unsigned sid) const {
         auto vstar = vstar_.at(sid);
@@ -120,7 +124,7 @@ public:
                     is >> act_id >> dst;
                     assert(dst < num_states_);
                     all_s_successors.insert(dst);
-                    nondet_transitions.emplace_back(src, act_id, dst);
+                    nondet_transitions_.emplace_back(src, act_id, dst);
                     n_read_transitions++;
                 }
 
