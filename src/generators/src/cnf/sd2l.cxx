@@ -474,7 +474,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
 
             if (it == good_s_a.end()) {
                 good_s_a_var = wr.var("Good_a(" + std::to_string(s) + ", " + std::to_string(a) + ")");
-                varmapstream << good_s_a_var << " " << s << " " << a << std::endl;
+//                 varmapstream << good_s_a_var << " " << s << " " << a << std::endl;
                 good_s_a.emplace(std::make_pair(s, a), good_s_a_var);
                 s_to_as[s].push_back(a);
             } else {
