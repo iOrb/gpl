@@ -33,3 +33,6 @@ class ExitCode(Enum):
 
     OutOfMemory = 100
     OutOfTime = 101
+
+    MissigAttribute = 102
+    MissigData = 103

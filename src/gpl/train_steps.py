@@ -56,7 +56,8 @@ def state_space_expander(config, data, rng):
 class TransitionSamplingStep:
     """ Generate the sample of transitions from the set of solved planning instances """
     def get_required_attributes(self):
-        return ["sample_files", "experiment_dir"]
+        return ["sample_files",
+                "experiment_dir",]
 
     def get_required_data(self):
         return []

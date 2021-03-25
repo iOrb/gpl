@@ -46,7 +46,8 @@ process:
 
 
 def run(config, data, rng):
-    return train(config, data, rng, train_steps=[], show_steps_only=False)
+    exitcode, output = train(config, data, rng, train_steps=[], show_steps_only=False)
+    return exitcode, output.to_dict()
 
 
 def train(config, data, rng, train_steps=[], show_steps_only=False):
@@ -66,8 +67,12 @@ def train(config, data, rng, train_steps=[], show_steps_only=False):
             # Run the trainnin step
             exitcode, config, data = run_step(step, config, data, rng)
 
+            if exitcode != ExitCode.Success:
+                return exitcode, data
+
         print_important_message('(END Episode {})'.format(episode))
 
+    return exitcode, data
 
 def run_step(step, config, data, rng):
     exitcode, data_ = step.get_step_runner()(config, data, rng)
