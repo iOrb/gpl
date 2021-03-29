@@ -12,7 +12,7 @@ from sltp.tester import PolicySearchException
 from sltp.util.misc import compute_universe_from_pddl_model, state_as_atoms, types_as_atoms
 from tarski.dl import compute_dl_vocabulary
 
-from .utils import Bunch, unpack_state
+from .utils import Bunch
 
 """
 rollout:
@@ -94,49 +94,39 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
 
 def run_test(config, search_policy, task, instance_name, rng):
 
-    state = task.initial_state
-    s_r, goal, deadend, s_encoded, info = unpack_state(state)
+    s = task.initial_state
     expanded = 0
 
-    parents = {s_encoded: 'root'}  # We'll use this at the same time as closed list and to keep track of parents
+    parents = {s[2]: 'root'}  # We'll use this at the same time as closed list and to keep track of parents
 
     solution = list()
 
-    while not goal:
+    while not s[1]['goal']:
         expanded += 1
         if expanded % 1000 == 0:
             logging.debug(f"Number of expanded states so far in policy-based search: {expanded}")
 
-        succcessors = task.get_successor_states(state)
+        successors = task.get_successor_states(s)
 
-        if not succcessors:
+        if not successors:
             raise PolicySearchException(ExitCode.NotSuccessorsFound)
 
-        alive, goals, _ = task.filter_successors(state, succcessors, instance_name, task)
-
-        if len(goals) > 0:
-            op, succ = random.Random(rng).choice(good_succs)
-            s_r, goal, deadend, s_encoded, info = unpack_state(succ)
-            solution.append(op)
-            continue
-
-        exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
-        if exitcode != 0:
+        # alive, goals, _ = task.filter_successors(s, successors, instance_name, task)
+        # if len(goals) > 0:
+        #     op, succ = random.Random(rng).choice(goals)
+        # else:
+        exitcode, good_succs = run_policy_based_search(config, search_policy, task, s, successors)
+        if exitcode != ExitCode.Success:
             raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
         op, succ = random.Random(rng).choice(good_succs)
-        if goal:
-            solution.append(op)
-            continue
-        elif deadend:
+        if succ[1]['deadend']:
             raise PolicySearchException(ExitCode.DeadEndReached)
-
-        if s_encoded in parents:
+        if succ[2] in parents:
             raise PolicySearchException(ExitCode.AbstractPolicyNonTerminatingOnTestInstances)
 
-        succ_r, goal, deadend, succ_encoded, info = unpack_state(succ)
         solution.append(op)
-        parents[succ_encoded] = s_encoded
-        state = succ
+        parents[succ[2]] = s[2]
+        s = succ
 
     logging.info(f"Goal found after expanding {expanded} nodes")
     logging.info(f"The solution was: {solution}")

@@ -63,7 +63,7 @@ def train(config, data, rng, train_steps=[], show_steps_only=False):
 
         for step in TRAIN_STEPS:
             step = step()
-            print_important_message("(#E {}) {}:".format(episode, step.description()))
+            print_important_message("({}) {}:".format(episode, step.description()))
 
             # Process the requirements of the trainning step
             config, data = process_requirements(step, config, data)

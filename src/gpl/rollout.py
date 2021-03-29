@@ -32,7 +32,7 @@ rollout:
 
 def rollout(config, data, get_policy, rng):
 
-    for instance_name in config.instances:
+    for i, instance_name in enumerate(config.instances):
         logging.info(f'Appying rollout in train instance "{instance_name}"')
 
         try:
@@ -71,7 +71,10 @@ def rollout(config, data, get_policy, rng):
             task = config.domain.generate_task(instance_filename=instance_name)
 
             # And now we inject our desired search and heuristic functions
-            run_rollout(config, search_policy, task, instance_name, rng)
+            if i == 0:
+                bfs(config, search_policy, task, instance_name, rng)
+            else:
+                run_rollout(config, search_policy, task, instance_name, rng)
 
         except PolicySearchException as e:
             logging.warning(f"Rollout of policy failed with code: {e.code}")
@@ -88,13 +91,13 @@ def run_rollout(config, search_policy, task, instance_name, rng):
 
             succcessors = task.get_successor_states(state)
 
-            if not succcessors:
-                config.sample.mark_state_as_deadend(state, task)
+            alive, _, _ = config.sample.filter_successors(state, succcessors, instance_name, task)
+
+            if not alive:
+                config.sample.mark_state_as_deadend(state, task) # maybe it is a goal (?)
                 state = task.initial_state
                 # raise RuntimeError("No successor")
                 continue
-
-            alive, _, _ = config.sample.filter_successors(state, succcessors, instance_name, task)
 
             rnd_op, rnd_succ = random.Random(rng).choice(alive)
             # rnd_succ, rnd_op = alive[0]
@@ -111,13 +114,8 @@ def run_rollout(config, search_policy, task, instance_name, rng):
                 # succ, op = run_dfs(config, task, state, rng)
 
             # config.visited.add(succ[2])
-            config.sample.add_transition(state, succ, op, instance_name, task)
+            # config.sample.add_transition(state, succ, op, instance_name, task)
             state = succ
-
-
-def run_dfs(config, task, state):
-    state, action = task.dfs_transition(state, rng, config.visited)
-    return state, action
 
 
 def run_policy_based_search(config, search_policy, task, state, successors):
@@ -128,6 +126,39 @@ def run_policy_based_search(config, search_policy, task, state, successors):
     exitcode, good_succs = search_policy(task, state, successors)
 
     return exitcode, good_succs
+
+
+def bfs(config, search_policy, task, instance_name, rng):
+
+    visited = set()
+    istate = task.initial_state
+
+    queue = [istate]
+
+    while queue:
+        s = queue.pop(0)
+        sr, _, _, s_encoded, info = unpack_state(s)
+
+        succcessors = task.get_successor_states(s)
+
+        alive, goals, deadends = config.sample.filter_successors(s, succcessors, instance_name, task)
+
+        for op, g in goals:
+            visited.add(g[2])
+
+        for op, d in deadends:
+            visited.add(d[2])
+
+        # if not alive:
+        #     config.sample.mark_state_as_deadend(s, task)
+        #     # raise RuntimeError("No successor")
+        #     continue
+
+        for op, succ in alive:
+
+            if succ[2] not in visited:
+                visited.add(succ[2])
+                queue.append(succ)
 
 
 def translate_state(task, state, static_atoms):

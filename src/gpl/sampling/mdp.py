@@ -130,6 +130,7 @@ class TransitionSampleMDP:
                 self.add_transition(s, sprime, op, instance_name, task)
             else:
                 alive.append((op, sprime))
+                self.add_transition(s, sprime, op, instance_name, task)
             """
             self.add_transition(s, sprime, op, instance_name, task)
             if goal or deadend:

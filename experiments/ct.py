@@ -27,7 +27,7 @@ def experiments():
         # concept_generation_timeout=120,  # in seconds
         maxsat_timeout=None,
 
-        distinguish_goals=True,
+        distinguish_goals=False,
         use_incremental_refinement=False,
 
     )
@@ -43,7 +43,7 @@ def experiments():
         #                all_instances('a') +
         #                break_instances('a'),
 
-        instances=all_instances([16]),
+        instances=all_instances([17]),
         test_instances=all_instances([15, 16, 17]),
 
         teach_policies=None,
@@ -55,36 +55,9 @@ def experiments():
         parameter_generator=None,
 
         # rollouts
-        num_episodes=20,
+        num_episodes=3,
         num_rollouts=20,
-        rollout_depth=50,
-    )
-
-    exps["1"] = update_dict(
-        base,
-        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-        #           all_instances([15, 16, 18]) +
-        #           break_instances('a'),
-        # test_instances=four_four_instances('a') +
-        #                all_instances('a') +
-        #                break_instances('a'),
-
-        instances=break_instances([0]),
-        test_instances=all_instances([15, 16, 17]) +
-                       break_instances('a'),
-
-        teach_policies=None,
-
-        max_concept_size=5,
-        distance_feature_max_complexity=5,
-        concept_generation_timeout=120,
-
-        parameter_generator=None,
-
-        # rollouts
-        num_episodes=100,
-        num_rollouts=100,
-        rollout_depth=100,
+        rollout_depth=20,
     )
 
     exps["2"] = update_dict(
