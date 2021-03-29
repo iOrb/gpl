@@ -3,9 +3,9 @@ class ITask:
     """
     General Task
     """
-    def __init__(self, domain_name, instance_file_name):
+    def __init__(self, domain_name, objects):
         self._domain_name = domain_name
-        self._instance_file_name = instance_file_name
+        self._objects = objects
 
     def encode_state(self, state, info):
         raise NotImplementedError()
@@ -19,7 +19,7 @@ class ITask:
     def get_successor_states(self, state0):
         raise NotImplementedError()
 
-    def transition(self, state0, operator):
+    def transition(self, state0, operator=None):
         raise NotImplementedError()
 
     def infer_info_from_state(self, state0, operator, state1):
@@ -33,6 +33,3 @@ class ITask:
 
     def is_operator_applicable(self, state=None, operaror=None):
         raise NotImplementedError()
-
-    def get_instance_filename(self):
-        return self._instance_file_name

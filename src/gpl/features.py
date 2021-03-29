@@ -46,6 +46,7 @@ def prepare_generator_input(config, sample):
 
     all_objects = []  # We'll collect here the set of objects used in each instance
     infos = []
+
     for instance_name in config.instances:
         lang, static_predicates = config.domain.generate_language()
         vocabulary = compute_dl_vocabulary(lang)

@@ -30,10 +30,6 @@ def experiments():
         distinguish_goals=True,
         use_incremental_refinement=False,
 
-        # new
-        num_episodes=2,
-        num_rollouts=1,
-        rollout_depth=5,
     )
 
     exps = dict()
@@ -47,16 +43,74 @@ def experiments():
         #                all_instances('a') +
         #                break_instances('a'),
 
-        instances=four_four_instances([1]),
-        test_instances=four_four_instances([1]),
+        instances=all_instances([16]),
+        test_instances=all_instances([15, 16, 17]),
 
-        teach_policies=[expert_checkmate_tactic_policy],
+        teach_policies=None,
 
         max_concept_size=5,
         distance_feature_max_complexity=5,
         concept_generation_timeout=120,
 
         parameter_generator=None,
+
+        # rollouts
+        num_episodes=20,
+        num_rollouts=20,
+        rollout_depth=50,
+    )
+
+    exps["1"] = update_dict(
+        base,
+        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+        #           all_instances([15, 16, 18]) +
+        #           break_instances('a'),
+        # test_instances=four_four_instances('a') +
+        #                all_instances('a') +
+        #                break_instances('a'),
+
+        instances=break_instances([0]),
+        test_instances=all_instances([15, 16, 17]) +
+                       break_instances('a'),
+
+        teach_policies=None,
+
+        max_concept_size=5,
+        distance_feature_max_complexity=5,
+        concept_generation_timeout=120,
+
+        parameter_generator=None,
+
+        # rollouts
+        num_episodes=100,
+        num_rollouts=100,
+        rollout_depth=100,
+    )
+
+    exps["2"] = update_dict(
+        base,
+        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+                  all_instances([15, 16, 18]) +
+                  break_instances('a'),
+        test_instances=four_four_instances('a') +
+                       all_instances('a') +
+                       break_instances('a'),
+
+        # instances=all_instances([16]),
+        # test_instances=all_instances([15, 16, 17]),
+
+        teach_policies=None,
+
+        max_concept_size=5,
+        distance_feature_max_complexity=5,
+        concept_generation_timeout=120,
+
+        parameter_generator=None,
+
+        # rollouts
+        num_episodes=10,
+        num_rollouts=40,
+        rollout_depth=10,
     )
 
     return exps

@@ -27,9 +27,9 @@ class Domain(IDomain):
         """ Generate the Tarski problem corresponding to the given domain and particular layout. """
         return generate_ct_problem(self._domain_name, lang, instance_filename)
 
-    def generate_task(self, instance_filename):
+    def generate_task(self, instance_filename=None, initial_state=None):
         """ Generate a Task object, according to the Interface ITask """
-        return Task(self._domain_name, instance_filename, self.objects)
+        return Task(self._domain_name, self.objects, instance_filename, initial_state)
 
     def expand_state_space(self, instance_filename, teach_policies, output):
         """ Expand state space of an instance """

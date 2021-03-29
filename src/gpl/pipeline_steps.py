@@ -19,7 +19,8 @@ class TrainStep(Step):
         return []
 
     def process_config(self, config):
-        config["sample_files"] = compute_sample_filenames(**config)
+        # config["sample_files"] = compute_sample_filenames(**config)
+        config["sample_file"] = compute_info_filename(config, "sample.pickle")
         return config
 
     def description(self):
@@ -47,8 +48,8 @@ class PolicyTesting(Step):
         return "Testing of the D2L policy"
 
     def get_step_runner(self):
-        from . import tester
-        return tester.test_d2l_policy_on_gym_env
+        from .tester import run
+        return run
 
 
 GPL_PIPELINE = [

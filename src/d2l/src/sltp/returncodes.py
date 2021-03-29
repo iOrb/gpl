@@ -15,6 +15,10 @@ class ExitCode(Enum):
 
     AbstractionFailsOnTestInstances = 20
 
+    # Not successors found while testing:
+    NotSuccessorsFound = 24
+    DeadEndReached = 25
+
     # The policy encounters a loop:
     AbstractPolicyNonTerminatingOnTestInstances = 26
 
@@ -23,6 +27,9 @@ class ExitCode(Enum):
 
     # The policy is not total on the set of reached states:
     AbstractPolicyNotCompleteOnTestInstances = 28
+
+
+
 
     SeparationPolicyNotComplete = 30
     SeparationPolicyCannotDistinguishGoal = 31
@@ -36,3 +43,4 @@ class ExitCode(Enum):
 
     MissigAttribute = 102
     MissigData = 103
+

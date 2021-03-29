@@ -10,7 +10,7 @@ GRID_DIRECTIONS = up, rightup, right, rightdown, down, leftdown, left, leftup =\
     ['up', 'rightup', 'right', 'rightdown', 'down', 'leftdown', 'left', 'leftup']
 
 
-def state_to_atoms(domain_name, state, info):
+def state_to_atoms(domain_name, state,):
     return {
 
         'reach_for_the_star': state_to_atoms_rfts,
@@ -19,7 +19,7 @@ def state_to_atoms(domain_name, state, info):
         'checkmate_tactic': state_to_atoms_ct,
         'two_pile_nim': state_to_atoms_tpn,
 
-    }.get(domain_name)(state, info)
+    }.get(domain_name)(state[0], state[1])
 
 
 # Reach for the star
@@ -89,7 +89,10 @@ def state_to_atoms_general(layout, info):
     # These are the general atoms for all the domains
     atoms = list()
 
-    nrows, ncols = layout.shape
+    try:
+        nrows, ncols = layout.shape
+    except:
+        print('h')
 
     for r in range(-1, nrows + 1):
 

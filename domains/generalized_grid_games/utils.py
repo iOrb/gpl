@@ -45,34 +45,3 @@ def get_operators_from_shape(height, width):
     return positions
 
 
-def infer_info_from_state(env, state0, action, state1):
-    """
-    Infer some relevant info from the current state, based on the simulator
-    """
-    reward = env.compute_reward(state0, action, state1)
-    try:
-        is_done = env.compute_done(state1)
-    except:
-        print('h')
-
-    if is_done:
-
-        if reward == 1.:
-
-            reward = 1
-            is_goal = 1
-            is_dead_end = 0
-
-        else:
-
-            reward = 0  # rewards different than 1. or 0 are not registered at the moment
-            is_goal = 0
-            is_dead_end = 1
-
-    else:
-
-        reward = 0
-        is_goal = 0
-        is_dead_end = 0
-
-    return is_goal, is_dead_end, reward
