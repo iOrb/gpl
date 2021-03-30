@@ -157,6 +157,10 @@ def generate_experiment(expid, **kwargs):
         n_features=2,
         closed=True,
         solve=True,
+
+        # New:
+        expand_first_train_instance=False,
+        provided_sample_file=None,
     )
 
     parameters = {**defaults, **kwargs}  # Copy defaults, overwrite with user-specified parameters

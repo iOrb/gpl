@@ -29,8 +29,6 @@ class ExitCode(Enum):
     AbstractPolicyNotCompleteOnTestInstances = 28
 
 
-
-
     SeparationPolicyNotComplete = 30
     SeparationPolicyCannotDistinguishGoal = 31
     SeparationPolicyAdvisesDeadState = 32

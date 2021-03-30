@@ -141,7 +141,7 @@ class TransitionSampleMDP:
         return alive, goals, deadends
 
 
-def process_sample(config, rng):
+def process_sample(config, sample, rng):
 
     # if not config.create_goal_features_automatically and not config.sample.goals:
     #     raise logging.warning("No goal found in the sample - increase number of expanded states!")
@@ -150,13 +150,13 @@ def process_sample(config, rng):
     # for src in config.sample.transitions:
     #     assert src in state_atoms and all(dst in state_atoms for dsts in transitions[src] for dst in dsts)
 
-    num_tx_entries = sum(len(tx) for tx in config.sample.transitions.values())
-    num_tx = sum(len(t) for tx in config.sample.transitions.values() for t in tx.values())
+    num_tx_entries = sum(len(tx) for tx in sample.transitions.values())
+    num_tx = sum(len(t) for tx in sample.transitions.values() for t in tx.values())
     logging.info('%s: #states=%d, #transition-entries=%d, #transitions=%d' %
-                 ('sample', len(config.sample.states), num_tx_entries, num_tx))
+                 ('sample', len(sample.states), num_tx_entries, num_tx))
 
-    mark_optimal_transitions(config) # check if this sample is being updated
-    logging.info(f"Entire sample: {config.sample.info()}")
+    mark_optimal_transitions(config, sample) # check if this sample is being updated
+    logging.info(f"Entire sample: {sample.info()}")
 
     # if config.num_sampled_states is not None:
     #     # Resample the full sample and extract only a few specified states
@@ -165,17 +165,17 @@ def process_sample(config, rng):
     #     selected.update(states_in_some_optimal_transition)
     #     sample = sample.resample(set(selected))
     #     logging.info(f"Sample after resampling: {sample.info()}")
+    return sample
 
-
-def mark_optimal_transitions(config):
+def mark_optimal_transitions(config, sample):
     """ Marks which transitions are optimal in a transition system according to some selection criterion
     such as marking *all* optimal transitions.
      """
     # Mark all transitions that are optimal from some alive state
     # We also mark which states are alive.
-    optimal, alive, config.sample.vstar = mark_all_optimal(config.sample.goals, config.sample.parents)
-    config.sample.mark_as_alive(alive)
-    config.sample.mark_as_optimal(optimal)
+    optimal, alive, sample.vstar = mark_all_optimal(sample.goals, sample.parents)
+    sample.mark_as_alive(alive)
+    sample.mark_as_optimal(optimal)
 
 
 def mark_all_optimal(goals, parents):
@@ -258,12 +258,11 @@ def print_transition_matrix(sample, transitions_filename):
             nondet_successors = ' '.join(f'{i} {sprime}' for i, sprime in pairs)
             print(f"{s} {len(pairs)} {nondet_successors}", file=f)
 
-
         # Next: A space-separated list of V^*(s) values, one per each state s, where -1 denotes infinity
         print(' '.join(str(sample.vstar.get(s, -1)) for s in state_ids), file=f)
 
 
 def run(config, data, rng):
-    process_sample(config, rng)
-    print_transition_matrix(config.sample, config.transitions_info_filename)
-    return ExitCode.Success, dict(sample=config.sample)
+    sample = process_sample(config, data.sample, rng)
+    print_transition_matrix(sample, config.transitions_info_filename)
+    return ExitCode.Success, dict(sample = sample)

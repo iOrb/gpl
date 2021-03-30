@@ -6,10 +6,10 @@ from gpl.defaults import generate_experiment
 from sltp.util import console
 from sltp.returncodes import ExitCode
 
-from .utils import Bunch, _create_exception_msg, print_important_message, save_local_object
+from .utils import Bunch, _create_exception_msg, print_important_message, save_local_object, load_local_object
 from .train_steps import TRAIN_STEPS
 
-from .sampling.mdp import TransitionSampleMDP
+from .sampling.fond import TransitionSampleMDP
 
 """
 TRAIN:
@@ -48,13 +48,12 @@ process:
 
 def run(config, data, rng):
     exitcode, output = train(config, data, rng, train_steps=[], show_steps_only=False)
-    return exitcode, output.to_dict()
+    return exitcode, output
 
 
 def train(config, data, rng, train_steps=[], show_steps_only=False):
 
-    config.sample = TransitionSampleMDP()  # for now stay in the non-adversarial context
-    config.visited = set()
+    data = pre_process_data(config, data)
 
     for episode in range(config.num_episodes):
         # TODO: check some policy convergence parameter
@@ -76,9 +75,9 @@ def train(config, data, rng, train_steps=[], show_steps_only=False):
 
         print_important_message('(END Episode {})'.format(episode))
 
-    process_data(config, data, rng)
+    data = post_process_data(config, data)
 
-    return exitcode, data
+    return exitcode, data.to_dict()
 
 
 def run_step(step, config, data, rng):
@@ -112,8 +111,17 @@ def check_requirements(step, config, data):
         if d not in data:
             raise RuntimeError(_create_exception_msg(step, "Missing data {}".format(d)))
 
+def pre_process_data(config, data):
+    data = Bunch(dict(sample=None, d2l_policy=None))
+    if config.provided_sample_file is not None:
+        data.sample = load_local_object(config.provided_sample_file)
+    else:
+        data.sample = TransitionSampleMDP()
+    if config.d2l_policy is not None:
+        data.d2l_policy=config.d2l_policy
+    return data
 
-def process_data(config, data, rng):
-    save_local_object(config.sample, config.sample_file)
-    config.sample = None
+def post_process_data(config, data):
+    save_local_object(data.sample, config.sample_file)
     data.sample = None
+    return data

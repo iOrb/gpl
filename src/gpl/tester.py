@@ -133,14 +133,7 @@ def run_test(config, search_policy, task, instance_name, rng):
     return solution
 
 
-def run_dfs(config, task, state):
-    state, action = task.dfs_transition(state, rng, config.visited)
-    return state, action
-
-
 def run_policy_based_search(config, search_policy, task, state, successors):
-    # # Compute all possible successors:
-    # successors = task.get_successor_states(state)
 
     # Show the successors to our D2L-type policy to let it pick one
     exitcode, good_succs = search_policy(task, state, successors)

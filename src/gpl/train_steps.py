@@ -116,7 +116,7 @@ class TransitionSamplingStep:
         return "Generation of the training sample"
 
     def get_step_runner(self):
-        from .sampling.mdp import run
+        from .sampling.fond import run
         return run
 
 

@@ -33,7 +33,6 @@ rollout:
 def rollout(config, data, get_policy, rng):
 
     for i, instance_name in enumerate(config.instances):
-        logging.info(f'Appying rollout in train instance "{instance_name}"')
 
         try:
             """ Run a search on the train instances that follows the given policy or DFS """
@@ -71,10 +70,10 @@ def rollout(config, data, get_policy, rng):
             task = config.domain.generate_task(instance_filename=instance_name)
 
             # And now we inject our desired search and heuristic functions
-            if i == 0:
-                bfs(config, search_policy, task, instance_name, rng)
+            if i == 0 and config.expand_first_train_instance:
+                bfs(config, data, search_policy, task, instance_name, rng)
             else:
-                run_rollout(config, search_policy, task, instance_name, rng)
+                run_rollout(config, data, search_policy, task, instance_name, rng)
 
         except PolicySearchException as e:
             logging.warning(f"Rollout of policy failed with code: {e.code}")
@@ -82,45 +81,46 @@ def rollout(config, data, get_policy, rng):
     return ExitCode.Success
 
 
-def run_rollout(config, search_policy, task, instance_name, rng):
+def run_rollout(config, data, search_policy, task, instance_name, rng):
+
+    logging.info(f'Appying rollout in train instance "{instance_name}"')
+
+    queue = list()
 
     for _ in range(config.num_rollouts):
+
         state = task.initial_state
+
+        queue = task.get_successor_states(state)
 
         for _ in range(config.rollout_depth):
 
             succcessors = task.get_successor_states(state)
 
-            alive, _, _ = config.sample.filter_successors(state, succcessors, instance_name, task)
+            alive, _, _ = data.sample.filter_successors(state, succcessors, instance_name, task)
 
             if not alive:
-                config.sample.mark_state_as_deadend(state, task) # maybe it is a goal (?)
-                state = task.initial_state
+                data.sample.mark_state_as_deadend(state, task) # maybe it is a goal (?)
+                state = queue.pop(0)
+                # state = task.initial_state
                 # raise RuntimeError("No successor")
                 continue
 
             rnd_op, rnd_succ = random.Random(rng).choice(alive)
-            # rnd_succ, rnd_op = alive[0]
 
             if search_policy is not None:
                 exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
                 if exitcode != 0:
                     op, succ = rnd_op, rnd_succ
-                    # succ, op = run_dfs(config, task, state, rng)
                 else:
                     op, succ = random.Random(rng).choice(good_succs)
             else:
                 op, succ = rnd_op, rnd_succ
-                # succ, op = run_dfs(config, task, state, rng)
 
-            # config.visited.add(succ[2])
-            # config.sample.add_transition(state, succ, op, instance_name, task)
             state = succ
 
 
 def run_policy_based_search(config, search_policy, task, state, successors):
-    # # Compute all possible successors:
-    # successors = task.get_successor_states(state)
 
     # Show the successors to our D2L-type policy to let it pick one
     exitcode, good_succs = search_policy(task, state, successors)
@@ -128,7 +128,9 @@ def run_policy_based_search(config, search_policy, task, state, successors):
     return exitcode, good_succs
 
 
-def bfs(config, search_policy, task, instance_name, rng):
+def bfs(config, data, search_policy, task, instance_name, rng):
+
+    logging.info(f'Expanding train instance "{instance_name}"')
 
     visited = set()
     istate = task.initial_state
@@ -141,7 +143,7 @@ def bfs(config, search_policy, task, instance_name, rng):
 
         succcessors = task.get_successor_states(s)
 
-        alive, goals, deadends = config.sample.filter_successors(s, succcessors, instance_name, task)
+        alive, goals, deadends = data.sample.filter_successors(s, succcessors, instance_name, task)
 
         for op, g in goals:
             visited.add(g[2])
@@ -200,16 +202,10 @@ def run(config, data, rng):
 
     def get_policy(model_factory, static_atoms, data):
 
-        data = data.to_dict()
-        if config.d2l_policy is not None:
-            policy = generate_user_provided_policy(config)
-            config.d2l_policy = None
-            policy = create_action_selection_function_from_transition_policy(config, model_factory, static_atoms, policy)
-        elif "d2l_policy" not in data:
-            policy = None
+        if data.d2l_policy is not None:
+            policy = create_action_selection_function_from_transition_policy(config, model_factory, static_atoms, data.d2l_policy)
         else:
-            policy = create_action_selection_function_from_transition_policy(config, model_factory, static_atoms, data["d2l_policy"])
-        data = Bunch(data)
+            policy = None
 
         return policy
 

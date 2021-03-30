@@ -42,8 +42,8 @@ def invoke_cpp_module(config, data, validate_features=None):
 def run(config, data, rng):
     exitcode = invoke_cpp_module(config, data)
     if exitcode != ExitCode.Success:
+        # return exitcode, dict(d2l_policy=None) # keep trying
         return ExitCode.Success, dict(d2l_policy=None) # keep trying
-        # return ExitCode.Success, dict(d2l_policy=None) # keep trying
 
     # Parse the DNF transition-classifier and transform it into a policy
     policy = parse_dnf_policy(config)
