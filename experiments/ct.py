@@ -36,45 +36,14 @@ def experiments():
 
     exps["1"] = update_dict(
         base,
-        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-        #           all_instances([15, 16, 18]) +
-        #           break_instances('a'),
+        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+                  all_instances([15, 16, 18]) +
+                  break_instances('a'),
         # test_instances=four_four_instances('a') +
         #                all_instances('a') +
         #                break_instances('a'),
 
-        instances=four_four_instances([0]),
-        test_instances=four_four_instances('a') +
-                       all_instances('a') +
-                       break_instances('a'),
-
-        teach_policies=None,
-
-        max_concept_size=2,
-        distance_feature_max_complexity=5,
-        concept_generation_timeout=120,
-
-        parameter_generator=None,
-
-        # rollouts
-        num_episodes=5,
-        num_rollouts=10,
-        rollout_depth=10,
-
-        # new
-        expand_first_train_instance=False,
-    )
-
-    exps["2"] = update_dict(
-        base,
-        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-        #           all_instances([15, 16, 18]) +
-        #           break_instances('a'),
-        # test_instances=four_four_instances('a') +
-        #                all_instances('a') +
-        #                break_instances('a'),
-
-        instances=four_four_instances([0]),
+        # instances=four_four_instances([0]),
         test_instances=four_four_instances('a') +
                        all_instances('a') +
                        break_instances('a'),
@@ -89,8 +58,8 @@ def experiments():
 
         # rollouts
         num_episodes=2,
-        num_rollouts=10,
-        rollout_depth=10,
+        num_rollouts=3,
+        rollout_depth=3,
 
         # new
         expand_first_train_instance=False,

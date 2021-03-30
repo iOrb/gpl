@@ -113,12 +113,15 @@ def run_test(config, search_policy, task, instance_name, rng):
 
         # alive, goals, _ = task.filter_successors(s, successors, instance_name, task)
         # if len(goals) > 0:
-        #     op, succ = random.Random(rng).choice(goals)
+        #     op, _ = random.Random(rng).choice(goals)
         # else:
         exitcode, good_succs = run_policy_based_search(config, search_policy, task, s, successors)
         if exitcode != ExitCode.Success:
             raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
-        op, succ = random.Random(rng).choice(good_succs)
+        op, _ = random.Random(rng).choice(good_succs)
+
+        succ = task.transition(s, op)
+
         if succ[1]['deadend']:
             raise PolicySearchException(ExitCode.DeadEndReached)
         if succ[2] in parents:

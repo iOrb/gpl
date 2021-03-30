@@ -91,7 +91,7 @@ def run_rollout(config, data, search_policy, task, instance_name, rng):
 
         state = task.initial_state
 
-        queue = [s for o, s in task.get_successor_states(state)]
+        op_queue = [o for o, s in task.get_successor_states(state)]
 
         for _ in range(config.rollout_depth):
 
@@ -101,22 +101,23 @@ def run_rollout(config, data, search_policy, task, instance_name, rng):
 
             if not alive:
                 data.sample.mark_state_as_deadend(state, task) # maybe it is a goal (?)
-                state = queue.pop(0)
+                op = op_queue.pop(0)
                 # state = task.initial_state
                 # raise RuntimeError("No successor")
-                continue
-
-            rnd_op, rnd_succ = random.Random(rng).choice(alive)
-
-            if search_policy is not None:
-                exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
-                if exitcode != 0:
-                    op, succ = rnd_op, rnd_succ
-                else:
-                    op, succ = random.Random(rng).choice(good_succs)
             else:
-                op, succ = rnd_op, rnd_succ
+                rnd_op, rnd_succ = random.Random(rng).choice(alive)
 
+                if search_policy is not None:
+                    exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
+                    if exitcode != 0:
+                        op, _ = rnd_op, rnd_succ
+                    else:
+                        op, _ = random.Random(rng).choice(good_succs)
+                else:
+                    op, succ = rnd_op, rnd_succ
+
+            succ = task.transition(state, op)
+            data.sample.add_transition(state, succ, op, instance_name, task)
             state = succ
 
 
