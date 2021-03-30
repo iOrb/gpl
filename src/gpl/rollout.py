@@ -91,7 +91,7 @@ def run_rollout(config, data, search_policy, task, instance_name, rng):
 
         state = task.initial_state
 
-        queue = task.get_successor_states(state)
+        queue = [s for o, s in task.get_successor_states(state)]
 
         for _ in range(config.rollout_depth):
 
