@@ -1,25 +1,19 @@
 import copy
-
 from gpl.domain import IDomain
-
 from tarski.fstrips import fstrips, create_fstrips_problem
-
 from .task import Task
-
-from .instances import INSTANCES
-
 import numpy as np
+from .instances import INSTANCES
+from .grammar.objects import OBJECTS
 
 class Domain(IDomain):
     def __init__(self, domain_name):
         super().__init__(domain_name)
 
-        self.objects = {0, 1, 2, 'X', 'O', 'none'}
-
     # Generate Language
     def generate_language(self):
         """ Generate the Tarski language corresponding to the given domain. """
-        return generate_lang(self._domain_name, self.objects)
+        return generate_lang(self._domain_name,)
 
     # Generate Problem
     def generate_problem(self, lang, instance_name):
@@ -29,15 +23,15 @@ class Domain(IDomain):
     # Generate Task
     def generate_task(self, instance_name, config):
         """ Generate a Task object, according to the Interface ITask """
-        return Task(self._domain_name, self.objects, instance_name, config)
+        return Task(self._domain_name, instance_name, config)
 
 
 GRID_DIRECTIONS = ['up', 'rightup', 'right', 'rightdown', 'down', 'leftdown', 'left', 'leftup']
 
 
-def generate_lang(domain_name, objects):
+def generate_lang(domain_name):
     lang, statics = generate_base_lang(domain_name)
-    load_general_lang(lang, statics, objects)
+    load_general_lang(lang, statics)
     return lang, statics
 
 
@@ -48,7 +42,7 @@ def generate_base_lang(domain_name):
     return lang, set()
 
 
-def load_general_lang(lang, statics, objects):
+def load_general_lang(lang, statics):
     """ Return the FOL language corresponding to the Reach for the Star domain,
      plus a set with the names of those predicates / functions that are static. """
 
@@ -57,7 +51,7 @@ def load_general_lang(lang, statics, objects):
     _ = [lang.predicate(d, 'cell', 'cell') for d in GRID_DIRECTIONS]
     statics.update(set(GRID_DIRECTIONS))
 
-    _ = [lang.predicate(f'cell-hv-{o}', 'cell') for o in {0, 1, 2, 'none'}]
+    _ = [lang.predicate(f'cell-hv-{o}', 'cell') for o in OBJECTS.general | {OBJECTS.none}]
 
     # _ = [lang.predicate('player-{}'.format(p),) for p in {'X', 'O'}]
 
@@ -108,7 +102,7 @@ def load_general_problem(problem, lang, rep):
                 o = brd[r, c]
             else:
                 # Add the None value for cells outside the world
-                o = 'none'
+                o = OBJECTS.none
 
             cell = lang.constant(f'c{r}-{c}', cell_)
 

@@ -1,7 +1,8 @@
 import sys
 import string
 
-from .state_to_atoms import state_to_atoms, atom_tuples_to_string
+from domains.tictactoe.grammar.state_to_atoms import state_to_atoms, atom_tuples_to_string
+from .objects import OBJECTS
 
 ASCII = string.printable
 # ASCII = ''.join(chr(x) for x in range(50, 1000))
@@ -11,10 +12,9 @@ class Grammar:
     Wrapper of some grammar utils
     """
 
-    def __init__(self, domain_name, objects,):
+    def __init__(self, domain_name,):
 
         self.domain_name = domain_name
-        self.objects = objects
         self.object_bytes = self.objects_to_bytes()
 
     def state_to_atoms(self, state,):
@@ -47,7 +47,11 @@ class Grammar:
         object_bytes = dict()
         possible_chars = ASCII
 
-        for obj in self.objects:
+        for obj in OBJECTS.general:
+            possible_chars, b = possible_chars[1:], possible_chars[0]
+            object_bytes[obj] = ord(b)
+
+        for obj in OBJECTS.player_marks:
             possible_chars, b = possible_chars[1:], possible_chars[0]
             object_bytes[obj] = ord(b)
 

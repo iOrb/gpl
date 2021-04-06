@@ -1,13 +1,8 @@
-
 from gpl.task import ITask
 from gpl.utils import unpack_state
-
 from gym_tictactoe.env import check_game_status, after_action_state, tomark, available_actions
-
 import random
-
-from .grammar import Grammar
-
+from domains.tictactoe.grammar.grammar import Grammar
 from .instances import INSTANCES
 
 # State: (representation, info, state_encoded)
@@ -16,10 +11,9 @@ class Task(ITask):
     """
     General Planning task
     """
-    def __init__(self, domain_name, objects, instance_name, config):
-        super().__init__(domain_name, objects, instance_name)
+    def __init__(self, domain_name, instance_name, config):
+        super().__init__(domain_name, instance_name)
 
-        self._objects = objects
         # self.env = TicTacToeEnv()
         self.player2_agent = BaseAgent('X')
         self.config = config
@@ -32,7 +26,7 @@ class Task(ITask):
                 'deadend': False,
                 'prev_repr': 'root'}
         self.actions = available_actions(brd) #self.env.available_actions()
-        self.grammar = Grammar(self._domain_name, self._objects)
+        self.grammar = Grammar(self._domain_name)
         encoded_s = self.encode_state((brd, mark), info)
         self.initial_state = ((brd, mark), info, encoded_s)
 
@@ -158,5 +152,5 @@ class BaseAgent(object):
             if gstatus > 0:
                 if tomark(gstatus) == self.mark:
                     return action
-        return random.choice(ava_actions)
-        # return ava_actions[-1]
+        # return random.choice(ava_actions)
+        return ava_actions[-1]
