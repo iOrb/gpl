@@ -23,8 +23,8 @@ def generate_experiment(expid, **kwargs):
     if "instances" not in kwargs or "domain" not in kwargs:
         raise RuntimeError("Please specify domain and instance when generating an experiment")
 
-    kwargs["instances"] = [os.path.join(BENCHMARK_DIR, i) for i in kwargs['instances']]
-    kwargs["test_instances"] = [os.path.join(BENCHMARK_DIR, i) for i in kwargs['test_instances']]
+    # kwargs["instances"] = [os.path.join(BENCHMARK_DIR, i) for i in kwargs['instances']]
+    # kwargs["test_instances"] = [os.path.join(BENCHMARK_DIR, i) for i in kwargs['test_instances']]
 
     defaults = dict(
         pipeline=GPL_PIPELINE,

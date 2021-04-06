@@ -53,10 +53,7 @@ def state_to_atoms_tpn(layout, info):
 # Chase
 def state_to_atoms_ec(state, info):
     layout = copy.deepcopy(state)
-    try:
-        la, _ = np.argwhere(layout == ec.LEFT_ARROW)[0]
-    except:
-        print('h')
+    la, _ = np.argwhere(layout == ec.LEFT_ARROW)[0]
     ra, _ = np.argwhere(layout == ec.RIGHT_ARROW)[0]
     da, _ = np.argwhere(layout == ec.DOWN_ARROW)[0]
     ua, _ = np.argwhere(layout == ec.UP_ARROW)[0]
@@ -89,10 +86,7 @@ def state_to_atoms_general(layout, info):
     # These are the general atoms for all the domains
     atoms = list()
 
-    try:
-        nrows, ncols = layout.shape
-    except:
-        print('h')
+    nrows, ncols = layout.shape
 
     for r in range(-1, nrows + 1):
 
@@ -107,7 +101,6 @@ def state_to_atoms_general(layout, info):
             atoms.append((f'cell-hv-{val}', f'c{r}-{c}'))
 
     return atoms
-
 
 
 def add_bool_atom(atoms, predicate, condition):

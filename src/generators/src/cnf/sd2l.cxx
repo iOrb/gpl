@@ -157,7 +157,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     // V vars
     std::map< std::pair< unsigned, unsigned >, cnfvar_t > v_vars;
 
-
     unsigned n_select_vars = 0;
     unsigned n_select_pos_vars = 0;
     unsigned n_y_vars = 0;
@@ -168,7 +167,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     unsigned n_v_vars = 0;
     unsigned n_good_tx_clauses = 0; // ?
 
-    std::vector< unsigned > cl_counter(n_constraints,0);
+    std::vector< unsigned > cl_counter(n_constraints, 0);
 
     // Create one "Select(f)" variable for each feature f in the pool
     for (unsigned f:feature_ids) {

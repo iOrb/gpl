@@ -118,7 +118,7 @@ class TransitionSampleMDP:
     def get_sorted_state_ids(self):
         return sorted(self.states.keys())
 
-    def filter_successors(self, s, succs, instance_name, task):
+    def process_successors(self, s, succs, instance_name, task):
         alive, goals, deadends = list(), list(), list()
         for op, sprime in succs:
             s_r, goal, deadend, s_encoded, info = unpack_state(sprime)

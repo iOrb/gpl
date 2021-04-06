@@ -1,306 +1,0 @@
-================================================================================
-SLTP v.0.2.0
-================================================================================
-================================================================================
-(pid: 4513) STARTING STEP #1: Expand the state space of the training instances
-================================================================================
-0it [00:00, ?it/s]4it [00:00, 64.59it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_1.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_layout_4x4_1.txt"
-[# nodes: 12, # goals: 1, # edges: 11, total time: 0.06188 seconds]
-4it [00:00, 56.92it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_2.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_layout_4x4_2.txt"
-[# nodes: 9, # goals: 1, # edges: 8, total time: 0.07024 seconds]
-4it [00:00, 64.70it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_3.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_layout_4x4_3.txt"
-[# nodes: 12, # goals: 1, # edges: 11, total time: 0.06176 seconds]
-4it [00:00, 45.04it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_5.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_layout_4x4_5.txt"
-[# nodes: 9, # goals: 1, # edges: 8, total time: 0.08877 seconds]
-4it [00:00, 73.78it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_6.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_layout_4x4_6.txt"
-[# nodes: 12, # goals: 1, # edges: 11, total time: 0.05418 seconds]
-4it [00:00, 47.09it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_8.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_layout_4x4_8.txt"
-[# nodes: 14, # goals: 1, # edges: 13, total time: 0.0849 seconds]
-4it [00:00, 71.59it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_9.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_layout_4x4_9.txt"
-[# nodes: 12, # goals: 1, # edges: 11, total time: 0.05582 seconds]
-4it [00:00, 150.55it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_2x3_0.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_layout_2x3_0.txt"
-[# nodes: 6, # goals: 1, # edges: 5, total time: 0.02653 seconds]
-4it [00:00, 113.83it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_3x3_0.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_layout_3x3_0.txt"
-[# nodes: 7, # goals: 1, # edges: 6, total time: 0.03512 seconds]
-3it [00:00, 22.85it/s]4it [00:00, 11.49it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_5x14_0.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_layout_5x14_0.txt"
-[# nodes: 27, # goals: 1, # edges: 26, total time: 0.34796 seconds]
-4it [00:00, 38.72it/s]4it [00:00, 38.68it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_0.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_bp_layout_5x5_0.txt"
-[# nodes: 15, # goals: 1, # edges: 14, total time: 0.10339 seconds]
-4it [00:00, 33.20it/s]4it [00:00, 33.17it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_1.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_bp_layout_5x5_1.txt"
-[# nodes: 15, # goals: 1, # edges: 14, total time: 0.12055 seconds]
-4it [00:00, 38.30it/s]4it [00:00, 38.26it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_2.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_bp_layout_5x5_2.txt"
-[# nodes: 15, # goals: 1, # edges: 14, total time: 0.10453 seconds]
-4it [00:00, 40.91it/s]
-State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_3.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_bp_layout_5x5_3.txt"
-0it [00:00, ?it/s][# nodes: 15, # goals: 1, # edges: 14, total time: 0.09774 seconds]
-4it [00:00, 36.20it/s]4it [00:00, 36.17it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_4.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_bp_layout_5x5_4.txt"
-[# nodes: 15, # goals: 1, # edges: 14, total time: 0.11056 seconds]
-4it [00:00, 36.98it/s]4it [00:00, 36.94it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_5.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_bp_layout_5x5_5.txt"
-[# nodes: 15, # goals: 1, # edges: 14, total time: 0.10825 seconds]
-4it [00:00, 36.43it/s]4it [00:00, 36.39it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_6.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_bp_layout_5x5_6.txt"
-[# nodes: 15, # goals: 1, # edges: 14, total time: 0.10989 seconds]
-4it [00:00, 36.64it/s]4it [00:00, 36.61it/s]
-State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_7.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/samples_bp_layout_5x5_7.txt"
-[# nodes: 15, # goals: 1, # edges: 14, total time: 0.10924 seconds]
-================================================================================
-END OF STEP #1: Expand the state space of the training instances. 1.78 CPU sec - 66.29 MB
-================================================================================
-================================================================================
-(pid: 4518) STARTING STEP #2: Generation of the training sample
-================================================================================
-2021-02-15 10:23:29 INFO     Loading state space samples...
-2021-02-15 10:23:29 INFO     samples_layout_4x4_1: #lines-raw-file=23, #states-by-id=12, #transition-entries=2, #transitions=11
-2021-02-15 10:23:29 INFO     samples_layout_4x4_2: #lines-raw-file=17, #states-by-id=9, #transition-entries=2, #transitions=8
-2021-02-15 10:23:29 INFO     samples_layout_4x4_3: #lines-raw-file=23, #states-by-id=12, #transition-entries=2, #transitions=11
-2021-02-15 10:23:29 INFO     samples_layout_4x4_5: #lines-raw-file=17, #states-by-id=9, #transition-entries=2, #transitions=8
-2021-02-15 10:23:29 INFO     samples_layout_4x4_6: #lines-raw-file=23, #states-by-id=12, #transition-entries=2, #transitions=11
-2021-02-15 10:23:29 INFO     samples_layout_4x4_8: #lines-raw-file=27, #states-by-id=14, #transition-entries=2, #transitions=13
-2021-02-15 10:23:29 INFO     samples_layout_4x4_9: #lines-raw-file=23, #states-by-id=12, #transition-entries=2, #transitions=11
-2021-02-15 10:23:29 INFO     samples_layout_2x3_0: #lines-raw-file=11, #states-by-id=6, #transition-entries=2, #transitions=5
-2021-02-15 10:23:29 INFO     samples_layout_3x3_0: #lines-raw-file=13, #states-by-id=7, #transition-entries=2, #transitions=6
-2021-02-15 10:23:29 INFO     samples_layout_5x14_0: #lines-raw-file=53, #states-by-id=27, #transition-entries=2, #transitions=26
-2021-02-15 10:23:29 INFO     samples_bp_layout_5x5_0: #lines-raw-file=29, #states-by-id=15, #transition-entries=2, #transitions=14
-2021-02-15 10:23:29 INFO     samples_bp_layout_5x5_1: #lines-raw-file=29, #states-by-id=15, #transition-entries=2, #transitions=14
-2021-02-15 10:23:29 INFO     samples_bp_layout_5x5_2: #lines-raw-file=29, #states-by-id=15, #transition-entries=2, #transitions=14
-2021-02-15 10:23:29 INFO     samples_bp_layout_5x5_3: #lines-raw-file=29, #states-by-id=15, #transition-entries=2, #transitions=14
-2021-02-15 10:23:29 INFO     samples_bp_layout_5x5_4: #lines-raw-file=29, #states-by-id=15, #transition-entries=2, #transitions=14
-2021-02-15 10:23:29 INFO     samples_bp_layout_5x5_5: #lines-raw-file=29, #states-by-id=15, #transition-entries=2, #transitions=14
-2021-02-15 10:23:29 INFO     samples_bp_layout_5x5_6: #lines-raw-file=29, #states-by-id=15, #transition-entries=2, #transitions=14
-2021-02-15 10:23:29 INFO     samples_bp_layout_5x5_7: #lines-raw-file=29, #states-by-id=15, #transition-entries=2, #transitions=14
-2021-02-15 10:23:29 INFO     Entire sample: roots: 18, states: 240, transitions: 222 (47 optimal), goals: 29, alive: 36
-2021-02-15 10:23:29 INFO     Resampled states logged at "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/sample.txt"
-2021-02-15 10:23:29 INFO     Printing SAT transition matrix with 240 states, 240 expanded states and 222 transitions to '/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/transitions-info.io'
-================================================================================
-END OF STEP #2: Generation of the training sample. 0.03 CPU sec - 70.91 MB
-================================================================================
-================================================================================
-(pid: 4522) STARTING STEP #3: Generate the pool of candidate features
-================================================================================
-2021-02-15 10:23:29 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 18, states: 240, transitions: 222 (47 optimal), goals: 29, alive: 36
-2021-02-15 10:23:30 INFO     Printing sample information to '/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/sample.io'
-2021-02-15 10:23:30 INFO     Invoking C++ feature generation module
-2021-02-15 10:23:30 INFO     Executing "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/venv/src/d2l/src/generators/featuregen --complexity-bound 5 --timeout -1 --dist-complexity-bound 5 --cond-complexity-bound 0 --workspace /home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1" on directory "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/experiments"
-reading '/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/transitions-info.io
-BASIS: #concepts=11, #roles=10
-ROLES: #roles=40
-Start of iteration 0: #total-concepts=0, #concepts-in-last-layer=0
-Result of iteration 0: #concepts-in-layer=9, #pruned-concepts=2
-Start of iteration 1: #total-concepts=9, #concepts-in-last-layer=9
-Result of iteration 1: #concepts-in-layer=432, #pruned-concepts=333
-Start of iteration 2: #total-concepts=441, #concepts-in-last-layer=432
-Result of iteration 2: #concepts-in-layer=3079, #pruned-concepts=7562
-Start of iteration 3: #total-concepts=3520, #concepts-in-last-layer=3079
-Result of iteration 3: #concepts-in-layer=42, #pruned-concepts=3928
-Start of iteration 4: #total-concepts=3562, #concepts-in-last-layer=42
-Result of iteration 4: #concepts-in-layer=0, #pruned-concepts=0
-dl::Factory: #concepts-final=3562
-A total of 0 features were marked as goal-identifying
-Generating cardinality features...
-Generating distance features...
-FEATURES: #features=1333, #nullary=0, #boolean=179, #numerical=1033, #distance=121, #conditional=0, #comparison=0
-Serializing all concepts and features to:
-	/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/serialized-concepts.io
-	/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/serialized-features.io
-2021-02-15 10:23:35 INFO     Transforming generator output to numpy format...
-2021-02-15 10:23:35 INFO     Reading feature information from /home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/feature-info.io
-2021-02-15 10:23:35 INFO     Read 1333 features: 1154 numeric + 179 binary
-2021-02-15 10:23:35 INFO     Reading denotation matrix from /home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/feature-matrix.io
-2021-02-15 10:23:35 INFO     Read denotation matrix with dimensions (240, 1333)
-2021-02-15 10:23:35 INFO     Printing matrix of 1333 features x 240 states to '/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/feature-matrix.dat'
-================================================================================
-END OF STEP #3: Generate the pool of candidate features. 6.63 CPU sec - 92.84 MB
-================================================================================
-================================================================================
-(pid: 4537) STARTING STEP #4: C++ CNF generation module
-================================================================================
-2021-02-15 10:23:36 INFO     Running standard non-incremental approach
-2021-02-15 10:23:36 INFO     Invoking C++ CNF generation module
-2021-02-15 10:23:36 INFO     Executing "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/venv/src/d2l/src/generators/cnfgen --workspace /home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1 --encoding d2l --v_slack 2 --distinguish-goals --cross_instance_constraints" on directory "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/experiments"
-reading '/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/transitions-info.io
-reading '/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/feature-matrix.dat
-Training sample: TransitionSample[instances: 18, states: 240, transitions: 222 (222 alive: 11/8/11/8/11/13/11/5/6/26/14/14/14/14/14/14/14/14), deadends: 0, goals: 29, features: 1333, est. size: 0.61 MB.]
-Number of transitions/equivalence classes: 222/222
-Number of necessarily bad transitions/classes: 175/175
-Using an upper bound for V_pi(s) values of 4
-A total of 1524 variables were created
-	Select(f): 1333
-	Good(s, s'): 47
-	V(s, d): 144
-Generating CNF encoding for 36 alive states, 222 alive-to-solvable and alive-to-dead transitions and 222 transition equivalence classes
-Posting distinguishability constraints for 580 pairs of transitions
-Posting (weighted) soft constraints for 1333 features
-A total of 8392 clauses were created
-	(Weighted) Select(f): 1333
-	Policy completeness [1]: 36
-	V descending along good transitions [2]: 72
-	V is total function within bounds [3,4]: 252
-	Transition-separation clauses [5,6]: 580
-	Goal clauses [7]: 6119
-Total-time: 0.27
-CNF Theory: 1524 vars + 8392 clauses
-2021-02-15 10:23:36 INFO     Executing (timeout: None s.) "['open-wbo_static', '/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1/theory.wsat']" on directory "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/ct_1"
-2021-02-15 10:23:37 INFO     Optimal MAXSAT solution with cost 30 found
-Features (#: 6; total k: 30; max k = 5):
-  Bool[And(Forall(leftdown,cell-hv-empty),cell-hv-white_queen)] [k=5]
-  Bool[And(Forall(leftup,cell-hv-empty),cell-hv-white_queen)] [k=5]
-  Bool[And(Exists(same_row,cell-hv-black_king),cell-hv-white_queen)] [k=5]
-  Bool[And(Forall(rightup,cell-hv-empty),cell-hv-white_queen)] [k=5]
-  Bool[And(Forall(rightdown,cell-hv-empty),cell-hv-white_queen)] [k=5]
-  Bool[And(Exists(same_col,cell-hv-white_queen),cell-hv-black_king)] [k=5]
-Invariants: Bool[And(Exists(same_row,cell-hv-black_king),cell-hv-white_queen)]=0,Bool[And(Exists(same_col,cell-hv-white_queen),cell-hv-black_king)]=0
-Policy:
-  1. Bool[And(Exists(same_col,cell-hv-white_queen),cell-hv-black_king)]=0 AND Bool[And(Exists(same_row,cell-hv-black_king),cell-hv-white_queen)]=0 AND Bool[And(Forall(leftdown,cell-hv-empty),cell-hv-white_queen)]=0 AND Bool[And(Forall(leftup,cell-hv-empty),cell-hv-white_queen)]=0 AND Bool[And(Forall(rightdown,cell-hv-empty),cell-hv-white_queen)]=0 AND Bool[And(Forall(rightup,cell-hv-empty),cell-hv-white_queen)]=0 -> {Bool[And(Exists(same_col,cell-hv-white_queen),cell-hv-black_king)] NILs, Bool[And(Exists(same_row,cell-hv-black_king),cell-hv-white_queen)] NILs, Bool[And(Forall(leftdown,cell-hv-empty),cell-hv-white_queen)] NILs, Bool[And(Forall(leftup,cell-hv-empty),cell-hv-white_queen)] ADDs, Bool[And(Forall(rightdown,cell-hv-empty),cell-hv-white_queen)] ADDs, Bool[And(Forall(rightup,cell-hv-empty),cell-hv-white_queen)] NILs}, {Bool[And(Exists(same_col,cell-hv-white_queen),cell-hv-black_king)] NILs, Bool[And(Exists(same_row,cell-hv-black_king),cell-hv-white_queen)] NILs, Bool[And(Forall(leftdown,cell-hv-empty),cell-hv-white_queen)] ADDs, Bool[And(Forall(leftup,cell-hv-empty),cell-hv-white_queen)] NILs, Bool[And(Forall(rightdown,cell-hv-empty),cell-hv-white_queen)] NILs, Bool[And(Forall(rightup,cell-hv-empty),cell-hv-white_queen)] ADDs}, {Bool[And(Exists(same_col,cell-hv-white_queen),cell-hv-black_king)] ADDs, Bool[And(Exists(same_row,cell-hv-black_king),cell-hv-white_queen)] NILs, Bool[And(Forall(leftdown,cell-hv-empty),cell-hv-white_queen)] ADDs, Bool[And(Forall(leftup,cell-hv-empty),cell-hv-white_queen)] ADDs, Bool[And(Forall(rightdown,cell-hv-empty),cell-hv-white_queen)] ADDs, Bool[And(Forall(rightup,cell-hv-empty),cell-hv-white_queen)] ADDs}, {Bool[And(Exists(same_col,cell-hv-white_queen),cell-hv-black_king)] NILs, Bool[And(Exists(same_row,cell-hv-black_king),cell-hv-white_queen)] ADDs, Bool[And(Forall(leftdown,cell-hv-empty),cell-hv-white_queen)] ADDs, Bool[And(Forall(leftup,cell-hv-empty),cell-hv-white_queen)] ADDs, Bool[And(Forall(rightdown,cell-hv-empty),cell-hv-white_queen)] ADDs, Bool[And(Forall(rightup,cell-hv-empty),cell-hv-white_queen)] ADDs}
-  2. Bool[And(Exists(same_col,cell-hv-white_queen),cell-hv-black_king)]=0 AND Bool[And(Exists(same_row,cell-hv-black_king),cell-hv-white_queen)]=0 AND Bool[And(Forall(leftdown,cell-hv-empty),cell-hv-white_queen)]>0 AND Bool[And(Forall(leftup,cell-hv-empty),cell-hv-white_queen)]>0 AND Bool[And(Forall(rightdown,cell-hv-empty),cell-hv-white_queen)]>0 AND Bool[And(Forall(rightup,cell-hv-empty),cell-hv-white_queen)]>0 -> {Bool[And(Exists(same_col,cell-hv-white_queen),cell-hv-black_king)] NILs, Bool[And(Exists(same_row,cell-hv-black_king),cell-hv-white_queen)] NILs, Bool[And(Forall(leftdown,cell-hv-empty),cell-hv-white_queen)] DELs, Bool[And(Forall(leftup,cell-hv-empty),cell-hv-white_queen)] DELs, Bool[And(Forall(rightdown,cell-hv-empty),cell-hv-white_queen)] DELs, Bool[And(Forall(rightup,cell-hv-empty),cell-hv-white_queen)] DELs}
-================================================================================
-END OF STEP #4: C++ CNF generation module. 0.79 CPU sec - 92.84 MB
-================================================================================
-================================================================================
-(pid: 4544) STARTING STEP #5: Testing of the D2L policy
-================================================================================
-2021-02-15 10:23:37 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_0.json"
-/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/src/lgp/task.py:36: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
-  if np.all(state0 == state1) or state1 in successors:
-2021-02-15 10:23:37 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:37 INFO     The solution was: [(0, 0), (0, 3)]
-2021-02-15 10:23:37 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_1.json"
-2021-02-15 10:23:37 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:37 INFO     The solution was: [(0, 2), (0, 3)]
-2021-02-15 10:23:37 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_2.json"
-2021-02-15 10:23:37 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:37 INFO     The solution was: [(3, 1), (2, 2)]
-2021-02-15 10:23:37 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_3.json"
-2021-02-15 10:23:37 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:37 INFO     The solution was: [(0, 1), (2, 1)]
-2021-02-15 10:23:37 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_4.json"
-2021-02-15 10:23:37 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:37 INFO     The solution was: [(0, 3), (2, 1)]
-2021-02-15 10:23:37 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_5.json"
-2021-02-15 10:23:37 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:37 INFO     The solution was: [(3, 2), (2, 1)]
-2021-02-15 10:23:37 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_6.json"
-2021-02-15 10:23:37 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:37 INFO     The solution was: [(3, 2), (2, 3)]
-2021-02-15 10:23:37 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_7.json"
-2021-02-15 10:23:37 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:37 INFO     The solution was: [(2, 0), (2, 3)]
-2021-02-15 10:23:37 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_8.json"
-2021-02-15 10:23:37 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:37 INFO     The solution was: [(2, 2), (2, 3)]
-2021-02-15 10:23:37 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/4x4/layout_4x4_9.json"
-2021-02-15 10:23:37 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:37 INFO     The solution was: [(2, 3), (0, 1)]
-2021-02-15 10:23:37 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_10x10_0.json"
-2021-02-15 10:23:38 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:38 INFO     The solution was: [(5, 8), (4, 9)]
-2021-02-15 10:23:38 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_12x5_0.json"
-2021-02-15 10:23:38 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:38 INFO     The solution was: [(4, 1), (4, 0)]
-2021-02-15 10:23:38 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_12x8_0.json"
-2021-02-15 10:23:39 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:39 INFO     The solution was: [(3, 11), (7, 11)]
-2021-02-15 10:23:39 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_12x9_0.json"
-2021-02-15 10:23:39 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:39 INFO     The solution was: [(1, 10), (1, 8)]
-2021-02-15 10:23:39 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_12x9_1.json"
-2021-02-15 10:23:40 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:40 INFO     The solution was: [(2, 1), (8, 1)]
-2021-02-15 10:23:40 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_13x14_0.json"
-2021-02-15 10:23:41 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:41 INFO     The solution was: [(4, 9), (6, 11)]
-2021-02-15 10:23:41 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_13x19_0.json"
-2021-02-15 10:23:42 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:42 INFO     The solution was: [(2, 7), (6, 11)]
-2021-02-15 10:23:42 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_14x14_0.json"
-2021-02-15 10:23:43 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:43 INFO     The solution was: [(7, 3), (13, 3)]
-2021-02-15 10:23:43 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_14x17_0.json"
-2021-02-15 10:23:45 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:45 INFO     The solution was: [(9, 13), (16, 13)]
-2021-02-15 10:23:45 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_15x6_0.json"
-2021-02-15 10:23:45 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:45 INFO     The solution was: [(0, 11), (0, 14)]
-2021-02-15 10:23:45 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_17x10_0.json"
-2021-02-15 10:23:46 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:46 INFO     The solution was: [(0, 13), (0, 16)]
-2021-02-15 10:23:46 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_17x12_0.json"
-2021-02-15 10:23:47 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:47 INFO     The solution was: [(1, 6), (0, 7)]
-2021-02-15 10:23:47 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_18x10_0.json"
-2021-02-15 10:23:48 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:48 INFO     The solution was: [(0, 1), (0, 0)]
-2021-02-15 10:23:48 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_19x10_0.json"
-2021-02-15 10:23:49 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:49 INFO     The solution was: [(6, 7), (0, 7)]
-2021-02-15 10:23:49 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_19x13_0.json"
-2021-02-15 10:23:51 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:51 INFO     The solution was: [(11, 1), (9, 1)]
-2021-02-15 10:23:51 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_2x3_0.json"
-2021-02-15 10:23:51 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:51 INFO     The solution was: [(0, 0), (1, 1)]
-2021-02-15 10:23:51 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_3x3_0.json"
-2021-02-15 10:23:51 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:51 INFO     The solution was: [(0, 0), (1, 1)]
-2021-02-15 10:23:51 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_4x4_0.json"
-2021-02-15 10:23:51 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:51 INFO     The solution was: [(0, 2), (0, 3)]
-2021-02-15 10:23:51 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_5x14_0.json"
-2021-02-15 10:23:51 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:51 INFO     The solution was: [(10, 4), (13, 4)]
-2021-02-15 10:23:51 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_7x16_0.json"
-2021-02-15 10:23:52 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:52 INFO     The solution was: [(8, 6), (8, 0)]
-2021-02-15 10:23:52 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_8x6_0.json"
-2021-02-15 10:23:52 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:52 INFO     The solution was: [(1, 7), (5, 7)]
-2021-02-15 10:23:52 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_9x14_0.json"
-2021-02-15 10:23:53 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:53 INFO     The solution was: [(1, 7), (1, 8)]
-2021-02-15 10:23:53 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/layout_9x9_0.json"
-2021-02-15 10:23:53 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:53 INFO     The solution was: [(1, 7), (0, 7)]
-2021-02-15 10:23:53 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_0.json"
-2021-02-15 10:23:53 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:53 INFO     The solution was: [(3, 0), (3, 3)]
-2021-02-15 10:23:53 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_1.json"
-2021-02-15 10:23:53 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:53 INFO     The solution was: [(0, 3), (3, 3)]
-2021-02-15 10:23:53 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_2.json"
-2021-02-15 10:23:53 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:53 INFO     The solution was: [(0, 1), (3, 1)]
-2021-02-15 10:23:53 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_3.json"
-2021-02-15 10:23:53 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:53 INFO     The solution was: [(3, 4), (3, 1)]
-2021-02-15 10:23:53 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_4.json"
-2021-02-15 10:23:53 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:53 INFO     The solution was: [(4, 1), (1, 1)]
-2021-02-15 10:23:53 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_5.json"
-2021-02-15 10:23:54 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:54 INFO     The solution was: [(1, 4), (1, 1)]
-2021-02-15 10:23:54 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_6.json"
-2021-02-15 10:23:54 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:54 INFO     The solution was: [(1, 0), (1, 3)]
-2021-02-15 10:23:54 INFO     Testing policy on instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/checkmate_tactic/break_points/bp_layout_5x5_7.json"
-2021-02-15 10:23:54 INFO     Goal found after expanding 2 nodes
-2021-02-15 10:23:54 INFO     The solution was: [(4, 3), (1, 3)]
-2021-02-15 10:23:54 INFO     Learnt policy solves the 100.0% of test instances: 41/41
-2021-02-15 10:23:54 INFO     Solved instances: ['layout_4x4_0', 'layout_4x4_1', 'layout_4x4_2', 'layout_4x4_3', 'layout_4x4_4', 'layout_4x4_5', 'layout_4x4_6', 'layout_4x4_7', 'layout_4x4_8', 'layout_4x4_9', 'layout_10x10_0', 'layout_12x5_0', 'layout_12x8_0', 'layout_12x9_0', 'layout_12x9_1', 'layout_13x14_0', 'layout_13x19_0', 'layout_14x14_0', 'layout_14x17_0', 'layout_15x6_0', 'layout_17x10_0', 'layout_17x12_0', 'layout_18x10_0', 'layout_19x10_0', 'layout_19x13_0', 'layout_2x3_0', 'layout_3x3_0', 'layout_4x4_0', 'layout_5x14_0', 'layout_7x16_0', 'layout_8x6_0', 'layout_9x14_0', 'layout_9x9_0', 'bp_layout_5x5_0', 'bp_layout_5x5_1', 'bp_layout_5x5_2', 'bp_layout_5x5_3', 'bp_layout_5x5_4', 'bp_layout_5x5_5', 'bp_layout_5x5_6', 'bp_layout_5x5_7']
-2021-02-15 10:23:54 INFO     Unsolved instances: []
-================================================================================
-END OF STEP #5: Testing of the D2L policy. 17.09 CPU sec - 92.84 MB
-================================================================================

@@ -37,8 +37,8 @@ class PolicyTesting(Step):
         return ["experiment_dir", "test_instances"]
 
     def process_config(self, config):
-        if any(not os.path.isfile(i) for i in config["test_instances"]):
-            raise InvalidConfigParameter('"test_instances" must point to existing files')
+        # if any(not os.path.isfile(i) for i in config["test_instances"]):
+        #     raise InvalidConfigParameter('"test_instances" must point to existing files')
         return config
 
     def get_required_data(self):

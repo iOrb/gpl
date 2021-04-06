@@ -1,41 +1,0 @@
-================================================================================
-SLTP v.0.2.0
-================================================================================
-================================================================================
-(pid: 12582) STARTING STEP #1: Expand the state space of the training instances
-================================================================================
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/two_pile_nim/layout_2x12_0.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/tpn_1/samples_layout_2x12_0.txt"
-[# nodes: 11, # goals: 2, # edges: 216, total time: 0.01927 seconds]
-9it [00:00, 464.95it/s]
-0it [00:00, ?it/s]State space of instance "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/benchmarks/two_pile_nim/layout_2x13_0.json" stored in "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/tpn_1/samples_layout_2x13_0.txt"
-[# nodes: 5, # goals: 2, # edges: 78, total time: 0.00742 seconds]
-3it [00:00, 401.79it/s]
-================================================================================
-END OF STEP #1: Expand the state space of the training instances. 0.05 CPU sec - 65.80 MB
-================================================================================
-================================================================================
-(pid: 12588) STARTING STEP #2: Generation of the training sample
-================================================================================
-2021-02-22 11:13:11 INFO     Loading state space samples...
-2021-02-22 11:13:11 INFO     samples_layout_2x12_0: #lines-raw-file=227, #states-by-id=11, #transition-entries=9, #transitions=34
-2021-02-22 11:13:11 INFO     samples_layout_2x13_0: #lines-raw-file=83, #states-by-id=5, #transition-entries=3, #transitions=7
-2021-02-22 11:13:11 INFO     Entire sample: roots: 2, states: 16, transitions: 41 (14 optimal), goals: 2, alive: 12
-2021-02-22 11:13:11 INFO     Resampled states logged at "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/tpn_1/sample.txt"
-2021-02-22 11:13:11 INFO     Printing SAT transition matrix with 16 states, 12 expanded states and 41 transitions to '/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/tpn_1/transitions-info.io'
-================================================================================
-END OF STEP #2: Generation of the training sample. 0.01 CPU sec - 65.80 MB
-================================================================================
-================================================================================
-(pid: 12592) STARTING STEP #3: Generate the pool of candidate features
-================================================================================
-2021-02-22 11:13:11 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 2, states: 16, transitions: 41 (14 optimal), goals: 2, alive: 12
-2021-02-22 11:13:11 INFO     Printing sample information to '/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/tpn_1/sample.io'
-2021-02-22 11:13:11 INFO     Invoking C++ feature generation module
-2021-02-22 11:13:11 INFO     Executing "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/venv/src/d2l/src/generators/featuregen --complexity-bound 5 --timeout -1 --dist-complexity-bound 5 --cond-complexity-bound 0 --workspace /home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/tpn_1" on directory "/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/experiments"
-terminate called after throwing an instance of 'std::runtime_error'
-  what():  Duplicate transition
-reading '/home/orbital/ws/research/learning-generalized-policies/gpl-fond/learning-generalized-policies/workspace/tpn_1/transitions-info.io
-================================================================================
-END OF STEP #3: Generate the pool of candidate features. 0.11 CPU sec - 69.02 MB
-================================================================================
-2021-02-22 11:13:11 ERROR    (<lgp.steps.FeatureGenerationStep object at 0x7f93b2eebdc0>, 'Critical error processing step "Generate the pool of candidate features". Error message: Critical error processing step "Generate the pool of candidate features". Error message: ExitCode.FeatureGenerationUnknownError')

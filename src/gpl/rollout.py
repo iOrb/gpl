@@ -33,18 +33,14 @@ rollout:
 def rollout(config, data, get_policy, rng):
 
     for i, instance_name in enumerate(config.instances):
-
         try:
             """ Run a search on the train instances that follows the given policy or DFS """
             lang, static_predicates = config.domain.generate_language()
-            # lang, static_predicates = generate_language(config.domain)
             vocabulary = compute_dl_vocabulary(lang)
 
             # We interpret as DL nominals all constants that are defined on the entire domain, i.e. instance-independent
             nominals = lang.constants()
             static_predicates |= {s.name for s in lang.sorts}  # Add unary predicates coming from types!
-
-            # instance_name = Path(instance).stem
 
             # We clone the language so that objects from different instances don't get registered all in the same language;
             # if that happened, we'd be unable to properly compute the universe of each instance.
@@ -54,8 +50,8 @@ def rollout(config, data, get_policy, rng):
             # Compute the universe of each instance: a set with all objects in the universe
             universe = compute_universe_from_pddl_model(problem.language)
 
-            # Compute the set of all static atoms in the instance, including those stemming from types
-            static_atoms = {atom for atom in state_as_atoms(problem.init) if atom[0] in static_predicates} |\
+            # Compute the set of all sstatic atoms in the instance, including those stemming from types
+            static_atoms = {atom for atom in state_as_atoms(problem.init) if atom[0] in static_predicates} | \
                            {atom for atom in types_as_atoms(problem.language)}
 
             info = InstanceInformation(universe, static_atoms, static_predicates, {}, {})
@@ -66,8 +62,8 @@ def rollout(config, data, get_policy, rng):
             # Compute an actual policy object that returns the next action to be applied
             search_policy = get_policy(model_factory, static_atoms, data)
 
-            # define the Task
-            task = config.domain.generate_task(instance_filename=instance_name)
+            # Define the Task
+            task = config.domain.generate_task(instance_name, config)
 
             # And now we inject our desired search and heuristic functions
             if i == 0 and config.expand_first_train_instance:
@@ -78,6 +74,7 @@ def rollout(config, data, get_policy, rng):
         except PolicySearchException as e:
             logging.warning(f"Rollout of policy failed with code: {e.code}")
             return e.code
+
     return ExitCode.Success
 
 
@@ -85,31 +82,29 @@ def run_rollout(config, data, search_policy, task, instance_name, rng):
 
     logging.info(f'Appying rollout in train instance "{instance_name}"')
 
-    queue = list()
-
     for _ in range(config.num_rollouts):
 
         state = task.initial_state
 
-        op_queue = [o for o, s in task.get_successor_states(state)]
+        s_queue = [s for o, s in task.get_successor_states(state)]
 
         for _ in range(config.rollout_depth):
 
             succcessors = task.get_successor_states(state)
 
-            alive, _, _ = data.sample.filter_successors(state, succcessors, instance_name, task)
+            alive, _, _ = data.sample.process_successors(state, succcessors, instance_name, task)
 
             if not alive:
                 data.sample.mark_state_as_deadend(state, task) # maybe it is a goal (?)
-                op = op_queue.pop(0)
-                # state = task.initial_state
-                # raise RuntimeError("No successor")
+                # state = s_queue.pop(0)
+                state = task.initial_state
+                # raise RuntimeError("No successors for expanded state: {}".format(state,))
             else:
                 rnd_op, rnd_succ = random.Random(rng).choice(alive)
 
                 if search_policy is not None:
                     exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
-                    if exitcode != 0:
+                    if exitcode != ExitCode.Success:
                         op, _ = rnd_op, rnd_succ
                     else:
                         op, _ = random.Random(rng).choice(good_succs)
@@ -144,7 +139,7 @@ def bfs(config, data, search_policy, task, instance_name, rng):
 
         succcessors = task.get_successor_states(s)
 
-        alive, goals, deadends = data.sample.filter_successors(s, succcessors, instance_name, task)
+        alive, goals, deadends = data.sample.process_successors(s, succcessors, instance_name, task)
 
         for op, g in goals:
             visited.add(g[2])

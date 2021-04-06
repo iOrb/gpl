@@ -71,7 +71,7 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
             search_policy = get_policy(model_factory, static_atoms, data)
 
             # define the Task
-            task = config.domain.generate_task(instance_filename=instance_name)
+            task = config.domain.generate_task(instance_name, config)
 
             # And now we inject our desired search and heuristic functions
             run_test(config, search_policy, task, instance_name, rng)
@@ -111,7 +111,7 @@ def run_test(config, search_policy, task, instance_name, rng):
         if not successors:
             raise PolicySearchException(ExitCode.NotSuccessorsFound)
 
-        # alive, goals, _ = task.filter_successors(s, successors, instance_name, task)
+        # alive, goals, _ = task.process_successors(s, successors, instance_name, task)
         # if len(goals) > 0:
         #     op, _ = random.Random(rng).choice(goals)
         # else:

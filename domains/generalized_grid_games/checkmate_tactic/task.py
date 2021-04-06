@@ -59,7 +59,7 @@ class Task(ITask):
         tmp_succ_encoded = set()
         for op in self.actions:
             state1 = self.transition(state0, op)
-            if self.same(state0, state1):
+            if state0 == state1:
                 continue
             if state1[2] in tmp_succ_encoded:
                 continue
@@ -92,14 +92,6 @@ class Task(ITask):
                     continue
             return state1, op
         return None, None
-
-    def same(self, state0, state1):
-        r0, r1 = state0[0], state1[0]
-        if r0.shape == r1.shape:
-            if np.array_equal(r0, r1):
-                return True
-        else:
-            return False
 
     def visited(self, s, visited):
         if s[2] in visited:
