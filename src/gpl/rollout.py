@@ -141,22 +141,22 @@ def bfs(config, data, search_policy, task, instance_name, rng):
 
         alive, goals, deadends = data.sample.process_successors(s, succcessors, instance_name, task)
 
-        for op, g in goals:
-            visited.add(g[2])
-
-        for op, d in deadends:
-            visited.add(d[2])
-
-        # if not alive:
-        #     config.sample.mark_state_as_deadend(s, task)
-        #     # raise RuntimeError("No successor")
-        #     continue
-
-        for op, succ in alive:
-
+        for op, succ in goals:
             if succ[2] not in visited:
                 visited.add(succ[2])
-                queue.append(succ)
+
+        for op, succ in deadends:
+            if succ[2] not in visited:
+                visited.add(succ[2])
+
+        # if not alive:
+        #     data.sample.mark_state_as_deadend(s, task) # perhabs goal
+        #     # raise RuntimeError("No successor")
+
+        for op, succ in alive:
+            if succ[2] not in visited:
+                visited.add(succ[2])
+            queue.append(succ)
 
 
 def translate_state(task, state, static_atoms):

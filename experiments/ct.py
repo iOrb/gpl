@@ -29,7 +29,6 @@ def experiments():
 
         distinguish_goals=False,
         use_incremental_refinement=False,
-
     )
 
     exps = dict()

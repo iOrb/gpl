@@ -34,55 +34,6 @@ class StateSpaceExplorationStep:
         return run
 
 
-# class StateSpaceExplorationStepOLD:
-#     """ Generate the sample of transitions from the set of solved planning instances """
-#
-#     def get_required_attributes(self):
-#         return ["instances", "domain", "num_states", "test_instances",]
-#
-#     def get_required_data(self):
-#         return []
-#
-#     def process_config(self, config):
-#         config["sample_files"] = compute_sample_filenames(**config)
-#         config["test_sample_files"] = compute_test_sample_filenames(**config)
-#         return config
-#
-#     def description(self):
-#         return "Exploration of the training sample"
-#
-#     def get_step_runner(self):
-#         return state_space_expander
-#
-# def state_space_expander(config, data, rng):
-#     for i in range(0, len(config.instances)):
-#         config.domain.expand_state_space(instance_filename=config.instances[i],
-#                                          teach_policies=config.teach_policies,
-#                                          output=config.sample_files[i],)
-#     return ExitCode.Success, dict()
-
-
-# class StateSpaceExplorationStep:
-#     """ Expand the entire state space """
-#
-#     def get_required_attributes(self):
-#         return ["instances", "domain", "num_states", "test_instances",]
-#
-#     def get_required_data(self):
-#         return []
-#
-#     def process_config(self, config):
-#         config["sample_files"] = compute_sample_filenames(**config)
-#         config["test_sample_files"] = compute_test_sample_filenames(**config)
-#         return config
-#
-#     def description(self):
-#         return "Expand the state space of the training instances"
-#
-#     def get_step_runner(self):
-#         return state_space_expander
-
-
 class TransitionSamplingStep:
     """ Generate the sample of transitions from the set of solved planning instances """
     def get_required_attributes(self):

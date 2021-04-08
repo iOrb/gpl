@@ -35,13 +35,15 @@ def experiments():
         concept_generation_timeout=120,
 
         parameter_generator=None,
+        # maxsat_timeout=5,
+        maxsat_iter=2,
 
         # rollouts
         num_episodes=1,
         num_rollouts=4,
         rollout_depth=3,
 
-        expand_first_train_instance=True,
+        # expand_first_train_instance=True,
         # all_player1_possible_successors=True,
     )
 

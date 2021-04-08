@@ -122,7 +122,7 @@ class Task(ITask):
         goal, deadend = [0] * 2
         gstatus = check_game_status(board)
         if gstatus >= 0:
-            if tomark(gstatus) == 'O':
+            if gstatus == 0 or tomark(gstatus) == 'O':
                 goal = True
             else:
                 deadend = True
