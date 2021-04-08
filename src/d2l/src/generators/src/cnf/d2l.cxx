@@ -381,7 +381,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
         }
     }
 
-
     // From this point on, no more variables will be created. Print total count.
     if (options.verbosity>0) {
         std::cout << "A total of " << wr.nvars() << " variables were created" << std::endl;

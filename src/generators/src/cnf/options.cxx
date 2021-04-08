@@ -86,6 +86,10 @@ Options parse_options(int argc, const char **argv) {
         ("encodings_dir", po::value<std::string>(), "The directory where the ASP encodings are.")
         ("sampling_strategy", po::value<std::string>()->default_value("random"),
           "The strategy to sample states when generating the encoding.")
+
+        //new
+        ("maxsat_iter", po::value<unsigned>()->default_value(99999),
+         "The maximum numer of iterations done by the maxsat solver")
     ;
 
 
@@ -128,6 +132,9 @@ Options parse_options(int argc, const char **argv) {
         options.acyclicity != "sd2l" ) {
         throw po::validation_error(po::validation_error::invalid_option_value, "acyclicity");
     }
+
+    //new
+    options.maxsat_iter = vm["maxsat_iter"].as<unsigned>();
 
     return options;
 }

@@ -207,7 +207,7 @@ int run(const Options& options) {
 
     CNFGenerationOutput output;
 
-    for (unsigned it=1; true; ++it) {
+      for (unsigned it=1; it<=options.maxsat_iter; ++it) {
         if (options.verbosity>0) {
             std::cout << std::endl << std::endl << "###  STARTING ITERATION " << it << "  ###" << std::endl;
         } else {

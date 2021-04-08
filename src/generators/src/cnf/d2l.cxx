@@ -280,7 +280,12 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     const auto& mat = sample_.matrix();
     const auto num_transitions = transition_ids_.size();
 
+    using sa_pair_t = std::pair<unsigned, unsigned>;
+
     VariableMapping variables(nf_);
+
+    // Map `good_s_a` from transition IDs to SAT variable IDs:
+    std::unordered_map<sa_pair_t, cnfvar_t, boost::hash<sa_pair_t>> good_s_a;
 
     auto varmapstream = utils::get_ofstream(options.workspace + "/varmap.wsat");
 
@@ -381,7 +386,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
         }
     }
 
-
     // From this point on, no more variables will be created. Print total count.
     if (options.verbosity>0) {
         std::cout << "A total of " << wr.nvars() << " variables were created" << std::endl;
@@ -395,15 +399,61 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     assert(wr.nvars() == variables.selecteds.size() + variables.goods.size() + vs.size() + reach.size());
 
     /////// CNF constraints ///////
+    // C3' // Create all variables Good_a(s, a) for any possible pair (s, a) in a non-det transition (s, a, s').
+    // We use this loop to index possible non-det transitions in maps s_to_as and s_a_to_s too.
+    std::unordered_map<unsigned, std::vector<unsigned>> s_to_as;
+    std::unordered_map<sa_pair_t, std::vector<unsigned>, boost::hash<sa_pair_t>> s_a_to_s;
+    for (const auto& [s, a, sprime]:sample_.transitions_.nondet_transitions()) {
+        if (sample_.is_alive(s)) {
+            const auto it = good_s_a.find({s, a});
+            cnfvar_t good_s_a_var = 0;
+
+            if (it == good_s_a.end()) {
+                good_s_a_var = wr.var("Good_a(" + std::to_string(s) + ", " + std::to_string(a) + ")");
+                varmapstream << good_s_a_var << " " << s << " " << a << std::endl;
+                good_s_a.emplace(std::make_pair(s, a), good_s_a_var);
+                s_to_as[s].push_back(a);
+            } else {
+                good_s_a_var = it->second;
+            }
+            s_a_to_s[{s, a}].push_back(sprime);
+        }
+    }
+
+    // C3. [1] For each alive state s, post a constraint
+    //         OR_{a s.t. (s, a, s') in T} Good_a(s, a).
+    // Then, For each alive state s and a applicable in s, post a constraint
+    //         If Good_a(s, a) then Good(s, s')
+    //
+    // One twist in domains with dead-ends: if all states s' that are reachable by applying a in s are
+    // unsolvable, then we cannot have Good_a(s, a).
+
     // [1] For each alive state s, post a constraint OR_{s' solvable child of s} Good(s, s')
     for (const auto s:sample_.alive_states()) {
         cnfclause_t clause;
-        for (unsigned sprime:sample_.successors(s)) {
-            auto tx = get_transition_id(s, sprime);
-            if (is_necessarily_bad(tx)) continue; // includes alive-to-dead transitions
+//         for (unsigned sprime:sample_.successors(s)) {
+//             auto tx = get_transition_id(s, sprime);
+//             if (is_necessarily_bad(tx)) continue; // includes alive-to-dead transitions
+//
+//             // Push it into the clause
+//             clause.push_back(Wr::lit(variables.goods.at(get_representative_id(tx)), true));
+//         }
 
-            // Push it into the clause
-            clause.push_back(Wr::lit(variables.goods.at(get_representative_id(tx)), true));
+        for (const auto a:s_to_as[s]) {
+            clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
+
+            for (const auto& sprime:s_a_to_s[{s, a}]) {
+                // If Good_a(s, a) then Good_a(s, s')
+                auto tx = get_transition_id(s, sprime);
+                if (is_necessarily_bad(tx)) {
+                    // If some possible outcome of (s, a) is BAD (e.g. an unsolvable state), then (s, a) cannot be good
+                    wr.cl({Wr::lit(good_s_a.at({s, a}), false)});
+                    continue; // includes alive-to-dead transitions
+                }
+
+                wr.cl({Wr::lit(good_s_a.at({s, a}), false),
+                       Wr::lit(variables.goods.at(get_representative_id(tx)), true)});
+            }
         }
 
         // Add clauses (1) for this state
@@ -416,8 +466,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
         wr.cl(clause);
         ++n_good_tx_clauses;
     }
-
-
 
     // Post reachability constraints
     if (options.acyclicity == "reachability") {

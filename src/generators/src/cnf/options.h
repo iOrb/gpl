@@ -63,6 +63,9 @@ struct Options {
 
     //! V consistency when V^*(s) <= K, so that V(s') < V(s) and V^*(s) <= V(s) <= v_slack * V^*(s)
     unsigned consistency_bound;
+
+    //new
+    unsigned maxsat_iter;
 };
 
 Options parse_options(int argc, const char** argv);
