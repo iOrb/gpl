@@ -105,14 +105,14 @@ def run_rollout(config, data, search_policy, task, instance_name, rng):
                 if search_policy is not None:
                     exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
                     if exitcode != ExitCode.Success:
-                        op, _ = rnd_op, rnd_succ
+                        op, succ = rnd_op, rnd_succ
                     else:
-                        op, _ = random.Random(rng).choice(good_succs)
+                        op, succ = random.Random(rng).choice(good_succs)
                 else:
                     op, succ = rnd_op, rnd_succ
 
-            succ = task.transition(state, op)
-            data.sample.add_transition(state, succ, op, instance_name, task)
+            # succ = task.transition(state, op)
+            # data.sample.add_transition(state, succ, op, instance_name, task)
             state = succ
 
 

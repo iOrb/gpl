@@ -51,8 +51,8 @@ def experiments():
         num_rollouts=4,
         rollout_depth=8,
 
-        expand_first_train_instance=True,
-        # all_possible_successors=True,
+        # expand_first_train_instance=True,
+        all_possible_successors=True,
     )
 
     return exps

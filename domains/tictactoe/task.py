@@ -75,8 +75,8 @@ class Task(ITask):
     def get_successor_states_all(self, state0): # all possible s" for each s -> a
 
         def __transition_player(s, op):  # s -> a -> s'
-            brd0, mark0 = s[0]
-            goal, deadend = self.infer_info(brd0)
+            _brd0, _mark0 = s[0]
+            goal, deadend = self.infer_info(_brd0)
             assert not goal and not deadend
 
             brd1, mark1 = after_action_state((brd0, mark0), op)  # player move
