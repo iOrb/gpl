@@ -43,3 +43,10 @@ def load_local_object(filename):
     local_object = dill.load(filename)
     picklefile.close()
     return local_object
+
+def encode_operator(op, task):
+    if callable(getattr(task, "encode_op", None)):
+        o = task.encode_op(op)
+    else:
+        o = op
+    return o

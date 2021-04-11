@@ -122,7 +122,7 @@ class Task(ITask):
         goal, deadend = [0] * 2
         gstatus = check_game_status(board)
         if gstatus >= 0:
-            if gstatus == 0 or tomark(gstatus) == 'O':
+            if tomark(gstatus) == 'O':
                 goal = True
             else:
                 deadend = True
@@ -146,11 +146,11 @@ class BaseAgent(object):
         self.mark = mark
 
     def act(self, state, ava_actions):
-        for action in ava_actions:
-            nstate = after_action_state(state, action)
-            gstatus = check_game_status(nstate[0])
-            if gstatus > 0:
-                if tomark(gstatus) == self.mark:
-                    return action
+        # for action in ava_actions:
+        #     nstate = after_action_state(state, action)
+        #     gstatus = check_game_status(nstate[0])
+        #     if gstatus > 0:
+        #         if tomark(gstatus) == self.mark:
+        #             return action
         # return random.choice(ava_actions)
         return ava_actions[-1]

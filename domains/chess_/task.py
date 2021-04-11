@@ -66,8 +66,8 @@ class Task(ITask):
     def transition(self, state0, operator):  # s -> a -> s' -> a -> s"
         r0 = state0[0]
         self.env.set_fen(r0)
-        # goal, deadend = self.infer_info(r0)
-        # assert not goal and not deadend
+        goal, deadend = self.infer_info(r0)
+        assert not goal and not deadend
         self.env.push(operator)  # our move
         r1 = self.env.fen()
         goal, deadend = self.infer_info()

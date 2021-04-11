@@ -102,6 +102,8 @@ public:
     //! Whether the two given transitions are distinguishable through the given features alone
     bool are_transitions_d1d2_distinguishable(
             state_id_t s, state_id_t sprime, state_id_t t, state_id_t tprime, const std::vector<unsigned>& features) const;
+    bool are_transitions_d1d2_distinguishable(
+            unsigned tx1, unsigned tx2, const std::vector<unsigned>& features) const;
 
     DNFPolicy generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const;
 

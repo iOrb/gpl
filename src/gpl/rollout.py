@@ -95,9 +95,10 @@ def run_rollout(config, data, search_policy, task, instance_name, rng):
             alive, _, _ = data.sample.process_successors(state, succcessors, instance_name, task)
 
             if not alive:
-                data.sample.mark_state_as_deadend(state, task) # maybe it is a goal (?)
+                # data.sample.mark_state_as_deadend(state, task) # maybe it is a goal (?)
                 # state = s_queue.pop(0)
                 state = task.initial_state
+                continue
                 # raise RuntimeError("No successors for expanded state: {}".format(state,))
             else:
                 rnd_op, rnd_succ = random.Random(rng).choice(alive)
@@ -194,7 +195,7 @@ def create_action_selection_function_from_transition_policy(config, model_factor
 def run(config, data, rng):
     if not config.instances:
         logging.info("No train instances were specified")
-        return ExitCode.Success, dict()
+        return ExitCode.NotTrainInstancesSpecified, dict()
 
     def get_policy(model_factory, static_atoms, data):
 

@@ -1,3 +1,5 @@
+from .utils import compute_instance_filename
+
 
 def all_instances(indexes):
     instances = {
@@ -25,13 +27,7 @@ def all_instances(indexes):
         21: "checkmate_tactic/layout_9x14_0.json",
         22: "checkmate_tactic/layout_9x9_0.json",
     }
-    if indexes == 'a':
-        return list(instances.values())
-
-    instances_list = list()
-    for i in indexes:
-        instances_list.append(instances.get(i))
-    return instances_list
+    return select_instances(indexes, instances)
 
 
 def four_four_instances(indexes):
@@ -47,14 +43,7 @@ def four_four_instances(indexes):
         8 : "checkmate_tactic/4x4/layout_4x4_8.json",
         9 : "checkmate_tactic/4x4/layout_4x4_9.json",
     }
-    if indexes == 'a':
-        return list(instances.values())
-
-    instances_list = list()
-    for i in indexes:
-        instances_list.append(instances.get(i))
-    return instances_list
-
+    return select_instances(indexes, instances)
 
 
 def break_instances(indexes):
@@ -68,11 +57,18 @@ def break_instances(indexes):
         6: "checkmate_tactic/break_points/bp_layout_5x5_6.json",
         7: "checkmate_tactic/break_points/bp_layout_5x5_7.json",
     }
+    return select_instances(indexes, instances)
 
+
+def select_instances(indexes, instances):
     if indexes == 'a':
-        return list(instances.values())
+        ins = list(instances.values())
+    else:
+        ins = list()
+        for i in indexes:
+            ins.append(instances.get(i))
 
-    instances_list = list()
-    for i in indexes:
-        instances_list.append(instances.get(i))
-    return instances_list
+    return compute_instance_filename(ins)
+
+
+

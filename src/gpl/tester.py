@@ -12,7 +12,7 @@ from sltp.tester import PolicySearchException
 from sltp.util.misc import compute_universe_from_pddl_model, state_as_atoms, types_as_atoms
 from tarski.dl import compute_dl_vocabulary
 
-from .utils import Bunch
+from .utils import Bunch, encode_operator
 
 """
 rollout:
@@ -127,7 +127,7 @@ def run_test(config, search_policy, task, instance_name, rng):
         if succ[2] in parents:
             raise PolicySearchException(ExitCode.AbstractPolicyNonTerminatingOnTestInstances)
 
-        solution.append(op)
+        solution.append(encode_operator(op, task))
         parents[succ[2]] = s[2]
         s = succ
 
@@ -177,9 +177,12 @@ def create_action_selection_function_from_transition_policy(config, model_factor
 
 
 def run(config, data, rng):
-    if not config.instances:
-        logging.info("No train instances were specified")
-        return ExitCode.Success, dict()
+    if not config.test_instances:
+        logging.info("No test instances were specified")
+        return ExitCode.NotTestInstancesSpecified, dict()
+
+    if not isinstance(data.d2l_policy, TransitionClassificationPolicy):
+        return ExitCode.NotPolicySpecified, dict()
 
     def get_policy(model_factory, static_atoms, data):
 

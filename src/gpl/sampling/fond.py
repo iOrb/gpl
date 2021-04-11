@@ -3,7 +3,7 @@ import logging
 import math
 from collections import defaultdict, OrderedDict, deque
 
-from ..utils import unpack_state
+from ..utils import unpack_state, encode_operator
 
 from sltp.returncodes import ExitCode
 from sltp.util.command import read_file
@@ -37,7 +37,7 @@ class TransitionSampleMDP:
         # state1_encoded, state1 = state1
 
         sids = self.check_states([state0, state1], task)
-        oid = self.check_operator(operator)
+        oid = self.check_operator(operator, task)
         self.update_transitions(sids, oid)
         _ = [self.update_instances(i, instance_name) for i in sids]
 
@@ -66,11 +66,12 @@ class TransitionSampleMDP:
     def get_state_id(self, s_encoded):
         return self.states_encoded[s_encoded]
 
-    def check_operator(self, op):
-        if op not in self.operators:
-            self.operators[op] = self.oid_count
+    def check_operator(self, op, task):
+        o = encode_operator(op, task)
+        if o not in self.operators:
+            self.operators[o] = self.oid_count
             self.oid_count += 1
-        return self.operators[op]
+        return self.operators[o]
 
     def update_transitions(self, states_pair_ids, operator_id):
         # TODO Here is some space for update the montecarlo value or any representative number for the node

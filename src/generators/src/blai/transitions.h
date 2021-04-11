@@ -112,15 +112,15 @@ public:
 
         // read transitions, in format: source_id, num_successors, succ_1, succ_2, ...
         for (unsigned i = 0; i < num_states_; ++i) {
-            unsigned src = 0, count = 0, act_id = 0, dst = 0;
-            is >> src >> count;
+            unsigned src = 0, n_succs = 0, act_id = 0, dst = 0;
+            is >> src >> n_succs;
             assert(i==src);
             assert(src < num_states_ && 0 <= count);
-            if (count > 0) {
+            if (n_succs > 0) {
                 std::vector<bool> seen(num_states_, false);
-                trdata_[src].reserve(count);
+                trdata_[src].reserve(n_succs);
                 std::unordered_set<unsigned> all_s_successors;
-                for (unsigned j = 0; j < count; ++j) {
+                for (unsigned j = 0; j < n_succs; ++j) {
                     is >> act_id >> dst;
                     assert(dst < num_states_);
                     all_s_successors.insert(dst);

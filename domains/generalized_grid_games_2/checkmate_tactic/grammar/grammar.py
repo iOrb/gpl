@@ -1,21 +1,21 @@
-import sys
 import string
+import sys
 
 from .state_to_atoms import state_to_atoms, atom_tuples_to_string
+from .objects import OBJECTS
 
 ASCII = string.printable
 # ASCII = ''.join(chr(x) for x in range(50, 1000))
+
 
 class Grammar:
     """
     Wrapper of some grammar utils
     """
 
-    def __init__(self, domain_name, objects, operators):
+    def __init__(self, domain_name,):
 
         self.domain_name = domain_name
-        self.objects = objects
-        self.actions = operators
         self.object_bytes = self.objects_to_bytes()
 
     def state_to_atoms(self, state,):
@@ -31,10 +31,10 @@ class Grammar:
         position.
         """
         try:
-            b = list(self.object_bytes[obj] for obj in r.flatten())
-            b = b + [self.object_bytes[1]] if info['reward'] else b + [self.object_bytes[0]]
-            b = b + [self.object_bytes[1]] if info['goal'] else b + [self.object_bytes[0]]
-            b = b + [self.object_bytes[1]] if info['deadend'] else b + [self.object_bytes[0]]
+            b = list(self.object_bytes[obj] for obj in r[0].flatten())
+            # b = b + [self.object_bytes['true']] if info['reward'] else b + [self.object_bytes['false']]
+            # b = b + [self.object_bytes['true']] if info['goal'] else b + [self.object_bytes['false']]
+            # b = b + [self.object_bytes['true']] if info['deadend'] else b + [self.object_bytes['false']]
             return bytes(b)
         except:
             for o in r.flatten():
@@ -47,12 +47,16 @@ class Grammar:
         object_bytes = dict()
         possible_chars = ASCII
 
-        for obj in self.objects:
+        for obj in OBJECTS.general:
             possible_chars, b = possible_chars[1:], possible_chars[0]
             object_bytes[obj] = ord(b)
 
-        for i in range(2):
+        for i in ['true', 'false']:
             possible_chars, b = possible_chars[1:], possible_chars[0]
             object_bytes[i] = ord(b)
 
         return object_bytes
+
+
+
+

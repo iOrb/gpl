@@ -663,6 +663,29 @@ DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variabl
     return generate_dnf(goods, selecteds);
 }
 
+
+bool D2LEncoding::are_transitions_d1d2_distinguishable(
+        unsigned tx1, unsigned tx2, const std::vector<unsigned>& features) const {
+
+    const auto& tx1pair = get_state_pair(tx1);
+    const auto s = tx1pair.first;
+    const auto sprime = tx1pair.second;
+
+    const auto& tx2pair = get_state_pair(tx2);
+    const auto t = tx1pair.first;
+    const auto tprime = tx1pair.second;
+
+    const auto& mat = sample_.matrix();
+    for (unsigned f:features) {
+        if (are_transitions_d1d2_distinguished(mat.entry(s, f), mat.entry(sprime, f),
+                                               mat.entry(t, f), mat.entry(tprime, f))) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 bool D2LEncoding::are_transitions_d1d2_distinguishable(
         state_id_t s, state_id_t sprime, state_id_t t, state_id_t tprime, const std::vector<unsigned>& features) const {
     const auto& mat = sample_.matrix();

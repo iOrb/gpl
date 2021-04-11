@@ -28,10 +28,12 @@ class ExitCode(Enum):
     # The policy is not total on the set of reached states:
     AbstractPolicyNotCompleteOnTestInstances = 28
 
-
     SeparationPolicyNotComplete = 30
     SeparationPolicyCannotDistinguishGoal = 31
     SeparationPolicyAdvisesDeadState = 32
+
+    # Policy not specified
+    NotPolicySpecified = 33
 
     FeatureGenerationUnknownError = 98
     CNFGenerationUnknownError = 99
@@ -42,3 +44,6 @@ class ExitCode(Enum):
     MissigAttribute = 102
     MissigData = 103
 
+    # Not instances
+    NotTrainInstancesSpecified = 201
+    NotTestInstancesSpecified = 202

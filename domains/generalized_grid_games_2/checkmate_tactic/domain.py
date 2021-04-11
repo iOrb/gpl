@@ -1,52 +1,48 @@
+from domains.generalized_grid_games_2.checkmate_tactic.grammar.objects import OBJECTS
 from gpl.domain import IDomain
-from ..utils import unserialize_layout
-
 from tarski.fstrips import fstrips, create_fstrips_problem
-
-from generalization_grid_games.envs import checkmate_tactic as ct
-
 from .task import Task
-
-from .expand_state_space import expand_state_space
-
+from .instances import INSTANCES
+from ..utils import unserialize_layout
+import copy
 
 class Domain(IDomain):
     def __init__(self, domain_name):
-        super().__init__(domain_name,)
+        super().__init__(domain_name)
 
-        self.objects = {ct.EMPTY, ct.HIGHLIGHTED_WHITE_QUEEN, ct.BLACK_KING,
-                        ct.HIGHLIGHTED_WHITE_KING, ct.HIGHLIGHTED_BLACK_KING,
-                        ct.WHITE_KING, ct.WHITE_QUEEN}
-
-    # Main stateless methods
+    # Generate Language
     def generate_language(self):
         """ Generate the Tarski language corresponding to the given domain. """
-        return generate_ct_lang(self._domain_name, self.objects)
+        return generate_lang(self._domain_name,)
 
-    def generate_problem(self, lang, instance_filename):
+    # Generate Problem
+    def generate_problem(self, lang, instance_name):
         """ Generate the Tarski problem corresponding to the given domain and particular layout. """
-        return generate_ct_problem(self._domain_name, lang, instance_filename)
+        return generate_problem(self._domain_name, lang, instance_name)
 
-    def generate_task(self, instance_filename=None, initial_state=None):
+    # Generate Task
+    def generate_task(self, instance_name, config):
         """ Generate a Task object, according to the Interface ITask """
-        return Task(self._domain_name, self.objects, instance_filename, initial_state)
-
-    def expand_state_space(self, instance_filename, teach_policies, output):
-        """ Expand state space of an instance """
-        return expand_state_space(self.generate_task(instance_filename), teach_policies, output)
+        return Task(self._domain_name, instance_name, config)
 
 
 GRID_DIRECTIONS = ['up', 'rightup', 'right', 'rightdown', 'down', 'leftdown', 'left', 'leftup']
 
 
-def generate_ct_lang(domain_name, objects):
+def generate_lang(domain_name,):
     lang, statics = generate_base_lang(domain_name)
-    objects.add('none')
-    load_general_lang(lang, statics, domain_name, objects)
+    load_general_lang(lang, statics,)
     return lang, statics
 
 
-def load_general_lang(lang, statics, domain_name, objects):
+def generate_base_lang(domain_name):
+    from tarski.theories import Theory
+    lang = fstrips.language(domain_name, theories=[Theory.EQUALITY])
+    # lang = tarski.language(theories=[Theory.EQUALITY])
+    return lang, set()
+
+
+def load_general_lang(lang, statics,):
     """ Return the FOL language corresponding to the Reach for the Star domain,
      plus a set with the names of those predicates / functions that are static. """
 
@@ -55,7 +51,9 @@ def load_general_lang(lang, statics, domain_name, objects):
     _ = [lang.predicate(d, 'cell', 'cell') for d in GRID_DIRECTIONS]
     statics.update(set(GRID_DIRECTIONS))
 
-    _ = [lang.predicate(f'cell-hv-{o}', 'cell') for o in objects]
+    _ = [lang.predicate(f'cell-hv-{o}', 'cell') for o in OBJECTS.general | {OBJECTS.none}]
+
+    # _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player_marks.values()}]
 
     # Scanning ==================================
     lang.predicate('same_row', 'cell', 'cell')
@@ -68,17 +66,10 @@ def load_general_lang(lang, statics, domain_name, objects):
     return lang, statics
 
 
-def generate_base_lang(domain_name):
-    from tarski.theories import Theory
-    lang = fstrips.language(domain_name, theories=[Theory.EQUALITY])
-    # lang = tarski.language(theories=[Theory.EQUALITY])
-    return lang, set()
-
-
-def generate_ct_problem(domain_name, lang, instance_name):
+def generate_problem(domain_name, lang, instance_name):
     problem = generate_base_problem(domain_name, lang, instance_name)
-    layout = unserialize_layout(instance_name)
-    load_general_problem(problem, domain_name, lang, instance_name, layout)
+    rep = unserialize_layout(instance_name)
+    load_general_problem(problem, lang, rep)
     return problem
 
 
@@ -89,11 +80,9 @@ def generate_base_problem(domain_name, lang, instance_name):
     return problem
 
 
-def load_general_problem(problem, domain_name, lang, instance_name, layout):
-
-    nrows = len(layout)
-    assert nrows > 0
-    ncols = len(layout[0])
+def load_general_problem(problem, lang, rep):
+    brd = copy.deepcopy(rep)
+    nrows, ncols = rep.shape
 
     cell_ = lang.get('cell')
 
@@ -104,10 +93,10 @@ def load_general_problem(problem, domain_name, lang, instance_name, layout):
         for c in range(-1, ncols + 1):
 
             if nrows > r >= 0 and ncols > c >= 0:
-                o = layout[r, c]
+                o = brd[r, c]
             else:
                 # Add the None value for cells outside the world
-                o = 'none'
+                o = OBJECTS.none
 
             cell = lang.constant(f'c{r}-{c}', cell_)
 
@@ -116,7 +105,7 @@ def load_general_problem(problem, domain_name, lang, instance_name, layout):
             # Add the atoms such as hv-drawn(c12,) to the initial state of the problem
             problem.init.add(lang.get(f'cell-hv-{o}'), cell)
 
-    scan(lang, problem, layout)
+    scan(lang, problem, brd)
 
     # Let's specify the entire grid topology:
     up, rightup, right, rightdown, down, leftdown, left, leftup = [lang.get(d) for d in GRID_DIRECTIONS]
@@ -206,3 +195,4 @@ def scan(lang, problem, layout):
             # # Add the same_d2 predicate for the current cell
             # _ = [problem.init.add(lang.get(f'same_d2'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
             #      for r_, c_ in d2_ if (r_, c_) != (r, c)]
+

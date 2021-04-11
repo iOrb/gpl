@@ -8,11 +8,11 @@ from sltp.util.command import create_experiment_workspace
 from sltp.util.defaults import get_experiment_class
 from sltp.util.misc import extend_namer_to_all_features
 
-from generalization_grid_games.envs import two_pile_nim as tpn
-from generalization_grid_games.envs import stop_the_fall as stf
-from generalization_grid_games.envs import chase as ec
-from generalization_grid_games.envs import checkmate_tactic as ct
-from generalization_grid_games.envs import reach_for_the_star as rfts
+# from generalization_grid_games.envs import two_pile_nim as tpn
+# from generalization_grid_games.envs import stop_the_fall as stf
+# from generalization_grid_games.envs import chase as ec
+# from generalization_grid_games.envs import checkmate_tactic as ct
+# from generalization_grid_games.envs import reach_for_the_star as rfts
 
 BASEDIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 BENCHMARK_DIR = os.path.join(BASEDIR, 'benchmarks')
@@ -149,7 +149,8 @@ def generate_experiment(expid, **kwargs):
         refinement_batch_size=20,
         seed=0,
         verbosity=0,
-        acyclicity='topological',
+        acyclicity='reachability',
+        # acyclicity='topological',
         encodings_dir='~/Desktop/encodings_d2l',
         sampling_strategy='random',
         optimal_steps=3,
@@ -161,6 +162,7 @@ def generate_experiment(expid, **kwargs):
         # New:
         expand_first_train_instance=False,
         provided_sample_file=None,
+        maxsat_iter = 999,
     )
 
     parameters = {**defaults, **kwargs}  # Copy defaults, overwrite with user-specified parameters
@@ -213,7 +215,8 @@ def tpn_names(feature):
 
 
 def ct_names(feature):
-    base = {f'Exists(hv,Nominal({t}))': f'cell-with-{t}' for t in ct.ALL_TOKENS}
+    from generalization_grid_games_2.envs.checkmate_tactic import ALL_TOKENS
+    base = {f'Exists(hv,Nominal({t}))': f'cell-with-{t}' for t in ALL_TOKENS}
     s = str(feature)
     return extend_namer_to_all_features(base).get(s, s)
 

@@ -1,7 +1,9 @@
 import json
+import os.path
+
 import numpy as np
 
-from generalization_grid_games.envs.generalization_grid_game import GymEnvFactory
+from generalization_grid_games_2.envs.generalization_grid_game import GymEnvFactory
 
 
 def serialize_layout(layout, filename):

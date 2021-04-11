@@ -1,4 +1,5 @@
 import string
+import sys
 
 from domains.chess_.grammar.state_to_atoms import state_to_atoms, atom_tuples_to_string
 from domains.chess_.grammar.objects import OBJECTS
@@ -29,14 +30,17 @@ class Grammar:
         more compact than a numpy array of `object` types for encoding single characters, that uses several bytes per
         position.
         """
-        brd, mrk = r.split(' ')[0:2]
         try:
-            # b = list(self.object_bytes[obj] for row in brd.split('/') for obj in split_all_chars(row))
-            # b.append(self.object_bytes[OBJECTS.player_marks[mrk]])
-            # return bytes(b)
-            return brd
+            b = list(self.object_bytes[obj] for obj in r.flatten())
+            b = b + [self.object_bytes[1]] if info['reward'] else b + [self.object_bytes[0]]
+            b = b + [self.object_bytes[1]] if info['goal'] else b + [self.object_bytes[0]]
+            b = b + [self.object_bytes[1]] if info['deadend'] else b + [self.object_bytes[0]]
+            return bytes(b)
         except:
-            raise RuntimeError
+            for o in r.flatten():
+                if o not in self.object_bytes:
+                    print('EXCEPTION: Unknown object: {}\n'.format(o))
+            sys.exit(1)
 
     def objects_to_bytes(self):
 

@@ -34,25 +34,26 @@ def experiments():
 
     exps["1"] = update_dict(
         base,
-        instances=['v4', 'v5'],
-        test_instances=['v0', 'v1', 'v2', 'v3', 'v4', 'v5'],
+        instances=['v0',],
+        # test_instances=['v0', 'v1', 'v2', 'v3', 'v4', 'v5'],
+        test_instances = ['v0'],
 
-        max_concept_size=5,
-        distance_feature_max_complexity=5,
+        max_concept_size=4,
+        distance_feature_max_complexity=4,
 
         # concept_generation_timeout=120,
         # maxsat_timeout=1,
-        maxsat_iter=10,
+        maxsat_iter=6,
 
         parameter_generator=None,
 
         # rollouts
         num_episodes=1,
-        num_rollouts=4,
-        rollout_depth=8,
+        num_rollouts=10,
+        rollout_depth=10,
 
-        # expand_first_train_instance=True,
-        all_possible_successors=True,
+        expand_first_train_instance=True,
+        # all_possible_successors=True,
     )
 
     return exps
