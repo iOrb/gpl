@@ -33,7 +33,7 @@ def experiments():
 
     exps["1"] = update_dict(
         base,
-        instances=break_instances([0, 2, 3, 4]),
+        instances=break_instances([0,]),
         # instances=all_instances([15, 16, 18]) +
         #           break_instances('a'),
         test_instances=four_four_instances('a') +
@@ -49,7 +49,7 @@ def experiments():
         concept_generation_timeout=120,
 
         parameter_generator=None,
-        maxsat_iter=1,
+        maxsat_iter=4,
 
         # rollouts
         num_episodes=1,
