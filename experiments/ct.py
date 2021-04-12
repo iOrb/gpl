@@ -33,7 +33,7 @@ def experiments():
 
     exps["1"] = update_dict(
         base,
-        instances=four_four_instances([0,]),
+        instances=break_instances([0, 2, 3, 4]),
         # instances=all_instances([15, 16, 18]) +
         #           break_instances('a'),
         test_instances=four_four_instances('a') +
@@ -42,17 +42,19 @@ def experiments():
 
         teach_policies=None,
 
+        initial_sample_size=10,
+
         max_concept_size=5,
         distance_feature_max_complexity=5,
         concept_generation_timeout=120,
 
         parameter_generator=None,
-        maxsat_iter=4,
+        maxsat_iter=1,
 
         # rollouts
         num_episodes=1,
-        num_rollouts=2,
-        rollout_depth=4,
+        num_rollouts=5,
+        rollout_depth=5,
 
         expand_first_train_instance=False,
         all_possible_successors=True,
@@ -81,7 +83,7 @@ def experiments():
         rollout_depth=1,
 
         expand_first_train_instance=False,
-        # all_possible_successors=True,
+        all_possible_successors=False,
     )
 
     return exps

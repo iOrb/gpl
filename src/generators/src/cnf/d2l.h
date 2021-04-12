@@ -22,6 +22,9 @@ struct VariableMapping {
     //! A map from transition IDs to SAT variable IDs:
     std::unordered_map<unsigned, cnfvar_t> goods;
 
+    //! A map from state IDs to SAT variable IDs:
+    std::unordered_map<unsigned, cnfvar_t> bads;
+
     explicit VariableMapping(unsigned nfeatures) : selecteds(nfeatures, std::numeric_limits<uint32_t>::max())
     {}
 };
@@ -102,14 +105,21 @@ public:
     //! Whether the two given transitions are distinguishable through the given features alone
     bool are_transitions_d1d2_distinguishable(
             state_id_t s, state_id_t sprime, state_id_t t, state_id_t tprime, const std::vector<unsigned>& features) const;
-    bool are_transitions_d1d2_distinguishable(
-            unsigned tx1, unsigned tx2, const std::vector<unsigned>& features) const;
+//    bool are_transitions_d1d2_distinguishable(
+//            unsigned tx1, unsigned tx2, const std::vector<unsigned>& features) const;
 
     DNFPolicy generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const;
 
-    DNFPolicy generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& selecteds) const;
-    DNFPolicy generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const;
+//    DNFPolicy generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& selecteds) const;
+//    DNFPolicy generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const;
 
+    DNFPolicy generate_dnf(const std::vector<unsigned>& goods,
+                           const std::vector<unsigned>& bads,
+                           const std::vector<unsigned>& selecteds) const;
+
+    DNFPolicy generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods,
+                           const std::vector<unsigned>& bads,
+                           const std::vector<unsigned>& selecteds) const;
 
         protected:
     //! The transition sample data

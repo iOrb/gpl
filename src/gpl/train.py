@@ -112,7 +112,7 @@ def check_requirements(step, config, data):
             raise RuntimeError(_create_exception_msg(step, "Missing data {}".format(d)))
 
 def pre_process_data(config, data):
-    data = Bunch(dict(sample=None, d2l_policy=None))
+    data = Bunch(dict(sample=None, d2l_policy=None, tasks=None))
     if config.provided_sample_file is not None:
         data.sample = load_local_object(config.provided_sample_file)
     else:

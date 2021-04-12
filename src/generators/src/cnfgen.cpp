@@ -162,7 +162,7 @@ public:
         }
         std::cout << "Solution with cost " << solution.cost << " found in " << tsolution << "sec." << std::endl;
 
-        auto dnf = generator.generate_dnf(solution.goods, solution.selecteds);
+        auto dnf = generator.generate_dnf(solution.goods, solution.bads, solution.selecteds);
 //            dnf = minimize_dnf();
         return {CNFGenerationOutput::Success, dnf};
     }

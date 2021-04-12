@@ -21,9 +21,10 @@ struct ASPSolution {
     bool solved;
     int cost;
     std::vector<std::pair<unsigned, unsigned>> goods;
+    std::vector<unsigned> bads;
     std::vector<unsigned> selecteds;
 
-    ASPSolution() : solved(false), cost(std::numeric_limits<int>::max()), goods(), selecteds() {}
+    ASPSolution() : solved(false), cost(std::numeric_limits<int>::max()), goods(), bads(), selecteds() {}
 };
 
 

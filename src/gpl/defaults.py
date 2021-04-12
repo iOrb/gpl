@@ -145,8 +145,10 @@ def generate_experiment(expid, **kwargs):
 
         # OTHERS:
         print_hstar_in_feature_matrix=False,
-        initial_sample_size=10,
-        refinement_batch_size=20,
+        initial_sample_size=0,
+        # initial_sample_size=10,
+        refinement_batch_size=2,
+        # refinement_batch_size=20,
         seed=0,
         verbosity=0,
         acyclicity='reachability',

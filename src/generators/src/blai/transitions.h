@@ -33,6 +33,7 @@ protected:
 
     std::vector<unsigned> alive_states_;
     std::vector<unsigned> goal_states_;
+    std::vector<unsigned> unsolvable_states_;
 
     std::vector<int> vstar_;
 
@@ -45,7 +46,8 @@ public:
               is_state_goal_(num_states, false),
               is_state_unsolvable_(num_states, false),
               alive_states_(),
-              goal_states_()
+              goal_states_(),
+              unsolvable_states_()
     {
         if (num_states_ > std::numeric_limits<state_id_t>::max()) {
             throw std::runtime_error("Number of states too high - revise source code and change state_id_t datatype");
@@ -90,6 +92,7 @@ public:
 
     const std::vector<unsigned>& all_alive() const { return alive_states_; }
     const std::vector<unsigned>& all_goals() const { return goal_states_; }
+    const std::vector<unsigned>& all_dead() const { return unsolvable_states_; }
 
     //! Print a representation of the object to the given stream.
     friend std::ostream& operator<<(std::ostream &os, const TransitionSample& o) { return o.print(os); }
@@ -125,6 +128,7 @@ public:
                     assert(dst < num_states_);
                     all_s_successors.insert(dst);
                     nondet_transitions_.emplace_back(src, act_id, dst);
+                    nondet_transitions_.emplace_back(src, act_id, dst);
                     n_read_transitions++;
                 }
 
@@ -146,9 +150,10 @@ public:
                 alive_states_.push_back(s);
             } else if (vstar<0) {
                 is_state_unsolvable_[s] = true;
+                unsolvable_states_.push_back(s);
             } else {
-                goal_states_.push_back(s);
                 is_state_goal_[s] = true;
+                goal_states_.push_back(s);
             }
         }
         std::cout << "Read " << alive_states_.size() << " alive states" << std::endl;

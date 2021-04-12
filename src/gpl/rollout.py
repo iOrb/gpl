@@ -32,11 +32,14 @@ rollout:
 
 def rollout(config, data, get_policy, rng):
 
-    for i, instance_name in enumerate(config.instances):
+    for i, task in enumerate(data.tasks):
         try:
             """ Run a search on the train instances that follows the given policy or DFS """
             lang, static_predicates = config.domain.generate_language()
             vocabulary = compute_dl_vocabulary(lang)
+
+            # Get the instance name
+            instance_name = task.get_instance_name()
 
             # We interpret as DL nominals all constants that are defined on the entire domain, i.e. instance-independent
             nominals = lang.constants()
@@ -62,9 +65,6 @@ def rollout(config, data, get_policy, rng):
             # Compute an actual policy object that returns the next action to be applied
             search_policy = get_policy(model_factory, static_atoms, data)
 
-            # Define the Task
-            task = config.domain.generate_task(instance_name, config)
-
             # And now we inject our desired search and heuristic functions
             if i == 0 and config.expand_first_train_instance:
                 bfs(config, data, search_policy, task, instance_name, rng)
@@ -78,15 +78,51 @@ def rollout(config, data, get_policy, rng):
     return ExitCode.Success
 
 
+# def run_rollout(config, data, search_policy, task, instance_name, rng):
+#
+#     logging.info(f'Appying rollout in train instance "{instance_name}"')
+#
+#
+#     root_state = task.get_state_from_queue()
+#
+#     state = copy.deepcopy(root_state)
+#
+#     s_queue = [s for o, s in task.get_successor_states(state)]
+#
+#     while True:
+#
+#         succcessors = task.get_successor_states(state)
+#
+#         alive, _, _ = data.sample.process_successors(state, succcessors, instance_name, task)
+#
+#         if not alive:
+#             # state = task.get_state_from_queue()
+#             # continue
+#             raise RuntimeError("No successors for expanded state: {}".format(state,))
+#         else:
+#
+#             if search_policy is not None:
+#                 exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
+#                 if exitcode != ExitCode.Success:
+#                     task.add_state_to_queue(state)
+#                     return
+#                 op, succ = random.Random(rng).choice(good_succs)
+#             else:
+#                 task.add_state_to_queue(state)
+#                 # task.add_state_to_queue(random.Random(rng).choice(alive)[1])
+#                 return
+#
+#         state = succ
+
 def run_rollout(config, data, search_policy, task, instance_name, rng):
 
     logging.info(f'Appying rollout in train instance "{instance_name}"')
 
+    root_state = task.get_state_from_queue()
+
     for _ in range(config.num_rollouts):
 
-        state = task.initial_state
-
-        s_queue = [s for o, s in task.get_successor_states(state)]
+        state = copy.deepcopy(root_state)
 
         for _ in range(config.rollout_depth):
 
@@ -96,8 +132,7 @@ def run_rollout(config, data, search_policy, task, instance_name, rng):
 
             if not alive:
                 # data.sample.mark_state_as_deadend(state, task) # maybe it is a goal (?)
-                # state = s_queue.pop(0)
-                state = task.initial_state
+                state = copy.deepcopy(root_state)
                 continue
                 # raise RuntimeError("No successors for expanded state: {}".format(state,))
             else:
@@ -130,7 +165,7 @@ def bfs(config, data, search_policy, task, instance_name, rng):
     logging.info(f'Expanding train instance "{instance_name}"')
 
     visited = set()
-    istate = task.initial_state
+    istate = task.get_state_from_queue()
 
     queue = [istate]
 
@@ -157,7 +192,7 @@ def bfs(config, data, search_policy, task, instance_name, rng):
         for op, succ in alive:
             if succ[2] not in visited:
                 visited.add(succ[2])
-            queue.append(succ)
+                queue.append(succ)
 
 
 def translate_state(task, state, static_atoms):
@@ -191,11 +226,20 @@ def create_action_selection_function_from_transition_policy(config, model_factor
 
     return _policy
 
-
-def run(config, data, rng):
+def init_tasks(config, data, rng):
     if not config.instances:
         logging.info("No train instances were specified")
         return ExitCode.NotTrainInstancesSpecified, dict()
+
+    data.tasks = list()
+
+    for i, instance_name in enumerate(config.instances):
+        task = config.domain.generate_task(instance_name, config)
+        data.tasks.append(task)
+
+def run(config, data, rng):
+    if not data.tasks:
+        init_tasks(config, data, rng)
 
     def get_policy(model_factory, static_atoms, data):
 

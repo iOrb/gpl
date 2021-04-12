@@ -29,9 +29,19 @@ class Task(ITask):
         brd = unserialize_layout(instance_name)
         r = (brd, OBJECTS.player.w)
         info = {'goal': 0, 'deadend': 0, 'reward': 0,}
-        self.grammar = Grammar(self._domain_name,)
+        self.grammar = Grammar(self.get_domain_name(),)
         encoded_s = self.grammar.encode_state(r, info)
         self.initial_state = (r, info, encoded_s)
+        self.queue = [self.initial_state]
+
+    def get_state_from_queue(self):
+        if self.queue:
+            return self.queue.pop(0)
+        else:
+            return None
+
+    def add_state_to_queue(self, state):
+        self.queue.append(state)
 
     def encode_state(self, rep, info):
         return self.grammar.encode_state(rep, info)
