@@ -24,7 +24,7 @@ void D2LEncoding::compute_equivalence_relations() {
     // A mapping from a full transition trace to the ID of the corresponding equivalence class
     std::unordered_map<transition_trace, unsigned> from_trace_to_class_repr;
 
-    for (const auto s:sample_.transitions_.all_alive()) {
+    for (const auto s:sample_.alive_states()) {
         for (unsigned sprime:sample_.successors(s)) {
             auto tx = std::make_pair((state_id_t) s, (state_id_t) sprime);
             auto id = (unsigned) transition_ids_inv_.size(); // Assign a sequential ID to the transition
@@ -209,8 +209,8 @@ CNFGenerationOutput D2LEncoding::generate_asp_instance_10(std::ofstream& os) {
 
 
     if (options.distinguish_goals) {
-        os << "%% Goal distinguishability (" << sample_.transitions_.all_goals().size() << " goals):" << std::endl;
-        for (unsigned s:sample_.transitions_.all_goals()) {
+        os << "%% Goal distinguishability (" << sample_.goal_states().size() << " goals):" << std::endl;
+        for (unsigned s:sample_.goal_states()) {
             for (unsigned t:sample_.nongoal_states()) {
 
                 const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
@@ -314,7 +314,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     unsigned n_goal_clauses = 0;
 
     if (options.verbosity>0) {
-        std::cout << "Generating CNF encoding for " << sample_.transitions_.all_alive().size() << " alive states, "
+        std::cout << "Generating CNF encoding for " << sample_.alive_states().size() << " alive states, "
                   <<  transition_ids_.size() << " alive-to-solvable and alive-to-dead transitions and "
                   << class_representatives_.size() << " transition equivalence classes" << std::endl;
     }
@@ -330,8 +330,8 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
 
     if (options.acyclicity == "reachability") {
         // Create one "Reach(s, s') variable for each pair of states (s, s')
-        for (unsigned s:sample_.transitions_.all_alive()) {
-            for (unsigned sprime:sample_.transitions_.all_alive()) {
+        for (unsigned s:sample_.alive_states()) {
+            for (unsigned sprime:sample_.alive_states()) {
                 auto v = wr.var("Reach(" + std::to_string(s) + ", " + std::to_string(sprime) + ")");
                 reach.emplace(std::make_pair(s, sprime), v);
             }
@@ -341,7 +341,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     unsigned acyclicity_radius = 99999;
     if (options.acyclicity == "topological") {
         // Create variables V(s, d) variables for all alive state s and d in 1..D
-        for (const auto s:sample_.transitions_.all_alive()) {
+        for (const auto s:sample_.alive_states()) {
             const auto min_vs = get_vstar(s);
             const auto max_vs = get_max_v(s);
             assert(max_vs > 0 && max_vs <= max_d && min_vs <= max_vs);
@@ -396,15 +396,15 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     }
 
     // Create a variable "Bad(s)" for each state s such that s is not solvable
-    for (auto s:sample_.transitions_.all_dead()) {
-        cnfvar_t bad_s = 0;
-        bad_s = wr.var("Bad(" + std::to_string(s) + ")");
-        auto it = variables.bads.emplace(s, bad_s);
-        assert(it.second); // i.e. the SAT variable Bad(s) is necessarily new
-        varmapstream << bad_s << " " << s << std::endl;
-    }
-
-    for (unsigned s:sample_.transitions_.all_alive()) {
+//    for (auto s:sample_.nongoal_states()) {
+//        cnfvar_t bad_s = 0;
+//        bad_s = wr.var("Bad(" + std::to_string(s) + ")");
+//        auto it = variables.bads.emplace(s, bad_s);
+//        assert(it.second); // i.e. the SAT variable Bad(s) is necessarily new
+//        varmapstream << bad_s << " " << s << std::endl;
+//    }
+//
+    for (unsigned s:sample_.alive_states()) {
         cnfvar_t bad_s = 0;
         bad_s = wr.var("Bad(" + std::to_string(s) + ")");
         auto it = variables.bads.emplace(s, bad_s);
@@ -458,9 +458,9 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     //  Then, For each alive state s and a applicable in s, post a constraint
     //    If not any 'a' such that Good(s, a, s') then Bad(s)
 
-    for (const auto s:sample_.transitions_.all_alive()) {
+    for (const auto s:sample_.alive_states()) {
         cnfclause_t clause;
-        cnfclause_t clause_bad;
+//        cnfclause_t clause_bad;
 
         unsigned num_good_s_a = 0;
 
@@ -473,7 +473,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                 auto tx = get_transition_id(s, sprime);
                 if (is_necessarily_bad(tx)) {
                     // if sprime is not solvable, then it should not have any 'a' s.t. good(s, a, s'), then Bad(sprime)
-                    clause_bad.push_back(Wr::lit(variables.bads.at(sprime), false));
+//                    clause_bad.push_back(Wr::lit(variables.bads.at(sprime), false));
 //                    wr.cl({Wr::lit(variables.bads.at(sprime), false)});
                     continue;
                 }; // includes alive-to-dead transition
@@ -488,11 +488,11 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
         //         If not any 'a' such that Good(s, a, s') then Bad(s)
         if (num_good_s_a == 0) {
             // if some sprime is not good, then Bad(s) |||| maybe polarity should be true, or feature good(s)
-            clause_bad.push_back(Wr::lit(variables.bads.at(s), false));
-//            wr.cl({Wr::lit(variables.bads.at(s), false)});
+//            clause_bad.push_back(Wr::lit(variables.bads.at(s), false));
+            wr.cl({Wr::lit(variables.bads.at(s), false)});
         } else {
-            clause_bad.push_back(Wr::lit(variables.bads.at(s), true));
-//            wr.cl({Wr::lit(variables.bads.at(s), true)});
+//            clause_bad.push_back(Wr::lit(variables.bads.at(s), true));
+            wr.cl({Wr::lit(variables.bads.at(s), true)});
         }
 
         // Add clauses (1) for this state
@@ -503,12 +503,12 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                                                     "some alive state. Try increasing the feature complexity bound");
         }
         wr.cl(clause);
-        wr.cl(clause_bad);
+//        wr.cl(clause_bad);
     }
 
     // Post reachability constraints
     if (options.acyclicity == "reachability") {
-        for (const auto s:sample_.transitions_.all_alive()) {
+        for (const auto s:sample_.alive_states()) {
             for (const auto sprime:sample_.successors(s)) {
                 if (is_necessarily_bad(get_transition_id(s, sprime))) continue; // includes alive-to-dead transitions
                 if (!sample_.is_alive(sprime)) continue;
@@ -521,7 +521,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                 wr.cl({Wr::lit(good_s_prime, false), Wr::lit(reach_s_sprime, true)});
                 n_reachability_clauses += 1;
 
-                for (const auto t:sample_.transitions_.all_alive()) {
+                for (const auto t:sample_.alive_states()) {
                     const auto reach_s_t = reach.at({s, t});
                     const auto reach_sprime_t = reach.at({sprime, t});
                     // Good(s, s') and Reach(s', t) --> Reach(s, t)
@@ -535,7 +535,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
             n_reachability_clauses += 1;
         }
     } else if (options.acyclicity == "topological") {
-        for (const auto s:sample_.transitions_.all_alive()) {
+        for (const auto s:sample_.alive_states()) {
             for (const auto sprime:sample_.successors(s)) {
                 if (is_necessarily_bad(get_transition_id(s, sprime))) continue; // includes alive-to-dead transitions
                 if (!sample_.is_alive(sprime)) continue;
@@ -591,8 +591,8 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
 
     // (8): Force D1(s1, s2) to be true if exactly one of the two states is a goal state
     if (options.distinguish_goals) {
-        for (unsigned s:sample_.transitions_.all_goals()) {
-            for (unsigned t:sample_.transitions_.all_dead()) {
+        for (unsigned s:sample_.goal_states()) {
+            for (unsigned t:sample_.nongoal_states()) {
 
                 const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
                 if (d1feats.empty()) {
@@ -611,7 +611,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     }
 
     // (9): Force D1(s1, s2) to be true if exactly one of the two states is a bad state
-//    for (unsigned s:sample_.transitions_.all_goals()) {
+//    for (unsigned s:sample_.goal_states()) {
 //        for (unsigned t:sample_.nongoal_states()) {
 //
 //            const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
