@@ -493,10 +493,9 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
             }
         }
 
-//      If not any 'a' such that Good(s, a, s') then Bad(s)
+        // If not any 'a' such that Good(s, a, s') then Bad(s)
         if (num_good_s_a == 0) {
-//          if some sprime is not good, then Bad(s) |||| maybe polarity should be true, or feature good(s)
-            clause_b.push_back(Wr::lit(variables.bads.at(s), false));
+            clause_b.push_back(Wr::lit(variables.bads.at(s), true));
         }
 
         // Add clauses (1) for this state
