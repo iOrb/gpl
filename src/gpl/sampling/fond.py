@@ -98,9 +98,6 @@ class TransitionSampleMDP:
         self.roots.add(sid)
         self.instance_roots[instance_id] = sid # {instance_id: root_state_id}
 
-    def mark_as_goals(self, goal):
-        self.goals.add(goal)
-
     def mark_state_as_deadend(self, s, task):
         id = self.check_state(s, task)
         self.deadends.add(id)
