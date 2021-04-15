@@ -47,7 +47,7 @@ class Grammar:
         object_bytes = dict()
         possible_chars = ASCII
 
-        for obj in OBJECTS.general:
+        for obj in OBJECTS.general | {OBJECTS.empty}:
             possible_chars, b = possible_chars[1:], possible_chars[0]
             object_bytes[obj] = ord(b)
 

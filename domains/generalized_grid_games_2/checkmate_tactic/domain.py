@@ -3,6 +3,7 @@ from gpl.domain import IDomain
 from tarski.fstrips import fstrips, create_fstrips_problem
 from .task import Task
 from .instances import INSTANCES
+from .utils import identify_margin
 from ..utils import unserialize_layout
 import copy
 
@@ -51,7 +52,9 @@ def load_general_lang(lang, statics,):
     _ = [lang.predicate(d, 'cell', 'cell') for d in GRID_DIRECTIONS]
     statics.update(set(GRID_DIRECTIONS))
 
-    _ = [lang.predicate(f'cell-hv-{o}', 'cell') for o in OBJECTS.general | {OBJECTS.none}]
+    _ = [lang.predicate(f'cell-hv-{o}', 'cell') for o in OBJECTS.general]
+    _ = [lang.predicate(f'{o}', 'cell') for o in OBJECTS.margin.values()]
+    # _ = [statics.add(f'{o}') for o in OBJECTS.margin.values()]
 
     # _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player_marks.values()}]
 
@@ -92,18 +95,20 @@ def load_general_problem(problem, lang, rep):
 
         for c in range(-1, ncols + 1):
 
-            if nrows > r >= 0 and ncols > c >= 0:
-                o = brd[r, c]
-            else:
-                # Add the None value for cells outside the world
-                o = OBJECTS.none
-
             cell = lang.constant(f'c{r}-{c}', cell_)
-
             map_cells[(r, c)] = cell
 
+            if nrows > r >= 0 and ncols > c >= 0:
+                o = brd[r, c]
+                a = f'cell-hv-{o}'
+                if o == OBJECTS.empty:
+                    continue
+            else:
+                # Add the None value for cells outside the world
+                a = f'{identify_margin(r, c, nrows, ncols)}'
+
             # Add the atoms such as hv-drawn(c12,) to the initial state of the problem
-            problem.init.add(lang.get(f'cell-hv-{o}'), cell)
+            problem.init.add(lang.get(a), cell)
 
     scan(lang, problem, brd)
 

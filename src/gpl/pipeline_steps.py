@@ -11,14 +11,18 @@ class TrainStep(Step):
     def get_required_attributes(self):
         return ["instances",
                 "domain",
-                "num_episodes",
-                "num_rollouts",
-                "rollout_depth"]
+                # "num_episodes",
+                # "num_rollouts",
+                # "rollout_depth",
+                # "val_isntances",
+        ]
 
     def get_required_data(self):
         return []
 
     def process_config(self, config):
+        if "num_episodes" not in config:
+            config["num_episodes"] = 1
         # config["sample_files"] = compute_sample_filenames(**config)
         config["sample_file"] = compute_info_filename(config, "sample.pickle")
         return config

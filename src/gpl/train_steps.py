@@ -9,13 +9,7 @@ class StateSpaceExplorationStep:
     """ Generate the sample of transitions from the set of solved planning instances """
 
     def get_required_attributes(self):
-        return ["instances",
-                "domain",
-                "num_episodes",
-                "num_rollouts",
-                "rollout_depth",
-                # "val_isntances",
-                ]
+        return []
 
     def get_required_data(self):
         return []
@@ -30,7 +24,7 @@ class StateSpaceExplorationStep:
         return "Exploration of the training sample"
 
     def get_step_runner(self):
-        from .rollout import run
+        from .search import run
         return run
 
 

@@ -32,42 +32,45 @@ class TransitionSampleMDP:
         self.oid_count = 0
         self.instance_id_count = 0
 
-    def add_transition(self, state0, state1, operator, instance_name, task):
-        # state0_encoded, state0 = state0
-        # state1_encoded, state1 = state1
-
-        sids = self.check_states([state0, state1], task)
-        oid = self.check_operator(operator, task)
+    def add_transition(self, state0, state1, operator, task):
+        new_instance_, instance_id = self.check_instance_name(task.get_instance_name())
+        sids = self.check_state_pair([state0, state1], task, instance_id)
+        oid = self.check_operator(operator, task, instance_id)
         self.update_transitions(sids, oid)
-        _ = [self.update_instances(i, instance_name) for i in sids]
+        if new_instance_:
+            self.mark_as_root(sids[0], instance_id)
+        _ = [self.update_instance(sid, instance_id) for sid in sids]
 
-    def check_states(self, states_pair, task):
+    def check_state_pair(self, states_pair, task, instance_id):
         states_pair_ids = [0]*2
         for i, state in enumerate(states_pair):
-            states_pair_ids[i] = self.check_state(state, task)
+            states_pair_ids[i] = self.check_state(state, task, instance_id)
         return states_pair_ids
 
-    def check_state(self, state, task):
-        state_id = 0
-        s_r, goal, deadend, s_encoded, info = unpack_state(state)
+    def check_state(self, state, task, instance_id):
+        s_r, goal, deadend, s_enc_raw, info = unpack_state(state)
+        s_encoded = self.encode_state(instance_id, s_enc_raw)
         if s_encoded not in self.states_encoded:
             self.states_encoded[s_encoded] = self.sid_count
             self.states[self.get_state_id(s_encoded)] = task.state_to_atoms(
                 state)  # this should be the representation as atoms
             self.sid_count += 1
         id = self.get_state_id(s_encoded)
-        state_id = id
         if goal:
             self.goals.add(id)
         elif deadend:
             self.deadends.add(id)
-        return state_id
+        return id
 
     def get_state_id(self, s_encoded):
         return self.states_encoded[s_encoded]
 
-    def check_operator(self, op, task):
-        o = encode_operator(op, task)
+    def get_instance_id(self, instance_name):
+        return self.instance_ids[instance_name]
+
+    def check_operator(self, op, task, intance_id):
+        o_raw = encode_operator(op, task)
+        o = self.encode_operator(intance_id, o_raw)
         if o not in self.operators:
             self.operators[o] = self.oid_count
             self.oid_count += 1
@@ -78,12 +81,21 @@ class TransitionSampleMDP:
         self.transitions[states_pair_ids[0]][operator_id].add(states_pair_ids[1])
         self.parents[states_pair_ids[1]].add(states_pair_ids[0])
 
-    def update_instances(self, sid, instance_name):
+    def update_instance(self, sid, intance_id):
+        self.instance[sid] = intance_id # {state_id: instance_id}
+
+    def check_instance_name(self, instance_name):
         if instance_name not in self.instance_ids:
             self.instance_ids[instance_name] = self.instance_id_count
-            self.mark_as_root(sid, self.instance_id_count)
             self.instance_id_count += 1
-        self.instance[sid] = self.instance_ids[instance_name] # {state_id: instance_id}
+            return True, self.get_instance_id(instance_name) # the intance is new
+        return False, self.get_instance_id(instance_name)
+
+    def encode_state(self, instance_id, s_enc_raw):
+        return '_'.join([str(instance_id), str(s_enc_raw)])
+
+    def encode_operator(self, instance_id, op_enc_raw):
+        return '_'.join([str(instance_id), str(op_enc_raw)])
 
     def num_transitions(self):
         return sum(len(x) for x in self.transitions.values())
@@ -116,26 +128,21 @@ class TransitionSampleMDP:
     def get_sorted_state_ids(self):
         return sorted(self.states.keys())
 
-    def process_successors(self, s, succs, instance_name, task):
+    def process_successors(self, s, succs, task):
         alive, goals, deadends = list(), list(), list()
-        for op, sprime in succs:
-            s_r, goal, deadend, s_encoded, info = unpack_state(sprime)
+        for op, sp, spp in succs:
+            s_r, goal, deadend, s_encoded, info = unpack_state(sp)
             if goal:
-                goals.append((op, sprime))
-                self.add_transition(s, sprime, op, instance_name, task)
+                assert not spp, "One state with successor is marked as Goal"
+                goals.append((op, sp))
+                self.add_transition(s, sp, op, task)
             elif deadend:
-                deadends.append((op, sprime))
-                self.add_transition(s, sprime, op, instance_name, task)
+                deadends.append((op, sp))
+                self.add_transition(s, sp, op, task)
             else:
-                alive.append((op, sprime))
-                self.add_transition(s, sprime, op, instance_name, task)
-            """
-            self.add_transition(s, sprime, op, instance_name, task)
-            if goal or deadend:
-                pass
-            else:   
-                alive.append((op, sprime))
-            """
+                assert spp, "One state with not any successor is marked as Alive"
+                alive.append((op, sp, spp))
+                self.add_transition(s, sp, op, task)
         return alive, goals, deadends
 
 

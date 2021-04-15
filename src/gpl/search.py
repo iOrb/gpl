@@ -66,7 +66,7 @@ def rollout(config, data, get_policy, rng):
             search_policy = get_policy(model_factory, static_atoms, data)
 
             # And now we inject our desired search and heuristic functions
-            if i == 0 and config.expand_first_train_instance:
+            if i in config.train_instances_to_expand:
                 bfs(config, data, search_policy, task, instance_name, rng)
             else:
                 run_rollout(config, data, search_policy, task, instance_name, rng)
@@ -78,65 +78,34 @@ def rollout(config, data, get_policy, rng):
     return ExitCode.Success
 
 
-# def run_rollout(config, data, search_policy, task, instance_name, rng):
-#
-#     logging.info(f'Appying rollout in train instance "{instance_name}"')
-#
-#
-#     root_state = task.get_state_from_queue()
-#
-#     state = copy.deepcopy(root_state)
-#
-#     s_queue = [s for o, s in task.get_successor_states(state)]
-#
-#     while True:
-#
-#         succcessors = task.get_successor_states(state)
-#
-#         alive, _, _ = data.sample.process_successors(state, succcessors, instance_name, task)
-#
-#         if not alive:
-#             # state = task.get_state_from_queue()
-#             # continue
-#             raise RuntimeError("No successors for expanded state: {}".format(state,))
-#         else:
-#
-#             if search_policy is not None:
-#                 exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
-#                 if exitcode != ExitCode.Success:
-#                     task.add_state_to_queue(state)
-#                     return
-#                 op, succ = random.Random(rng).choice(good_succs)
-#             else:
-#                 task.add_state_to_queue(state)
-#                 # task.add_state_to_queue(random.Random(rng).choice(alive)[1])
-#                 return
-#
-#         state = succ
-
 def run_rollout(config, data, search_policy, task, instance_name, rng):
 
     logging.info(f'Appying rollout in train instance "{instance_name}"')
 
-    root_state = task.get_state_from_queue()
+    root_state = task.initial_state
 
     for _ in range(config.num_rollouts):
 
+        end_node_reached = False
+        rollout_depth = 0
         state = copy.deepcopy(root_state)
+        succcessors = task.get_successor_states(state)
+        alive, _, _ = data.sample.process_successors(state, succcessors, task)
+        if not alive:
+            break
 
-        for _ in range(config.rollout_depth):
+        while not end_node_reached and rollout_depth < config.rollout_depth:
 
             succcessors = task.get_successor_states(state)
 
-            alive, _, _ = data.sample.process_successors(state, succcessors, instance_name, task)
+            alive, _, _ = data.sample.process_successors(state, succcessors, task)
 
             if not alive:
-                # data.sample.mark_state_as_deadend(state, task) # maybe it is a goal (?)
-                state = copy.deepcopy(root_state)
+                end_node_reached = True;
                 continue
-                # raise RuntimeError("No successors for expanded state: {}".format(state,))
+                # raise RuntimeError("No successors for expanded state: \n{}".format(state[1],))
             else:
-                rnd_op, rnd_succ = random.Random(rng).choice(alive)
+                rnd_op, rnd_succ, _ = random.Random(rng).choice(alive)
 
                 if search_policy is not None:
                     exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
@@ -147,9 +116,10 @@ def run_rollout(config, data, search_policy, task, instance_name, rng):
                 else:
                     op, succ = rnd_op, rnd_succ
 
-            # succ = task.transition(state, op)
-            # data.sample.add_transition(state, succ, op, instance_name, task)
-            state = succ
+            spp = task.transition_adversary(succ) # (FOND Adv) transition
+
+            state = spp
+            rollout_depth += 1
 
 
 def run_policy_based_search(config, search_policy, task, state, successors):
@@ -165,7 +135,7 @@ def bfs(config, data, search_policy, task, instance_name, rng):
     logging.info(f'Expanding train instance "{instance_name}"')
 
     visited = set()
-    istate = task.get_state_from_queue()
+    istate = task.initial_state
 
     queue = [istate]
 
@@ -175,30 +145,24 @@ def bfs(config, data, search_policy, task, instance_name, rng):
 
         succcessors = task.get_successor_states(s)
 
-        alive, goals, deadends = data.sample.process_successors(s, succcessors, instance_name, task)
-
-        for op, succ in goals:
-            if succ[2] not in visited:
-                visited.add(succ[2])
-
-        for op, succ in deadends:
-            if succ[2] not in visited:
-                visited.add(succ[2])
+        alive, goals, deadends = data.sample.process_successors(s, succcessors, task)
 
         # if not alive:
         #     data.sample.mark_state_as_deadend(s, task) # perhabs goal
         #     # raise RuntimeError("No successor")
 
-        for op, succ in alive:
-            if succ[2] not in visited:
-                visited.add(succ[2])
-                queue.append(succ)
+        for _, _, spps in alive: # Add all FOND-Adv transitions to the queue
+            for _, spp in spps:
+                if spp[2] not in visited:
+                    if not spp[1]['goal'] and not spp[1]['deadend']:
+                        visited.add(spp[2])
+                        queue.append(spp)
 
 
 def translate_state(task, state, static_atoms):
     """ Translate a pyperplan-like state into a list with the format required by SLTP's concept denotation processor """
     translated_state = task.state_to_atoms(state) + list(static_atoms)
-    return translated_state
+    return translated_stateidentify_margin
 
 
 def generate_model_from_state(task, model_factory, state, static_atoms):
@@ -214,7 +178,7 @@ def create_action_selection_function_from_transition_policy(config, model_factor
 
         good_succs = list()
 
-        for op, succ in successors:
+        for op, succ, _ in successors:
             m1 = generate_model_from_state(task, model_factory, succ, static_atoms)
             if policy.transition_is_good(m0, m1):
                 # return ExitCode.Success, op, succ

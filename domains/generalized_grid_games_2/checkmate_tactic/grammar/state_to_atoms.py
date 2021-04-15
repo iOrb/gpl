@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 
+from ..utils import identify_margin
 from .objects import OBJECTS
 
 # General State to atoms
@@ -16,12 +17,15 @@ def state_to_atoms(domain_name, state):
         for c in range(-1, ncols + 1):
 
             if nrows > r >= 0 and ncols > c >= 0:
-                val = rep[r, c]
+                o = rep[r, c]
+                a = f'cell-hv-{o}'
+                if o ==  OBJECTS.empty:
+                    continue
             else:
                 # Add the None value for cells outside the world
-                val = OBJECTS.none
+                a = f'{identify_margin(r, c, nrows, ncols)}'
 
-            atoms.append((f'cell-hv-{val}', f'c{r}-{c}'))
+            atoms.append((a, f'c{r}-{c}'))
 
     # atoms.append(('player-{}'.format(mrk),))
     return atoms

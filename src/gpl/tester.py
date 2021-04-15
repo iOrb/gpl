@@ -101,7 +101,9 @@ def run_test(config, search_policy, task, instance_name, rng):
 
     solution = list()
 
-    while not s[1]['goal']:
+    goal_reached = False
+
+    while not goal_reached:
         expanded += 1
         if expanded % 1000 == 0:
             logging.debug(f"Number of expanded states so far in policy-based search: {expanded}")
@@ -111,25 +113,32 @@ def run_test(config, search_policy, task, instance_name, rng):
         if not successors:
             raise PolicySearchException(ExitCode.NotSuccessorsFound)
 
-        # alive, goals, _ = task.process_successors(s, successors, instance_name, task)
-        # if len(goals) > 0:
-        #     op, _ = random.Random(rng).choice(goals)
-        # else:
         exitcode, good_succs = run_policy_based_search(config, search_policy, task, s, successors)
         if exitcode != ExitCode.Success:
             raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
-        op, _ = random.Random(rng).choice(good_succs)
-
-        succ = task.transition(s, op)
+        op, succ = random.Random(rng).choice(good_succs)
 
         if succ[1]['deadend']:
             raise PolicySearchException(ExitCode.DeadEndReached)
+        if succ[1]['goal']:
+            solution.append(encode_operator(op, task))
+            goal_reached = True
+            continue
         if succ[2] in parents:
             raise PolicySearchException(ExitCode.AbstractPolicyNonTerminatingOnTestInstances)
 
+        spp = task.transition_adversary(succ)
+
+        if spp[1]['deadend']:
+            raise PolicySearchException(ExitCode.DeadEndReached)
+        if spp[1]['goal']:
+            solution.append(encode_operator(op, task))
+            goal_reached = True
+            continue
+
         solution.append(encode_operator(op, task))
         parents[succ[2]] = s[2]
-        s = succ
+        s = spp
 
     logging.info(f"Goal found after expanding {expanded} nodes")
     logging.info(f"The solution was: {solution}")
@@ -163,7 +172,7 @@ def create_action_selection_function_from_transition_policy(config, model_factor
 
         good_succs = list()
 
-        for op, succ in successors:
+        for op, succ, _ in successors:
             m1 = generate_model_from_state(task, model_factory, succ, static_atoms)
             if policy.transition_is_good(m0, m1):
                 # return ExitCode.Success, op, succ
