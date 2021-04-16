@@ -130,6 +130,34 @@ def run_policy_based_search(config, search_policy, task, state, successors):
     return exitcode, good_succs
 
 
+# def bfs_old(config, data, search_policy, task, instance_name, rng):
+#
+#     logging.info(f'Expanding train instance "{instance_name}"')
+#
+#     visited = set()
+#     istate = task.initial_state
+#
+#     queue = [istate]
+#
+#     while queue:
+#         s = queue.pop(0)
+#         sr, _, _, s_encoded, info = unpack_state(s)
+#
+#         succcessors = task.get_successor_states(s)
+#
+#         alive, goals, deadends = data.sample.process_successors(s, succcessors, task)
+#
+#         # if not alive:
+#         #     data.sample.mark_state_as_deadend(s, task) # perhabs goal
+#         #     # raise RuntimeError("No successor")
+#
+#         for _, _, spps in alive: # Add all FOND-Adv transitions to the queue
+#             for _, spp in spps:
+#                 if spp[2] not in visited:
+#                     if not spp[1]['goal'] and not spp[1]['deadend']:
+#                         visited.add(spp[2])
+#                         queue.append(spp)
+
 def bfs(config, data, search_policy, task, instance_name, rng):
 
     logging.info(f'Expanding train instance "{instance_name}"')
@@ -147,16 +175,18 @@ def bfs(config, data, search_policy, task, instance_name, rng):
 
         alive, goals, deadends = data.sample.process_successors(s, succcessors, task)
 
-        # if not alive:
-        #     data.sample.mark_state_as_deadend(s, task) # perhabs goal
-        #     # raise RuntimeError("No successor")
+        for op, succ in goals:
+            if succ[2] not in visited:
+                visited.add(succ[2])
 
-        for _, _, spps in alive: # Add all FOND-Adv transitions to the queue
-            for _, spp in spps:
-                if spp[2] not in visited:
-                    if not spp[1]['goal'] and not spp[1]['deadend']:
-                        visited.add(spp[2])
-                        queue.append(spp)
+        for op, succ in deadends:
+            if succ[2] not in visited:
+                visited.add(succ[2])
+
+        for op, succ in alive:
+            if succ[2] not in visited:
+                visited.add(succ[2])
+                queue.append(succ)
 
 
 def translate_state(task, state, static_atoms):
@@ -181,7 +211,6 @@ def create_action_selection_function_from_transition_policy(config, model_factor
         for op, succ, _ in successors:
             m1 = generate_model_from_state(task, model_factory, succ, static_atoms)
             if policy.transition_is_good(m0, m1):
-                # return ExitCode.Success, op, succ
                 good_succs.append((op, succ))
         if not good_succs:
             return ExitCode.AbstractPolicyNotCompleteOnTestInstances, None

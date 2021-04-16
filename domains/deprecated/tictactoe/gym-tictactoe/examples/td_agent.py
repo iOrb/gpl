@@ -290,7 +290,7 @@ def _play(load_file, vs_agent, show_number):
     Args:
         load_file (str):
         vs_agent (object): Enemy agent of TD agent.
-        show_number (bool): Whether show grid number for visual hint.
+        show_number (bool): Whether show pick_package number for visual hint.
     """
     load_model(load_file)
     env = TicTacToeEnv(show_number=show_number)
@@ -521,7 +521,7 @@ def _gridsearch_reproduce(rtest_cnt):
 
 
 def _gridsearch_candidate(quality):
-    """Select best hyper-parameter candiadates by grid search.
+    """Select best hyper-parameter candiadates by pick_package search.
 
     1. Generate parameter combination by product each parameter space.
     2. Spawn processors to learn & bench each combination.

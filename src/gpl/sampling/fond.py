@@ -133,15 +133,16 @@ class TransitionSampleMDP:
         for op, sp, spp in succs:
             s_r, goal, deadend, s_encoded, info = unpack_state(sp)
             if goal:
-                assert not spp, "One state with successor is marked as Goal"
+                # assert not spp, "One state with successor is marked as Goal"
                 goals.append((op, sp))
                 self.add_transition(s, sp, op, task)
             elif deadend:
                 deadends.append((op, sp))
                 self.add_transition(s, sp, op, task)
             else:
-                assert spp, "One state with not any successor is marked as Alive"
-                alive.append((op, sp, spp))
+                # assert spp, "One state with not any successor is marked as Alive"
+                alive.append((op, sp))
+                # alive.append((op, sp, spp))
                 self.add_transition(s, sp, op, task)
         return alive, goals, deadends
 

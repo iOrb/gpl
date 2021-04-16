@@ -1,8 +1,7 @@
 from gpl.task import ITask
 from gpl.utils import unpack_state
 from gym_tictactoe.env import check_game_status, after_action_state, tomark, available_actions
-import random
-from domains.tictactoe.grammar.grammar import Grammar
+from domains.deprecated.tictactoe.grammar.grammar import Grammar
 from .instances import INSTANCES
 
 # State: (representation, info, state_encoded)

@@ -433,16 +433,20 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     assert(wr.nvars() == variables.selecteds.size() + variables.goods.size() + vs.size() + reach.size());
 
     /////// CNF constraints ///////
-    // [1] For each alive state s, post a constraint OR_{s' solvable child of s} Good(s, s')
+    // [1] For each alive state s, post a constraint OR_{s' solvable child of s} (Good(s, s') if v(s') < v(s)) xor (-Good(s, s') if v(s) < v(s'))
     for (const auto s:sample_.alive_states()) {
         cnfclause_t clause;
+        cnfclause_t clause_neg;
+
         for (unsigned sprime:sample_.successors(s)) {
             auto tx = get_transition_id(s, sprime);
             if (is_necessarily_bad(tx)) continue; // includes alive-to-dead transitions
 
-            if (get_vstar(sprime) <= get_vstar(s)) {
+            if (get_vstar(sprime) < get_vstar(s)) {
                 // Push it into the clause
                 clause.push_back(Wr::lit(variables.goods.at(get_representative_id(tx)), true));
+            } else {
+                clause_neg.push_back(Wr::lit(variables.goods.at(get_representative_id(tx)), false));
             }
         }
 
@@ -454,35 +458,112 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                     "some alive state. Try increasing the feature complexity bound");
         }
         wr.cl(clause);
-        ++n_good_tx_clauses;
+        wr.cl(clause_neg);
     }
+
+    // (1)' For each alive state s, post a constraint
+    //         OR_{a s.t. (s, a, s') in T} Good_a(s, a).
+    // Then, For each alive state s and a applicable in s, post a constraint
+    //         If Good_a(s, a) then Good(s, s')
+    //
+    // One twist in domains with dead-ends: if all states s' that are reachable by applying a in s are
+    // unsolvable, then we cannot have Good_a(s, a).
+//    for (const auto s:sample_.alive_states()) {
+//        cnfclause_t clause;
+//        for (const auto a:s_to_as[s]) {
+//            clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
+//
+//            for (const auto& sprime:s_a_to_s[{s, a}]) {
+//                // If Good_a(s, a) then (Good(s, s') iff (V(s') < V(s)))
+//                auto tx = get_transition_id(s, sprime);
+//                if (is_necessarily_bad(tx)) {
+//                    // If some possible outcome of (s, a) is BAD (e.g. an unsolvable state), then (s, a) cannot be good
+//                    wr.cl({Wr::lit(good_s_a.at({s, a}), false)});
+//                    continue; // includes alive-to-dead transitions
+//                }
+//
+//                // Good_a(s, a) --> (Good_a(s, s') iff (V(s') < V(s)))
+//                wr.cl({Wr::lit(good_s_a.at({s, a}), false),
+//                       Wr::lit(variables.goods.at(get_representative_id(tx)), true)});
+//            }
+//        }
+//        // Add clauses (1) for this state
+//        if (clause.empty()) {
+//            throw std::runtime_error(
+//                    "State #" + std::to_string(s) + " is marked as alive, but has no successor that can be good. "
+//                                                    "This is likely due to the feature pool not being large enough to distinguish some dead state from "
+//                                                    "some alive state. Try increasing the feature complexity bound");
+//        }
+//        wr.cl(clause);
+//    }
 
     // For each alive state, post a soft constrain Good_s(s)
-    for (const auto s:sample_.alive_states()) {
+//    for (const auto s:sample_.alive_states()) {
+//        unsigned num_good_s_a = 0;
+//        unsigned num_s_a = s_to_as[s].size();
+//
+//        for (const auto a:s_to_as[s]) {
+//
+//            unsigned num_good_transitions_s_a_sprime = 0;
+//            unsigned num_transitions_s_a_sprime = s_a_to_s[{s, a}].size();
+//
+//            for (const auto &sprime:s_a_to_s[{s, a}]) {
+//                auto tx = get_transition_id(s, sprime);
+//                if (is_necessarily_bad(tx)) continue; // includes alive-to-dead transition
+//                num_good_transitions_s_a_sprime++;
+//            }
+//
+//            if (num_good_transitions_s_a_sprime == num_transitions_s_a_sprime) {
+//                num_good_s_a++;
+//            }
+//        }
+//
+//        // Proportion of good actions to apply in s to define how good is s
+//        unsigned proportion_of_good_s_a = (int) ((num_good_s_a / num_s_a) * 100);
+//        wr.cl({Wr::lit(good_s.at(s), false)}, proportion_of_good_s_a + 1);
+//
+//    }
 
-        unsigned num_good_s_a = 0;
-        unsigned num_s_a = s_to_as[s].size();
-
-        for (const auto a:s_to_as[s]) {
-
-            unsigned num_good_transitions_s_a_sprime = 0;
-            unsigned num_transitions_s_a_sprime = s_a_to_s[{s, a}].size();
-
-            for (const auto &sprime:s_a_to_s[{s, a}]) {
-                auto tx = get_transition_id(s, sprime);
-                if (is_necessarily_bad(tx)) continue; // includes alive-to-dead transition
-                num_good_transitions_s_a_sprime++;
-            }
-
-            if (num_good_transitions_s_a_sprime == num_transitions_s_a_sprime) {
-                num_good_s_a++;
-            }
-        }
-
-        // Proportion of good actions to apply in s to define how good is s
-        unsigned proportion_of_good_s_a = (int) ((num_good_s_a / num_s_a) * 100);
-        wr.cl({Wr::lit(good_s.at(s), false)}, proportion_of_good_s_a + 1);
-    }
+    // For each alive state, post a soft constrain Good_s(s)
+//    for (const auto s:sample_.alive_states()) {
+//        cnfclause_t clause;
+//        unsigned num_good_s_a = 0;
+//        unsigned num_s_a = s_to_as[s].size();
+//
+//        for (const auto a:s_to_as[s]) {
+//
+//            unsigned num_good_transitions_s_a_sprime = 0;
+//            unsigned num_transitions_s_a_sprime = s_a_to_s[{s, a}].size();
+//
+//            for (const auto &sprime:s_a_to_s[{s, a}]) {
+//                auto tx = get_transition_id(s, sprime);
+//                if (is_necessarily_bad(tx)) continue; // includes alive-to-dead transition
+//                num_good_transitions_s_a_sprime++;
+//
+//                if (get_vstar(sprime) < get_vstar(s)) {
+//                    // Push it into the clause
+//                    clause.push_back(Wr::lit(variables.goods.at(get_representative_id(tx)), true));
+//                }
+//            }
+//
+//            if (num_good_transitions_s_a_sprime == num_transitions_s_a_sprime) {
+//                num_good_s_a++;
+//            }
+//        }
+//
+//        // Proportion of good actions to apply in s to define how good is s
+//        unsigned proportion_of_good_s_a = (int) ((num_good_s_a / num_s_a) * 100);
+//        wr.cl({Wr::lit(good_s.at(s), false)}, proportion_of_good_s_a + 1);
+//
+//        // Add clauses (1) for this state
+//        if (clause.empty()) {
+//            throw std::runtime_error(
+//                    "State #" + std::to_string(s) + " is marked as alive, but has no successor that can be good. "
+//                    "This is likely due to the feature pool not being large enough to distinguish some dead state from "
+//                    "some alive state. Try increasing the feature complexity bound");
+//        }
+//        wr.cl(clause);
+//    }
 
     // Post reachability constraints
     if (options.acyclicity == "reachability") {
@@ -587,7 +668,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
             }
         }
     }
-    
+
     if (!options.validate_features.empty()) {
         // If we only want to validate a set of features, we just force the Selected(f) to be true for them,
         // plus we don't really need any soft constraints.

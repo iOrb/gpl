@@ -21,7 +21,7 @@ def experiments():
 
     exps = dict()
 
-    # 3x3 overfits: in a 3x3 grid, with 2 booleans per dimension you can represent the position
+    # 3x3 overfits: in a 3x3 pick_package, with 2 booleans per dimension you can represent the position
 
     exps["5x5"] = update_dict(
         base,
@@ -51,9 +51,9 @@ def experiments():
 def add_domain_parameters(language):
     # language.constant(2, "coordinate")  # x-goal coordinate
     # language.constant(3, "coordinate")  # x-goal coordinate
-    # language.constant(10, "coordinate")  # grid limits!!
+    # language.constant(10, "coordinate")  # pick_package limits!!
     # [language.constant(i, "coordinate") for i in range(1, 11)]
-    return [language.constant(1, "coordinate")]  # grid limits!!
+    return [language.constant(1, "coordinate")]  # pick_package limits!!
 
 
 def add_domain_parameters_strips(language):

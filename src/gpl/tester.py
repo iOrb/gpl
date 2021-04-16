@@ -91,7 +91,6 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
     logging.info("Unsolved instances: {}".format(unsolved_instances))
     return ExitCode.Success
 
-
 def run_test(config, search_policy, task, instance_name, rng):
 
     s = task.initial_state
@@ -101,9 +100,7 @@ def run_test(config, search_policy, task, instance_name, rng):
 
     solution = list()
 
-    goal_reached = False
-
-    while not goal_reached:
+    while not s[1]['goal']:
         expanded += 1
         if expanded % 1000 == 0:
             logging.debug(f"Number of expanded states so far in policy-based search: {expanded}")
@@ -114,35 +111,76 @@ def run_test(config, search_policy, task, instance_name, rng):
             raise PolicySearchException(ExitCode.NotSuccessorsFound)
 
         exitcode, good_succs = run_policy_based_search(config, search_policy, task, s, successors)
-        if exitcode != ExitCode.Success:
+        if exitcode == ExitCode.AbstractPolicyNotCompleteOnTestInstances:
             raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
-        op, succ = random.Random(rng).choice(good_succs)
+        op, _ = random.Random(rng).choice(good_succs)
+
+        succ = task.transition(s, op)
 
         if succ[1]['deadend']:
             raise PolicySearchException(ExitCode.DeadEndReached)
-        if succ[1]['goal']:
-            solution.append(encode_operator(op, task))
-            goal_reached = True
-            continue
         if succ[2] in parents:
             raise PolicySearchException(ExitCode.AbstractPolicyNonTerminatingOnTestInstances)
 
-        spp = task.transition_adversary(succ)
-
-        if spp[1]['deadend']:
-            raise PolicySearchException(ExitCode.DeadEndReached)
-        if spp[1]['goal']:
-            solution.append(encode_operator(op, task))
-            goal_reached = True
-            continue
-
         solution.append(encode_operator(op, task))
         parents[succ[2]] = s[2]
-        s = spp
+        s = succ
 
     logging.info(f"Goal found after expanding {expanded} nodes")
     logging.info(f"The solution was: {solution}")
     return solution
+
+# def run_test_old(config, search_policy, task, instance_name, rng):
+#
+#     s = task.initial_state
+#     expanded = 0
+#
+#     parents = {s[2]: 'root'}  # We'll use this at the same time as closed list and to keep track of parents
+#
+#     solution = list()
+#
+#     goal_reached = False
+#
+#     while not goal_reached:
+#         expanded += 1
+#         if expanded % 1000 == 0:
+#             logging.debug(f"Number of expanded states so far in policy-based search: {expanded}")
+#
+#         successors = task.get_successor_states(s)
+#
+#         if not successors:
+#             raise PolicySearchException(ExitCode.NotSuccessorsFound)
+#
+#         exitcode, good_succs = run_policy_based_search(config, search_policy, task, s, successors)
+#         if exitcode != ExitCode.Success:
+#             raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
+#         op, succ = random.Random(rng).choice(good_succs)
+#
+#         if succ[1]['deadend']:
+#             raise PolicySearchException(ExitCode.DeadEndReached)
+#         if succ[1]['goal']:
+#             solution.append(encode_operator(op, task))
+#             goal_reached = True
+#             continue
+#         if succ[2] in parents:
+#             raise PolicySearchException(ExitCode.AbstractPolicyNonTerminatingOnTestInstances)
+#
+#         spp = task.transition_adversary(succ)
+#
+#         if spp[1]['deadend']:
+#             raise PolicySearchException(ExitCode.DeadEndReached)
+#         if spp[1]['goal']:
+#             solution.append(encode_operator(op, task))
+#             goal_reached = True
+#             continue
+#
+#         solution.append(encode_operator(op, task))
+#         parents[succ[2]] = s[2]
+#         s = spp
+#
+#     logging.info(f"Goal found after expanding {expanded} nodes")
+#     logging.info(f"The solution was: {solution}")
+#     return solution
 
 
 def run_policy_based_search(config, search_policy, task, state, successors):

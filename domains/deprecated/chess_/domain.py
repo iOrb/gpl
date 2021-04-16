@@ -1,10 +1,9 @@
-from domains.generalized_grid_games_2.checkmate_tactic.grammar.objects import OBJECTS
 from gpl.domain import IDomain
 from tarski.fstrips import fstrips, create_fstrips_problem
 from .task import Task
-from .utils import identify_margin
-from ..utils import unserialize_layout
-import copy
+from .instances import INSTANCES
+from domains.deprecated.chess_.grammar.objects import OBJECTS, array_from_fen
+
 
 class Domain(IDomain):
     def __init__(self, domain_name):
@@ -51,17 +50,16 @@ def load_general_lang(lang, statics,):
     _ = [lang.predicate(d, 'cell', 'cell') for d in GRID_DIRECTIONS]
     statics.update(set(GRID_DIRECTIONS))
 
-    _ = [lang.predicate(f'cell-hv-{o}', 'cell') for o in OBJECTS.general]
-    _ = [lang.predicate(f'{o}', 'cell') for o in OBJECTS.margin.values()]
-    # _ = [statics.add(f'{o}') for o in OBJECTS.margin.values()]
+    _ = [lang.predicate(f'cell-hv-{o}', 'cell') for o in OBJECTS.general | {OBJECTS.none, OBJECTS.empty}]
 
     # _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player_marks.values()}]
 
     # Scanning ==================================
-    for c in ['row', 'col', 'd1', 'd2']:
-        c = 'same_{}'.format(c)
-        lang.predicate(c, 'cell', 'cell')
-        statics.add(c)
+    lang.predicate('same_row', 'cell', 'cell')
+    lang.predicate('same_col', 'cell', 'cell')
+
+    statics.add('same_row')
+    statics.add('same_col')
     # ===============================================
 
     return lang, statics
@@ -69,7 +67,7 @@ def load_general_lang(lang, statics,):
 
 def generate_problem(domain_name, lang, instance_name):
     problem = generate_base_problem(domain_name, lang, instance_name)
-    rep = unserialize_layout(instance_name)
+    rep = INSTANCES[instance_name]  # rep for v0 problem
     load_general_problem(problem, lang, rep)
     return problem
 
@@ -82,8 +80,14 @@ def generate_base_problem(domain_name, lang, instance_name):
 
 
 def load_general_problem(problem, lang, rep):
-    brd = copy.deepcopy(rep)
-    nrows, ncols = rep.shape
+    # env = gym.make('chess-v0')
+    # env.set_fen(rep)
+    # r = env._get_array_state()
+
+    nrows = 8
+    ncols = 8
+
+    brd = array_from_fen(rep)
 
     cell_ = lang.get('cell')
 
@@ -93,20 +97,18 @@ def load_general_problem(problem, lang, rep):
 
         for c in range(-1, ncols + 1):
 
-            cell = lang.constant(f'c{r}-{c}', cell_)
-            map_cells[(r, c)] = cell
-
             if nrows > r >= 0 and ncols > c >= 0:
                 o = brd[r, c]
-                a = f'cell-hv-{o}'
-                if o == OBJECTS.empty:
-                    continue
             else:
                 # Add the None value for cells outside the world
-                a = f'{identify_margin(r, c, nrows, ncols)}'
+                o = OBJECTS.none
+
+            cell = lang.constant(f'c{r}-{c}', cell_)
+
+            map_cells[(r, c)] = cell
 
             # Add the atoms such as hv-drawn(c12,) to the initial state of the problem
-            problem.init.add(lang.get(a), cell)
+            problem.init.add(lang.get(f'cell-hv-{o}'), cell)
 
     scan(lang, problem, brd)
 
@@ -173,29 +175,30 @@ def scan(lang, problem, layout):
             _ = [problem.init.add(lang.get(f'same_col'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
                  for r_, c_ in col_ if (r_, c_) != (r, c)]
 
-            # left-up
-            left_up_ = [(row, col) for row, col in zip(range(r - 1, -1, -1), range(c - 1, -1, -1))]
+            # # left-up
+            # left_up_ = [(row, col) for row, col in zip(range(r - 1, -1, -1), range(c - 1, -1, -1))]
+            #
+            # # right-down
+            # right_down_ = [(row, col) for row, col in zip(range(r + 1, nrows), range(c + 1, ncols))]
 
-            # right-down
-            right_down_ = [(row, col) for row, col in zip(range(r + 1, nrows), range(c + 1, ncols))]
+            # # Main diagonal:
+            # d1_ = left_up_ + right_down_
+            #
+            # # left-down
+            # left_down_ = [(row, col) for row, col in zip(range(r+1, nrows), range(c - 1, -1, -1))]
+            #
+            # # right-up
+            # right_up_ = [(row, col) for row, col in zip(range(r-1, -1, -1), range(c + 1, ncols))]
+            #
+            # # Inverse diagonal:
+            # d2_ = left_down_ + right_up_
+            #
+            # # Add the same_d1 predicate for the current cell
+            # _ = [problem.init.add(lang.get(f'same_d1'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
+            #      for r_, c_ in d1_ if (r_, c_) != (r, c)]
+            #
+            # # Add the same_d2 predicate for the current cell
+            # _ = [problem.init.add(lang.get(f'same_d2'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
+            #      for r_, c_ in d2_ if (r_, c_) != (r, c)]
 
-            # Main diagonal:
-            d1_ = left_up_ + right_down_
-
-            # left-down
-            left_down_ = [(row, col) for row, col in zip(range(r+1, nrows), range(c - 1, -1, -1))]
-
-            # right-up
-            right_up_ = [(row, col) for row, col in zip(range(r-1, -1, -1), range(c + 1, ncols))]
-
-            # Inverse diagonal:
-            d2_ = left_down_ + right_up_
-
-            # Add the same_d1 predicate for the current cell
-            _ = [problem.init.add(lang.get(f'same_d1'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
-                 for r_, c_ in d1_ if (r_, c_) != (r, c)]
-
-            # Add the same_d2 predicate for the current cell
-            _ = [problem.init.add(lang.get(f'same_d2'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
-                 for r_, c_ in d2_ if (r_, c_) != (r, c)]
 

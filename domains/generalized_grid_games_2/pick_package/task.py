@@ -4,6 +4,7 @@ from gpl.task import ITask
 from gpl.utils import unpack_state
 import random
 from .grammar.grammar import Grammar
+from .instances import INSTANCES
 from .utils import stockfish_default_params
 
 from ..utils import unserialize_layout, get_operators

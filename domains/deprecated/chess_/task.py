@@ -2,7 +2,7 @@ import chess
 from gpl.task import ITask
 from gpl.utils import unpack_state
 import random
-from domains.chess_.grammar.grammar import Grammar
+from domains.deprecated.chess_.grammar.grammar import Grammar
 from .instances import INSTANCES
 from stockfish import Stockfish
 from .utils import stockfish_default_params

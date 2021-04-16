@@ -63,7 +63,7 @@ def experiments():
 
     exps["debug"] = update_dict(exps["small"], feature_generator=debug_features)
 
-    # One reason for overfitting: in a 3x3 grid, with 2 booleans per dimension you can perfectly represent any position
+    # One reason for overfitting: in a 3x3 pick_package, with 2 booleans per dimension you can perfectly represent any position
 
     return exps
 

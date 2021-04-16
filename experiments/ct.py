@@ -21,11 +21,11 @@ def experiments():
         num_states="all",
         concept_generator=None,
         parameter_generator=None,
-        v_slack=1,
+        v_slack=2,
 
         # concept_generation_timeout=120,  # in seconds
 
-        distinguish_goals=False,
+        distinguish_goals=True,
         use_incremental_refinement=False,
     )
 
@@ -47,25 +47,25 @@ def experiments():
         refinement_batch_size=10,
         verbosity=0,
 
-        # acyclicity='topological',
-        acyclicity='reachability',
+        acyclicity='topological',
+        # acyclicity='reachability',
 
         max_concept_size=5,
         distance_feature_max_complexity=5,
         concept_generation_timeout=120,
 
         parameter_generator=None,
-        maxsat_iter=3,
+        maxsat_iter=100,
 
         # rollouts
         # num_episodes=1,
         # num_rollouts=2,
         # rollout_depth=2,
 
-        train_instances_to_expand=list(range(8)),
+        train_instances_to_expand=list(range(1000)),
     )
 
-    exps["solved"] = update_dict(
+    exps["2"] = update_dict(
         base,
         instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
                   all_instances([15, 16]) +

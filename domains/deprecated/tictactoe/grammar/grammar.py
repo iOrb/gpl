@@ -1,12 +1,11 @@
-import string
 import sys
+import string
 
-from domains.chess_.grammar.state_to_atoms import state_to_atoms, atom_tuples_to_string
-from domains.chess_.grammar.objects import OBJECTS
+from domains.deprecated.tictactoe.grammar.state_to_atoms import state_to_atoms, atom_tuples_to_string
+from .objects import OBJECTS
 
 ASCII = string.printable
 # ASCII = ''.join(chr(x) for x in range(50, 1000))
-
 
 class Grammar:
     """
@@ -30,14 +29,15 @@ class Grammar:
         more compact than a numpy array of `object` types for encoding single characters, that uses several bytes per
         position.
         """
+        brd, mark = r
         try:
-            b = list(self.object_bytes[obj] for obj in r.flatten())
-            b = b + [self.object_bytes[1]] if info['reward'] else b + [self.object_bytes[0]]
-            b = b + [self.object_bytes[1]] if info['goal'] else b + [self.object_bytes[0]]
-            b = b + [self.object_bytes[1]] if info['deadend'] else b + [self.object_bytes[0]]
+            b = list(self.object_bytes[obj] for obj in brd)
+            b.append(self.object_bytes[mark])
+            # b = b + [self.object_bytes['true']] if info['goal'] else b + [self.object_bytes['false']]
+            # b = b + [self.object_bytes['true']] if info['deadend'] else b + [self.object_bytes['false']]
             return bytes(b)
         except:
-            for o in r.flatten():
+            for o in r:
                 if o not in self.object_bytes:
                     print('EXCEPTION: Unknown object: {}\n'.format(o))
             sys.exit(1)
@@ -51,7 +51,7 @@ class Grammar:
             possible_chars, b = possible_chars[1:], possible_chars[0]
             object_bytes[obj] = ord(b)
 
-        for obj in OBJECTS.player_marks.values():
+        for obj in OBJECTS.player_marks:
             possible_chars, b = possible_chars[1:], possible_chars[0]
             object_bytes[obj] = ord(b)
 
@@ -60,7 +60,3 @@ class Grammar:
             object_bytes[i] = ord(b)
 
         return object_bytes
-
-
-
-
