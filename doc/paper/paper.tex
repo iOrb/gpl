@@ -140,12 +140,20 @@ Work In Progress.\footnote{This is implemented, but needs to be adapted to the e
 
 \subsubsection{Main Variables}
 
-Let the transitions be defined as $s \rightarrow a \rightarrow s' \rightarrow s"$, where the agent executes a in the state s and goes to some $s'$, and then the nature or the adversary (doing anything) turns $s'$ into $s''$. Therefore the transitions $(s, s')$ is deterministic and the transition $(s, s'')$ is non-deternimistic.
+In any non deterministic domain the agent can go a pull of states $S'$ by executing an action $a$ in the state $s$, and then the nature or the adversary (doing anything) turns $s'$ into $s''$. Then all the transitions holds in the form $s \rightarrow a \rightarrow s'$, where $s' \epsilon~S'$.
+
+%We define the adversarial setting as transitions defined by $s \rightarrow a \rightarrow s' \rightarrow s"$, where the agent executes a in the state s and goes to some $s'$, and then the nature or the adversary (doing anything) turns $s'$ into $s''$. Therefore the transitions $(s, s')$ is deterministic and the transition $(s, s'')$ is non-deternimistic. If there is no possible $s''$ outgoing from $s'$ we just set $s'' = s'$.
+
+%If we are in a completely non-deterministic setting we can make it hold in the previous definition just by setting $s' = s''$.
+
+%We can face two different situations. One in which the actions space is defined and never change from one instance to another. In the other situation we have no defined action space $A$. When we are facing a non defined $A$, we just define the actions as efects to be discovered implicitly in the transitions $s \rightarrow s'$.
 
 \begin{itemize}
- \item $Good(s, a)$ for $s$ alive, $s''$ solvable. Where $V(s'') < V(s)$.
+ \item $Good(s, a)$ for $s$ alive, $s'$ solvable for all possible $s'$ result of executing a in $s$.
 
- \item $Good(s, s')$ for $s$ alive, $s'$ solvable and $(s, s') \not\in \badtx$.
+ \item $Bad(s)$ for $s$ alive.
+
+ %\item $Good(s, s')$ for $s$ alive, $s'$ solvable and $(s, s') \not\in \badtx$.
 
  \item $V(s, d)$ for $s$ alive, and $d \in [0, D]$, where $D = \max_{s} \delta \cdot V^*(s)$,
  with intended denotation $V(s)=d$.
@@ -167,23 +175,23 @@ Let the transitions be defined as $s \rightarrow a \rightarrow s' \rightarrow s"
 \subsection{Hard Constraints}
 
 \smallpar{C1}
-The policy has to be complete with respect to all alive states:
+The policy has to be complete with respect to all possible actions applicable in s:
 \begin{align}
-\bigvee_{s' \text{ s.t. } (s, s') \in T \setminus \badtx} Good(s, s'),&\;\; \text{for $s$ alive.}
+\bigvee_{a \text{ s.t. } (s, a, S') \in T} Good(s, a),&\;\; \text{for $s$ alive.}
 \end{align}
 
 
-\smallpar{C2} $V$ is always descending along Good transitions:
+\smallpar{C2} $V$ is always descending along Good actions:
 \begin{align}
- Good(s, s') \land V(s', d) \rightarrow \bigvee_{d < k \leq D} V(s, k),&\;\; \text{for $s, s'$ alive, $(s, s') \not\in \badtx$, $d \in [1, D)$.} \\
- V(s', D) \rightarrow \neg Good(s, s'),&\;\; \text{for $s, s'$ alive, $(s, s') \not\in \badtx$.} \tag{\theequation${}^\prime$}
+ Good(s, a) \land V(s', d) \rightarrow \bigvee_{d < k \leq D} V(s, k),&\;\; \text{for $s, a$ alive, $(s, a) \not\in \badtx$, $d \in [1, D)$.} \\
+ V(s', D) \rightarrow \neg Good(s, a),&\;\; \text{for $s, a$ alive, $(s, a) \not\in \badtx$.} \tag{\theequation${}^\prime$}
 \end{align}
 
 
-\smallpar{C3 (Optional)} All descending transitions must be considered Good:
+\smallpar{C3} All descending transitions must be considered Good:
 \begin{align}
- V(s, d) \land V(s', d') \rightarrow Good(s, s'),&\;\; \text{for $s, s'$ alive, $(s, s') \not\in \badtx$, $1 \leq d' < d \leq D$,} \\
- Good(s, s'),&\;\; \text{for $s$ alive, $s'$ goal.} \tag{\theequation${}^\prime$}
+ V(s, d) \land V(s', d') \rightarrow Good(s, a),&\;\; \text{for $s, s'$ alive, $(s, a, s') \not\in \badtx$, $1 \leq d' < d \leq D$,} \\
+ Good(s, a),&\;\; \text{for $s$ alive, $s'$ goal.} \tag{\theequation${}^\prime$}
 \end{align}
 
 %\smallpar{C4-5} Any upper bound on $V(s)$ (for $s$ not a goal) needs to be justified:
@@ -206,19 +214,25 @@ and such that $V(s)$ is within lower bound $V^*(s)$ and upper bound $\delta \cdo
  \neg V(s, d) \lor \neg V(s, d')&\;\; \text{for $s$ alive, $1 \leq d < d' \leq D$.}
 \end{align}
 
-
 \smallpar{C5-6}
-Good transitions can be distinguished from bad transitions.
-Let $(s, s')$ and $(t, t')$ be \emph{representative} transitions
-of two different equivalence classes such that $(s, s') \not\in \badtx$
-(which implies that $s'$ is solvable). Then,
+Good pairs (s, a) can be distinguished from bad pairs (s, a).
+Let $(s, a)$ and $(s, a')$
+of two different equivalence classes such that $(s, a, S') \not\in \badtx$
+(which implies that any $s' \in S'$ is solvable). Then,
 
-\begin{align}
- Good(s, s') \rightarrow Good(t, t') \lor
- Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \not\in \badtx$.} \\
- Good(s, s') \rightarrow
- Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \in \badtx$.}
-\end{align}
+
+
+%\smallpar{C5-6}
+%Good transitions can be distinguished from bad transitions.
+%Let $(s, s')$ and $(t, t')$ be \emph{representative} transitions
+%of two different equivalence classes such that $(s, s') \not\in \badtx$
+%(which implies that $s'$ is solvable). Then,
+%\begin{align}
+% Good(s, s') \rightarrow Good(t, t') \lor
+% Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \not\in \badtx$.} \\
+% Good(s, s') \rightarrow
+% Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \in \badtx$.}
+%\end{align}
 
 \noindent where $Dist(s, s', t, t')$ is shorthand for $\bigvee_{f \in D1\&2(s, s', t, t')} Select(f)$.
 
