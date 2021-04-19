@@ -38,7 +38,7 @@ bool evaluate_dnf(unsigned s, unsigned sprime, const DNFPolicy &dnf, const sltp:
 
 
 int select_action(unsigned s, const DNFPolicy& dnf, const TrainingSet& trset) {
-    for (unsigned sprime:trset.transitions().successors(s)) {
+    for (unsigned sprime:trset.transitions().agent_successors(s)) {
         if (evaluate_dnf(s, sprime, dnf, trset.matrix())) {
             return (int) sprime;
         }
@@ -55,9 +55,9 @@ void detect_cycles(const DNFPolicy& dnf, const TrainingSet& trset, unsigned batc
 
     // Build graph
     for (unsigned s:alive) {
-        for (unsigned sprime:trset.transitions().successors(s)) {
-            if (trset.transitions().is_alive(sprime) && evaluate_dnf(s, sprime, dnf, trset.matrix())) {
-                boost::add_edge(s, sprime, graph);
+        for (unsigned spp:trset.transitions().nondet_successors(s)) {
+            if (trset.transitions().is_alive(spp) && evaluate_dnf(s, spp, dnf, trset.matrix())) {
+                boost::add_edge(s, spp, graph);
             }
         }
     }

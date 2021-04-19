@@ -53,6 +53,7 @@ namespace sltp {
                   is_state_alive_(num_states_s_spp, false), // include states s and spp
                   is_state_goal_(num_states_s_spp, false), // include states s and spp
                   is_state_unsolvable_(num_states_s_spp, false), // include states s and spp
+                  is_state_alive_sp_(num_states, false), // include states sp
                   alive_states_(),
                   goal_states_(),
                   unsolvable_states_()

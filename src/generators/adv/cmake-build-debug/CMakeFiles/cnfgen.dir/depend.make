@@ -44,23 +44,6 @@ CMakeFiles/cnfgen.dir/src/cnf/sample.cxx.o: ../src/common/utils.h
 CMakeFiles/cnfgen.dir/src/cnf/sample.cxx.o: ../src/cnf/sample.cxx
 CMakeFiles/cnfgen.dir/src/cnf/sample.cxx.o: ../src/cnf/sample.h
 
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/blai/matrix.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/blai/sample.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/blai/transitions.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/cnf/cnfwriter.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/cnf/d2l.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/cnf/generator.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/cnf/options.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/cnf/sample.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/cnf/solver.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/cnf/types.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/common/base.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/common/helpers.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/common/utils.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/cnf/sd2l.cxx
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/cnf/sd2l.h
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/cnf/types.h
-
 CMakeFiles/cnfgen.dir/src/cnf/solver.cxx.o: ../src/common/macros.h
 CMakeFiles/cnfgen.dir/src/cnf/solver.cxx.o: ../src/common/utils.h
 CMakeFiles/cnfgen.dir/src/cnf/solver.cxx.o: ../src/cnf/options.h

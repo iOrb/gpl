@@ -102,22 +102,9 @@ CMakeFiles/cnfgen.dir/src/cnf/d2l.cxx.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cnfgen.dir/src/cnf/d2l.cxx.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/cnf/d2l.cxx -o CMakeFiles/cnfgen.dir/src/cnf/d2l.cxx.s
 
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: CMakeFiles/cnfgen.dir/flags.make
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o: ../src/cnf/sd2l.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o -c /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/cnf/sd2l.cxx
-
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/cnf/sd2l.cxx > CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.i
-
-CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/cnf/sd2l.cxx -o CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.s
-
 CMakeFiles/cnfgen.dir/src/cnf/types.cxx.o: CMakeFiles/cnfgen.dir/flags.make
 CMakeFiles/cnfgen.dir/src/cnf/types.cxx.o: ../src/cnf/types.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/cnfgen.dir/src/cnf/types.cxx.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/cnfgen.dir/src/cnf/types.cxx.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cnfgen.dir/src/cnf/types.cxx.o -c /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/cnf/types.cxx
 
 CMakeFiles/cnfgen.dir/src/cnf/types.cxx.i: cmake_force
@@ -130,7 +117,7 @@ CMakeFiles/cnfgen.dir/src/cnf/types.cxx.s: cmake_force
 
 CMakeFiles/cnfgen.dir/src/cnf/generator.cxx.o: CMakeFiles/cnfgen.dir/flags.make
 CMakeFiles/cnfgen.dir/src/cnf/generator.cxx.o: ../src/cnf/generator.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/cnfgen.dir/src/cnf/generator.cxx.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/cnfgen.dir/src/cnf/generator.cxx.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cnfgen.dir/src/cnf/generator.cxx.o -c /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/cnf/generator.cxx
 
 CMakeFiles/cnfgen.dir/src/cnf/generator.cxx.i: cmake_force
@@ -143,7 +130,7 @@ CMakeFiles/cnfgen.dir/src/cnf/generator.cxx.s: cmake_force
 
 CMakeFiles/cnfgen.dir/src/cnf/options.cxx.o: CMakeFiles/cnfgen.dir/flags.make
 CMakeFiles/cnfgen.dir/src/cnf/options.cxx.o: ../src/cnf/options.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/cnfgen.dir/src/cnf/options.cxx.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/cnfgen.dir/src/cnf/options.cxx.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cnfgen.dir/src/cnf/options.cxx.o -c /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/cnf/options.cxx
 
 CMakeFiles/cnfgen.dir/src/cnf/options.cxx.i: cmake_force
@@ -156,7 +143,7 @@ CMakeFiles/cnfgen.dir/src/cnf/options.cxx.s: cmake_force
 
 CMakeFiles/cnfgen.dir/src/cnf/sample.cxx.o: CMakeFiles/cnfgen.dir/flags.make
 CMakeFiles/cnfgen.dir/src/cnf/sample.cxx.o: ../src/cnf/sample.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/cnfgen.dir/src/cnf/sample.cxx.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/cnfgen.dir/src/cnf/sample.cxx.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cnfgen.dir/src/cnf/sample.cxx.o -c /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/cnf/sample.cxx
 
 CMakeFiles/cnfgen.dir/src/cnf/sample.cxx.i: cmake_force
@@ -169,7 +156,7 @@ CMakeFiles/cnfgen.dir/src/cnf/sample.cxx.s: cmake_force
 
 CMakeFiles/cnfgen.dir/src/cnf/solver.cxx.o: CMakeFiles/cnfgen.dir/flags.make
 CMakeFiles/cnfgen.dir/src/cnf/solver.cxx.o: ../src/cnf/solver.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/cnfgen.dir/src/cnf/solver.cxx.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/cnfgen.dir/src/cnf/solver.cxx.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cnfgen.dir/src/cnf/solver.cxx.o -c /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/cnf/solver.cxx
 
 CMakeFiles/cnfgen.dir/src/cnf/solver.cxx.i: cmake_force
@@ -182,7 +169,7 @@ CMakeFiles/cnfgen.dir/src/cnf/solver.cxx.s: cmake_force
 
 CMakeFiles/cnfgen.dir/src/blai/matrix.cxx.o: CMakeFiles/cnfgen.dir/flags.make
 CMakeFiles/cnfgen.dir/src/blai/matrix.cxx.o: ../src/blai/matrix.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/cnfgen.dir/src/blai/matrix.cxx.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/cnfgen.dir/src/blai/matrix.cxx.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cnfgen.dir/src/blai/matrix.cxx.o -c /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/blai/matrix.cxx
 
 CMakeFiles/cnfgen.dir/src/blai/matrix.cxx.i: cmake_force
@@ -195,7 +182,7 @@ CMakeFiles/cnfgen.dir/src/blai/matrix.cxx.s: cmake_force
 
 CMakeFiles/cnfgen.dir/src/common/utils.cxx.o: CMakeFiles/cnfgen.dir/flags.make
 CMakeFiles/cnfgen.dir/src/common/utils.cxx.o: ../src/common/utils.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/cnfgen.dir/src/common/utils.cxx.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/cnfgen.dir/src/common/utils.cxx.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cnfgen.dir/src/common/utils.cxx.o -c /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/common/utils.cxx
 
 CMakeFiles/cnfgen.dir/src/common/utils.cxx.i: cmake_force
@@ -208,7 +195,7 @@ CMakeFiles/cnfgen.dir/src/common/utils.cxx.s: cmake_force
 
 CMakeFiles/cnfgen.dir/src/common/helpers.cxx.o: CMakeFiles/cnfgen.dir/flags.make
 CMakeFiles/cnfgen.dir/src/common/helpers.cxx.o: ../src/common/helpers.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/cnfgen.dir/src/common/helpers.cxx.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/cnfgen.dir/src/common/helpers.cxx.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cnfgen.dir/src/common/helpers.cxx.o -c /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/common/helpers.cxx
 
 CMakeFiles/cnfgen.dir/src/common/helpers.cxx.i: cmake_force
@@ -221,7 +208,7 @@ CMakeFiles/cnfgen.dir/src/common/helpers.cxx.s: cmake_force
 
 CMakeFiles/cnfgen.dir/src/common/types.cxx.o: CMakeFiles/cnfgen.dir/flags.make
 CMakeFiles/cnfgen.dir/src/common/types.cxx.o: ../src/common/types.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/cnfgen.dir/src/common/types.cxx.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/cnfgen.dir/src/common/types.cxx.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cnfgen.dir/src/common/types.cxx.o -c /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/src/common/types.cxx
 
 CMakeFiles/cnfgen.dir/src/common/types.cxx.i: cmake_force
@@ -236,7 +223,6 @@ CMakeFiles/cnfgen.dir/src/common/types.cxx.s: cmake_force
 cnfgen_OBJECTS = \
 "CMakeFiles/cnfgen.dir/src/cnfgen.cpp.o" \
 "CMakeFiles/cnfgen.dir/src/cnf/d2l.cxx.o" \
-"CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o" \
 "CMakeFiles/cnfgen.dir/src/cnf/types.cxx.o" \
 "CMakeFiles/cnfgen.dir/src/cnf/generator.cxx.o" \
 "CMakeFiles/cnfgen.dir/src/cnf/options.cxx.o" \
@@ -252,7 +238,6 @@ cnfgen_EXTERNAL_OBJECTS =
 
 cnfgen: CMakeFiles/cnfgen.dir/src/cnfgen.cpp.o
 cnfgen: CMakeFiles/cnfgen.dir/src/cnf/d2l.cxx.o
-cnfgen: CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o
 cnfgen: CMakeFiles/cnfgen.dir/src/cnf/types.cxx.o
 cnfgen: CMakeFiles/cnfgen.dir/src/cnf/generator.cxx.o
 cnfgen: CMakeFiles/cnfgen.dir/src/cnf/options.cxx.o
@@ -265,7 +250,7 @@ cnfgen: CMakeFiles/cnfgen.dir/src/common/types.cxx.o
 cnfgen: CMakeFiles/cnfgen.dir/build.make
 cnfgen: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.71.0
 cnfgen: CMakeFiles/cnfgen.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable cnfgen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable cnfgen"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/cnfgen.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -58,6 +58,7 @@ public:
 
         os
             << "[instances: " << ninstances
+            << ", states: " << transitions_.num_states()
             << ", states (s, spp): " << transitions_.num_states_s_spp()
             << ", transitions (non-det): " << transitions_.num_nondet_transitions()
             << " (" << num_alive << " alive: " << alive_string << ")"
