@@ -1,49 +1,49 @@
 This is BibTeX, Version 0.99d (TeX Live 2019/Debian)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: paper.aux
-The style file: named.bst
+The style file: plain.bst
 Database file #1: abbrv-short.bib
 Database file #2: literatur.bib
 Database file #3: references.bib
 Database file #4: crossref-short.bib
 You've used 1 entry,
-            2439 wiz_defined-function locations,
-            604 strings with 5326 characters,
-and the built_in function-call counts, 445 in all, are:
-= -- 37
-> -- 28
-< -- 0
-+ -- 10
-- -- 10
-* -- 34
-:= -- 82
+            2118 wiz_defined-function locations,
+            550 strings with 4845 characters,
+and the built_in function-call counts, 571 in all, are:
+= -- 56
+> -- 23
+< -- 1
++ -- 9
+- -- 8
+* -- 37
+:= -- 85
 add.period$ -- 3
 call.type$ -- 1
-change.case$ -- 9
-chr.to.int$ -- 1
+change.case$ -- 7
+chr.to.int$ -- 0
 cite$ -- 1
-duplicate$ -- 17
-empty$ -- 32
-format.name$ -- 11
-if$ -- 87
-int.to.chr$ -- 1
-int.to.str$ -- 0
+duplicate$ -- 25
+empty$ -- 45
+format.name$ -- 8
+if$ -- 127
+int.to.chr$ -- 0
+int.to.str$ -- 1
 missing$ -- 1
 newline$ -- 8
-num.names$ -- 3
-pop$ -- 12
+num.names$ -- 2
+pop$ -- 10
 preamble$ -- 1
-purify$ -- 10
+purify$ -- 6
 quote$ -- 0
-skip$ -- 12
+skip$ -- 23
 stack$ -- 0
-substring$ -- 5
-swap$ -- 3
-text.length$ -- 0
+substring$ -- 45
+swap$ -- 13
+text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 8
+type$ -- 4
 warning$ -- 0
-while$ -- 2
+while$ -- 5
 width$ -- 2
-write$ -- 14
+write$ -- 13

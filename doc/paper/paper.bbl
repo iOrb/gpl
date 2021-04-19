@@ -1,10 +1,9 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{1}
 
-\bibitem[\protect\citeauthoryear{Silver \bgroup \em et al.\egroup
-  }{2020}]{silver2019few}
-Tom Silver, Kelsey~R. Allen, Alex~K. Lew, Leslie~Pack Kaelbling, and Josh
-  Tenenbaum.
-\newblock Few-shot bayesian imitation learning with logical program policies.
-\newblock In {\em AAAI}, 2020.
+\bibitem{frances-et-al-ijcai2019}
+Guillem Franc{\`e}s, Augusto~B. Corr\^{e}a, Cedric Geissmann, and Florian
+  Pommerening.
+\newblock Generalized potential heuristics for classical planning.
+\newblock In {\em Proc.\ IJCAI 2019}, pages 5554--5561, 2019.
 
 \end{thebibliography}
