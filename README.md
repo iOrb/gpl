@@ -9,7 +9,7 @@ Run `pip install -e src\d2l`.
 Then install the entire pipeline by running `pip install -e .` and `pip install gpl`.    
 
 Install:\
-https://github.com/tomsilver/generalization_grid_games
+https://github.com/iOrb/generalization_grid_games_2
 
 ## Experiments
 The [experiments](experiments) folder contains experiment setups for some common domains.
