@@ -94,10 +94,6 @@ public:
     const std::vector<unsigned>& alive_states() const { return alive_states_; }
     const std::vector<unsigned>& goal_states() const { return goal_states_; }
     const std::vector<unsigned>& nongoal_states() const { return nongoal_states_; }
-//
-//    const std::vector<unsigned>& alive_states() const { return alive_states_; }
-//    const std::vector<unsigned>& goal_states() const { return goal_states_; }
-//    const std::vector<unsigned>& nongoal_states() const { return nongoal_states_; }
 
     bool is_goal(unsigned s) const { return transitions_.is_goal(s); }
 

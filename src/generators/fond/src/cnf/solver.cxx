@@ -83,10 +83,7 @@ ASPSolution solve_asp(const std::string& domain_filename, const std::string& ins
                 solution.selecteds.push_back(boost::lexical_cast<unsigned>(aux[1]));
             } else if (aux[0] == "good") {
                 boost::split(aux, aux[1], boost::is_any_of(","));
-                solution.goods.emplace_back(boost::lexical_cast<unsigned>(aux[0]),
-                                            boost::lexical_cast<unsigned>(aux[1]));
-            } else if (aux[0] == "bad") {
-                solution.bads.emplace_back(boost::lexical_cast<unsigned>(aux[1]));
+                solution.goods.emplace_back(boost::lexical_cast<unsigned>(aux[0]), boost::lexical_cast<unsigned>(aux[1]));
             }
         }
 

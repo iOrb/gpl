@@ -6,44 +6,9 @@ from gpl.defaults import generate_experiment
 from sltp.util import console
 from sltp.returncodes import ExitCode
 
-from .utils import Bunch, _create_exception_msg, print_important_message, save_local_object, load_local_object
+from .utils import Bunch, _create_exception_msg, print_important_message, save_local_object, load_local_object, \
+    get_sampling_class
 from .train_steps import TRAIN_STEPS
-
-from .sampling.fond import TransitionSampleMDP
-
-"""
-TRAIN:
-params:
-    n-episodes
-
-process:
-    for _ in n-episodes:
-
-        Train Steps:
-
-        1. Rollouts:
-            process:
-                for _ in n-rollouts:
-                    for _ in rollout-depth:
-                        if d2l-policy exists:
-                            if d2l-policy applies:
-                                select action from d2l-policy
-                        else:
-                            select action from DFS
-
-            params:
-                n-rollouts
-                rollout-depth
-
-        2. With the saved Rollouts, update the graph AND/OR:
-
-        3. Sampling:
-
-        4. Generate Features:
-            (keeping the previous ones (?))
-
-        5. Compute d2l-policy using maxsat solver:
-"""
 
 
 def run(config, data, rng):
@@ -81,7 +46,7 @@ def train(config, data, rng, train_steps=[], show_steps_only=False):
 
 
 def run_step(step, config, data, rng):
-    exitcode, data_ = step.get_step_runner()(config, data, rng)
+    exitcode, data_ = step.get_step_runner(config)(config, data, rng)
     # if exitcode is not ExitCode.Success:
     #     raise RuntimeError(_create_exception_msg(step, exitcode))
     data.update(data_)
@@ -111,15 +76,17 @@ def check_requirements(step, config, data):
         if d not in data:
             raise RuntimeError(_create_exception_msg(step, "Missing data {}".format(d)))
 
+
 def pre_process_data(config, data):
     data = Bunch(dict(sample=None, d2l_policy=None, tasks=None))
     if config.provided_sample_file is not None:
         data.sample = load_local_object(config.provided_sample_file)
     else:
-        data.sample = TransitionSampleMDP()
+        data.sample = get_sampling_class(config)
     if config.d2l_policy is not None:
         data.d2l_policy=config.d2l_policy
     return data
+
 
 def post_process_data(config, data):
     save_local_object(data.sample, config.sample_file)

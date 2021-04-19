@@ -6,7 +6,7 @@ from .objects import OBJECTS
 
 # General State to atoms
 def state_to_atoms(domain_name, state):
-    rep = copy.deepcopy(state[0][0])
+    rep = copy.deepcopy(state[0])
     nrows, ncols = rep.shape
 
     # These are the general atoms for all the domains

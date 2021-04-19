@@ -126,14 +126,11 @@ namespace sltp::cnf {
         options.encodings_dir = vm["encodings_dir"].as<std::string>();
         options.sampling_strategy = vm["sampling_strategy"].as<std::string>();
         options.acyclicity = vm["acyclicity"].as<std::string>();
-        if (options.acyclicity != "reachability" &&
-            options.acyclicity != "asp" &&
+        if (options.acyclicity != "asp" &&
             options.acyclicity != "topological" &&
             options.acyclicity != "sd2l" ) {
             throw po::validation_error(po::validation_error::invalid_option_value, "acyclicity");
         }
-
-        //new
         options.maxsat_iter = vm["maxsat_iter"].as<unsigned>();
 
         return options;

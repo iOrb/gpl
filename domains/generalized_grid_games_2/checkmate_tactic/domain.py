@@ -55,7 +55,7 @@ def load_general_lang(lang, statics,):
     _ = [lang.predicate(f'{o}', 'cell') for o in OBJECTS.margin.values()]
     # _ = [statics.add(f'{o}') for o in OBJECTS.margin.values()]
 
-    # _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player_marks.values()}]
+    _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player.w, OBJECTS.player.b}]
 
     # Scanning ==================================
     for c in ['row', 'col', 'd1', 'd2']:
@@ -84,6 +84,8 @@ def generate_base_problem(domain_name, lang, instance_name):
 def load_general_problem(problem, lang, rep):
     brd = copy.deepcopy(rep)
     nrows, ncols = rep.shape
+
+    problem.init.add(lang.get('player-{}'.format(OBJECTS.player.w)),)
 
     cell_ = lang.get('cell')
 

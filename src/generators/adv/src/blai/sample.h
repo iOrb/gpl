@@ -42,7 +42,7 @@ public:
         std::unordered_map<unsigned, unsigned> num_alive_per_instance;
 
         for (const auto s:transitions_.all_alive()) {
-            auto nsuccessors = transitions_.successors(s).size();
+            auto nsuccessors = transitions_.nondet_successors(s).size();
             auto instanceid = sample_.state(s).instance_id();
             num_alive += nsuccessors;
             num_alive_per_instance[instanceid] += nsuccessors;
@@ -58,8 +58,8 @@ public:
 
         os
             << "[instances: " << ninstances
-            << ", states: " << transitions_.num_states()
-            << ", transitions: " << transitions_.num_transitions()
+            << ", states (s, spp): " << transitions_.num_states_s_spp()
+            << ", transitions (non-det): " << transitions_.num_nondet_transitions()
             << " (" << num_alive << " alive: " << alive_string << ")"
 //          << " (" << transitions_.num_marked_transitions() << " marked)"
             << ", unsolvable: " << transitions_.num_unsolvable()

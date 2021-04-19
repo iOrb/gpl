@@ -50,3 +50,11 @@ def encode_operator(op, task):
     else:
         o = op
     return o
+
+def get_sampling_class(config):
+    from .sampling.adv import TransitionSampleADV
+    from .sampling.fond import TransitionSampleFOND
+    return {
+        'adv': TransitionSampleADV(),
+        'fond': TransitionSampleFOND(),
+    }[config.mode]

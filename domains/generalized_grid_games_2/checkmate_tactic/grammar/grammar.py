@@ -32,6 +32,7 @@ class Grammar:
         """
         try:
             b = list(self.object_bytes[obj] for obj in r[0].flatten())
+            b = b + [self.object_bytes[r[1]]]
             # b = b + [self.object_bytes['true']] if info['reward'] else b + [self.object_bytes['false']]
             # b = b + [self.object_bytes['true']] if info['goal'] else b + [self.object_bytes['false']]
             # b = b + [self.object_bytes['true']] if info['deadend'] else b + [self.object_bytes['false']]
@@ -48,6 +49,10 @@ class Grammar:
         possible_chars = ASCII
 
         for obj in OBJECTS.general | {OBJECTS.empty}:
+            possible_chars, b = possible_chars[1:], possible_chars[0]
+            object_bytes[obj] = ord(b)
+
+        for obj in {OBJECTS.player.w, OBJECTS.player.b}:
             possible_chars, b = possible_chars[1:], possible_chars[0]
             object_bytes[obj] = ord(b)
 

@@ -162,7 +162,7 @@ public:
         }
         std::cout << "Solution with cost " << solution.cost << " found in " << tsolution << "sec." << std::endl;
 
-        auto dnf = generator.generate_dnf(solution.goods, solution.bads, solution.selecteds);
+        auto dnf = generator.generate_dnf(solution.goods, solution.selecteds);
 //            dnf = minimize_dnf();
         return {CNFGenerationOutput::Success, dnf};
     }
@@ -207,8 +207,7 @@ int run(const Options& options) {
 
     CNFGenerationOutput output;
 
-      for (unsigned it=1; true; ++it) {
-//      for (unsigned it=1; it<=options.maxsat_iter; ++it) {
+    for (unsigned it=1; true; ++it) {
         if (options.verbosity>0) {
             std::cout << std::endl << std::endl << "###  STARTING ITERATION " << it << "  ###" << std::endl;
         } else {
@@ -230,7 +229,7 @@ int run(const Options& options) {
 
         auto flaws = sampler->sample_flaws(dnf, options.refinement_batch_size);
 //        auto flaws = test_policy(rng, dnf, *sample, options.refinement_batch_size);
-        if (flaws.empty()) {
+        if (flaws.empty() || !(it<options.maxsat_iter)) {
             std::cout << "Solution found in iteration #" << it << " is correct!" << std::endl;
             print_classifier(sample->matrix(), dnf, options.workspace + "/classifier");
             break;

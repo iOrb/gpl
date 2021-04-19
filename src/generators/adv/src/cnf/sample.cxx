@@ -118,7 +118,7 @@ std::vector<unsigned> StateSampler::sample_flaws(const DNFPolicy& dnf, unsigned 
         }
 
         // Check (2)
-        for (unsigned sprime:trset.transitions().successors(s)) {
+        for (unsigned sprime:trset.transitions().agent_successors(s)) {
             bool is_good = evaluate_dnf(s, sprime, dnf, trset.matrix());
             if (is_good && trset.transitions().is_unsolvable(sprime)) {
                 flaws.push_back(s);

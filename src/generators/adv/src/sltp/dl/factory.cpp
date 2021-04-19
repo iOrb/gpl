@@ -231,14 +231,25 @@ bool Factory::check_some_transition_pair_distinguished(const feature_sample_deno
 
         int sf = fsd[s];
 
-        for (unsigned sprime:transitions.successors(s)) {
-            int sfprime = fsd[sprime];
+        for (unsigned sp:transitions.agent_successors(s)) {
+            int sfp = fsd[sp];
 
-            if (last_sfprime > 0 && are_transitions_d1d2_distinguished(last_sf, last_sfprime, sf, sfprime)) {
+            if (last_sfprime > 0 && are_transitions_d1d2_distinguished(last_sf, last_sfprime, sf, sfp)) {
                 feature_can_distinguish_some_transition = true;
             }
 
-            last_sfprime = sfprime;
+            last_sfprime = sfp;
+            last_sf = sf;
+        }
+
+        for (unsigned spp:transitions.nondet_successors(s)) {
+            int sfpp = fsd[spp];
+
+            if (last_sfprime > 0 && are_transitions_d1d2_distinguished(last_sf, last_sfprime, sf, sfpp)) {
+                feature_can_distinguish_some_transition = true;
+            }
+
+            last_sfprime = sfpp;
             last_sf = sf;
         }
 

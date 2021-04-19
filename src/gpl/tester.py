@@ -14,6 +14,8 @@ from tarski.dl import compute_dl_vocabulary
 
 from .utils import Bunch, encode_operator
 
+from collections import defaultdict
+
 """
 rollout:
     process:
@@ -91,13 +93,14 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
     logging.info("Unsolved instances: {}".format(unsolved_instances))
     return ExitCode.Success
 
+
 def run_test(config, search_policy, task, instance_name, rng):
 
     s = task.initial_state
     expanded = 0
 
-    parents = {s[2]: 'root'}  # We'll use this at the same time as closed list and to keep track of parents
-
+    transitions = defaultdict(lambda: 0) # We'll use this at the same time as closed list and to keep track of parents
+    transitions[s[2]] = 1
     solution = list()
 
     while not s[1]['goal']:
@@ -113,22 +116,24 @@ def run_test(config, search_policy, task, instance_name, rng):
         exitcode, good_succs = run_policy_based_search(config, search_policy, task, s, successors)
         if exitcode == ExitCode.AbstractPolicyNotCompleteOnTestInstances:
             raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
-        op, _ = random.Random(rng).choice(good_succs)
+        op, sp = random.Random(rng).choice(good_succs)
 
-        succ = task.transition(s, op)
+        tx = task.encode_tx((s[2], op, sp[2]))
+        spp = task.transition(s, op)
 
-        if succ[1]['deadend']:
+        if spp[1]['deadend']:
             raise PolicySearchException(ExitCode.DeadEndReached)
-        if succ[2] in parents:
+        if transitions[tx] > 1:
             raise PolicySearchException(ExitCode.AbstractPolicyNonTerminatingOnTestInstances)
 
         solution.append(encode_operator(op, task))
-        parents[succ[2]] = s[2]
-        s = succ
+        transitions[tx] += 1
+        s = spp
 
     logging.info(f"Goal found after expanding {expanded} nodes")
     logging.info(f"The solution was: {solution}")
     return solution
+
 
 # def run_test_old(config, search_policy, task, instance_name, rng):
 #
@@ -210,11 +215,11 @@ def create_action_selection_function_from_transition_policy(config, model_factor
 
         good_succs = list()
 
-        for op, succ, _ in successors:
-            m1 = generate_model_from_state(task, model_factory, succ, static_atoms)
+        for op, sp, _ in successors:
+            m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
             if policy.transition_is_good(m0, m1):
-                # return ExitCode.Success, op, succ
-                good_succs.append((op, succ))
+                # return ExitCode.Success, op, sp
+                good_succs.append((op, sp))
         if not good_succs:
             return ExitCode.AbstractPolicyNotCompleteOnTestInstances, None
         else:

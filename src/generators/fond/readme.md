@@ -9,5 +9,6 @@ The build system is CMake (`sudo apt install cmake`)
 
 ## Building
 
+    cd features
     cmake . && make -j6
 

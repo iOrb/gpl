@@ -65,6 +65,7 @@ public:
     std::vector<unsigned> alive_states_;
     std::vector<unsigned> goal_states_;
     std::vector<unsigned> nongoal_states_;
+    std::vector<unsigned> alive_states_sp_;
 
     StateSpaceSample(const FeatureMatrix& matrix, const TransitionSample& transitions, std::vector<unsigned> states) :
             matrix_(matrix), transitions_(transitions), states_(states.begin(), states.end())
@@ -73,7 +74,9 @@ public:
         for (unsigned s:states_) {
             if (is_alive(s)) alive_states_.push_back(s);
             if (is_goal(s)) goal_states_.push_back(s);
-            else nongoal_states_.push_back(s);
+            if (is_unsolvable(s)) nongoal_states_.push_back(s);
+            else if (is_alive_sp(s)) alive_states_sp_.push_back(s);
+            else assert(true==false);
         }
     }
 
@@ -94,6 +97,7 @@ public:
     const std::vector<unsigned>& alive_states() const { return alive_states_; }
     const std::vector<unsigned>& goal_states() const { return goal_states_; }
     const std::vector<unsigned>& nongoal_states() const { return nongoal_states_; }
+    const std::vector<unsigned>& alive_states_sp() const { return alive_states_sp_; }
 
     bool is_goal(unsigned s) const { return transitions_.is_goal(s); }
 
@@ -103,6 +107,8 @@ public:
 
     bool is_unsolvable(unsigned s) const { return transitions_.is_unsolvable(s); }
 
+    bool is_alive_sp(unsigned s) const { return transitions_.is_alive_sp(s);}
+
     inline FeatureMatrix::feature_value_t value(unsigned s, unsigned f) const {
         return matrix_.entry(s, f);
     }
@@ -111,8 +117,12 @@ public:
         return matrix_.feature_cost(f);
     }
 
-    const std::vector<unsigned>& successors(unsigned s) const {
-        return transitions_.successors(s);
+    const std::vector<unsigned>& notdet_successors(unsigned s) const {
+        return transitions_.nondet_successors(s);
+    }
+
+    const std::vector<unsigned>& agent_successors(unsigned s) const {
+        return transitions_.agent_successors(s);
     }
 
     const TransitionSample& full_training_set() const {

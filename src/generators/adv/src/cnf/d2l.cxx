@@ -25,15 +25,15 @@ void D2LEncoding::compute_equivalence_relations() {
     std::unordered_map<transition_trace, unsigned> from_trace_to_class_repr;
 
     for (const auto s:sample_.alive_states()) {
-        for (unsigned sprime:sample_.successors(s)) {
-            auto tx = std::make_pair((state_id_t) s, (state_id_t) sprime);
+        for (unsigned sp:sample_.agent_successors(s)) {
+            auto tx = std::make_pair((state_id_t) s, (state_id_t) sp);
             auto id = (unsigned) transition_ids_inv_.size(); // Assign a sequential ID to the transition
 
             transition_ids_inv_.push_back(tx);
             auto it1 = transition_ids_.emplace(tx, id);
             assert(it1.second);
 
-            if (!sample_.is_solvable(sprime)) { // An alive-to-dead transition cannot be Good
+            if (sample_.is_unsolvable(sp)) { // An alive-to-dead transition cannot be Good
                 necessarily_bad_transitions_.emplace(id);
             }
 
@@ -49,7 +49,7 @@ void D2LEncoding::compute_equivalence_relations() {
             transition_trace trace;
             for (auto f:feature_ids) {
                 trace.denotations.emplace_back(
-                        compute_transition_denotation(sample_.value(s, f), sample_.value(sprime, f)));
+                        compute_transition_denotation(sample_.value(s, f), sample_.value(sp, f)));
             }
 
             // Check whether some previous transition has the same transition trace
@@ -130,7 +130,8 @@ CNFGenerationOutput D2LEncoding::generate_asp_instance_1(std::ofstream& os) {
     os << "feature(0.." << mat.num_features() << ")." << std::endl;
     os << std::endl;
 
-    for (unsigned s = 0; s < mat.num_states(); ++s) {
+//    for (unsigned s = 0; s < mat.num_states(); ++s) {
+    for (auto const& [s, o, spp]:sample_.transitions_.nondet_transitions()) {
         if (!sample_.is_solvable(s)) {
             os << "dead(" << s << ")." << std::endl;
         }
@@ -142,7 +143,7 @@ CNFGenerationOutput D2LEncoding::generate_asp_instance_1(std::ofstream& os) {
             os << "vstar(" << s << ", " << get_vstar(s) << ")." << std::endl;
         }
 
-        for (unsigned sprime:sample_.successors(s)) {
+        for (unsigned sprime:sample_.agent_successors(s)) {
             os << "transition(" << s << ", " << sprime << ")." << std::endl;
         }
     }
@@ -154,7 +155,6 @@ CNFGenerationOutput D2LEncoding::generate_asp_instance_1(std::ofstream& os) {
         }
     }
     os << std::endl;
-
 
     for (unsigned f = 0; f < mat.num_features(); ++f) {
         os << "weight(" << f << ", " << sample_.feature_weight(f) << ")." << std::endl;
@@ -183,7 +183,7 @@ CNFGenerationOutput D2LEncoding::generate_asp_instance_10(std::ofstream& os) {
     os << std::endl << std::endl;
 
     os << "%% Sample description" << std::endl;
-    for (auto s = 0; s < mat.num_states(); ++s) {
+    for (auto const& [s, o, spp]:sample_.transitions_.nondet_transitions()) {
         if (!sample_.in_sample(s)) continue;
 
         if (!sample_.is_solvable(s)) {
@@ -195,7 +195,7 @@ CNFGenerationOutput D2LEncoding::generate_asp_instance_10(std::ofstream& os) {
         else {
             os << "alive(" << s << ")." << std::endl;
 
-            for (unsigned sprime:sample_.successors(s)) {
+            for (unsigned sprime:sample_.agent_successors(s)) {
                 os << "transition(" << s << ", " << sprime << ")." << std::endl;
                 const auto& [t, tprime] = get_state_pair(get_class_representative(s, sprime));
                 os << "repr(" << s << ", " << sprime << ", " << t << ", " << tprime << " )." << std::endl;
@@ -284,9 +284,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
 
     auto varmapstream = utils::get_ofstream(options.workspace + "/varmap.wsat");
 
-    // A map from pairs of states (s, s') to the ID of the SAT variable reach(s, s')
-    std::unordered_map<state_pair, cnfvar_t, boost::hash<state_pair>> reach;
-
     // Keep a map from pairs (s, d) to SAT variable ID of the variable V(s, d)
     std::unordered_map<std::pair<unsigned, unsigned>, cnfvar_t, boost::hash<state_pair>> vs;
 
@@ -295,7 +292,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     unsigned n_good_tx_clauses = 0;
     unsigned n_selected_clauses = 0;
     unsigned n_separation_clauses = 0;
-    unsigned n_reachability_clauses = 0;
     unsigned n_goal_clauses = 0;
 
     if (options.verbosity>0) {
@@ -313,52 +309,39 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
         variables.selecteds[f] = v;
     }
 
-    if (options.acyclicity == "reachability") {
-        // Create one "Reach(s, s') variable for each pair of states (s, s')
-        for (unsigned s:sample_.alive_states()) {
-            for (unsigned sprime:sample_.alive_states()) {
-                auto v = wr.var("Reach(" + std::to_string(s) + ", " + std::to_string(sprime) + ")");
-                reach.emplace(std::make_pair(s, sprime), v);
-            }
-        }
-    }
+    // Create variables V(s, d) variables for all alive state s and d in 1..D
+    //    unsigned acyclicity_radius = 99999;
+    for (const auto s:sample_.alive_states()) {
+        const auto min_vs = get_vstar(s);
+        const auto max_vs = get_max_v(s);
+        assert(max_vs > 0 && max_vs <= max_d && min_vs <= max_vs);
 
-    unsigned acyclicity_radius = 99999;
-    if (options.acyclicity == "topological") {
-        // Create variables V(s, d) variables for all alive state s and d in 1..D
-        for (const auto s:sample_.alive_states()) {
-            const auto min_vs = get_vstar(s);
-            const auto max_vs = get_max_v(s);
-            assert(max_vs > 0 && max_vs <= max_d && min_vs <= max_vs);
+        cnfclause_t within_range_clause;
 
-            cnfclause_t within_range_clause;
-
-            // TODO Note that we could be more efficient here and create only variables V(s,d) for those values of d that
-            //  are within the bounds below. I'm leaving that as a future optimization, as it slightly complicates the
-            //  formulation of constraints C2
-            for (unsigned d = 1; d <= max_d; ++d) {
-                const auto v_s_d = wr.var("V(" + std::to_string(s) + ", " + std::to_string(d) + ")");
-                vs.emplace(std::make_pair(s, d), v_s_d);
+        // TODO Note that we could be more efficient here and create only variables V(s,d) for those values of d that
+        //  are within the bounds below. I'm leaving that as a future optimization, as it slightly complicates the
+        //  formulation of constraints C2
+        for (unsigned d = 1; d <= max_d; ++d) {
+            const auto v_s_d = wr.var("V(" + std::to_string(s) + ", " + std::to_string(d) + ")");
+            vs.emplace(std::make_pair(s, d), v_s_d);
 //                std::cout << s << ", " << d << std::endl;
 
-                if (d >= min_vs && d <= max_vs) {
-                    within_range_clause.push_back(Wr::lit(v_s_d, true));
-                }
+            if (d >= min_vs && d <= max_vs) {
+                within_range_clause.push_back(Wr::lit(v_s_d, true));
             }
+        }
 
-            // Add clauses (4), (5)
-            wr.cl(within_range_clause);
-            n_v_function_clauses += 1;
+        // Add clauses (4), (5)
+        wr.cl(within_range_clause);
+        n_v_function_clauses += 1;
 
-            for (unsigned d = 1; d <= max_d; ++d) {
-                for (unsigned dprime = d+1; dprime <= max_d; ++dprime) {
-                    wr.cl({Wr::lit(vs.at({s, d}), false), Wr::lit(vs.at({s, dprime}), false)});
-                    n_v_function_clauses += 1;
-                }
+        for (unsigned d = 1; d <= max_d; ++d) {
+            for (unsigned dpp = d+1; dpp <= max_d; ++dpp) {
+                wr.cl({Wr::lit(vs.at({s, d}), false), Wr::lit(vs.at({s, dpp}), false)});
+                n_v_function_clauses += 1;
             }
         }
     }
-
 
     // Create a variable "Good(s, s')" for each transition (s, s') such that s' is solvable and (s, s') is not in BAD
     for (unsigned tx=0; tx < num_transitions; ++tx) {
@@ -389,7 +372,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     // Map `good_s_a` from transition IDs to SAT variable IDs:
     std::unordered_map<sa_pair_t, cnfvar_t, boost::hash<sa_pair_t>> good_s_a;
     unsigned n_good_s_a_vars = 0;
-    for (const auto& [s, a, sprime]:sample_.transitions_.nondet_transitions()) {
+    for (const auto& [s, a, spp]:sample_.transitions_.nondet_transitions()) {
         if (sample_.is_alive(s)) {
             const auto it = good_s_a.find({s, a});
             cnfvar_t good_s_a_var = 0;
@@ -404,18 +387,18 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
             else {
                 good_s_a_var = it->second;
             }
-            s_a_to_s[{s, a}].push_back(sprime);
+            s_a_to_s[{s, a}].push_back(spp);
         }
     }
 
-    // Create a variable "Good(s)" for each alive state
-    std::unordered_map<unsigned, cnfvar_t, boost::hash<unsigned>> good_s;
+    // Create a variable "Bad(s)" for each alive state
+    std::unordered_map<unsigned, cnfvar_t, boost::hash<unsigned>> bad_s;
     for (unsigned s:sample_.alive_states()) {
-        cnfvar_t good_s_var = 0;
-        good_s_var = wr.var("Good(" + std::to_string(s) + ")");
-        auto it = good_s.emplace(s, good_s_var);
+        cnfvar_t bad_s_var = 0;
+        bad_s_var = wr.var("Bad(" + std::to_string(s) + ")");
+        auto it = bad_s.emplace(s, bad_s_var);
         assert(it.second); // i.e. the SAT variable Bad(s) is necessarily new
-        varmapstream << good_s_var << " " << s << std::endl;
+        varmapstream << bad_s_var << " " << s << std::endl;
     }
 
     // From this point on, no more variables will be created. Print total count.
@@ -424,67 +407,67 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
         std::cout << "\tSelect(f): " << variables.selecteds.size() << std::endl;
         std::cout << "\tGood(s, s'): " << variables.goods.size() << std::endl;
         std::cout << "\tGood_a(s, a): " << n_good_s_a_vars << std::endl;
-        std::cout << "\tGood(s): " << good_s.size() << std::endl;
+        std::cout << "\tBad(s): " << bad_s.size() << std::endl;
         std::cout << "\tV(s, d): " << vs.size() << std::endl;
-        std::cout << "\tReach(s, s'): " << reach.size() << std::endl;
     }
 
     // Check our variable count is correct
-    assert(wr.nvars() == variables.selecteds.size() + variables.goods.size() + vs.size() + reach.size());
+//    assert(wr.nvars() == variables.selecteds.size() + variables.goods.size() + vs.size());
 
     /////// CNF constraints ///////
-    // [1] For each alive state s, post a constraint OR_{s' solvable child of s} (Good(s, s') if v(s') < v(s)) xor (-Good(s, s') if v(s) < v(s'))
+
+//     (1)' For each alive state s, post a constraint
+//             OR_{a s.t. (s, a, s') in T} Good_a(s, a).
+//     Then, For each alive state s and a applicable in s, post a constraint
+//             If Good_a(s, a) then Good(s, s')
+//     One twist in domains with dead-ends: if all states s' that are reachable by applying a in s are
+//     unsolvable, then we cannot have Good_a(s, a).
     for (const auto s:sample_.alive_states()) {
         cnfclause_t clause;
-        cnfclause_t clause_neg;
+        for (const auto a:s_to_as[s]) {
+            clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
 
-        for (unsigned sprime:sample_.successors(s)) {
-            auto tx = get_transition_id(s, sprime);
-            if (is_necessarily_bad(tx)) continue; // includes alive-to-dead transitions
+            for (const auto& sprime:s_a_to_s[{s, a}]) {
+                // If Good_a(s, a) then Good(s, s')
+                auto tx = get_transition_id(s, sprime);
+                if (is_necessarily_bad(tx)) {
+                    // If some possible outcome of (s, a) is BAD (e.g. an unsolvable state), then (s, a) cannot be good
+                    wr.cl({Wr::lit(good_s_a.at({s, a}), false)});
+                    continue; // includes alive-to-dead transitions
+                }
 
-            if (get_vstar(sprime) < get_vstar(s)) {
-                // Push it into the clause
-                clause.push_back(Wr::lit(variables.goods.at(get_representative_id(tx)), true));
-            } else {
-                clause_neg.push_back(Wr::lit(variables.goods.at(get_representative_id(tx)), false));
+                // Good_a(s, a) --> Good_a(s, s')
+                wr.cl({Wr::lit(good_s_a.at({s, a}), false),
+                       Wr::lit(variables.goods.at(get_representative_id(tx)), true)});
             }
         }
-
         // Add clauses (1) for this state
         if (clause.empty()) {
             throw std::runtime_error(
                     "State #" + std::to_string(s) + " is marked as alive, but has no successor that can be good. "
-                    "This is likely due to the feature pool not being large enough to distinguish some dead state from "
-                    "some alive state. Try increasing the feature complexity bound");
+                                                    "This is likely due to the feature pool not being large enough to distinguish some dead state from "
+                                                    "some alive state. Try increasing the feature complexity bound");
         }
         wr.cl(clause);
-        wr.cl(clause_neg);
     }
 
-    // (1)' For each alive state s, post a constraint
-    //         OR_{a s.t. (s, a, s') in T} Good_a(s, a).
-    // Then, For each alive state s and a applicable in s, post a constraint
-    //         If Good_a(s, a) then Good(s, s')
-    //
-    // One twist in domains with dead-ends: if all states s' that are reachable by applying a in s are
-    // unsolvable, then we cannot have Good_a(s, a).
+////     (1)' For each alive state s, post a constraint
+////             (OR_{s' s.t. (s, s') in T} Good(s, s').) or Bad(s)
 //    for (const auto s:sample_.alive_states()) {
 //        cnfclause_t clause;
+//
+//        clause.push_back(Wr::lit(bad_s.at(s), true));
+//
 //        for (const auto a:s_to_as[s]) {
-//            clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
 //
 //            for (const auto& sprime:s_a_to_s[{s, a}]) {
-//                // If Good_a(s, a) then (Good(s, s') iff (V(s') < V(s)))
 //                auto tx = get_transition_id(s, sprime);
 //                if (is_necessarily_bad(tx)) {
-//                    // If some possible outcome of (s, a) is BAD (e.g. an unsolvable state), then (s, a) cannot be good
-//                    wr.cl({Wr::lit(good_s_a.at({s, a}), false)});
+////                    wr.cl({Wr::lit(variables.goods.at(get_representative_id(tx)), true)});
 //                    continue; // includes alive-to-dead transitions
 //                }
 //
-//                // Good_a(s, a) --> (Good_a(s, s') iff (V(s') < V(s)))
-//                wr.cl({Wr::lit(good_s_a.at({s, a}), false),
-//                       Wr::lit(variables.goods.at(get_representative_id(tx)), true)});
+//                clause.push_back(Wr::lit(variables.goods.at(get_representative_id(tx)), true));
 //            }
 //        }
 //        // Add clauses (1) for this state
@@ -497,130 +480,82 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
 //        wr.cl(clause);
 //    }
 
-    // For each alive state, post a soft constrain Good_s(s)
-//    for (const auto s:sample_.alive_states()) {
-//        unsigned num_good_s_a = 0;
-//        unsigned num_s_a = s_to_as[s].size();
-//
-//        for (const auto a:s_to_as[s]) {
-//
-//            unsigned num_good_transitions_s_a_sprime = 0;
-//            unsigned num_transitions_s_a_sprime = s_a_to_s[{s, a}].size();
-//
-//            for (const auto &sprime:s_a_to_s[{s, a}]) {
-//                auto tx = get_transition_id(s, sprime);
-//                if (is_necessarily_bad(tx)) continue; // includes alive-to-dead transition
-//                num_good_transitions_s_a_sprime++;
-//            }
-//
-//            if (num_good_transitions_s_a_sprime == num_transitions_s_a_sprime) {
-//                num_good_s_a++;
-//            }
-//        }
-//
-//        // Proportion of good actions to apply in s to define how good is s
-//        unsigned proportion_of_good_s_a = (int) ((num_good_s_a / num_s_a) * 100);
-//        wr.cl({Wr::lit(good_s.at(s), false)}, proportion_of_good_s_a + 1);
-//
-//    }
+    //    Bad(s) or OR_{a in A}   Good(s, a):
+    for (const auto s:sample_.alive_states()) {
+        cnfclause_t clause;
+        clause.push_back(Wr::lit(bad_s.at(s), true));
 
-    // For each alive state, post a soft constrain Good_s(s)
-//    for (const auto s:sample_.alive_states()) {
-//        cnfclause_t clause;
-//        unsigned num_good_s_a = 0;
-//        unsigned num_s_a = s_to_as[s].size();
-//
-//        for (const auto a:s_to_as[s]) {
-//
-//            unsigned num_good_transitions_s_a_sprime = 0;
-//            unsigned num_transitions_s_a_sprime = s_a_to_s[{s, a}].size();
-//
-//            for (const auto &sprime:s_a_to_s[{s, a}]) {
-//                auto tx = get_transition_id(s, sprime);
-//                if (is_necessarily_bad(tx)) continue; // includes alive-to-dead transition
-//                num_good_transitions_s_a_sprime++;
-//
-//                if (get_vstar(sprime) < get_vstar(s)) {
-//                    // Push it into the clause
-//                    clause.push_back(Wr::lit(variables.goods.at(get_representative_id(tx)), true));
-//                }
-//            }
-//
-//            if (num_good_transitions_s_a_sprime == num_transitions_s_a_sprime) {
-//                num_good_s_a++;
-//            }
-//        }
-//
-//        // Proportion of good actions to apply in s to define how good is s
-//        unsigned proportion_of_good_s_a = (int) ((num_good_s_a / num_s_a) * 100);
-//        wr.cl({Wr::lit(good_s.at(s), false)}, proportion_of_good_s_a + 1);
-//
-//        // Add clauses (1) for this state
-//        if (clause.empty()) {
-//            throw std::runtime_error(
-//                    "State #" + std::to_string(s) + " is marked as alive, but has no successor that can be good. "
-//                    "This is likely due to the feature pool not being large enough to distinguish some dead state from "
-//                    "some alive state. Try increasing the feature complexity bound");
-//        }
-//        wr.cl(clause);
-//    }
-
-    // Post reachability constraints
-    if (options.acyclicity == "reachability") {
-        for (const auto s:sample_.alive_states()) {
-            for (const auto sprime:sample_.successors(s)) {
-                if (is_necessarily_bad(get_transition_id(s, sprime))) continue; // includes alive-to-dead transitions
-                if (!sample_.is_alive(sprime)) continue;
-                if (!sample_.in_sample(sprime)) continue;  // If s' is not in the sample, then it'll have no outgoing edge
-
-                const auto good_s_prime = variables.goods.at(get_class_representative(s, sprime));
-                const auto reach_s_sprime = reach.at({s, sprime});
-
-                // Good(s, s') --> Reach(s, s')
-                wr.cl({Wr::lit(good_s_prime, false), Wr::lit(reach_s_sprime, true)});
-                n_reachability_clauses += 1;
-
-                for (const auto t:sample_.alive_states()) {
-                    const auto reach_s_t = reach.at({s, t});
-                    const auto reach_sprime_t = reach.at({sprime, t});
-                    // Good(s, s') and Reach(s', t) --> Reach(s, t)
-                    wr.cl({Wr::lit(good_s_prime, false), Wr::lit(reach_sprime_t, false), Wr::lit(reach_s_t, true)});
-                    n_reachability_clauses += 1;
-                }
-            }
-
-            // -Reach(s, s)
-            wr.cl({Wr::lit(reach.at({s, s}), false)});
-            n_reachability_clauses += 1;
+        for (const auto a:s_to_as[s]) {
+            clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
         }
-    } else if (options.acyclicity == "topological") {
-        for (const auto s:sample_.alive_states()) {
-            for (const auto sprime:sample_.successors(s)) {
-                if (is_necessarily_bad(get_transition_id(s, sprime))) continue; // includes alive-to-dead transitions
-                if (!sample_.is_alive(sprime)) continue;
-                if (!sample_.in_sample(sprime)) continue;
-                if (get_vstar(s) > acyclicity_radius) continue;
 
-                const auto good_s_prime = variables.goods.at(get_class_representative(s, sprime));
+        wr.cl(clause);
+    }
 
-                for (unsigned dprime=1; dprime < max_d; ++dprime) {
-                    // (2) Good(s, s') and V(s',dprime) -> V(s) > dprime
-                    cnfclause_t clause{Wr::lit(good_s_prime, false),
-                                       Wr::lit(vs.at({sprime, dprime}), false)};
+//    Soft clauses Bad(s):
+    for (const auto s:sample_.alive_states()) {
+        wr.cl({Wr::lit(bad_s.at(s), false)}, 1);
+    }
 
-                    for (unsigned d = dprime + 1; d <= max_d; ++d) {
+//    1. Good(s, a) implies V(s") < V(s),                        equiv. to (using binary variables):
+//    2. Good(s, a) implies V(s")=d" and V(s)=d, for some d"<d   equiv. to (move things around):
+//    3. Good(s, a) and V(s")=d"  implies OR_{d>d"}  V(s)=d      equiv. to (implication to disjunc.):
+//    4. not Good(s, a) or not V(s")=d" or OR_{d>d"}  V(s)=d
+    for (const auto s:sample_.alive_states()) {
+        for (const auto a:s_to_as[s]) {
+            for (const auto &spp:s_a_to_s[{s, a}]) {
+                if (is_necessarily_bad(get_transition_id(s, spp))) continue; // includes alive-to-dead transitions
+                if (!sample_.is_alive(spp)) continue;
+                if (!sample_.in_sample(spp)) continue;
+//                if (get_vstar(s) > acyclicity_radius) continue;
+
+                for (unsigned dpp=1; dpp < max_d; ++dpp) {
+
+                    cnfclause_t clause;
+                    // (2) Good(s, a) and V(s", d") -> V(s) > d"
+                    clause.push_back(Wr::lit(good_s_a.at({s, a}), false));
+                    clause.push_back(Wr::lit(vs.at({spp, dpp}), false));
+
+                    for (unsigned d = dpp + 1; d <= max_d; ++d) {
                         clause.push_back(Wr::lit(vs.at({s, d}), true));
                     }
                     wr.cl(clause);
                     ++n_descending_clauses;
                 }
 
-                // (2') Border condition: V(s', D) implies -Good(s, s')
-                wr.cl({Wr::lit(vs.at({sprime, max_d}), false), Wr::lit(good_s_prime, false)});
+//               (2') Border condition: V(s", D) implies -Good(s, a)
+                wr.cl({Wr::lit(vs.at({spp, max_d}), false),
+                       Wr::lit(good_s_a.at({s, a}), false)});
                 ++n_descending_clauses;
             }
         }
     }
+
+//    for (const auto s:sample_.alive_states()) {
+//        for (const auto sprime:sample_.successors(s)) {
+//            if (is_necessarily_bad(get_transition_id(s, sprime))) continue; // includes alive-to-dead transitions
+//            if (!sample_.is_alive(sprime)) continue;
+//            if (!sample_.in_sample(sprime)) continue;
+//
+//            const auto good_s_prime = variables.goods.at(get_class_representative(s, sprime));
+//
+//            for (unsigned dprime=1; dprime < max_d; ++dprime) {
+//                // (2) Good(s, s') and V(s',dprime) -> V(s) > dprime
+//                cnfclause_t clause{Wr::lit(good_s_prime, false),
+//                                   Wr::lit(vs.at({sprime, dprime}), false)};
+//
+//                for (unsigned d = dprime + 1; d <= max_d; ++d) {
+//                    clause.push_back(Wr::lit(vs.at({s, d}), true));
+//                }
+//                wr.cl(clause);
+//                ++n_descending_clauses;
+//            }
+//
+//            // (2') Border condition: V(s', D) implies -Good(s, s')
+//            wr.cl({Wr::lit(vs.at({sprime, max_d}), false), Wr::lit(good_s_prime, false)});
+//            ++n_descending_clauses;
+//        }
+//    }
 
     // Clauses (6), (7):
     auto transitions_to_distinguish = distinguish_all_transitions();
@@ -630,13 +565,13 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     }
     for (const auto& tpair:transitions_to_distinguish) {
         assert (!is_necessarily_bad(tpair.tx1));
-        const auto& [s, sprime] = get_state_pair(tpair.tx1);
-        const auto& [t, tprime] = get_state_pair(tpair.tx2);
+        const auto& [s, sp] = get_state_pair(tpair.tx1);
+        const auto& [t, tp] = get_state_pair(tpair.tx2);
 
         cnfclause_t clause{Wr::lit(variables.goods.at(tpair.tx1), false)};
 
         // Compute first the Selected(f) terms
-        for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sprime, t, tprime)) {
+        for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
             clause.push_back(Wr::lit(variables.selecteds.at(f), true));
         }
 
@@ -693,7 +628,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
         std::cout << "\tV descending along good transitions [X]: " << n_descending_clauses << std::endl;
         std::cout << "\tV is total function within bounds [X]: " << n_v_function_clauses << std::endl;
         std::cout << "\tGoal separation [X]: " << n_goal_clauses << std::endl;
-        std::cout << "\tReachability [X]: " << n_reachability_clauses << std::endl;
         std::cout << "\t(Weighted) Select(f): " << n_selected_clauses << std::endl;
         assert(wr.nclauses() == n_selected_clauses + n_good_tx_clauses + n_descending_clauses
                                 + n_v_function_clauses + n_separation_clauses
@@ -720,12 +654,12 @@ std::vector<transition_pair> D2LEncoding::distinguish_all_transitions() const {
 
 DNFPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const {
     DNFPolicy dnf(selecteds);
-    for (const auto& [s, sprime]:goods) {
+    for (const auto& [s, sp]:goods) {
         DNFPolicy::term_t clause;
 
         for (const auto& f:selecteds) {
             const auto& fs = sample_.matrix().entry(s, f);
-            const auto& fsprime = sample_.matrix().entry(sprime, f);
+            const auto& fsprime = sample_.matrix().entry(sp, f);
 
             clause.emplace_back(f, DNFPolicy::compute_state_value(fs));
             clause.emplace_back(f, DNFPolicy::compute_transition_value(fs, fsprime));
@@ -762,11 +696,11 @@ DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variabl
 }
 
 bool D2LEncoding::are_transitions_d1d2_distinguishable(
-        state_id_t s, state_id_t sprime, state_id_t t, state_id_t tprime, const std::vector<unsigned>& features) const {
+        state_id_t s, state_id_t sp, state_id_t t, state_id_t tp, const std::vector<unsigned>& features) const {
     const auto& mat = sample_.matrix();
     for (unsigned f:features) {
-        if (are_transitions_d1d2_distinguished(mat.entry(s, f), mat.entry(sprime, f),
-                                               mat.entry(t, f), mat.entry(tprime, f))) {
+        if (are_transitions_d1d2_distinguished(mat.entry(s, f), mat.entry(sp, f),
+                                               mat.entry(t, f), mat.entry(tp, f))) {
             return true;
         }
     }

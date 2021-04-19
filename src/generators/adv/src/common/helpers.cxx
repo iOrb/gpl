@@ -14,7 +14,6 @@ sltp::TransitionSample read_transition_data(const std::string& workspace, bool v
     return transitions;
 }
 
-
 sltp::FeatureMatrix read_feature_matrix(const std::string& workspace, bool verbose) {
     std::string matrix_filename = workspace + "/feature-matrix.io";
     std::cout << sltp::utils::blue() << "reading" << sltp::utils::normal() << " '" << matrix_filename << std::endl;
@@ -43,7 +42,6 @@ std::vector<std::string> read_nominals(const std::string& workspace) {
     boost::split(nominals, nominals_line, boost::is_any_of(" \t"));
     return nominals;
 }
-
 
 int transition_sign(int s_f, int sprime_f) {
     int type_s = sprime_f - s_f; // <0 if DEC, =0 if unaffected, >0 if INC

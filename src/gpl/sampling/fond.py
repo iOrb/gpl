@@ -10,7 +10,7 @@ from sltp.util.command import read_file
 from sltp.util.naming import filename_core
 
 
-class TransitionSampleMDP:
+class TransitionSampleFOND:
     """ """
     def __init__(self):
         self.states = OrderedDict()

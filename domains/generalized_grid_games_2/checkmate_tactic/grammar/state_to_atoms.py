@@ -19,7 +19,7 @@ def state_to_atoms(domain_name, state):
             if nrows > r >= 0 and ncols > c >= 0:
                 o = rep[r, c]
                 a = f'cell-hv-{o}'
-                if o ==  OBJECTS.empty:
+                if o == OBJECTS.empty:
                     continue
             else:
                 # Add the None value for cells outside the world
@@ -27,7 +27,7 @@ def state_to_atoms(domain_name, state):
 
             atoms.append((a, f'c{r}-{c}'))
 
-    # atoms.append(('player-{}'.format(mrk),))
+    atoms.append(('player-{}'.format(state[0][1]),))
     return atoms
 
 

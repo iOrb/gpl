@@ -67,7 +67,10 @@ def rollout(config, data, get_policy, rng):
 
             # And now we inject our desired search and heuristic functions
             if i in config.train_instances_to_expand:
-                bfs(config, data, search_policy, task, instance_name, rng)
+                if config.mode == 'adv':
+                    bfs_adv(config, data, search_policy, task, instance_name, rng)
+                else:
+                    bfs_no_adv(config, data, search_policy, task, instance_name, rng)
             else:
                 run_rollout(config, data, search_policy, task, instance_name, rng)
 
@@ -94,8 +97,8 @@ def run_rollout(config, data, search_policy, task, instance_name, rng):
         if not alive:
             break
 
-        while not end_node_reached and rollout_depth < config.rollout_depth:
-
+        while rollout_depth < config.rollout_depth:
+            rollout_depth += 1
             succcessors = task.get_successor_states(state)
 
             alive, _, _ = data.sample.process_successors(state, succcessors, task)
@@ -105,7 +108,7 @@ def run_rollout(config, data, search_policy, task, instance_name, rng):
                 continue
                 # raise RuntimeError("No successors for expanded state: \n{}".format(state[1],))
             else:
-                rnd_op, rnd_succ, _ = random.Random(rng).choice(alive)
+                rnd_op, rnd_succ = random.Random(rng).choice(alive)
 
                 if search_policy is not None:
                     exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
@@ -116,10 +119,9 @@ def run_rollout(config, data, search_policy, task, instance_name, rng):
                 else:
                     op, succ = rnd_op, rnd_succ
 
-            spp = task.transition_adversary(succ) # (FOND Adv) transition
+            # spp = task.transition(succ) # (FOND Adv) transition
 
-            state = spp
-            rollout_depth += 1
+            state = succ
 
 
 def run_policy_based_search(config, search_policy, task, state, successors):
@@ -130,35 +132,36 @@ def run_policy_based_search(config, search_policy, task, state, successors):
     return exitcode, good_succs
 
 
-# def bfs_old(config, data, search_policy, task, instance_name, rng):
-#
-#     logging.info(f'Expanding train instance "{instance_name}"')
-#
-#     visited = set()
-#     istate = task.initial_state
-#
-#     queue = [istate]
-#
-#     while queue:
-#         s = queue.pop(0)
-#         sr, _, _, s_encoded, info = unpack_state(s)
-#
-#         succcessors = task.get_successor_states(s)
-#
-#         alive, goals, deadends = data.sample.process_successors(s, succcessors, task)
-#
-#         # if not alive:
-#         #     data.sample.mark_state_as_deadend(s, task) # perhabs goal
-#         #     # raise RuntimeError("No successor")
-#
-#         for _, _, spps in alive: # Add all FOND-Adv transitions to the queue
-#             for _, spp in spps:
-#                 if spp[2] not in visited:
-#                     if not spp[1]['goal'] and not spp[1]['deadend']:
-#                         visited.add(spp[2])
-#                         queue.append(spp)
+def bfs_adv(config, data, search_policy, task, instance_name, rng):
 
-def bfs(config, data, search_policy, task, instance_name, rng):
+    logging.info(f'Expanding train instance "{instance_name}"')
+
+    istate = task.initial_state
+    visited = set([istate[2]])
+
+    queue = [istate]
+
+    while queue:
+        s = queue.pop(0)
+        sr, _, _, s_encoded, info = unpack_state(s)
+
+        succcessors = task.get_successor_states(s)
+
+        alive, goals, deadends = data.sample.process_successors(s, succcessors, task)
+
+        # if not alive:
+        #     data.sample.mark_state_as_deadend(s, task) # perhabs goal
+        #     # raise RuntimeError("No successor")
+
+        for _, _, spps in alive: # Add all FOND-Adv transitions to the queue
+            for _, spp in spps:
+                if spp[2] not in visited:
+                    if not spp[1]['goal'] and not spp[1]['deadend']:
+                        visited.add(spp[2])
+                        queue.append(spp)
+
+
+def bfs_no_adv(config, data, search_policy, task, instance_name, rng):
 
     logging.info(f'Expanding train instance "{instance_name}"')
 

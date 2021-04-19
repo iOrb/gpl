@@ -112,12 +112,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     const auto& mat = sample_.matrix();
     const auto num_transitions = transition_ids_.size();
 
-    using sa_pair_t = std::pair<unsigned, unsigned>;
-
     VariableMapping variables(nf_);
-
-    // Map `good_s_a` from transition IDs to SAT variable IDs:
-    std::unordered_map<sa_pair_t, cnfvar_t, boost::hash<sa_pair_t>> good_s_a;
 
     // We keep the logging of variables for debugging purposes
     auto varmapstream = utils::get_ofstream(options.workspace + "/varmap.wsat");
@@ -157,6 +152,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     // V vars
     std::map< std::pair< unsigned, unsigned >, cnfvar_t > v_vars;
 
+
     unsigned n_select_vars = 0;
     unsigned n_select_pos_vars = 0;
     unsigned n_y_vars = 0;
@@ -165,9 +161,8 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     unsigned n_bi_vars = 0;
     unsigned n_split_vars = 0;
     unsigned n_v_vars = 0;
-    unsigned n_good_tx_clauses = 0; // ?
 
-    std::vector< unsigned > cl_counter(n_constraints, 0);
+    std::vector< unsigned > cl_counter(n_constraints,0);
 
     // Create one "Select(f)" variable for each feature f in the pool
     for (unsigned f:feature_ids) {
@@ -445,7 +440,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
             cl_counter[2]++;
         }
     }
-
     // C3.b -Good(s,s') iff s is alive and s' is a dead-end
     /*std::set< unsigned > c2_repr;
     for( const auto s : sample_.alive_states() ){
@@ -462,82 +456,25 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     }*/
     //c2_repr.clear();
 
-    // C3' // Create all variables Good_a(s, a) for any possible pair (s, a) in a non-det transition (s, a, s').
-    // We use this loop to index possible non-det transitions in maps s_to_as and s_a_to_s too.
-    std::unordered_map<unsigned, std::vector<unsigned>> s_to_as;
-    std::unordered_map<sa_pair_t, std::vector<unsigned>, boost::hash<sa_pair_t>> s_a_to_s;
-    for (const auto& [s, a, sprime]:sample_.transitions_.nondet_transitions()) {
-        if (sample_.is_alive(s)) {
-            const auto it = good_s_a.find({s, a});
-            cnfvar_t good_s_a_var = 0;
-
-            if (it == good_s_a.end()) {
-                good_s_a_var = wr.var("Good_a(" + std::to_string(s) + ", " + std::to_string(a) + ")");
-//                 varmapstream << good_s_a_var << " " << s << " " << a << std::endl;
-                good_s_a.emplace(std::make_pair(s, a), good_s_a_var);
-                s_to_as[s].push_back(a);
-            } else {
-                good_s_a_var = it->second;
-            }
-            s_a_to_s[{s, a}].push_back(sprime);
-        }
-    }
-
-    // C3. [1] For each alive state s, post a constraint
-    //         OR_{a s.t. (s, a, s') in T} Good_a(s, a).
-    // Then, For each alive state s and a applicable in s, post a constraint
-    //         If Good_a(s, a) then Good(s, s')
-    //
-    // One twist in domains with dead-ends: if all states s' that are reachable by applying a in s are
-    // unsolvable, then we cannot have Good_a(s, a).
+    // C3. For each state s, post a constraint OR_{s' child of s} Good(s, s')
     if (options.verbosity>0) std::cout << "Encoding clause C3..." << std::endl;
     for( const auto s : sample_.alive_states()){
-
-//         std::set< unsigned > c3_repr;
-//         for (unsigned s_prime:sample_.successors(s)) {
-//             if( !sample_.is_solvable(s_prime) ) continue;
-//             auto tx = get_transition_id(s, s_prime);
-//             auto repr = get_representative_id( tx );
-//             c3_repr.insert( repr );
-//         }
-
+        std::set< unsigned > c3_repr;
+        for (unsigned s_prime:sample_.successors(s)) {
+            if( !sample_.is_solvable(s_prime) ) continue;
+            auto tx = get_transition_id(s, s_prime);
+            auto repr = get_representative_id( tx );
+            c3_repr.insert( repr );
+        }
         cnfclause_t clause;
-
-        for (const auto a:s_to_as[s]) {
-            clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
-
-            for (const auto& sprime:s_a_to_s[{s, a}]) {
-                // If Good_a(s, a) then Good_a(s, s')
-                auto tx = get_transition_id(s, sprime);
-                if (is_necessarily_bad(tx)) {
-                    // If some possible outcome of (s, a) is BAD (e.g. an unsolvable state), then (s, a) cannot be good
-                    wr.cl({Wr::lit(good_s_a.at({s, a}), false)});
-                    continue; // includes alive-to-dead transitions
-                }
-
-                wr.cl({Wr::lit(good_s_a.at({s, a}), false),
-                       Wr::lit(variables.goods.at(get_representative_id(tx)), true)});
-            }
+        for( auto repr : c3_repr ){
+            clause.push_back( Wr::lit(variables.goods.at(repr ), true ) );
         }
-
-//         for( auto repr : c3_repr ){
-//             clause.push_back( Wr::lit(variables.goods.at(repr ), true ) );
-//         }
-//         if (clause.empty()) {
-//             throw std::runtime_error("State #" + std::to_string(s) + " has no successor that can be good");
-//         }
-//         wr.cl( clause );
-//         ++cl_counter[3];
-
-        // Add clauses (1) for this state
         if (clause.empty()) {
-            throw std::runtime_error(
-                    "State #" + std::to_string(s) + " is marked as alive, but has no successor that can be good. "
-                    "This is likely due to the feature pool not being large enough to distinguish some dead state from "
-                    "some alive state. Try increasing the feature complexity bound");
+            throw std::runtime_error("State #" + std::to_string(s) + " has no successor that can be good");
         }
-        wr.cl(clause);
-        ++n_good_tx_clauses;
+        wr.cl( clause );
+        ++cl_counter[3];
     }
 
     // C4. Policy Termination Preliminaries

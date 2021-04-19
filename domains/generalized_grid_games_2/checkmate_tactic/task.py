@@ -120,7 +120,7 @@ class Task(ITask):
                 visited_tx.add(tx_enc)
                 succs_sp.append((op0, state1, None))
             else:
-                # succs_spp = []
+                succs_spp = []
                 visited_tx_adv = set()
                 ava_actions1 = available_actions(state1[0])
                 # deadend = False
@@ -132,17 +132,18 @@ class Task(ITask):
                     if tx_enc in visited_tx_adv:
                         continue
                     visited_tx_adv.add(state2[2])
-                    succs_sp.append((op0, state2, None))
                     # assert not state2[1]['goal']
                     # if state2[1]['deadend']:
                     #     deadend = True
-                    # succs_spp.append((op1, state2))
+                    succs_spp.append((op1, state2))
+                    # succs_sp.append((op0, state2, None))
                 # if deadend:
-                ##     If any succ(s') is dead-end, then s' is dead-end
-                    # succs_sp.append((op0, self.__change_to_deadend(state1), succs_spp))
+                # #     If any succ(s') is dead-end, then s' is dead-end
+                #     succs_sp.append((op0, self.__change_to_deadend(state1), succs_spp))
                 # else:
-                ##     If not-any succ(s') is dead-end, then s' is alive
-                    # succs_sp.append((op0, state1, succs_spp))
+                # #     If not-any succ(s') is dead-end, then s' is alive
+                #     succs_sp.append((op0, state1, succs_spp))
+                succs_sp.append((op0, state1, succs_spp))
 
         return succs_sp
 

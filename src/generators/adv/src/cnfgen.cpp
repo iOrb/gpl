@@ -207,7 +207,7 @@ int run(const Options& options) {
 
     CNFGenerationOutput output;
 
-    for (unsigned it=1; it<options.maxsat_iter+1; ++it) {
+    for (unsigned it=1; true; ++it) {
         if (options.verbosity>0) {
             std::cout << std::endl << std::endl << "###  STARTING ITERATION " << it << "  ###" << std::endl;
         } else {
@@ -229,7 +229,7 @@ int run(const Options& options) {
 
         auto flaws = sampler->sample_flaws(dnf, options.refinement_batch_size);
 //        auto flaws = test_policy(rng, dnf, *sample, options.refinement_batch_size);
-        if (flaws.empty()) {
+        if (flaws.empty() || !(it<options.maxsat_iter)) {
             std::cout << "Solution found in iteration #" << it << " is correct!" << std::endl;
             print_classifier(sample->matrix(), dnf, options.workspace + "/classifier");
             break;

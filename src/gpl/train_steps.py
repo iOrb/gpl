@@ -23,7 +23,7 @@ class StateSpaceExplorationStep:
     def description(self):
         return "Exploration of the training sample"
 
-    def get_step_runner(self):
+    def get_step_runner(self, config):
         from .search import run
         return run
 
@@ -60,8 +60,13 @@ class TransitionSamplingStep:
     def description(self):
         return "Generation of the training sample"
 
-    def get_step_runner(self):
-        from .sampling.fond import run
+    def get_step_runner(self, config):
+        if config.mode == 'adv':
+            from .sampling.adv import run
+        elif config.mode == 'fond':
+            from .sampling.fond import run
+        else:
+            raise RuntimeError("Wrong mode provided: {}".format(config.mode))
         return run
 
 
@@ -88,7 +93,7 @@ class FeatureGenerationStep:
     def description(self):
         return "Generate the pool of candidate features"
 
-    def get_step_runner(self):
+    def get_step_runner(self, config):
         from .features import run
         return run
 
@@ -113,7 +118,7 @@ class CPPMaxsatProblemGenerationStep:
     def description(self):
         return "C++ CNF generation module"
 
-    def get_step_runner(self):
+    def get_step_runner(self, config):
         from sltp import cnfgen
         return cnfgen.run
 

@@ -12,6 +12,8 @@ from gpl.defaults import ct_names
 
 DOMAIN_NAME = "checkmate_tactic"
 
+MODE = 'adv' # could be on of {'fond', 'adv'}
+
 def experiments():
     base = dict(
         domain=Domain(DOMAIN_NAME),
@@ -22,6 +24,7 @@ def experiments():
         concept_generator=None,
         parameter_generator=None,
         v_slack=2,
+        mode=MODE,
 
         # concept_generation_timeout=120,  # in seconds
 
@@ -33,18 +36,52 @@ def experiments():
 
     exps["1"] = update_dict(
         base,
-        instances=break_instances('a'),
+        instances=all_instances([17]),
+        # instances=break_instances([0]),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
         #           all_instances([15, 16]) +
         #           break_instances('a'),
+        test_instances=four_four_instances('a') +
+                       break_instances('a') +
+                       all_instances('a'),
+
+        teach_policies=None,
+
+        initial_sample_size=1,
+        refinement_batch_size=3,
+        verbosity=0,
+
+        acyclicity='topological',
+
+        max_concept_size=5,
+        distance_feature_max_complexity=5,
+        concept_generation_timeout=120,
+
+        parameter_generator=None,
+        maxsat_iter=1000,
+
+        # rollouts
+        # num_episodes=1,
+        # num_rollouts=1,
+        # rollout_depth=1,
+
+        # train_instances_to_expand=[],
+        train_instances_to_expand=list(range(1000)),
+    )
+
+    exps["2"] = update_dict(
+        base,
+        instances=four_four_instances([1, 8, 9]) +
+                  all_instances([15, 16]) +
+                  break_instances([0, 5, 7]),
         test_instances=four_four_instances('a') +
                        all_instances('a') +
                        break_instances('a'),
 
         teach_policies=None,
 
-        initial_sample_size=5,
-        refinement_batch_size=10,
+        initial_sample_size=10,
+        refinement_batch_size=20,
         verbosity=0,
 
         acyclicity='topological',
@@ -55,7 +92,7 @@ def experiments():
         concept_generation_timeout=120,
 
         parameter_generator=None,
-        maxsat_iter=100,
+        maxsat_iter=20,
 
         # rollouts
         # num_episodes=1,
@@ -65,32 +102,73 @@ def experiments():
         train_instances_to_expand=list(range(1000)),
     )
 
-    exps["2"] = update_dict(
+    exps["3"] = update_dict(
         base,
-        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-                  all_instances([15, 16]) +
-                  break_instances('a'),
+        instances=four_four_instances([1, 8, 9]) +
+                  all_instances([15,]) +
+                  break_instances([0,]),
         test_instances=four_four_instances('a') +
                        all_instances('a') +
                        break_instances('a'),
 
         teach_policies=None,
 
+        initial_sample_size=10,
+        refinement_batch_size=20,
+        verbosity=0,
+
+        acyclicity='topological',
+        # acyclicity='reachability',
+
         max_concept_size=5,
         distance_feature_max_complexity=5,
         concept_generation_timeout=120,
 
         parameter_generator=None,
+        maxsat_iter=20,
 
         # rollouts
-        num_episodes=1,
-        num_rollouts=1,
-        rollout_depth=1,
+        # num_episodes=1,
+        # num_rollouts=2,
+        # rollout_depth=2,
 
-        expand_first_train_instance=False,
+        train_instances_to_expand=list(range(1000)),
+    )
+
+    exps["4"] = update_dict(
+        base,
+        instances=all_instances([20]) +
+                  all_instances([15,]),
+        test_instances=four_four_instances('a') +
+                       all_instances('a') +
+                       break_instances('a'),
+
+        teach_policies=None,
+
+        initial_sample_size=10,
+        refinement_batch_size=20,
+        verbosity=0,
+
+        acyclicity='topological',
+        # acyclicity='reachability',
+
+        max_concept_size=5,
+        distance_feature_max_complexity=5,
+        concept_generation_timeout=120,
+
+        parameter_generator=None,
+        maxsat_iter=20,
+
+        # rollouts
+        # num_episodes=1,
+        # num_rollouts=2,
+        # rollout_depth=2,
+
+        train_instances_to_expand=list(range(1000)),
     )
 
     return exps
+
 
 
 
