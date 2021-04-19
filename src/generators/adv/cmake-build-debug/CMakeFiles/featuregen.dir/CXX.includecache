@@ -19,6 +19,8 @@ vector
 -
 
 ../src/blai/transitions.h
+map
+../src/blai/map
 cassert
 -
 iostream

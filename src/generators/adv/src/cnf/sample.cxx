@@ -47,7 +47,7 @@ int select_action(unsigned s, const DNFPolicy& dnf, const TrainingSet& trset) {
 }
 
 
-void detect_cycles(const DNFPolicy& dnf, const TrainingSet& trset, unsigned batch_size, const std::vector<unsigned>& alive, std::vector<unsigned>& flaws) {
+void detect_cycles(const DNFPolicy& dnf, const TrainingSet& trset, unsigned batch_size, const std::set<unsigned>& alive, std::vector<unsigned>& flaws) {
     const unsigned N = trset.transitions().num_states();
 
     using graph_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS>;
@@ -55,9 +55,9 @@ void detect_cycles(const DNFPolicy& dnf, const TrainingSet& trset, unsigned batc
 
     // Build graph
     for (unsigned s:alive) {
-        for (unsigned spp:trset.transitions().nondet_successors(s)) {
-            if (trset.transitions().is_alive(spp) && evaluate_dnf(s, spp, dnf, trset.matrix())) {
-                boost::add_edge(s, spp, graph);
+        for (unsigned sp:trset.transitions().agent_successors(s)) {
+            if (trset.transitions().is_alive(sp) && evaluate_dnf(s, sp, dnf, trset.matrix())) {
+                boost::add_edge(s, sp, graph);
             }
         }
     }
@@ -80,10 +80,8 @@ void detect_cycles(const DNFPolicy& dnf, const TrainingSet& trset, unsigned batc
     //    for (auto i = 0; i < component.size(); ++i) std::cout << "Vertex " << i << " in CC " << component[i] << std::endl;
 }
 
-std::vector<unsigned> StateSampler::randomize_all_alive_states(unsigned n) {
+std::set<unsigned> StateSampler::randomize_all_alive_states(unsigned n) {
     auto alive = trset.transitions().all_alive(); // Make a non-const copy that we can shuffle
-    std::shuffle(alive.begin(), alive.end(), rng);
-    alive.resize(std::min(alive.size(), (std::size_t) n));
     return alive;
 }
 
@@ -103,7 +101,7 @@ StateSpaceSample* GoalDistanceSampler::sample_initial_states(unsigned n) {
 }
 
 
-std::vector<unsigned> StateSampler::sample_flaws(const DNFPolicy& dnf, unsigned batch_size, const std::vector<unsigned>& states_to_check) {
+std::vector<unsigned> StateSampler::sample_flaws(const DNFPolicy& dnf, unsigned batch_size, const std::set<unsigned>& states_to_check) {
     std::vector<unsigned> flaws;
 
     // We want to check the following over the  entire training set:
@@ -150,13 +148,13 @@ std::vector<unsigned> StateSampler::sample_flaws(const DNFPolicy& dnf, unsigned 
 }
 
 
-std::vector<unsigned> GoalDistanceSampler::randomize_and_sort_alive_states(unsigned n) {
+std::set<unsigned> GoalDistanceSampler::randomize_and_sort_alive_states(unsigned n) {
     auto sample = randomize_all_alive_states();
     // Sort states in ascending order of their min-distance to the goal V*(s)
-    std::sort(sample.begin(), sample.end(), [&](const auto& lhs, const auto& rhs) {
-        return trset.transitions_.vstar(lhs) < trset.transitions_.vstar(rhs);
-    });
-    sample.resize(std::min(sample.size(), (std::size_t) n));
+//    std::sort(sample.begin(), sample.end(), [&](const auto& lhs, const auto& rhs) {
+//        return trset.transitions_.vstar(lhs) < trset.transitions_.vstar(rhs);
+//    });
+//    sample.resize(std::min(sample.size(), (std::size_t) n));
     return sample;
 }
 
@@ -172,8 +170,6 @@ std::vector<unsigned> GoalDistanceSampler::sample_flaws(const DNFPolicy& dnf, un
     // We look for samples in order of increasing distance to goal.
     return sample_flaws(dnf, batch_size, randomize_and_sort_alive_states());
 }
-
-
 
 
 std::string print_term(const sltp::FeatureMatrix& matrix, const DNFPolicy::term_t& term, bool txt) {

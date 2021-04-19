@@ -127,8 +127,7 @@ namespace sltp::cnf {
         options.sampling_strategy = vm["sampling_strategy"].as<std::string>();
         options.acyclicity = vm["acyclicity"].as<std::string>();
         if (options.acyclicity != "asp" &&
-            options.acyclicity != "topological" &&
-            options.acyclicity != "sd2l" ) {
+            options.acyclicity != "topological") {
             throw po::validation_error(po::validation_error::invalid_option_value, "acyclicity");
         }
         options.maxsat_iter = vm["maxsat_iter"].as<unsigned>();

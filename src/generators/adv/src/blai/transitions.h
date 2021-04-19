@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "map"
 #include <cassert>
 #include <iostream>
 #include <fstream>
@@ -23,24 +24,21 @@ namespace sltp {
 
         //! nondet_transitions_ represents the entire non-deterministic transition function by storing a vector of
         //! possible tuples (s, a, s').
-        std::vector<std::tuple<unsigned, unsigned, unsigned>> agent_transitions_;
-        std::vector<std::tuple<unsigned, unsigned, unsigned>> nondet_transitions_;
+        std::set<std::tuple<unsigned, unsigned, unsigned>> agent_transitions_;
+        std::set<std::tuple<unsigned, unsigned, unsigned>> nondet_transitions_;
 
         //! trdata_[s] contains a vector with all state IDs of the states s' that can be reached in the state space
         //! in one single step from s
-        std::vector<std::vector<unsigned>> agent_trdata_;
-        std::vector<std::vector<unsigned>> nondet_trdata_;
+        std::map<unsigned, std::set<unsigned>> agent_trdata_;
+        std::map<unsigned, std::set<unsigned>> nondet_trdata_;
 
-        std::vector<bool> is_state_alive_;
-        std::vector<bool> is_state_goal_;
-        std::vector<bool> is_state_unsolvable_;
-        std::vector<bool> is_state_alive_sp_;
 
-        std::vector<unsigned> alive_states_;
-        std::vector<unsigned> goal_states_;
-        std::vector<unsigned> unsolvable_states_;
+        std::set<unsigned> alive_states_;
+        std::set<unsigned> goal_states_;
+        std::set<unsigned> unsolvable_states_;
+        std::set<unsigned> alive_states_sp_;
 
-        std::vector<int> vstar_;
+        std::map<unsigned, int> vstar_;
 
     public:
         TransitionSample(std::size_t num_states, std::size_t num_states_s_spp, std::size_t num_nondet_transitions, std::size_t num_agent_transitions)
@@ -48,15 +46,11 @@ namespace sltp {
                   num_states_s_spp_(num_states_s_spp),
                   num_nondet_transitions_(num_nondet_transitions),
                   num_agent_transitions_(num_agent_transitions),
-                  agent_trdata_(num_agent_transitions),
-                  nondet_trdata_(num_nondet_transitions),
-                  is_state_alive_(num_states_s_spp, false), // include states s and spp
-                  is_state_goal_(num_states_s_spp, false), // include states s and spp
-                  is_state_unsolvable_(num_states_s_spp, false), // include states s and spp
-                  is_state_alive_sp_(num_states, false), // include states sp
-                  alive_states_(),
-                  goal_states_(),
-                  unsolvable_states_()
+                  alive_states_(), // include states s and spp
+                  goal_states_(), // include states s and spp
+                  unsolvable_states_(), // include states s and spp
+                  alive_states_sp_(), // include states sp
+                  vstar_()
         {
             if (num_states_s_spp_ > std::numeric_limits<state_id_t>::max()) {
                 throw std::runtime_error("Number of states too high - revise source code and change state_id_t datatype");
@@ -76,31 +70,30 @@ namespace sltp {
         std::size_t num_nondet_transitions() const { return num_nondet_transitions_; }
         std::size_t num_agent_transitions() const { return num_agent_transitions_; }
 
-        const std::vector<std::tuple<unsigned, unsigned, unsigned>>& agent_transitions() const {
+        const std::set<std::tuple<unsigned, unsigned, unsigned>>& agent_transitions() const {
             return agent_transitions_;
         }
 
-        const std::vector<std::tuple<unsigned, unsigned, unsigned>>& nondet_transitions() const {
+        const std::set<std::tuple<unsigned, unsigned, unsigned>>& nondet_transitions() const {
             return nondet_transitions_;
         }
 
         int vstar(unsigned sid) const {
-            auto vstar = vstar_.at(sid);
-            return vstar < 0 ? -1 : vstar;
+            return vstar_.at(sid);
         }
 
-        const std::vector<unsigned>& agent_successors(unsigned s) const {
+        const std::set<unsigned>& agent_successors(unsigned s) const {
             return agent_trdata_.at(s);
         }
 
-        const std::vector<unsigned>& nondet_successors(unsigned s) const {
+        const std::set<unsigned>& nondet_successors(unsigned s) const {
             return nondet_trdata_.at(s);
         }
 
-        bool is_alive(unsigned state) const { return is_state_alive_.at(state); }
-        bool is_goal(unsigned state) const { return is_state_goal_.at(state); }
-        bool is_unsolvable(unsigned state) const { return is_state_unsolvable_.at(state); }
-        bool is_alive_sp(unsigned state) const { return is_state_alive_sp_.at(state); }
+        bool is_alive(unsigned state) const { return alive_states_.find(state) != alive_states_.end(); }
+        bool is_goal(unsigned state) const { return goal_states_.find(state) != goal_states_.end(); }
+        bool is_unsolvable(unsigned state) const { return unsolvable_states_.find(state) != unsolvable_states_.end(); }
+        bool is_alive_sp(unsigned state) const { return alive_states_sp_.find(state) != alive_states_sp_.end(); }
 
         unsigned num_unsolvable() const {
             unsigned c = 0;
@@ -110,9 +103,10 @@ namespace sltp {
             return c;
         }
 
-        const std::vector<unsigned>& all_alive() const { return alive_states_; }
-        const std::vector<unsigned>& all_goals() const { return goal_states_; }
-        const std::vector<unsigned>& all_dead() const { return unsolvable_states_; }
+        const std::set<unsigned>& all_alive() const { return alive_states_; }
+        const std::set<unsigned>& all_goals() const { return goal_states_; }
+        const std::set<unsigned>& all_dead() const { return unsolvable_states_; }
+        const std::set<unsigned>& all_alive_sp() const { return alive_states_sp_; }
 
         //! Print a representation of the object to the given stream.
         friend std::ostream& operator<<(std::ostream &os, const TransitionSample& o) { return o.print(os); }
@@ -129,54 +123,44 @@ namespace sltp {
 
             // read number of states that have been expanded, for which we'll have one state per line next
             unsigned n_read_transitions = 0;
-            vstar_.reserve(num_states_s_spp_);
 
             // read transitions, in format: s_id, vstar, num_sp, num_spp, (op0, sp0, spp0), (op0, sp0, spp1)...
             for (unsigned i = 0; i < num_states_s_spp_; ++i) {
-                unsigned s = 0, vstar=0, n_sp = 0, n_spp = 0, op0 = 0, sp = 0, spp = 0;
+                unsigned s = 0, n_sp = 0, n_spp = 0, op0 = 0, sp = 0, spp = 0;
+                int vstar = 0;
                 is >> s >> vstar >> n_sp >> n_spp;
 //                assert(i==src);
 //                assert(src < num_states_ && 0 <= count);
                 if (n_spp > 0) {
 //                    std::vector<bool> seen(num_states_s_spp_ + num_states_sp_, false);
-                    agent_trdata_[s].reserve(n_sp);
-                    nondet_trdata_[s].reserve(n_spp);
-                    std::unordered_set<unsigned> all_sp_successors;
-                    std::unordered_set<unsigned> all_spp_successors;
                     for (unsigned j = 0; j < n_spp; ++j) {
                         is >> op0 >> sp >> spp;
 //                        assert(spp < num_states_);
-                        all_sp_successors.insert(sp);
-                        all_spp_successors.insert(spp);
-                        agent_transitions_.emplace_back(s, op0, sp);
-                        nondet_transitions_.emplace_back(s, op0, spp);
+                        agent_trdata_[s].insert(sp);
+                        nondet_trdata_[s].insert(sp);
+                        agent_transitions_.insert(std::make_tuple(s, op0, sp));
+                        nondet_transitions_.insert(std::make_tuple(s, op0, spp));
                         n_read_transitions++;
                     }
 
                     assert(agent_trdata_[s].empty());
                     assert(nondet_trdata_[s].empty());
-                    agent_trdata_[s].insert(agent_trdata_[s].end(), all_sp_successors.begin(), all_sp_successors.end());
-                    nondet_trdata_[s].insert(nondet_trdata_[s].end(), all_spp_successors.begin(), all_spp_successors.end());
 
                     // Store the value of V^*(s) for each state s
-                    vstar_.push_back(vstar);
-                    if (vstar>0) {
-                        is_state_alive_[s] = true;
-                        alive_states_.push_back(s);
-                    } else if (vstar<0) {
-                        is_state_unsolvable_[s] = true;
-                        unsolvable_states_.push_back(s);
-                    } else {
-                        is_state_goal_[s] = true;
-                        goal_states_.push_back(s);
-                    }
+                    assert(vstar > 0);
+                    alive_states_.insert(s);
+                } else if (vstar == 0) {
+                    goal_states_.insert(s);
+                } else if (vstar < 0) {
+                    unsolvable_states_.insert(s);
                 }
+                vstar_[s] = vstar;
             }
 
             // post alive states sp
             for (unsigned s = 0; s < num_states_; ++s) {
                 if (!(is_alive(s) || is_goal(s) || is_unsolvable(s))) {
-                    is_state_alive_sp_[s] = true;
+                    alive_states_sp_.insert(s);
                 }
             }
 

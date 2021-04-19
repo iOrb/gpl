@@ -76,12 +76,12 @@ clean: CMakeFiles/featuregen.dir/clean
 CMakeFiles/cnfgen.dir/all:
 	$(MAKE) -f CMakeFiles/cnfgen.dir/build.make CMakeFiles/cnfgen.dir/depend
 	$(MAKE) -f CMakeFiles/cnfgen.dir/build.make CMakeFiles/cnfgen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13 "Built target cnfgen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12 "Built target cnfgen"
 .PHONY : CMakeFiles/cnfgen.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/cnfgen.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/CMakeFiles 12
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/cnfgen.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/orbital/ws/research/gpl/code/gpl/src/generators/adv/CMakeFiles 0
 .PHONY : CMakeFiles/cnfgen.dir/rule
@@ -103,7 +103,7 @@ CMakeFiles/cnfgen.dir/clean:
 CMakeFiles/featuregen.dir/all:
 	$(MAKE) -f CMakeFiles/featuregen.dir/build.make CMakeFiles/featuregen.dir/depend
 	$(MAKE) -f CMakeFiles/featuregen.dir/build.make CMakeFiles/featuregen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/CMakeFiles --progress-num=14,15,16,17,18,19,20,21,22,23 "Built target featuregen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/CMakeFiles --progress-num=13,14,15,16,17,18,19,20,21,22 "Built target featuregen"
 .PHONY : CMakeFiles/featuregen.dir/all
 
 # Build rule for subdir invocation for target.

@@ -4,7 +4,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/cnfgen.dir/src/cnf/generator.cxx.o"
   "CMakeFiles/cnfgen.dir/src/cnf/options.cxx.o"
   "CMakeFiles/cnfgen.dir/src/cnf/sample.cxx.o"
-  "CMakeFiles/cnfgen.dir/src/cnf/sd2l.cxx.o"
   "CMakeFiles/cnfgen.dir/src/cnf/solver.cxx.o"
   "CMakeFiles/cnfgen.dir/src/cnf/types.cxx.o"
   "CMakeFiles/cnfgen.dir/src/cnfgen.cpp.o"

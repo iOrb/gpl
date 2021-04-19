@@ -33,7 +33,7 @@ void D2LEncoding::compute_equivalence_relations() {
             auto it1 = transition_ids_.emplace(tx, id);
             assert(it1.second);
 
-            if (sample_.is_unsolvable(sp)) { // An alive-to-dead transition cannot be Good
+            if (!sample_.is_solvable(sp)) { // An alive-to-dead transition cannot be Good
                 necessarily_bad_transitions_.emplace(id);
             }
 

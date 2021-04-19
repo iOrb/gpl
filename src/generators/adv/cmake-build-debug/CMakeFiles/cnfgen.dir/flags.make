@@ -6,5 +6,5 @@ CXX_DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK
 
 CXX_INCLUDES = -I/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/./src
 
-CXX_FLAGS = -O3 -DNDEBUG -g -std=c++17
+CXX_FLAGS = -O3 -DNDEBUG -g -O0 -std=c++17
 

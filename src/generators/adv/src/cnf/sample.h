@@ -62,27 +62,27 @@ public:
     //! The states that belong to this sample
     std::unordered_set<unsigned> states_;
 
-    std::vector<unsigned> alive_states_;
-    std::vector<unsigned> goal_states_;
-    std::vector<unsigned> nongoal_states_;
-    std::vector<unsigned> alive_states_sp_;
+    std::set<unsigned> alive_states_;
+    std::set<unsigned> goal_states_;
+    std::set<unsigned> nongoal_states_;
+    std::set<unsigned> alive_states_sp_;
 
-    StateSpaceSample(const FeatureMatrix& matrix, const TransitionSample& transitions, std::vector<unsigned> states) :
+    StateSpaceSample(const FeatureMatrix& matrix, const TransitionSample& transitions, std::set<unsigned> states) :
             matrix_(matrix), transitions_(transitions), states_(states.begin(), states.end())
     {
         // Let's classify the states for easier access
         for (unsigned s:states_) {
-            if (is_alive(s)) alive_states_.push_back(s);
-            if (is_goal(s)) goal_states_.push_back(s);
-            if (is_unsolvable(s)) nongoal_states_.push_back(s);
-            else if (is_alive_sp(s)) alive_states_sp_.push_back(s);
+            if (is_alive(s)) alive_states_.insert(s);
+            if (is_goal(s)) goal_states_.insert(s);
+            if (is_unsolvable(s)) nongoal_states_.insert(s);
+            else if (is_alive_sp(s)) alive_states_sp_.insert(s);
             else assert(true==false);
         }
     }
 
     virtual ~StateSpaceSample() = default;
     StateSpaceSample(const StateSpaceSample&) = default;
-//
+
 //    const std::vector<unsigned>& states() const {
 //        return states_;
 //    }
@@ -94,19 +94,15 @@ public:
     const FeatureMatrix& matrix() const { return matrix_; }
 
     //! Return all alive states in this sample
-    const std::vector<unsigned>& alive_states() const { return alive_states_; }
-    const std::vector<unsigned>& goal_states() const { return goal_states_; }
-    const std::vector<unsigned>& nongoal_states() const { return nongoal_states_; }
-    const std::vector<unsigned>& alive_states_sp() const { return alive_states_sp_; }
+    const std::set<unsigned>& alive_states() const { return alive_states_; }
+    const std::set<unsigned>& goal_states() const { return goal_states_; }
+    const std::set<unsigned>& nongoal_states() const { return nongoal_states_; }
+    const std::set<unsigned>& alive_states_sp() const { return alive_states_sp_; }
 
     bool is_goal(unsigned s) const { return transitions_.is_goal(s); }
-
     bool is_alive(unsigned s) const { return transitions_.is_alive(s); }
-
-    bool is_solvable(unsigned s) const { return is_alive(s) || is_goal(s); }
-
+    bool is_solvable(unsigned s) const { return is_alive(s) || is_goal(s) || is_alive_sp(s); }
     bool is_unsolvable(unsigned s) const { return transitions_.is_unsolvable(s); }
-
     bool is_alive_sp(unsigned s) const { return transitions_.is_alive_sp(s);}
 
     inline FeatureMatrix::feature_value_t value(unsigned s, unsigned f) const {
@@ -117,11 +113,11 @@ public:
         return matrix_.feature_cost(f);
     }
 
-    const std::vector<unsigned>& notdet_successors(unsigned s) const {
+    const std::set<unsigned>& notdet_successors(unsigned s) const {
         return transitions_.nondet_successors(s);
     }
 
-    const std::vector<unsigned>& agent_successors(unsigned s) const {
+    const std::set<unsigned>& agent_successors(unsigned s) const {
         return transitions_.agent_successors(s);
     }
 
@@ -164,8 +160,8 @@ public:
 
 
 protected:
-    std::vector<unsigned> randomize_all_alive_states(unsigned n = std::numeric_limits<unsigned>::max());
-    std::vector<unsigned> sample_flaws(const DNFPolicy& dnf, unsigned batch_size, const std::vector<unsigned>& states_to_check);
+    std::set<unsigned> randomize_all_alive_states(unsigned n = std::numeric_limits<unsigned>::max());
+    std::vector<unsigned> sample_flaws(const DNFPolicy& dnf, unsigned batch_size, const std::set<unsigned>& states_to_check);
 
 };
 
@@ -191,7 +187,7 @@ public:
     StateSpaceSample* sample_initial_states(unsigned n) override;
     std::vector<unsigned> sample_flaws(const DNFPolicy& dnf, unsigned batch_size) override;
 
-    std::vector<unsigned> randomize_and_sort_alive_states(unsigned n = std::numeric_limits<unsigned>::max());
+    std::set<unsigned> randomize_and_sort_alive_states(unsigned n = std::numeric_limits<unsigned>::max());
 
     std::unordered_map<unsigned, unsigned> compute_goal_distance_histogram(const std::vector<unsigned> states);
 
