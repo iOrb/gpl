@@ -1,0 +1,301 @@
+\documentclass{article}
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+% The file ijcai21.sty is NOT the same than previous years'
+\usepackage{ijcai21}
+
+% Use the postscript times font!
+\usepackage{times}
+\usepackage{soul}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[small]{caption}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{stmaryrd}
+\urlstyle{same}
+
+% our packages
+\usepackage{amssymb}
+\usepackage{environ}
+\usepackage{tabularx}
+% \usepackage{todonotes}
+% \presetkeys{todonotes}{inline}{}
+\usepackage{pgfplotstable}
+\usepackage{amsmath}
+\usepackage{enumitem}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
+
+\usepackage{comment}
+
+% Some useful macros
+%\newcommand{\rednote}[1]{\footnote{\color{red}{*** #1 ***}}}
+\newcommand{\inlinecite}[1]{\citeauthor{#1}~(\citeyear{#1})}
+%\newcommand{\citealp}[1]{\citeauthor{#1}~\citeyear{#1}}
+
+%\newcommand{\predicates}[1]{\ensuremath{P(#1)}}
+\newcommand{\atoms}{\ensuremath{\mathcal{H}}}
+\newcommand{\actions}[1]{\ensuremath{A(#1)}}
+\newcommand{\objects}[1]{\ensuremath{O(#1)}}
+\newcommand{\initial}[1]{\ensuremath{I(#1)}}
+\newcommand{\goal}[1]{\ensuremath{G(#1)}}
+%\newcommand{\states}[1]{\ensuremath{S(#1)}}
+\newcommand{\free}[1]{\ensuremath{\mathrm{free}(#1)}}
+\newcommand{\vars}{\ensuremath{\mathrm{vars}}}
+\newcommand{\pre}{\ensuremath{\textit{pre}}}
+\newcommand{\add}{\ensuremath{\textit{add}}}
+\newcommand{\del}{\ensuremath{\textit{del}}}
+\newcommand{\effs}{\ensuremath{\mathrm{effs}}}
+\newcommand{\states}{\ensuremath{\mathcal{S}}}
+\newcommand{\transitions}{\ensuremath{\mathcal{T}}}
+\newcommand{\dl}{\ensuremath{\mathcal{DL}}}
+\newcommand{\labels}{L}
+\newcommand{\goals}{S_G}
+\newcommand{\init}{s_I}
+\newcommand{\constants}{{\mathcal C}}
+\newcommand{\predicates}{{\mathcal P}}
+\newcommand{\Q}{\ensuremath{\mathcal Q}}
+\newcommand{\successors}{\textit{succ}}
+\newcommand{\dlmodel}{\mathcal M}
+\newcommand{\featurespace}{\mathcal{F}}
+\newcommand{\featurepool}{\ensuremath{F}}
+\newcommand{\complexity}{\mathcal K}
+\newcommand{\mli}[1]{\ensuremath{\textit{#1}}}
+\newcommand{\dist}{\textit{dist}}
+\newcommand{\training}{\ensuremath{\mathbb{T}}}
+\newcommand{\apply}[1]{\ensuremath{\llbracket #1\rrbracket}}
+\newcommand{\msat}{Max-SAT}
+
+\usepackage{ textcomp }
+
+
+%\hypersetup{draft}
+
+
+\newcommand{\tup}[1]{\ensuremath{\langle #1 \rangle}}
+\newcommand{\tuple}[1]{\tup{#1}}  % Just an alias
+\newcommand{\set}[1]{\ensuremath{\left\{#1 \right\}}}
+\newcommand{\setst}[2]{\ensuremath{\left\{#1 \mid #2 \right\}}}
+
+\newcommand{\pplus}{\raisebox{.15ex}{\footnotesize$\uparrow$}}
+\newcommand{\mminus}{\raisebox{.15ex}{\footnotesize$\downarrow$}}
+\newcommand{\nils}{\raisebox{.15ex}{$\textdegree$}}
+
+% \newcommand{\wip}[1]{{\color{red} #1}}  % From "work in progress" :-)
+% \newcommand{\gfm}[1]{\footnote{\color{red}{[Guillem] #1}}}
+% \newcommand{\F}{\ensuremath{\mathcal{F}}}
+% \renewcommand{\S}{\mathcal{S}}
+% \newcommand{\G}{\mathcal{G}}
+
+% the following package is optional:
+%\usepackage{latexsym}
+
+% Following comment is from ijcai97-submit.tex:
+% The preparation of these files was supported by Schlumberger Palo Alto
+% Research, AT\&T Bell Laboratories, and Morgan Kaufmann Publishers.
+% Shirley Jowell, of Morgan Kaufmann Publishers, and Peter F.
+% Patel-Schneider, of AT\&T Bell Laboratories collaborated on their
+% preparation.
+
+% These instructions can be modified and used in other conferences as long
+% as credit to the authors and supporting agencies is retained, this notice
+% is not changed, and further modification or reuse is not restricted.
+% Neither Shirley Jowell nor Peter F. Patel-Schneider can be listed as
+% contacts for providing assistance without their prior permission
+
+% To use for other conferences, change references to files and the
+% conference appropriate and use other authors, contacts, publishers, and
+% organizations.
+% Also change the deadline and address for returning papers and the length and
+% page charge instructions.
+% Put where the files are available in the appropriate places.
+
+%PDF Info Is REQUIRED.
+\pdfinfo{
+/TemplateVersion (IJCAI.2021.0)
+}
+
+\title{Learning Generalized Policies Over Grid Environments}
+
+% \title{General Polizy Learner for Grid Environments}
+
+\author{
+
+}
+
+
+% Papers must be no longer than 7 pages in total: 6 pages for the body of the paper (including all figures/tables),
+% plus up to 1 additional page with references
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\section{Introduction}
+
+
+\section{Logic Language}
+
+The Grid Domains share the set of Objects \textit{O}, and the set of predicates \textit{P}.
+
+\subsection{Objects}
+
+All objects in \textit{O} belong to one sort, \textit{cell}. Then, we have an object \textit{o} for each cell in the grid. For instance, in a grid of size $i \times j$ the set \textit{O} contains the object \textit{cij}, representing the cell in the row \textit{i} and the column \textit{j}.
+
+
+\subsection{Predicates}
+
+To explain the predicates it is good to remember that each of the domains has different values contained in the grid, e.g. the domain reach-for-the-star has five possible values for each cell in the grid, which are: Empty, drawn, agent, star, right-arrow, and left-arrow. Then, let us define that for each domain there is a set of values \textit{V} which represents the values that each cell object in the grid can take. It is also good to remember the difference between static and dynamic predicates. Then, the static predicates are always the same for any state of an instance, while a dynamic predicate will change depending on the state of the instance. \textit{P} will contain both types of predicates, dynamic and static.\\
+
+We have used the dynimic predicates to define the value of \textit{V} that any object \textit{o} can take at a given time. While we have used the static predicates to define the topology of the grid, i.e., the relative position of o with respect to o'. It is important to note that it is always preferable to have a static predicate rather than a dynamic one as this will considerably reduce the problem of the combinatorial explosion of symbols [some reference]. Finally, we define a set of relative directions \textit{D}, which contains \{right, left, down, up, right-up, right-down, left-down, left-up, horizontal, vertical\}. Then, \textit{D} is used to define the topology of the grid.\\
+
+
+Then, \textit{P} contains:
+
+\subsubsection{Dynamic predicates:}
+
+\begin{itemize}
+
+\item \textit{v(cij)}: Means that cell \textit{o} has the value \textit{v} at a certain time. Recall that v is a concrete value within the set \textit{V}. For instance, if \textit{v} is equalt to the value \textit{agent}, then \textit{agent(cij)} means that cell \textit{cij} has the value agent.
+\item \textit{player(n)}: This is predicate used for multiplayer games where $n \in \mathbb N$, and represents the player whose turn it is this turn. For instance, the predicate \textit{player(0)} means that in a specific state is the turn of the player \textit{0}.
+
+\end{itemize}
+
+\subsubsection{Static predicates:}
+
+\begin{itemize}
+
+\item \textit{d(o, o')}: means that \textit{o} has \textit{o'} as contiguous in direction d. For example: \textit{right(cij, cij')} means that to the adjacent right of cell \textit{cij} is the cell \textit{cij'}. Notice that some directions of \textit{D} are redundan, e.g., the predicate \textit{horizontal(cij, cij')} means that to the adjacent right o left of cell \textit{cij} is the cell \textit{cij'}, and could be defined combining two of the other predicates like $\textit{right(cij, cij')} \lor \textit{left(cij, cij')}$. In a similar way \textit{vertical(cij, cij')} can be defined as $\textit{up(cij, cij')} \lor \textit{down(cij, cij')}$. Furthermore, some directions like \textit{left(cij, cij')} are also redundant, since can be redefined as the invers of its opposite direction like \textit{right(cij', cij)}. This redundancy will increase the number of possible features according to the grammar, however it will also reduce the complexity of the features.
+
+\item \textit{same-row(o, o')}: Means that \textit{o} is in the same row as \textit{o'}. For example: \textit{same-row(cij, cij')} means that cell \textit{cij} is in the same row as cell \textit{cij'}, the row \textit{i}.
+
+\item \textit{same-col(o, o')}: Means that \textit{o} is in the same column as \textit{o'}. For example: \textit{same-col(cij, ci'j)} means that cell \textit{cij} is in the same column as cell \textit{ci'j}, the column \textit{j}.
+
+\end{itemize}
+
+
+\subsection{Encodings}
+
+\subsubsection{FOND Adversarial}
+
+\subsubsection{Main Variables}
+\begin{itemize}
+ \item $Good(s, s')$ for $s$ alive, $s'$ solvable and $(s, s') \not\in \badtx$.
+
+ \item $V(s, d)$ for $s$ alive, and $d \in [0, D]$, where $D = \max_{s} \delta \cdot V^*(s)$,
+ with intended denotation $V(s)=d$.
+ Note that for states $s$ that are a goal, we know $V(s)=0$,
+ and for states $s$ that are unsolvable, we know that $V(s) \neq d$ for all $d$.
+ Thus, we can restrict SAT variables $V(s, d)$ to those states $s$ that are alive.
+
+ \item $Select(f)$, for each feature $f$ in the feature pool.
+\end{itemize}
+
+%\subsubsection{Auxiliary Variables}
+%\begin{itemize}
+% \item We'll use $GV(s, s', d)$ to denote that $Good(s, s')$ and $V(s') \leq d$. This is enforced with the constraint
+% $GV(s, s', d) \rightarrow Good(s, s') \land V(s') \leq d$ for $s, s'$ alive, $(s, s') \not\in \badtx$, $d \in [0, D)$.
+% The other direction of the implication is not necessary.
+%\end{itemize}
+
+
+\subsection{Hard Constraints}
+
+\smallpar{C1}
+The policy has to be complete with respect to all alive states:
+\begin{align}
+\bigvee_{s' \text{ s.t. } (s, s') \in T \setminus \badtx} Good(s, s'),&\;\; \text{for $s$ alive.}
+\end{align}
+
+
+\smallpar{C2} $V$ is always descending along Good transitions:
+\begin{align}
+ Good(s, s') \land V(s', d) \rightarrow \bigvee_{d < k \leq D} V(s, k),&\;\; \text{for $s, s'$ alive, $(s, s') \not\in \badtx$, $d \in [1, D)$.} \\
+ V(s', D) \rightarrow \neg Good(s, s'),&\;\; \text{for $s, s'$ alive, $(s, s') \not\in \badtx$.} \tag{\theequation${}^\prime$}
+\end{align}
+
+
+%\smallpar{C4-5} Any upper bound on $V(s)$ (for $s$ not a goal) needs to be justified:
+%\begin{align}
+% V(s) \leq d+1 \rightarrow \bigvee_{\substack{
+% s' \text{ goal child of } s\\
+% (s, s') \not\in \badtx}} Good(s, s') \lor
+% \bigvee_{\substack{
+% s' \text{ alive child of } s\\
+% (s, s') \not\in \badtx}} GV(s, s', d),&
+% \;\; \text{for $s$ alive, $d \in [0, D)$.} \\
+% \neg V(s) \leq 0,&\;\; \text{for $s$ not a goal.}
+%\end{align}
+
+\smallpar{C3-4}
+Variables $V(s, d)$ define a function that is total over the set of alive states,
+and such that $V(s)$ is within lower bound $V^*(s)$ and upper bound $\delta \cdot V^*(s)$:
+\begin{align}
+ \bigvee_{V^*(s) \leq d \leq \delta \cdot V^*(s)} V(s,d),&\;\; \text{for $s$ alive.} \\
+ \neg V(s, d) \lor \neg V(s, d')&\;\; \text{for $s$ alive, $1 \leq d < d' \leq D$.}
+\end{align}
+
+
+\smallpar{C5-6}
+Good transitions can be distinguished from bad transitions.
+Let $(s, s')$ and $(t, t')$ be \emph{representative} transitions
+of two different equivalence classes such that $(s, s') \not\in \badtx$
+(which implies that $s'$ is solvable). Then,
+
+\begin{align}
+ Good(s, s') \rightarrow Good(t, t') \lor
+ Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \not\in \badtx$.} \\
+ Good(s, s') \rightarrow
+ Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \in \badtx$.}
+\end{align}
+
+\noindent where $Dist(s, s', t, t')$ is shorthand for $\bigvee_{f \in D1\&2(s, s', t, t')} Select(f)$.
+
+
+\smallpar{C7 (Optional)}
+Goals are distinguishable from non-goals.
+\begin{align}
+\bigvee_{f \in D1(s, s')} Select(f),&\;\; \text{for $s$ goal, $s$ not a goal}
+\end{align}
+
+\smallpar{C8 (Optional)}
+All selected features need to have some Good transition that takes them to $0$:
+\begin{align}
+ Selected(f) \rightarrow \bigvee_{(s, s') \in Z(f)} Good(s, s'),&\;\; \text{for $f$ in pool}
+\end{align}
+
+\noindent where $Z(f)$ is the set transitions starting in an alive state that change the denotation of $f$ from something
+larger than 0 to 0.
+
+
+\subsection{Soft Constraints}
+We simply post a constraint $\neg Select(f)$ for each feature $f$ in the pool, with weight equal to its complexity $\mathcal{K}(f)$.
+
+
+
+
+
+% ... End
+
+
+%\section*{Acknowledgments}
+
+%% The file named.bst is a bibliography style file for BibTeX 0.99c
+\small
+\bibliographystyle{named}
+\bibliography{abbrv-short,literatur,references,crossref-short}
+
+\end{document}
