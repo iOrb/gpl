@@ -4,7 +4,7 @@ build
 dist
 *.egg-info
 .tox
-src/generators/adv_/CMakeCache.txt
-src/generators/fond/CMakeCache.txt
-src/generators/adv_/CMakeFiles
-src/generators/fond/CMakeFiles
+CMakeCache.txt
+CMakeFiles
+.idea
+cmake_install.cmake
