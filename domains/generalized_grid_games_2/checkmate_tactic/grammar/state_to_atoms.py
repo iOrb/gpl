@@ -27,7 +27,7 @@ def state_to_atoms(domain_name, state):
 
             atoms.append((a, f'c{r}-{c}'))
 
-    # atoms.append(('player-{}'.format(state[0][1]),))
+    atoms.append(('player-{}'.format(state[0][1]),))
     return atoms
 
 
