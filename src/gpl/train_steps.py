@@ -97,7 +97,6 @@ class FeatureGenerationStep:
         from .features import run
         return run
 
-
 class CPPMaxsatProblemGenerationStep:
     """ Generate the standard SLTP Max-sat CNF encoding """
     def get_required_attributes(self):

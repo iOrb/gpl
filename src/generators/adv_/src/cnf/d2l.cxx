@@ -395,14 +395,16 @@ namespace sltp::cnf {
 
         /////// CNF constraints ///////
 
-//      // Good_a(s, a) iff Good(s, s')
+//      // Good(s, s') iff Good_a(s, a)
+        std::unordered_map<unsigned, cnfvar_t> tx_s_a;
         for (const auto& [s, a, sp]:sample_.transitions_.agent_transitions()) {
             auto tx = get_transition_id(s, sp);
-//            if (is_necessarily_bad(tx)) continue;
+            if (is_necessarily_bad(tx)) continue;
+            tx_s_a[tx] = good_s_a[{s, a}];
             variables.goods_s_a[good_s_a[{s, a}]].insert(get_representative_id(tx));
         }
 
-        //    Bad(s) or OR_{a in A} Good(s, a):
+        // Bad(s) or OR_{a in A} Good(s, a):
         for (const auto s:sample_.transitions_.all_alive()) {
             cnfclause_t clause;
             clause.push_back(Wr::lit(bad_s.at(s), true));
@@ -415,8 +417,9 @@ namespace sltp::cnf {
         }
 
 //    Soft clauses Bad(s):
+        unsigned bad_s_penalization = 9999999;
         for (const auto s:sample_.transitions_.all_alive()) {
-            wr.cl({Wr::lit(bad_s.at(s), false)}, 100);
+            wr.cl({Wr::lit(bad_s.at(s), false)}, bad_s_penalization);
         }
 
 //    1. Good(s, a) implies V(s") < V(s),                        equiv. to (using binary variables):
@@ -446,10 +449,10 @@ namespace sltp::cnf {
                         ++n_descending_clauses;
                     }
 
-//               (2') Border condition: V(s", D) implies -Good(s, a)
-                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
-                           Wr::lit(good_s_a.at({s, a}), false)});
-                    ++n_descending_clauses;
+////               (2') Border condition: V(s", D) implies -Good(s, a)
+//                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
+//                           Wr::lit(good_s_a.at({s, a}), false)});
+//                    ++n_descending_clauses;
                 }
             }
         }
@@ -465,7 +468,7 @@ namespace sltp::cnf {
 //            const auto& [s, sp] = get_state_pair(tpair.tx1);
 //            const auto& [t, tp] = get_state_pair(tpair.tx2);
 //
-//            cnfclause_t clause{Wr::lit(variables.goods.at(tpair.tx1), false)};
+//            cnfclause_t clause{Wr::lit(tx_s_a[tpair.tx1], false)};
 //
 //            // Compute first the Selected(f) terms
 //            for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
@@ -473,8 +476,8 @@ namespace sltp::cnf {
 //            }
 //
 //            if (!is_necessarily_bad(tpair.tx2)) {
-//                auto good_t_tprime = variables.goods.at(tpair.tx2);
-//                clause.push_back(Wr::lit(good_t_tprime, true));
+//                auto good_t_a = tx_s_a[tpair.tx2];
+//                clause.push_back(Wr::lit(good_t_a, true));
 //            }
 //            wr.cl(clause);
 //            n_separation_clauses += 1;
@@ -484,6 +487,22 @@ namespace sltp::cnf {
         if (options.distinguish_goals) {
             for (unsigned s:sample_.transitions_.all_goals()) {
                 for (unsigned t:sample_.transitions_.all_dead()) {
+
+                    const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
+                    if (d1feats.empty()) {
+                        undist_goal_warning(s, t);
+                    }
+
+                    cnfclause_t clause;
+                    for (unsigned f:d1feats) {
+                        clause.push_back(Wr::lit(variables.selecteds.at(f), true));
+                    }
+
+                    wr.cl(clause);
+                    n_goal_clauses += 1;
+                }
+
+                for (unsigned t:sample_.transitions_.all_alive()) {
 
                     const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
                     if (d1feats.empty()) {
@@ -585,9 +604,8 @@ namespace sltp::cnf {
             auto varid = variables.selecteds[f];
             if (varid>0 && solution.assignment.at(varid)) selecteds.push_back(f);
         }
-
         for (auto const& [varid, txids]:variables.goods_s_a) {
-            if (varid>0) {
+            if (varid>0 && solution.assignment.at(varid)) {
                 for (unsigned txid:txids) {
                     goods.push_back(txid);
                 }

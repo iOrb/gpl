@@ -26,9 +26,6 @@ def experiments():
         v_slack=2,
         mode=MODE,
 
-        # concept_generation_timeout=120,  # in seconds
-
-        distinguish_goals=True,
         use_incremental_refinement=False,
     )
 
@@ -36,16 +33,18 @@ def experiments():
 
     exps["1"] = update_dict(
         base,
-        instances=all_instances([15, 16, 17]),
-        # instances=break_instances('a'),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-        #           all_instances([15, 16]) +
-        #           break_instances('a'),
+        #           all_instances([15, 16, 17]),
+        # instances=four_four_instances([1, 2, 3, 4, 5]),
+        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+                  all_instances([15, 16]) +
+                  break_instances('a'),
         test_instances=four_four_instances('a') +
                        # all_instances('a') +
                        break_instances('a'),
 
         teach_policies=None,
+        distinguish_goals=True,
 
         initial_sample_size=1,
         refinement_batch_size=3,
@@ -55,10 +54,12 @@ def experiments():
 
         max_concept_size=5,
         distance_feature_max_complexity=5,
-        concept_generation_timeout=120,
+        concept_generation_timeout=1200,
 
         parameter_generator=None,
         maxsat_iter=1,
+        skip_train_steps=[0, 1, 2],
+        # skip_train_steps=[],
 
         # rollouts
         # num_episodes=1,

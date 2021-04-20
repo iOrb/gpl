@@ -135,6 +135,8 @@ namespace sltp {
 //                assert(src < num_states_ && 0 <= count);
                 if (n_spp > 0) {
 //                    std::vector<bool> seen(num_states_s_spp_ + num_states_sp_, false);
+                    std::map<std::pair<unsigned,unsigned>,std::set<unsigned>> tmp_a_sp_spps;
+
                     for (unsigned j = 0; j < n_spp; ++j) {
                         is >> op0 >> sp >> spp;
 //                        assert(spp < num_states_);
@@ -142,7 +144,12 @@ namespace sltp {
                         nondet_trdata_[s].insert(spp);
                         agent_transitions_.insert(std::make_tuple(s, op0, sp));
                         nondet_transitions_.insert(std::make_tuple(s, op0, spp));
+                        tmp_a_sp_spps[{op0, sp}].insert(spp);
                         n_read_transitions++;
+                    }
+
+                    for (auto const& [pair, spps]:tmp_a_sp_spps) {
+                        transitions_.insert(std::make_tuple(s, pair.first, pair.second, spps));
                     }
 
                     assert(agent_trdata_[s].empty());
@@ -157,11 +164,6 @@ namespace sltp {
                     unsolvable_states_.insert(s);
                 }
                 vstar_[s] = vstar;
-            }
-
-            for (auto const& [s, op, sp]:agent_transitions_) {
-                std::set<unsigned> spps = nondet_successors(s);
-                transitions_.insert(std::make_tuple(s, op, sp, spps));
             }
 
             // post alive states sp

@@ -25,12 +25,15 @@ def train(config, data, rng, train_steps=[], show_steps_only=False):
 
         print_important_message('(START Episode {})'.format(episode))
 
-        for step in TRAIN_STEPS:
+        for i, step in enumerate(TRAIN_STEPS):
             step = step()
             print_important_message("({}) {}:".format(episode, step.description()))
 
             # Process the requirements of the trainning step
             config, data = process_requirements(step, config, data)
+
+            if i in config.skip_train_steps:
+                continue
 
             # Run the trainnin step
             exitcode, config, data = run_step(step, config, data, rng)
@@ -47,8 +50,8 @@ def train(config, data, rng, train_steps=[], show_steps_only=False):
 
 def run_step(step, config, data, rng):
     exitcode, data_ = step.get_step_runner(config)(config, data, rng)
-    # if exitcode is not ExitCode.Success:
-    #     raise RuntimeError(_create_exception_msg(step, exitcode))
+    if exitcode is not ExitCode.Success:
+        raise RuntimeError(_create_exception_msg(step, exitcode))
     data.update(data_)
     return exitcode, config, data
 
