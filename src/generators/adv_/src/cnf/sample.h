@@ -76,7 +76,6 @@ namespace sltp::cnf {
                 if (is_goal(s)) goal_states_.insert(s);
                 if (is_unsolvable(s)) nongoal_states_.insert(s);
                 else if (is_alive_sp(s)) alive_states_sp_.insert(s);
-                else assert(true==false);
             }
         }
 
@@ -94,14 +93,14 @@ namespace sltp::cnf {
         const FeatureMatrix& matrix() const { return matrix_; }
 
         //! Return all alive states in this sample
-        const std::set<unsigned>& alive_states() const { return alive_states_; }
-        const std::set<unsigned>& goal_states() const { return goal_states_; }
-        const std::set<unsigned>& nongoal_states() const { return nongoal_states_; }
-        const std::set<unsigned>& alive_states_sp() const { return alive_states_sp_; }
+        const std::set<unsigned>& alive_states() const { return transitions_.all_alive(); }
+//        const std::set<unsigned>& goal_states() const { return transitions_.all_goals(); }
+//        const std::set<unsigned>& nongoal_states() const { return transitions_.all_dead(); }
+//        const std::set<unsigned>& alive_states_sp() const { return transitions_.all_alive_sp(); }
 
         bool is_goal(unsigned s) const { return transitions_.is_goal(s); }
         bool is_alive(unsigned s) const { return transitions_.is_alive(s); }
-        bool is_solvable(unsigned s) const { return is_alive(s) || is_goal(s) || is_alive_sp(s); }
+        bool is_solvable(unsigned s) const { return is_alive(s) || is_goal(s); }
         bool is_unsolvable(unsigned s) const { return transitions_.is_unsolvable(s); }
         bool is_alive_sp(unsigned s) const { return transitions_.is_alive_sp(s);}
 

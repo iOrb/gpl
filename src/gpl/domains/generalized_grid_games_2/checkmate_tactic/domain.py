@@ -27,7 +27,8 @@ class Domain(IDomain):
 
 
 GRID_DIRECTIONS = ['up', 'rightup', 'right', 'rightdown', 'down', 'leftdown', 'left', 'leftup']
-
+# TO_SCANN = ['row', 'col', 'd1', 'd2']
+TO_SCANN = ['row', 'col']
 
 def generate_lang(domain_name,):
     lang, statics = generate_base_lang(domain_name)
@@ -58,8 +59,7 @@ def load_general_lang(lang, statics,):
     _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player.w, OBJECTS.player.b}]
 
     # Scanning ==================================
-    # for c in ['row', 'col', 'd1', 'd2']:
-    for c in ['row', 'col']:
+    for c in TO_SCANN:
         c = 'same_{}'.format(c)
         lang.predicate(c, 'cell', 'cell')
         statics.add(c)
@@ -168,37 +168,41 @@ def scan(lang, problem, layout):
             # Column cells
             col_ = [(row, c) for row in range(nrows)]
 
-            # Add the same_row predicate for the current cell
-            _ = [problem.init.add(lang.get(f'same_row'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
-                 for r_, c_ in row_ if (r_, c_) != (r, c)]
+            if 'row' in TO_SCANN:
+                # Add the same_row predicate for the current cell
+                _ = [problem.init.add(lang.get(f'same_row'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
+                     for r_, c_ in row_ if (r_, c_) != (r, c)]
 
-            # Add the same_col predicate for the current cell
-            _ = [problem.init.add(lang.get(f'same_col'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
-                 for r_, c_ in col_ if (r_, c_) != (r, c)]
+            if 'col' in  TO_SCANN:
+                # Add the same_col predicate for the current cell
+                _ = [problem.init.add(lang.get(f'same_col'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
+                     for r_, c_ in col_ if (r_, c_) != (r, c)]
 
-            # # left-up
-            # left_up_ = [(row, col) for row, col in zip(range(r - 1, -1, -1), range(c - 1, -1, -1))]
-            #
-            # # right-down
-            # right_down_ = [(row, col) for row, col in zip(range(r + 1, nrows), range(c + 1, ncols))]
-            #
-            # # Main diagonal:
-            # d1_ = left_up_ + right_down_
-            #
-            # # left-down
-            # left_down_ = [(row, col) for row, col in zip(range(r+1, nrows), range(c - 1, -1, -1))]
-            #
-            # # right-up
-            # right_up_ = [(row, col) for row, col in zip(range(r-1, -1, -1), range(c + 1, ncols))]
-            #
-            # # Inverse diagonal:
-            # d2_ = left_down_ + right_up_
-            #
-            # # Add the same_d1 predicate for the current cell
-            # _ = [problem.init.add(lang.get(f'same_d1'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
-            #      for r_, c_ in d1_ if (r_, c_) != (r, c)]
-            #
-            # # Add the same_d2 predicate for the current cell
-            # _ = [problem.init.add(lang.get(f'same_d2'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
-            #      for r_, c_ in d2_ if (r_, c_) != (r, c)]
+            # left-up
+            left_up_ = [(row, col) for row, col in zip(range(r - 1, -1, -1), range(c - 1, -1, -1))]
+
+            # right-down
+            right_down_ = [(row, col) for row, col in zip(range(r + 1, nrows), range(c + 1, ncols))]
+
+            # Main diagonal:
+            d1_ = left_up_ + right_down_
+
+            # left-down
+            left_down_ = [(row, col) for row, col in zip(range(r+1, nrows), range(c - 1, -1, -1))]
+
+            # right-up
+            right_up_ = [(row, col) for row, col in zip(range(r-1, -1, -1), range(c + 1, ncols))]
+
+            # Inverse diagonal:
+            d2_ = left_down_ + right_up_
+
+            if 'd1' in TO_SCANN:
+                # Add the same_d1 predicate for the current cell
+                _ = [problem.init.add(lang.get(f'same_d1'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
+                     for r_, c_ in d1_ if (r_, c_) != (r, c)]
+
+            if 'd1' in TO_SCANN:
+                # Add the same_d2 predicate for the current cell
+                _ = [problem.init.add(lang.get(f'same_d2'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
+                     for r_, c_ in d2_ if (r_, c_) != (r, c)]
 

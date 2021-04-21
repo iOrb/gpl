@@ -33,22 +33,25 @@ def experiments():
 
     exps["1"] = update_dict(
         base,
+        instances=four_four_instances([0]),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+        #           break_instances('a') +
         #           all_instances([15, 16, 17]),
-        # instances=four_four_instances([1, 2, 3, 4, 5]),
-        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-                  all_instances([15, 16]) +
-                  break_instances('a'),
+        # instances=break_instances('a'),
+        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+        #           all_instances([15, 16]) +
+        #           break_instances('a'),
         test_instances=four_four_instances('a') +
                        all_instances('a') +
+                       # all_instances([16]) +
                        break_instances('a'),
+        # test_instances=all_instances([16]),
 
         teach_policies=None,
-        distinguish_goals=True,
 
         initial_sample_size=1,
         refinement_batch_size=3,
-        verbosity=0,
+        verbosity=1,
 
         acyclicity='topological',
 
@@ -58,13 +61,14 @@ def experiments():
 
         parameter_generator=None,
         maxsat_iter=1,
-        skip_train_steps=[0, 1, 2],
-        # skip_train_steps=[],
+        # skip_train_steps=[0, 1, 2],  # do not generate features twice!
+        skip_train_steps=[],
+        distinguish_goals=True,
 
         # rollouts
         # num_episodes=1,
         # num_rollouts=1,
-        # rollout_depth=1,
+        # rollout_depth=2,
 
         # train_instances_to_expand=[],
         train_instances_to_expand=list(range(1000)),
@@ -73,18 +77,18 @@ def experiments():
     exps["2"] = update_dict(
         base,
         # instances=all_instances([16]),
-        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-        #           break_instances('a') +
-        #           all_instances([15, 16, 17]),
-        instances=four_four_instances([1, 2, 3, 4, 6]),
+        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+                  break_instances('a') +
+                  all_instances([15, 16, 17]),
+        # instances=break_instances('a'),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
         #           all_instances([15, 16]) +
         #           break_instances('a'),
-        # test_instances=four_four_instances('a') +
-        #                # all_instances('a') +
-        #                all_instances([16]) +
-        #                break_instances('a'),
-        test_instances=all_instances([16]),
+        test_instances=four_four_instances('a') +
+                       all_instances('a') +
+                       # all_instances([16]) +
+                       break_instances('a'),
+        # test_instances=all_instances([16]),
 
         teach_policies=None,
 
@@ -106,8 +110,8 @@ def experiments():
 
         # rollouts
         num_episodes=1,
-        num_rollouts=5,
-        rollout_depth=5,
+        num_rollouts=1,
+        rollout_depth=2,
 
         train_instances_to_expand=[],
         # train_instances_to_expand=list(range(1000)),
@@ -117,18 +121,19 @@ def experiments():
     exps["3"] = update_dict(
         base,
         # instances=all_instances([16]),
+        instances=break_instances([1]),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
         #           break_instances('a') +
         #           all_instances([15, 16, 17]),
-        # instances=four_four_instances([1, 2, 3, 4, 6]),
-        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-                  all_instances([15, 16]) +
-                  break_instances('a'),
-        # test_instances=four_four_instances('a') +
-        #                # all_instances('a') +
-        #                all_instances([16]) +
-        #                break_instances('a'),
-        test_instances=all_instances([16]),
+        # instances=break_instances('a'),
+        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+        #           all_instances([15, 16]) +
+        #           break_instances('a'),
+        test_instances=four_four_instances('a') +
+                       all_instances('a') +
+                       # all_instances([16]) +
+                       break_instances('a'),
+        # test_instances=all_instances([16]),
 
         teach_policies=None,
 
@@ -144,14 +149,14 @@ def experiments():
 
         parameter_generator=None,
         maxsat_iter=1,
-        skip_train_steps=[0, 1, 2], # do not generate features twice
-        # skip_train_steps=[],
+        # skip_train_steps=[0, 1, 2],  # do not generate features twice!
+        skip_train_steps=[],
         distinguish_goals=True,
 
         # rollouts
-        # num_episodes=1,
-        # num_rollouts=1,
-        # rollout_depth=1,
+        num_episodes=1,
+        num_rollouts=3,
+        rollout_depth=3,
 
         # train_instances_to_expand=[],
         train_instances_to_expand=list(range(1000)),

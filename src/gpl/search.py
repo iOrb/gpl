@@ -140,6 +140,7 @@ def run_policy_based_search(config, search_policy, task, state, successors):
 
 
 def bfs_adv(config, data, search_policy, task, instance_name, rng):
+    from tqdm import tqdm
 
     logging.info(f'Expanding train instance "{instance_name}"')
 
@@ -148,13 +149,15 @@ def bfs_adv(config, data, search_policy, task, instance_name, rng):
 
     queue = [istate]
 
+    pbar = tqdm()
+
     while queue:
         s = queue.pop(0)
         sr, _, _, s_encoded, info = unpack_state(s)
 
         succcessors = task.get_successor_states(s)
 
-        alive, goals, deadends = data.sample.process_successors(s, succcessors, task)
+        alive, _, _ = data.sample.process_successors(s, succcessors, task)
 
         # if not alive:
         #     data.sample.mark_state_as_deadend(s, task) # perhabs goal
@@ -167,6 +170,9 @@ def bfs_adv(config, data, search_policy, task, instance_name, rng):
                         visited.add(spp[2])
                         queue.append(spp)
 
+        n_s = len(succcessors) + len(alive[2])
+        pbar.update(n_s)
+    pbar.close()
 
 def bfs_no_adv(config, data, search_policy, task, instance_name, rng):
 

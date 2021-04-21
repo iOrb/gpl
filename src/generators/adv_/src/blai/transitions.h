@@ -133,6 +133,17 @@ namespace sltp {
                 is >> s >> vstar >> n_sp >> n_spp;
 //                assert(i==src);
 //                assert(src < num_states_ && 0 <= count);
+                // Store the value of V^*(s) for each state s
+
+                if (vstar>0) {
+                    alive_states_.insert(s);
+                } else if (vstar == 0) {
+                    goal_states_.insert(s);
+                } else if (vstar < 0) {
+                    unsolvable_states_.insert(s);
+                }
+                vstar_[s] = vstar;
+
                 if (n_spp > 0) {
 //                    std::vector<bool> seen(num_states_s_spp_ + num_states_sp_, false);
                     std::map<std::pair<unsigned,unsigned>,std::set<unsigned>> tmp_a_sp_spps;
@@ -155,15 +166,7 @@ namespace sltp {
                     assert(agent_trdata_[s].empty());
                     assert(nondet_trdata_[s].empty());
 
-                    // Store the value of V^*(s) for each state s
-                    assert(vstar > 0);
-                    alive_states_.insert(s);
-                } else if (vstar == 0) {
-                    goal_states_.insert(s);
-                } else if (vstar < 0) {
-                    unsolvable_states_.insert(s);
                 }
-                vstar_[s] = vstar;
             }
 
             // post alive states sp

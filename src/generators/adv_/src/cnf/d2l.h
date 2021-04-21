@@ -93,7 +93,7 @@ namespace sltp::cnf {
             // return 20;
             // D will be the maximum over the set of alive states of the upper bounds on V_pi
             unsigned D = 0;
-            for (const auto s:sample_.alive_states()) {
+            for (const auto s:sample_.transitions_.all_alive()) {
                 auto max_v_s = get_max_v(s);
                 if (max_v_s > D) D = max_v_s;
             }
