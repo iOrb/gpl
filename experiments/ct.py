@@ -76,24 +76,24 @@ def experiments():
 
     exps["2"] = update_dict(
         base,
-        # instances=all_instances([16]),
-        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-                  break_instances('a') +
-                  all_instances([15, 16, 17]),
+        instances=all_instances([17]),
+        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+        #           break_instances('a') +
+        #           all_instances([15, 16, 17]),
         # instances=break_instances('a'),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
         #           all_instances([15, 16]) +
         #           break_instances('a'),
-        test_instances=four_four_instances('a') +
-                       all_instances('a') +
-                       # all_instances([16]) +
-                       break_instances('a'),
-        # test_instances=all_instances([16]),
+        # test_instances=four_four_instances('a') +
+        #                all_instances('a') +
+        #                all_instances([16]) +
+        #                break_instances('a'),
+        test_instances=four_four_instances('a'),
 
         teach_policies=None,
 
-        initial_sample_size=1,
-        refinement_batch_size=3,
+        initial_sample_size=10,
+        refinement_batch_size=30,
         verbosity=1,
 
         acyclicity='topological',
@@ -109,12 +109,12 @@ def experiments():
         distinguish_goals=True,
 
         # rollouts
-        num_episodes=1,
-        num_rollouts=1,
-        rollout_depth=2,
+        # num_episodes=1,
+        # num_rollouts=1,
+        # rollout_depth=1,
 
-        train_instances_to_expand=[],
-        # train_instances_to_expand=list(range(1000)),
+        # train_instances_to_expand=[],
+        train_instances_to_expand=list(range(1000)),
     )
 
 

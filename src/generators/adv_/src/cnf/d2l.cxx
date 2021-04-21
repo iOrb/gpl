@@ -32,14 +32,14 @@ namespace sltp::cnf {
             auto it1 = transition_ids_.emplace(tx, id);
             assert(it1.second);
 
-            bool all_spp_alive = true;
+            bool all_spp_solvable = true;
             for (auto const& spp:spps) {
                 if (!sample_.is_solvable(spp)) {
-                    all_spp_alive = false;
+                    all_spp_solvable = false;
                 }
             }
 
-            if (!sample_.is_alive_sp(sp) or !all_spp_alive) { // An alive-to-dead transition cannot be Good
+            if (!sample_.is_solvable(sp) or !all_spp_solvable) { // An alive-to-dead transition cannot be Good
                 necessarily_bad_transitions_.emplace(id);
             }
 
@@ -211,7 +211,6 @@ namespace sltp::cnf {
             nrules += 1;
         }
         os << std::endl;
-
 
         if (options.distinguish_goals) {
             os << "%% Goal distinguishability (" << sample_.transitions_.all_goals().size() << " goals):" << std::endl;
@@ -409,17 +408,17 @@ namespace sltp::cnf {
         }
 
         // OR_{a in A} Good(s, a) for all (s, s') s.t. s is alive and not any s'' is dead
-//        for (const auto& s:sample_.transitions_.all_alive()) {
-//            cnfclause_t clause;
-//            for (const auto& a:s_to_as[s]) {
-//                if (is_necessarily_bad(get_representative_id(get_transition_id(s, s_a_to_sp[{s, a}])))) {
-//                    wr.cl({Wr::lit(good_s_a[{s, a}], false)});
-//                } else {
-//                    clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
-//                }
-//            }
-//            wr.cl(clause);
-//        }
+        for (const auto& s:sample_.transitions_.all_alive()) {
+            cnfclause_t clause;
+            for (const auto& a:s_to_as[s]) {
+                if (is_necessarily_bad(get_representative_id(get_transition_id(s, s_a_to_sp[{s, a}])))) {
+                    wr.cl({Wr::lit(good_s_a[{s, a}], false)});
+                } else {
+                    clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
+                }
+            }
+            wr.cl(clause);
+        }
 
         // Bad(s) or OR_{a in A} Good(s, a):
         for (const auto s:sample_.transitions_.all_alive()) {
@@ -436,7 +435,7 @@ namespace sltp::cnf {
 
 //    Soft clauses Bad(s):
         for (const auto s:sample_.transitions_.all_alive()) {
-            wr.cl({Wr::lit(bad_s.at(s), false)}, 1000);
+            wr.cl({Wr::lit(bad_s.at(s), false)}, 99999);
         }
 
 
@@ -450,7 +449,7 @@ namespace sltp::cnf {
 //                if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
 //            }
 //        }
-//
+
 
 //    1. Good(s, a) implies V(s") < V(s),                        equiv. to (using binary variables):
 //    2. Good(s, a) implies V(s")=d" and V(s)=d, for some d"<d   equiv. to (move things around):
@@ -461,7 +460,7 @@ namespace sltp::cnf {
                 unsigned sp = s_a_to_sp[{s, a}];
                 if (is_necessarily_bad(get_representative_id(get_transition_id(s, sp)))) continue; // includes alive-to-dead transitions
                 for (unsigned spp:s_a_to_spp[{s, a}]) {
-//                    if (!sample_.is_solvable(spp)) continue;
+                    if (!sample_.is_alive(spp)) continue;
 //                   if (!sample_.in_sample(spp)) continue;
 //                   if (get_vstar(s) > acyclicity_radius) continue;
 
@@ -480,9 +479,9 @@ namespace sltp::cnf {
                     }
 
 //               (2') Border condition: V(s", D) implies -Good(s, a)
-                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
-                           Wr::lit(good_s_a.at({s, a}), false)});
-                    ++n_descending_clauses;
+//                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
+//                           Wr::lit(good_s_a.at({s, a}), false)});
+//                    ++n_descending_clauses;
                 }
             }
         }
@@ -589,11 +588,13 @@ namespace sltp::cnf {
         for (const auto tx1:class_representatives_) {
             if (is_necessarily_bad(tx1)) continue;
             for (const auto tx2:class_representatives_) {
+                if (is_necessarily_bad(tx2)) continue;
                 if (tx1 != tx2) {
                     transitions_to_distinguish.emplace_back(tx1, tx2);
                 }
             }
         }
+        transitions_to_distinguish.resize(2000);
         return transitions_to_distinguish;
     }
 

@@ -170,7 +170,7 @@ def bfs_adv(config, data, search_policy, task, instance_name, rng):
                         visited.add(spp[2])
                         queue.append(spp)
 
-        n_s = len(succcessors) + len(alive[2])
+        n_s = len(succcessors)
         pbar.update(n_s)
     pbar.close()
 
