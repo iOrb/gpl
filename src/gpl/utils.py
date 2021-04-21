@@ -44,9 +44,9 @@ def load_local_object(filename):
     picklefile.close()
     return local_object
 
-def encode_operator(op, task):
+def encode_operator(s, op, task):
     if callable(getattr(task, "encode_op", None)):
-        o = task.encode_op(op)
+        o = task.encode_op(s, op)
     else:
         o = op
     return o

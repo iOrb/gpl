@@ -41,7 +41,7 @@ class TransitionSampleADV:
         spp = spp if spp is not None else copy.deepcopy(sp) # if sp is goal or deadend just extende it to spp
         sids = [self.check_state(s, task, instance_id) for s in [s, sp, spp]]
         self.states_s_spp |= {sids[0], sids[2]}
-        oid = self.check_operator(op0, task, instance_id)
+        oid = self.check_operator(s, op0, task, instance_id)
         self.update_transitions(self.get_tx(sids, oid))
         if new_instance_:
             self.mark_as_root(sids[0], instance_id)
@@ -79,8 +79,8 @@ class TransitionSampleADV:
     def get_instance_id(self, instance_name):
         return self.instance_ids[instance_name]
 
-    def check_operator(self, op, task, intance_id):
-        o_raw = encode_operator(op, task)
+    def check_operator(self, s, op, task, intance_id):
+        o_raw = encode_operator(s, op, task)
         o = self.encode_operator(intance_id, o_raw)
         if o not in self.operators:
             self.operators[o] = self.oid_count

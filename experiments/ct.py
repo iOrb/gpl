@@ -2,7 +2,7 @@
 
 from sltp.util.misc import update_dict
 
-from domains.generalized_grid_games_2.checkmate_tactic.domain import Domain
+from gpl.domains.generalized_grid_games_2.checkmate_tactic.domain import Domain
 # from domains.generalized_grid_games.checkmate_tactic.teach_policies import expert_checkmate_tactic_policy
 
 from instances.ct_instances import four_four_instances, all_instances, \
@@ -12,7 +12,7 @@ from gpl.defaults import ct_names
 
 DOMAIN_NAME = "checkmate_tactic"
 
-MODE = 'adv' # could be on of {'fond', 'adv'}
+MODE = 'adv'  # could be on of {'fond', 'adv'}
 
 def experiments():
     base = dict(
@@ -40,7 +40,7 @@ def experiments():
                   all_instances([15, 16]) +
                   break_instances('a'),
         test_instances=four_four_instances('a') +
-                       # all_instances('a') +
+                       all_instances('a') +
                        break_instances('a'),
 
         teach_policies=None,
@@ -54,7 +54,7 @@ def experiments():
 
         max_concept_size=5,
         distance_feature_max_complexity=5,
-        concept_generation_timeout=1200,
+        concept_generation_timeout=15000,
 
         parameter_generator=None,
         maxsat_iter=1,
@@ -72,99 +72,88 @@ def experiments():
 
     exps["2"] = update_dict(
         base,
-        instances=four_four_instances([1, 8, 9]) +
-                  all_instances([15, 16]) +
-                  break_instances([0, 5, 7]),
-        test_instances=four_four_instances('a') +
-                       all_instances('a') +
-                       break_instances('a'),
+        # instances=all_instances([16]),
+        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+        #           break_instances('a') +
+        #           all_instances([15, 16, 17]),
+        instances=four_four_instances([1, 2, 3, 4, 6]),
+        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+        #           all_instances([15, 16]) +
+        #           break_instances('a'),
+        # test_instances=four_four_instances('a') +
+        #                # all_instances('a') +
+        #                all_instances([16]) +
+        #                break_instances('a'),
+        test_instances=all_instances([16]),
 
         teach_policies=None,
 
-        initial_sample_size=10,
-        refinement_batch_size=20,
-        verbosity=0,
+        initial_sample_size=1,
+        refinement_batch_size=3,
+        verbosity=1,
 
         acyclicity='topological',
-        # acyclicity='reachability',
 
         max_concept_size=5,
         distance_feature_max_complexity=5,
-        concept_generation_timeout=120,
+        concept_generation_timeout=15000,
 
         parameter_generator=None,
-        maxsat_iter=20,
+        maxsat_iter=1,
+        # skip_train_steps=[0, 1, 2],  # do not generate features twice!
+        skip_train_steps=[],
+        distinguish_goals=True,
 
         # rollouts
-        # num_episodes=1,
-        # num_rollouts=2,
-        # rollout_depth=2,
+        num_episodes=1,
+        num_rollouts=5,
+        rollout_depth=5,
 
-        train_instances_to_expand=list(range(1000)),
+        train_instances_to_expand=[],
+        # train_instances_to_expand=list(range(1000)),
     )
+
 
     exps["3"] = update_dict(
         base,
-        instances=four_four_instances([1, 8, 9]) +
-                  all_instances([15,]) +
-                  break_instances([0,]),
-        test_instances=four_four_instances('a') +
-                       all_instances('a') +
-                       break_instances('a'),
+        # instances=all_instances([16]),
+        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+        #           break_instances('a') +
+        #           all_instances([15, 16, 17]),
+        # instances=four_four_instances([1, 2, 3, 4, 6]),
+        instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+                  all_instances([15, 16]) +
+                  break_instances('a'),
+        # test_instances=four_four_instances('a') +
+        #                # all_instances('a') +
+        #                all_instances([16]) +
+        #                break_instances('a'),
+        test_instances=all_instances([16]),
 
         teach_policies=None,
 
-        initial_sample_size=10,
-        refinement_batch_size=20,
-        verbosity=0,
+        initial_sample_size=1,
+        refinement_batch_size=3,
+        verbosity=1,
 
         acyclicity='topological',
-        # acyclicity='reachability',
 
         max_concept_size=5,
         distance_feature_max_complexity=5,
-        concept_generation_timeout=120,
+        concept_generation_timeout=15000,
 
         parameter_generator=None,
-        maxsat_iter=20,
+        maxsat_iter=1,
+        skip_train_steps=[0, 1, 2], # do not generate features twice
+        # skip_train_steps=[],
+        distinguish_goals=True,
 
         # rollouts
         # num_episodes=1,
-        # num_rollouts=2,
-        # rollout_depth=2,
+        # num_rollouts=1,
+        # rollout_depth=1,
 
-        train_instances_to_expand=list(range(1000)),
-    )
-
-    exps["4"] = update_dict(
-        base,
-        instances=all_instances([20]) +
-                  all_instances([15,]),
-        test_instances=four_four_instances('a') +
-                       all_instances('a') +
-                       break_instances('a'),
-
-        teach_policies=None,
-
-        initial_sample_size=10,
-        refinement_batch_size=20,
-        verbosity=0,
-
-        acyclicity='topological',
-        # acyclicity='reachability',
-
-        max_concept_size=5,
-        distance_feature_max_complexity=5,
-        concept_generation_timeout=120,
-
-        parameter_generator=None,
-        maxsat_iter=20,
-
-        # rollouts
-        # num_episodes=1,
-        # num_rollouts=2,
-        # rollout_depth=2,
-
+        # train_instances_to_expand=[],
         train_instances_to_expand=list(range(1000)),
     )
 

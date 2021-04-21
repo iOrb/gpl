@@ -24,52 +24,57 @@ namespace sltp::cnf {
         // A mapping from a full transition trace to the ID of the corresponding equivalence class
         std::unordered_map<transition_trace, unsigned> from_trace_to_class_repr;
 
-        for (const auto s:sample_.transitions_.all_alive()) {
-            for (unsigned sp:sample_.agent_successors(s)) {
-                auto tx = std::make_pair((state_id_t) s, (state_id_t) sp);
-                auto id = (unsigned) transition_ids_inv_.size(); // Assign a sequential ID to the transition
+        for (const auto& [s, a, sp, spps]:sample_.transitions_.transitions()) {
+            auto tx = std::make_pair((state_id_t) s, (state_id_t) sp);
+            auto id = (unsigned) transition_ids_inv_.size(); // Assign a sequential ID to the transition
 
-                transition_ids_inv_.push_back(tx);
-                auto it1 = transition_ids_.emplace(tx, id);
-                assert(it1.second);
+            transition_ids_inv_.push_back(tx);
+            auto it1 = transition_ids_.emplace(tx, id);
+            assert(it1.second);
 
-                if (!sample_.is_solvable(sp)) { // An alive-to-dead transition cannot be Good
-                    necessarily_bad_transitions_.emplace(id);
+            bool all_spp_alive = true;
+            for (auto const& spp:spps) {
+                if (!sample_.is_solvable(spp)) {
+                    all_spp_alive = false;
                 }
+            }
 
-                if (!options.use_equivalence_classes) {
-                    // If we don't want to use equivalence classes, we simply create one fictitious equivalence class
-                    // for each transition, and proceed as usual
-                    from_transition_to_eq_class_.push_back(id);
-                    class_representatives_.push_back(id);
-                    continue;
-                }
+            if (!sample_.is_solvable(sp) or !all_spp_alive) { // An alive-to-dead transition cannot be Good
+                necessarily_bad_transitions_.emplace(id);
+            }
 
-                // Compute the trace of the transition for all features
-                transition_trace trace;
-                for (auto f:feature_ids) {
-                    trace.denotations.emplace_back(
-                            compute_transition_denotation(sample_.value(s, f), sample_.value(sp, f)));
-                }
+            if (!options.use_equivalence_classes) {
+                // If we don't want to use equivalence classes, we simply create one fictitious equivalence class
+                // for each transition, and proceed as usual
+                from_transition_to_eq_class_.push_back(id);
+                class_representatives_.push_back(id);
+                continue;
+            }
 
-                // Check whether some previous transition has the same transition trace
-                auto it = from_trace_to_class_repr.find(trace);
-                if (it == from_trace_to_class_repr.end()) {
-                    // We have a new equivalence class, to which we assign the ID of the representative transition
-                    from_transition_to_eq_class_.push_back(id);
-                    from_trace_to_class_repr.emplace(trace, id);
-                    class_representatives_.push_back(id);
-                } else {
-                    // We already have other transitions undistinguishable from this one
-                    assert(it->second < id);
-                    from_transition_to_eq_class_.push_back(it->second);
+            // Compute the trace of the transition for all features
+            transition_trace trace;
+            for (auto f:feature_ids) {
+                trace.denotations.emplace_back(
+                        compute_transition_denotation(sample_.value(s, f), sample_.value(sp, f)));
+            }
+
+            // Check whether some previous transition has the same transition trace
+            auto it = from_trace_to_class_repr.find(trace);
+            if (it == from_trace_to_class_repr.end()) {
+                // We have a new equivalence class, to which we assign the ID of the representative transition
+                from_transition_to_eq_class_.push_back(id);
+                from_trace_to_class_repr.emplace(trace, id);
+                class_representatives_.push_back(id);
+            } else {
+                // We already have other transitions undistinguishable from this one
+                assert(it->second < id);
+                from_transition_to_eq_class_.push_back(it->second);
 
 //                if (types_[it->second] != types_[id]) {
 //                    // We have to non-distinguishable transitions, one from alive to solvable, and one from alive
 //                    // to dead; hence, both will need to be labeled as not Good
 //                    throw std::runtime_error("Found two non-distinguishable transitions with different types");
 //                }
-                }
             }
         }
 
@@ -376,8 +381,7 @@ namespace sltp::cnf {
         for (unsigned s:sample_.transitions_.all_alive()) {
             cnfvar_t bad_s_var = 0;
             bad_s_var = wr.var("Bad(" + std::to_string(s) + ")");
-            auto it = bad_s.emplace(s, bad_s_var);
-            assert(it.second); // i.e. the SAT variable Bad(s) is necessarily new
+            bad_s.emplace(s, bad_s_var);
             varmapstream << bad_s_var << " " << s << std::endl;
         }
 
@@ -399,28 +403,52 @@ namespace sltp::cnf {
         std::unordered_map<unsigned, cnfvar_t> tx_s_a;
         for (const auto& [s, a, sp]:sample_.transitions_.agent_transitions()) {
             auto tx = get_transition_id(s, sp);
-            if (is_necessarily_bad(tx)) continue;
+            if (is_necessarily_bad(get_representative_id(tx))) continue;
             tx_s_a[tx] = good_s_a[{s, a}];
             variables.goods_s_a[good_s_a[{s, a}]].insert(get_representative_id(tx));
         }
 
-        // Bad(s) or OR_{a in A} Good(s, a):
-        for (const auto s:sample_.transitions_.all_alive()) {
+        // OR_{a in A} Good(s, a) for all (s, s') s.t. s is alive and not any s'' is dead
+        for (const auto& s:sample_.transitions_.all_alive()) {
             cnfclause_t clause;
-            clause.push_back(Wr::lit(bad_s.at(s), true));
-
-            for (const auto a:s_to_as[s]) {
-                clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
+            for (const auto& a:s_to_as[s]) {
+                if (is_necessarily_bad(get_representative_id(get_transition_id(s, s_a_to_sp[{s, a}])))) {
+                    wr.cl({Wr::lit(good_s_a[{s, a}], false)});
+                } else {
+                    clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
+                }
             }
-
             wr.cl(clause);
         }
 
+        // Bad(s) or OR_{a in A} Good(s, a):
+//        for (const auto s:sample_.transitions_.all_alive()) {
+//            cnfclause_t clause;
+//            clause.push_back(Wr::lit(bad_s.at(s), true));
+//
+//            for (const auto a:s_to_as[s]) {
+//                if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
+//                clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
+//            }
+//
+//            wr.cl(clause);
+//        }
+
+        // Bad(s) -> not Good(s, a):
+        // not Bad(s) or not Good(s, a):
+//        for (const auto s:sample_.transitions_.all_alive()) {
+//
+//            for (const auto a:s_to_as[s]) {
+//                wr.cl({Wr::lit(bad_s.at(s), false),
+//                       Wr::lit(good_s_a.at({s, a}), false)});
+//                if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
+//            }
+//        }
+//
 //    Soft clauses Bad(s):
-        unsigned bad_s_penalization = 9999999;
-        for (const auto s:sample_.transitions_.all_alive()) {
-            wr.cl({Wr::lit(bad_s.at(s), false)}, bad_s_penalization);
-        }
+//        for (const auto s:sample_.transitions_.all_alive()) {
+//            wr.cl({Wr::lit(bad_s.at(s), false)}, 9999999);
+//        }
 
 //    1. Good(s, a) implies V(s") < V(s),                        equiv. to (using binary variables):
 //    2. Good(s, a) implies V(s")=d" and V(s)=d, for some d"<d   equiv. to (move things around):
@@ -429,7 +457,7 @@ namespace sltp::cnf {
         for (unsigned s:sample_.transitions_.all_alive()) {
             for (unsigned a:s_to_as[s]) {
                 unsigned sp = s_a_to_sp[{s, a}];
-                if (is_necessarily_bad(get_transition_id(s, sp))) continue; // includes alive-to-dead transitions
+                if (is_necessarily_bad(get_representative_id(get_transition_id(s, sp)))) continue; // includes alive-to-dead transitions
                 for (unsigned spp:s_a_to_spp[{s, a}]) {
                     if (!sample_.is_alive(spp)) continue;
                     if (!sample_.in_sample(spp)) continue;
@@ -450,38 +478,38 @@ namespace sltp::cnf {
                     }
 
 ////               (2') Border condition: V(s", D) implies -Good(s, a)
-//                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
-//                           Wr::lit(good_s_a.at({s, a}), false)});
-//                    ++n_descending_clauses;
+                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
+                           Wr::lit(good_s_a.at({s, a}), false)});
+                    ++n_descending_clauses;
                 }
             }
         }
 
         // Clauses (6), (7):
-//        auto transitions_to_distinguish = distinguish_all_transitions();
-//        if (options.verbosity>0) {
-//            std::cout << "Posting distinguishability constraints for " << transitions_to_distinguish.size()
-//                      << " pairs of transitions" << std::endl;
-//        }
-//        for (const auto& tpair:transitions_to_distinguish) {
-//            assert (!is_necessarily_bad(tpair.tx1));
-//            const auto& [s, sp] = get_state_pair(tpair.tx1);
-//            const auto& [t, tp] = get_state_pair(tpair.tx2);
-//
-//            cnfclause_t clause{Wr::lit(tx_s_a[tpair.tx1], false)};
-//
-//            // Compute first the Selected(f) terms
-//            for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
-//                clause.push_back(Wr::lit(variables.selecteds.at(f), true));
-//            }
-//
-//            if (!is_necessarily_bad(tpair.tx2)) {
-//                auto good_t_a = tx_s_a[tpair.tx2];
-//                clause.push_back(Wr::lit(good_t_a, true));
-//            }
-//            wr.cl(clause);
-//            n_separation_clauses += 1;
-//        }
+        auto transitions_to_distinguish = distinguish_all_transitions();
+        if (options.verbosity>0) {
+            std::cout << "Posting distinguishability constraints for " << transitions_to_distinguish.size()
+                      << " pairs of transitions" << std::endl;
+        }
+        for (const auto& tpair:transitions_to_distinguish) {
+            assert (!is_necessarily_bad(tpair.tx1));
+            const auto& [s, sp] = get_state_pair(tpair.tx1);
+            const auto& [t, tp] = get_state_pair(tpair.tx2);
+
+            cnfclause_t clause{Wr::lit(tx_s_a[tpair.tx1], false)};
+
+            // Compute first the Selected(f) terms
+            for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
+                clause.push_back(Wr::lit(variables.selecteds.at(f), true));
+            }
+
+            if (!is_necessarily_bad(tpair.tx2)) {
+                auto good_t_a = tx_s_a[tpair.tx2];
+                clause.push_back(Wr::lit(good_t_a, true));
+            }
+            wr.cl(clause);
+            n_separation_clauses += 1;
+        }
 
         // (8): Force D1(s1, s2) to be true if exactly one of the two states is a goal state
         if (options.distinguish_goals) {
@@ -559,6 +587,7 @@ namespace sltp::cnf {
         for (const auto tx1:class_representatives_) {
             if (is_necessarily_bad(tx1)) continue;
             for (const auto tx2:class_representatives_) {
+//                if (!is_necessarily_bad(tx2)) continue;
                 if (tx1 != tx2) {
                     transitions_to_distinguish.emplace_back(tx1, tx2);
                 }
@@ -570,7 +599,7 @@ namespace sltp::cnf {
 
     DNFPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const {
         DNFPolicy dnf(selecteds);
-        for (const auto [s, sp]:goods) {
+        for (const auto& [s, sp]:goods) {
             DNFPolicy::term_t clause;
 
             for (const auto& f:selecteds) {
