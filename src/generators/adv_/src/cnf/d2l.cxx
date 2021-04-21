@@ -39,7 +39,7 @@ namespace sltp::cnf {
                 }
             }
 
-            if (!sample_.is_solvable(sp) or !all_spp_solvable) { // An alive-to-dead transition cannot be Good
+            if (!all_spp_solvable) { // An alive-to-dead transition cannot be Good
                 necessarily_bad_transitions_.emplace(id);
             }
 
@@ -408,17 +408,17 @@ namespace sltp::cnf {
         }
 
         // OR_{a in A} Good(s, a) for all (s, s') s.t. s is alive and not any s'' is dead
-        for (const auto& s:sample_.transitions_.all_alive()) {
-            cnfclause_t clause;
-            for (const auto& a:s_to_as[s]) {
-                if (is_necessarily_bad(get_representative_id(get_transition_id(s, s_a_to_sp[{s, a}])))) {
-                    wr.cl({Wr::lit(good_s_a[{s, a}], false)});
-                } else {
-                    clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
-                }
-            }
-            wr.cl(clause);
-        }
+//        for (const auto& s:sample_.transitions_.all_alive()) {
+//            cnfclause_t clause;
+//            for (const auto& a:s_to_as[s]) {
+//                if (is_necessarily_bad(get_representative_id(get_transition_id(s, s_a_to_sp[{s, a}])))) {
+//                    wr.cl({Wr::lit(good_s_a[{s, a}], false)});
+//                } else {
+//                    clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
+//                }
+//            }
+//            wr.cl(clause);
+//        }
 
         // Bad(s) or OR_{a in A} Good(s, a):
         for (const auto s:sample_.transitions_.all_alive()) {
@@ -479,9 +479,9 @@ namespace sltp::cnf {
                     }
 
 //               (2') Border condition: V(s", D) implies -Good(s, a)
-//                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
-//                           Wr::lit(good_s_a.at({s, a}), false)});
-//                    ++n_descending_clauses;
+                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
+                           Wr::lit(good_s_a.at({s, a}), false)});
+                    ++n_descending_clauses;
                 }
             }
         }
@@ -581,6 +581,7 @@ namespace sltp::cnf {
         return {CNFGenerationOutput::Success, variables};
     }
 
+
     std::vector<transition_pair> D2LEncoding::distinguish_all_transitions() const {
         std::vector<transition_pair> transitions_to_distinguish;
         transitions_to_distinguish.reserve(class_representatives_.size() * class_representatives_.size());
@@ -594,9 +595,37 @@ namespace sltp::cnf {
                 }
             }
         }
-        transitions_to_distinguish.resize(2000);
         return transitions_to_distinguish;
     }
+
+
+
+//    std::vector<transition_pair> D2LEncoding::distinguish_all_transitions() const {
+//        std::vector<transition_pair> transitions_to_distinguish;
+////        transitions_to_distinguish.reserve(class_representatives_.size() * class_representatives_.size());
+//
+//        unsigned max_tx = 1000000;
+//        unsigned count_tx = 0;
+//        transitions_to_distinguish.reserve(max_tx);
+//
+//        for (const auto tx1:class_representatives_) {
+//            if (is_necessarily_bad(tx1)) continue;
+//            for (const auto tx2:class_representatives_) {
+//                if (is_necessarily_bad(tx2)) continue;
+//                if (tx1 != tx2) {
+//                    transitions_to_distinguish.emplace_back(tx1, tx2);
+//                    count_tx++;
+//                }
+//                if (!(count_tx<max_tx)) {
+//                    break;
+//                }
+//            }
+//            if (!(count_tx<max_tx)) {
+//                break;
+//            }
+//        }
+//        return transitions_to_distinguish;
+//    }
 
     DNFPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const {
         DNFPolicy dnf(selecteds);
