@@ -420,33 +420,34 @@ namespace sltp::cnf {
 //            wr.cl(clause);
 //        }
 
-        // Bad(s) or OR_{a in A} Good(s, a):
-        for (const auto s:sample_.transitions_.all_alive()) {
-            cnfclause_t clause;
-            clause.push_back(Wr::lit(bad_s.at(s), true));
+        if (options.allow_bad_states) {
+            // Bad(s) or OR_{a in A} Good(s, a):
+            for (const auto s:sample_.transitions_.all_alive()) {
+                cnfclause_t clause;
+                clause.push_back(Wr::lit(bad_s.at(s), true));
 
-            for (const auto a:s_to_as[s]) {
-                if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
-                clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
+                for (const auto a:s_to_as[s]) {
+                    if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
+                    clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
+                }
+
+                wr.cl(clause);
             }
 
-            wr.cl(clause);
+            // Soft clauses Bad(s):
+            for (const auto s:sample_.transitions_.all_alive()) {
+                wr.cl({Wr::lit(bad_s.at(s), false)}, 99999);
+            }
         }
-
-//    Soft clauses Bad(s):
-        for (const auto s:sample_.transitions_.all_alive()) {
-            wr.cl({Wr::lit(bad_s.at(s), false)}, 99999);
-        }
-
 
         // Bad(s) -> not Good(s, a):
         // not Bad(s) or not Good(s, a):
 //        for (const auto s:sample_.transitions_.all_alive()) {
 //
 //            for (const auto a:s_to_as[s]) {
+//                if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
 //                wr.cl({Wr::lit(bad_s.at(s), false),
 //                       Wr::lit(good_s_a.at({s, a}), false)});
-//                if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
 //            }
 //        }
 
@@ -460,28 +461,60 @@ namespace sltp::cnf {
                 unsigned sp = s_a_to_sp[{s, a}];
                 if (is_necessarily_bad(get_representative_id(get_transition_id(s, sp)))) continue; // includes alive-to-dead transitions
                 for (unsigned spp:s_a_to_spp[{s, a}]) {
-                    if (!sample_.is_alive(spp)) continue;
+                    if (!sample_.is_solvable(spp)) continue;
 //                   if (!sample_.in_sample(spp)) continue;
 //                   if (get_vstar(s) > acyclicity_radius) continue;
+
+                    cnfvar_t good_s_a_var = good_s_a.at({s, a});
+
+                    if (options.decreasing_transitions_must_be_good) {
+                        // (3') Border condition: if s' is a goal, then (s, s') must be good
+                        if (sample_.is_goal(spp)) {
+                            wr.cl({Wr::lit(good_s_a_var, true)});
+                            ++n_descending_clauses;
+                        }
+                    }
+
+                    if (!sample_.is_alive(spp)) continue;
 
                     for (unsigned dpp=1; dpp < max_d; ++dpp) {
 
                         cnfclause_t clause;
                         // (2) Good(s, a) and V(s", d") -> V(s) > d"
-                        clause.push_back(Wr::lit(good_s_a.at({s, a}), false));
+                        clause.push_back(Wr::lit(good_s_a_var, false));
                         clause.push_back(Wr::lit(vs.at({spp, dpp}), false));
+
+                        if (options.allow_cycles) {
+                            // (2) Good(s, a) and V(s", d") -> V(s) = d"
+                            clause.push_back(Wr::lit(vs.at({s, dpp}), true));
+
+//                            // (3') Soft clause Good(s, a) and V(s", d") -> V(s) = d"
+                            wr.cl({Wr::lit(good_s_a_var , false),
+                                   Wr::lit(vs.at({spp, dpp}), false),
+                                   Wr::lit(vs.at({s, dpp}), true)}, 99999);
+                            ++n_descending_clauses;
+                        }
 
                         for (unsigned d = dpp + 1; d <= max_d; ++d) {
                             clause.push_back(Wr::lit(vs.at({s, d}), true));
+
+                            if (options.decreasing_transitions_must_be_good) {
+                                // (3) V(s") < V(s) -> Good(s, a)
+                                wr.cl({Wr::lit(vs.at({s, d}), false),
+                                       Wr::lit(vs.at({spp, dpp}), false),
+                                       Wr::lit(good_s_a_var, true)});
+                                ++n_descending_clauses;
+                            }
+
                         }
                         wr.cl(clause);
                         ++n_descending_clauses;
                     }
 
 //               (2') Border condition: V(s", D) implies -Good(s, a)
-                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
-                           Wr::lit(good_s_a.at({s, a}), false)});
-                    ++n_descending_clauses;
+//                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
+//                           Wr::lit(good_s_a_var, false)});
+//                    ++n_descending_clauses;
                 }
             }
         }
@@ -589,7 +622,6 @@ namespace sltp::cnf {
         for (const auto tx1:class_representatives_) {
             if (is_necessarily_bad(tx1)) continue;
             for (const auto tx2:class_representatives_) {
-                if (is_necessarily_bad(tx2)) continue;
                 if (tx1 != tx2) {
                     transitions_to_distinguish.emplace_back(tx1, tx2);
                 }

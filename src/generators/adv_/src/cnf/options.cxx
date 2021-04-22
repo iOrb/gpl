@@ -90,6 +90,15 @@ namespace sltp::cnf {
                 //new
                 ("maxsat_iter", po::value<unsigned>()->default_value(99999),
                  "The maximum numer of iterations done by the maxsat solver")
+
+                ("allow_bad_states",
+                 "Allow usage of bad states")
+
+                 ("decreasing_transitions_must_be_good",
+                 "V(s') < V(s) implies Good(s, a)")
+
+                 ("allow_cycles",
+                 "Soft clause Good(s, a) and V(s\", d\") -> V(s) = d")
                 ;
 
 

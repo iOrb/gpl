@@ -24,6 +24,13 @@ def experiments():
         concept_generator=None,
         parameter_generator=None,
         v_slack=2,
+        maxsat_iter=1,
+        teach_policies=None,
+        initial_sample_size=1,
+        refinement_batch_size=1,
+        verbosity=0,
+        acyclicity='topological',
+
         mode=MODE,
 
         use_incremental_refinement=False,
@@ -33,7 +40,7 @@ def experiments():
 
     exps["1"] = update_dict(
         base,
-        instances=four_four_instances([0]),
+        instances=break_instances('a'),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
         #           break_instances('a') +
         #           all_instances([15, 16, 17]),
@@ -47,20 +54,14 @@ def experiments():
                        break_instances('a'),
         # test_instances=all_instances([16]),
 
-        teach_policies=None,
-
-        initial_sample_size=1,
-        refinement_batch_size=3,
-        verbosity=1,
-
-        acyclicity='topological',
-
         max_concept_size=5,
         distance_feature_max_complexity=5,
         concept_generation_timeout=15000,
 
-        parameter_generator=None,
-        maxsat_iter=1,
+        allow_bad_states=False,
+        decreasing_transitions_must_be_good=True,
+        allow_cycles=False,
+
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],
         distinguish_goals=True,
@@ -74,93 +75,6 @@ def experiments():
         train_instances_to_expand=list(range(1000)),
     )
 
-    exps["2"] = update_dict(
-        base,
-        instances=all_instances([17]),
-        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-        #           break_instances('a') +
-        #           all_instances([15, 16, 17]),
-        # instances=break_instances('a'),
-        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-        #           all_instances([15, 16]) +
-        #           break_instances('a'),
-        # test_instances=four_four_instances('a') +
-        #                all_instances('a') +
-        #                all_instances([16]) +
-        #                break_instances('a'),
-        test_instances=four_four_instances('a'),
-
-        teach_policies=None,
-
-        initial_sample_size=10,
-        refinement_batch_size=30,
-        verbosity=1,
-
-        acyclicity='topological',
-
-        max_concept_size=5,
-        distance_feature_max_complexity=5,
-        concept_generation_timeout=15000,
-
-        parameter_generator=None,
-        maxsat_iter=1,
-        # skip_train_steps=[0, 1, 2],  # do not generate features twice!
-        skip_train_steps=[],
-        distinguish_goals=True,
-
-        # rollouts
-        # num_episodes=1,
-        # num_rollouts=1,
-        # rollout_depth=1,
-
-        # train_instances_to_expand=[],
-        train_instances_to_expand=list(range(1000)),
-    )
-
-
-    exps["3"] = update_dict(
-        base,
-        # instances=all_instances([16]),
-        instances=break_instances([1]),
-        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-        #           break_instances('a') +
-        #           all_instances([15, 16, 17]),
-        # instances=break_instances('a'),
-        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-        #           all_instances([15, 16]) +
-        #           break_instances('a'),
-        test_instances=four_four_instances('a') +
-                       all_instances('a') +
-                       # all_instances([16]) +
-                       break_instances('a'),
-        # test_instances=all_instances([16]),
-
-        teach_policies=None,
-
-        initial_sample_size=1,
-        refinement_batch_size=3,
-        verbosity=1,
-
-        acyclicity='topological',
-
-        max_concept_size=5,
-        distance_feature_max_complexity=5,
-        concept_generation_timeout=15000,
-
-        parameter_generator=None,
-        maxsat_iter=1,
-        # skip_train_steps=[0, 1, 2],  # do not generate features twice!
-        skip_train_steps=[],
-        distinguish_goals=True,
-
-        # rollouts
-        num_episodes=1,
-        num_rollouts=3,
-        rollout_depth=3,
-
-        # train_instances_to_expand=[],
-        train_instances_to_expand=list(range(1000)),
-    )
 
     return exps
 

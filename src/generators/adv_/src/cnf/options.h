@@ -66,6 +66,10 @@ namespace sltp::cnf {
 
         //new
         unsigned maxsat_iter;
+        bool allow_bad_states;
+        bool decreasing_transitions_must_be_good;
+        bool allow_cycles;
+
     };
 
     Options parse_options(int argc, const char** argv);
