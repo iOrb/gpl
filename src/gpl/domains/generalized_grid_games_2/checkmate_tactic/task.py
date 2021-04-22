@@ -24,6 +24,7 @@ class Task(ITask):
 
     def __init_task(self, instance_name):
         brd = unserialize_layout(instance_name)
+        self.__representative_instance_name = "{}x{}".format(*brd.shape)
         r = (brd, OBJECTS.player.w)
         info = {'goal': 0, 'deadend': 0, 'reward': 0,}
         self.grammar = Grammar(self.get_domain_name(),)
@@ -150,6 +151,9 @@ class Task(ITask):
         new_info = copy.deepcopy(s[1])
         new_info['deadend'] = True
         return (s[0], new_info, s[2])
+
+    def get_representative_instance_name(self):
+        return self.__representative_instance_name
 
     def encode_tx(self, tx):
         s, op, sp = tx

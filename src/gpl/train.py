@@ -18,7 +18,7 @@ def run(config, data, rng):
 
 def train(config, data, rng, train_steps=[], show_steps_only=False):
 
-    data = pre_process_data(config, data)
+    data = pre_process_data(config, data, rng)
 
     for episode in range(config.num_episodes):
         # TODO: check some policy convergence parameter
@@ -80,16 +80,27 @@ def check_requirements(step, config, data):
             raise RuntimeError(_create_exception_msg(step, "Missing data {}".format(d)))
 
 
-def pre_process_data(config, data):
-    data = Bunch(dict(sample=None, d2l_policy=None, tasks=None))
+def pre_process_data(config, data, rng):
+    data = Bunch(dict(sample=None, d2l_policy=None, tasks=None, repr_instances=dict()))
     if config.provided_sample_file is not None:
         data.sample = load_local_object(config.provided_sample_file)
     else:
         data.sample = get_sampling_class(config)
     if config.d2l_policy is not None:
         data.d2l_policy=config.d2l_policy
+    init_tasks(config, data, rng)
     return data
 
+def init_tasks(config, data, rng):
+    if not config.instances:
+        logging.info("No train instances were specified")
+        return ExitCode.NotTrainInstancesSpecified, dict()
+
+    data.tasks = list()
+
+    for i, instance_name in enumerate(config.instances):
+        task = config.domain.generate_task(instance_name, config)
+        data.tasks.append(task)
 
 def post_process_data(config, data):
     save_local_object(data.sample, config.sample_file)

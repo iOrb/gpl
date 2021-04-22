@@ -27,6 +27,7 @@ class TransitionSampleADV:
         self.instance_roots = dict()  # The root of each instance
         self.deadends = set()
         self.instance = dict()  # A mapping between states and the problem instances they came from
+        self.representative_instances = dict()  # A mappint between repr_instance_name and the first seen representative_instace
         self.instance_ids = dict()
         self.remapping = dict()
         self.vstar = {}
@@ -37,7 +38,7 @@ class TransitionSampleADV:
     def add_transition(self, tx, task):
         s, op0, sp, _, spp = tx # for now ignore op1
         assert None not in [s, op0, sp]
-        new_instance_, instance_id = self.check_instance_name(task.get_instance_name())
+        new_instance_, instance_id = self.check_instance_name(task)
         spp = spp if spp is not None else copy.deepcopy(sp) # if sp is goal or deadend just extende it to spp
         sids = [self.check_state(s, task, instance_id) for s in [s, sp, spp]]
         self.states_s_spp |= {sids[0], sids[2]}
@@ -90,12 +91,15 @@ class TransitionSampleADV:
     def update_instance(self, sid, intance_id):
         self.instance[sid] = intance_id # {state_id: instance_id}
 
-    def check_instance_name(self, instance_name):
-        if instance_name not in self.instance_ids:
-            self.instance_ids[instance_name] = self.instance_id_count
+    def check_instance_name(self, task):
+        repr_instance_name = task.get_representative_instance_name()
+
+        if repr_instance_name not in self.instance_ids:
+            self.instance_ids[repr_instance_name] = self.instance_id_count
+            self.representative_instances[repr_instance_name] = task.get_instance_name()
             self.instance_id_count += 1
-            return True, self.get_instance_id(instance_name) # the intance is new
-        return False, self.get_instance_id(instance_name)
+            return True, self.get_instance_id(repr_instance_name) # the intance is new
+        return False, self.get_instance_id(repr_instance_name)
 
     def encode_state(self, instance_id, s_enc_raw):
         return '_'.join([str(instance_id), str(s_enc_raw)])

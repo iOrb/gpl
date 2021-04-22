@@ -236,21 +236,8 @@ def create_action_selection_function_from_transition_policy(config, model_factor
 
     return _policy
 
-def init_tasks(config, data, rng):
-    if not config.instances:
-        logging.info("No train instances were specified")
-        return ExitCode.NotTrainInstancesSpecified, dict()
-
-    data.tasks = list()
-
-    for i, instance_name in enumerate(config.instances):
-        task = config.domain.generate_task(instance_name, config)
-        data.tasks.append(task)
 
 def run(config, data, rng):
-    if not data.tasks:
-        init_tasks(config, data, rng)
-
     def get_policy(model_factory, static_atoms, data):
 
         if data.d2l_policy is not None:

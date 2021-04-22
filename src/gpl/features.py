@@ -47,7 +47,7 @@ def prepare_generator_input(config, sample):
     all_objects = []  # We'll collect here the set of objects used in each instance
     infos = []
 
-    for instance_name in config.instances:
+    for instance in sample.representative_instances.values():
         lang, static_predicates = config.domain.generate_language()
         vocabulary = compute_dl_vocabulary(lang)
 
@@ -62,7 +62,7 @@ def prepare_generator_input(config, sample):
         # We clone the language so that objects from different instances don't get registered all in the same language;
         # if that happened, we'd be unable to properly compute the universe of each instace.
         pl = copy.deepcopy(lang)
-        problem = config.domain.generate_problem(pl, instance_name)
+        problem = config.domain.generate_problem(pl, instance)
 
         # Compute the universe of each instance: a set with all objects in the universe
         universe = compute_universe_from_pddl_model(problem.language)
