@@ -26,7 +26,7 @@ class Task(ITask):
     def __init_task(self, instance_name):
         brd = unserialize_layout(instance_name)
         self.__representative_instance_name = "{}x{}".format(*brd.shape)
-        self.__representative_transitions = create_representative_transitions(*brd.shape)
+        self.__representative_op_effects = create_representative_transitions(*brd.shape)
         r = (brd, OBJECTS.player.w)
         info = {'goal': 0, 'deadend': 0, 'reward': 0,}
         self.grammar = Grammar(self.get_domain_name(),)
@@ -157,8 +157,10 @@ class Task(ITask):
     def get_representative_instance_name(self):
         return self.__representative_instance_name
 
-    def get_representative_transition(self, op_encoded):
-        return self.__representative_transitions[op_encoded]
+    def get_representative_op_effect(self, op_encoded):
+        tx = self.__representative_op_effects[op_encoded]
+        (s0, s1) = tuple([self.colapse_state(r, False, False, None) for r in tx])
+        return (s0, s1)
 
     def encode_tx(self, tx):
         s, op, sp = tx

@@ -34,7 +34,7 @@ class TransitionSampleADV:
         self.sid_count = 0
         self.oid_count = 0
         self.instance_id_count = 0
-        self.representative_transitions = dict()  # {{s, op}}: {t, t'}}
+        self.representative_op_effects = dict()  # {op: (t, t')}
 
     def add_transition(self, tx, task):
         s, op0, sp, _, spp = tx # for now ignore op1
@@ -52,7 +52,7 @@ class TransitionSampleADV:
     def update_transitions(self, tx):
         """ main method """
         s, op0, sp, spp = tx # IDs
-        # s {(op0, s'): {s'', ...}}
+        # s: {(op0, s'): {s'', ...}}
         self.transitions[s][(op0, sp)].add(spp)
         # for simplicity we just take into account the adversary transitions as FOND
         self.parents[spp].add(s)
@@ -81,13 +81,25 @@ class TransitionSampleADV:
     def get_instance_id(self, instance_name):
         return self.instance_ids[instance_name]
 
-    def check_operator(self, s, op, task, intance_id):
+    def get_representative_op_effect(self, oid):
+        return self.representative_op_effects[oid]
+
+    def check_operator(self, s, op, task, instance_id):
         o_raw = encode_operator(s, op, task)
-        o = self.encode_operator(intance_id, o_raw)
+        o = self.encode_operator(instance_id, o_raw)
         if o not in self.operators:
             self.operators[o] = self.oid_count
             self.oid_count += 1
+            self.__set_op_representative_effect(self.operators[o], o_raw, task, instance_id)
+
         return self.operators[o]
+
+    def __set_op_representative_effect(self, oid, o_enc_raw, task, instance_id):
+        t, tp = task.get_representative_op_effect(o_enc_raw)
+        tid = self.check_state(t, task, instance_id)
+        tpid = self.check_state(tp, task, instance_id)
+        self.representative_op_effects[oid] = (tid, tpid)
+        _ = [self.update_instance(i, instance_id) for i in (tid, tpid)]
 
     def update_instance(self, sid, intance_id):
         self.instance[sid] = intance_id # {state_id: instance_id}
@@ -141,6 +153,9 @@ class TransitionSampleADV:
 
     def get_sorted_state_s_spp_ids(self):
         return sorted(self.states_s_spp)
+
+    def get_sorted_op_ids(self):
+        return sorted(self.operators.values())
 
     def process_successors(self, s, succs, task):
         alive, goals, deadends = list(), list(), list()
@@ -251,9 +266,11 @@ def print_transition_matrix(sample, transitions_filename):
     transitions = sample.transitions
     num_agent_transitions = sum(len(tx) for tx in transitions.values())
     num_nondet_transitions = sum(len(t) for tx in transitions.values() for t in tx.values())
+    operator_ids = sample.get_sorted_op_ids()
     num_s_with_outgoind_edge = len(transitions.keys()) - len(sample.goals) - len(sample.deadends)
     logging.info(f"Printing SAT transition matrix with {len(state_ids)} states,"
                  f" {num_s_with_outgoind_edge} states with some outgoing transition,"
+                 f" {len(operator_ids)} operators,"
                  f" {num_nondet_transitions} (non-det) transitions,"
                  f" and {num_agent_transitions} (agent) transitions to '{transitions_filename}'")
 
@@ -277,6 +294,12 @@ def print_transition_matrix(sample, transitions_filename):
             # Next: A space-separated list of V^*(s) values, one per each state s, where -1 denotes infinity
             vstar = sample.vstar.get(s, -1)
             print(f"{s} {vstar} {num_ops} {len(o_edges)} {nondet_successors}", file=f)
+
+        if sample.representative_op_effects:
+            print(f"{len(operator_ids)}", file=f)
+            for op in operator_ids:
+                t, tp = sample.get_representative_op_effect(op)
+                print(f"{op} {t} {tp}", file=f)
 
 
 def run(config, data, rng):
