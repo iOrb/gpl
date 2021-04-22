@@ -431,12 +431,10 @@ namespace sltp::cnf {
                     clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
                 }
 
-                wr.cl(clause);
-            }
-
-            // Soft clauses Bad(s):
-            for (const auto s:sample_.transitions_.all_alive()) {
+                // Soft clauses Bad(s):
                 wr.cl({Wr::lit(bad_s.at(s), false)}, 99999);
+
+                wr.cl(clause);
             }
         }
 
@@ -548,36 +546,24 @@ namespace sltp::cnf {
         // (8): Force D1(s1, s2) to be true if exactly one of the two states is a goal state
         if (options.distinguish_goals) {
             for (unsigned s:sample_.transitions_.all_goals()) {
-                for (unsigned t:sample_.transitions_.all_dead()) {
+                for (unsigned s:sample_.transitions_.all_alive()) {
+                    for (unsigned a:s_to_as[s]) {
+                        unsigned t = s_a_to_sp[{s, a}];
+                        if (!sample_.is_goal(t)) {
+                            const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
+                            if (d1feats.empty()) {
+                                undist_goal_warning(s, t);
+                            }
 
-                    const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
-                    if (d1feats.empty()) {
-                        undist_goal_warning(s, t);
+                            cnfclause_t clause;
+                            for (unsigned f:d1feats) {
+                                clause.push_back(Wr::lit(variables.selecteds.at(f), true));
+                            }
+
+                            wr.cl(clause);
+                            n_goal_clauses += 1;
+                        }
                     }
-
-                    cnfclause_t clause;
-                    for (unsigned f:d1feats) {
-                        clause.push_back(Wr::lit(variables.selecteds.at(f), true));
-                    }
-
-                    wr.cl(clause);
-                    n_goal_clauses += 1;
-                }
-
-                for (unsigned t:sample_.transitions_.all_alive()) {
-
-                    const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
-                    if (d1feats.empty()) {
-                        undist_goal_warning(s, t);
-                    }
-
-                    cnfclause_t clause;
-                    for (unsigned f:d1feats) {
-                        clause.push_back(Wr::lit(variables.selecteds.at(f), true));
-                    }
-
-                    wr.cl(clause);
-                    n_goal_clauses += 1;
                 }
             }
         }
@@ -629,8 +615,6 @@ namespace sltp::cnf {
         }
         return transitions_to_distinguish;
     }
-
-
 
 //    std::vector<transition_pair> D2LEncoding::distinguish_all_transitions() const {
 //        std::vector<transition_pair> transitions_to_distinguish;

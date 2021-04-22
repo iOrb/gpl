@@ -34,6 +34,7 @@ class TransitionSampleADV:
         self.sid_count = 0
         self.oid_count = 0
         self.instance_id_count = 0
+        self.representative_transitions = dict()  # {{s, op}}: {t, t'}}
 
     def add_transition(self, tx, task):
         s, op0, sp, _, spp = tx # for now ignore op1
@@ -265,7 +266,7 @@ def print_transition_matrix(sample, transitions_filename):
 
         # Print one line for each source state, representing all non-det transitions that start in that state,
         # with format:
-        #     source_id, vstar_src, num_sps, num_spps, <a1, sp1 spp11>, <a1, sp1, spp>, <a2, sp2, spp21>, ...
+        #     source_id, vstar_src, num_sps, num_spps, <a1, sp1, spp11>, <a1, sp1, spp>, <a2, sp2, spp21>, ...
         for s in state_s_spp:
             o_edges = []
             num_ops = 0

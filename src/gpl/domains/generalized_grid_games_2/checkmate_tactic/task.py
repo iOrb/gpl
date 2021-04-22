@@ -9,6 +9,7 @@ from .utils import stockfish_default_params
 from ..utils import unserialize_layout, get_operators
 from .grammar.objects import OBJECTS
 from generalization_grid_games_2.envs.checkmate_tactic import available_actions, check_game_status, act, player2_policy
+from .grammar.actions import create_representative_transitions, encode_op
 
 # State: (representation, info, state_encoded)
 
@@ -25,6 +26,7 @@ class Task(ITask):
     def __init_task(self, instance_name):
         brd = unserialize_layout(instance_name)
         self.__representative_instance_name = "{}x{}".format(*brd.shape)
+        self.__representative_transitions = create_representative_transitions(*brd.shape)
         r = (brd, OBJECTS.player.w)
         info = {'goal': 0, 'deadend': 0, 'reward': 0,}
         self.grammar = Grammar(self.get_domain_name(),)
@@ -155,6 +157,9 @@ class Task(ITask):
     def get_representative_instance_name(self):
         return self.__representative_instance_name
 
+    def get_representative_transition(self, op_encoded):
+        return self.__representative_transitions[op_encoded]
+
     def encode_tx(self, tx):
         s, op, sp = tx
         op_enc = self.encode_op(s, op)
@@ -165,4 +170,5 @@ class Task(ITask):
         piece = s[0][0][op[0][0], op[0][1]]
         assert piece not in "empty"
         o = copy.deepcopy(op)
-        return "{}_{}.{}_{}.{}".format(piece, o[0][0], o[0][1], o[1][0], o[1][1])
+        return encode_op(piece, op)
+

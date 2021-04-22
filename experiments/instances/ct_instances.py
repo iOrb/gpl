@@ -26,6 +26,7 @@ def all_instances(indexes):
         20: "checkmate_tactic/layout_8x6_0.json",
         21: "checkmate_tactic/layout_9x14_0.json",
         22: "checkmate_tactic/layout_9x9_0.json",
+        23: "checkmate_tactic/layout_4x5_0.json",
     }
     return select_instances(indexes, instances)
 

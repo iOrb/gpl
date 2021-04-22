@@ -40,26 +40,26 @@ def experiments():
 
     exps["1"] = update_dict(
         base,
-        instances=break_instances('a'),
+        instances=break_instances([0]),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
         #           break_instances('a') +
         #           all_instances([15, 16, 17]),
         # instances=break_instances('a'),
         test_instances=four_four_instances('a') +
-                       all_instances('a') +
-                       break_instances('a'),
+                       break_instances('a') +
+                       all_instances('a'),
         # test_instances=all_instances([16]),
 
         max_concept_size=5,
         distance_feature_max_complexity=5,
         concept_generation_timeout=15000,
 
-        allow_bad_states=False,
+        allow_bad_states=True,
         decreasing_transitions_must_be_good=True,
-        allow_cycles=False,
+        allow_cycles=True,
 
-        # skip_train_steps=[0, 1, 2],  # do not generate features twice!
-        skip_train_steps=[],
+        skip_train_steps=[0, 1, 2],  # do not generate features twice!
+        # skip_train_steps=[],
         distinguish_goals=True,
 
         # rollouts
@@ -73,7 +73,7 @@ def experiments():
 
     exps["2"] = update_dict(
         exps["1"],
-        instances=four_four_instances([0, 1, 4, 5, 6, 7]),
+        instances=all_instances([23]),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
         #           break_instances('a') +
         #           all_instances([15, 16, 17]),
@@ -99,8 +99,10 @@ def experiments():
 
     exps["3"] = update_dict(
         exps["1"],
-        instances=four_four_instances('a') +
-                  break_instances('a'),
+        instances=four_four_instances('a'),
+        # instances=four_four_instances('a') +
+        #           all_instances([0, 1, 2, 3, 4, 15, 16, 17, 20, 22]) +
+        #           break_instances('a'),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
         #           break_instances('a') +
         #           all_instances([15, 16, 17]),
@@ -113,7 +115,7 @@ def experiments():
         distance_feature_max_complexity=5,
         concept_generation_timeout=15000,
 
-        allow_bad_states=False,
+        allow_bad_states=True,
         decreasing_transitions_must_be_good=True,
         allow_cycles=True,
 
@@ -123,8 +125,8 @@ def experiments():
 
         # rollouts
         num_episodes=1,
-        num_rollouts=3,
-        rollout_depth=4,
+        num_rollouts=1,
+        rollout_depth=1,
 
         train_instances_to_expand=[],
         # train_instances_to_expand=list(range(1000)),
