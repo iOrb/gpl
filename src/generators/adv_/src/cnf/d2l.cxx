@@ -412,7 +412,7 @@ namespace sltp::cnf {
             auto tx = get_transition_id(s, sp);
             if (is_necessarily_bad(get_representative_id(tx))) continue;
             tx_s_a[tx] = good_s_a[{s, a}];
-            variables.goods_s_a[good_s_a[{s, a}]] = std::make_pair(s, a);
+            variables.goods_s_a[good_s_a[{s, a}]].insert(tx);
         }
 
         // OR_{a in A} Good(s, a) for all (s, s') s.t. s is alive and not any s'' is dead
@@ -445,17 +445,6 @@ namespace sltp::cnf {
                 wr.cl(clause);
             }
         }
-
-        // Bad(s) -> not Good(s, a):
-        // not Bad(s) or not Good(s, a):
-//        for (const auto s:sample_.transitions_.all_alive()) {
-//
-//            for (const auto a:s_to_as[s]) {
-//                if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
-//                wr.cl({Wr::lit(bad_s.at(s), false),
-//                       Wr::lit(good_s_a.at({s, a}), false)});
-//            }
-//        }
 
 
 //    1. Good(s, a) implies V(s") < V(s),                        equiv. to (using binary variables):
@@ -525,15 +514,6 @@ namespace sltp::cnf {
             }
         }
 
-/*
- *
- * for all good_s_a:
- *  for all good_t_a:
- *   for all a:
- *      -good_s_a or good_t_a ->
- *
- */
-
         // Clauses (6), (7):
         auto transitions_to_distinguish = distinguish_all_transitions();
         if (options.verbosity>0) {
@@ -541,52 +521,24 @@ namespace sltp::cnf {
                       << " pairs of transitions" << std::endl;
         }
         for (const auto& tpair:transitions_to_distinguish) {
-            const auto& [s, sp] = sample_.transitions_.get_op_tx(tpair.tx1); // representative s, s' for a
-            const auto& [t, tp] = sample_.transitions_.get_op_tx(tpair.tx2); // representative t, t' for a'
+            assert (!is_necessarily_bad(tpair.tx1));
+            const auto& [s, sp] = get_state_pair(tpair.tx1);
+            const auto& [t, tp] = get_state_pair(tpair.tx2);
 
-            cnfclause_t clause;
-//            cnfclause_t clause{Wr::lit(tx_s_a[tpair.tx1], false)};
+            cnfclause_t clause{Wr::lit(tx_s_a[tpair.tx1], false)};
 
             // Compute first the Selected(f) terms
             for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
                 clause.push_back(Wr::lit(variables.selecteds.at(f), true));
             }
 
-//            if (!is_necessarily_bad(tpair.tx2)) {
-//                auto good_t_a = tx_s_a[tpair.tx2];
-//                clause.push_back(Wr::lit(good_t_a, true));
-//            }
-
+            if (!is_necessarily_bad(tpair.tx2)) {
+                auto good_t_a = tx_s_a[tpair.tx2];
+                clause.push_back(Wr::lit(good_t_a, true));
+            }
             wr.cl(clause);
             n_separation_clauses += 1;
-
         }
-
-        // Clauses (6), (7):
-//        auto transitions_to_distinguish = distinguish_all_transitions();
-//        if (options.verbosity>0) {
-//            std::cout << "Posting distinguishability constraints for " << transitions_to_distinguish.size()
-//                      << " pairs of transitions" << std::endl;
-//        }
-//        for (const auto& tpair:transitions_to_distinguish) {
-//            assert (!is_necessarily_bad(tpair.tx1));
-//            const auto& [s, sp] = get_state_pair(tpair.tx1);
-//            const auto& [t, tp] = get_state_pair(tpair.tx2);
-//
-//            cnfclause_t clause{Wr::lit(tx_s_a[tpair.tx1], false)};
-//
-//            // Compute first the Selected(f) terms
-//            for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
-//                clause.push_back(Wr::lit(variables.selecteds.at(f), true));
-//            }
-//
-//            if (!is_necessarily_bad(tpair.tx2)) {
-//                auto good_t_a = tx_s_a[tpair.tx2];
-//                clause.push_back(Wr::lit(good_t_a, true));
-//            }
-//            wr.cl(clause);
-//            n_separation_clauses += 1;
-//        }
 
         // (8): Force D1(s1, s2) to be true if exactly one of the two states is a goal state
         if (options.distinguish_goals) {
@@ -648,95 +600,35 @@ namespace sltp::cnf {
 
     std::vector<transition_pair> D2LEncoding::distinguish_all_transitions() const {
         std::vector<transition_pair> transitions_to_distinguish;
-//        transitions_to_distinguish.reserve(class_representatives_.size() * class_representatives_.size());
-
-//        for (const auto tx1:class_representatives_) {
-//            if (is_necessarily_bad(tx1)) continue;
-//            for (const auto tx2:class_representatives_) {
-//                if (tx1 != tx2) {
-//                    transitions_to_distinguish.emplace_back(tx1, tx2);
-//                }
-//            }
-//        }
-
-        transitions_to_distinguish.reserve(sample_.transitions_.num_op() * sample_.transitions_.num_op());
-
-        for (auto const& [op1, tx1]:sample_.transitions_.operations_tx()) {
-            for (const auto& [op2, tx2]:sample_.transitions_.operations_tx()) {
-                if (op1 != op2) {
-                    transitions_to_distinguish.emplace_back(op1, op2);
+        transitions_to_distinguish.reserve(class_representatives_.size() * class_representatives_.size());
+        for (const auto tx1:class_representatives_) {
+            if (is_necessarily_bad(tx1)) continue;
+            for (const auto tx2:class_representatives_) {
+                if (tx1 != tx2) {
+                    transitions_to_distinguish.emplace_back(tx1, tx2);
                 }
             }
         }
-
         return transitions_to_distinguish;
     }
 
-//    std::vector<transition_pair> D2LEncoding::distinguish_all_transitions() const {
-//        std::vector<transition_pair> transitions_to_distinguish;
-////        transitions_to_distinguish.reserve(class_representatives_.size() * class_representatives_.size());
-//
-//        unsigned max_tx = 1000000;
-//        unsigned count_tx = 0;
-//        transitions_to_distinguish.reserve(max_tx);
-//
-//        for (const auto tx1:class_representatives_) {
-//            if (is_necessarily_bad(tx1)) continue;
-//            for (const auto tx2:class_representatives_) {
-//                if (is_necessarily_bad(tx2)) continue;
-//                if (tx1 != tx2) {
-//                    transitions_to_distinguish.emplace_back(tx1, tx2);
-//                    count_tx++;
-//                }
-//                if (!(count_tx<max_tx)) {
-//                    break;
-//                }
-//            }
-//            if (!(count_tx<max_tx)) {
-//                break;
-//            }
-//        }
-//        return transitions_to_distinguish;
-//    }
-
-    DNFPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& good_s_a, const std::vector<unsigned>& selecteds) const {
+    DNFPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const {
         DNFPolicy dnf(selecteds);
-        for (const auto& [s, a]:good_s_a) {
+        for (const auto& [s, sp]:goods) {
             DNFPolicy::term_t clause;
 
             for (const auto& f:selecteds) {
                 const auto& fs = sample_.matrix().entry(s, f);
-
-                const auto& tx = sample_.transitions_.get_op_tx(a); // (t, t')
-                const auto& ft = sample_.matrix().entry(tx.first, f);
-                const auto& ftp = sample_.matrix().entry(tx.second, f);
+                const auto& fsprime = sample_.matrix().entry(sp, f);
 
                 clause.emplace_back(f, DNFPolicy::compute_state_value(fs));
-                clause.emplace_back(f, DNFPolicy::compute_transition_value(ft, ftp));
+                clause.emplace_back(f, DNFPolicy::compute_transition_value(fs, fsprime));
             }
 
             dnf.terms.insert(clause);
         }
         return dnf;
     }
-//    DNFPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const {
-//        DNFPolicy dnf(selecteds);
-//        for (const auto& [s, sp]:goods) {
-//            DNFPolicy::term_t clause;
-//
-//            for (const auto& f:selecteds) {
-//                const auto& fs = sample_.matrix().entry(s, f);
-//                const auto& fsprime = sample_.matrix().entry(sp, f);
-//
-//                clause.emplace_back(f, DNFPolicy::compute_state_value(fs));
-//                clause.emplace_back(f, DNFPolicy::compute_transition_value(fs, fsprime));
-//            }
-//
-//            dnf.terms.insert(clause);
-//        }
-//        return dnf;
-//    }
-
 
     DNFPolicy D2LEncoding::generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& selecteds) const {
         std::vector<std::pair<unsigned, unsigned>> pairs;
@@ -747,40 +639,22 @@ namespace sltp::cnf {
         return generate_dnf(pairs, selecteds);
     }
 
-
     DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const {
         // Let's parse the relevant bits of the CNF solution:
-        std::vector<unsigned> selecteds;
-        std::vector<std::pair<unsigned, unsigned>> good_s_a;
+        std::vector<unsigned> selecteds, goods;
         for (unsigned f=0; f < variables.selecteds.size(); ++f) {
             auto varid = variables.selecteds[f];
             if (varid>0 && solution.assignment.at(varid)) selecteds.push_back(f);
         }
-        for (auto const& [varid, s_a]:variables.goods_s_a) {
+        for (auto const& [varid, txids]:variables.goods_s_a) {
             if (varid>0 && solution.assignment.at(varid)) {
-                good_s_a.push_back(s_a);
+                for (unsigned txid:txids) {
+                    goods.push_back(txid);
+                }
             }
         }
-        return generate_dnf(good_s_a, selecteds);
+        return generate_dnf(goods, selecteds);
     }
-
-//    DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const {
-//        // Let's parse the relevant bits of the CNF solution:
-//        std::vector<unsigned> selecteds, goods;
-//        for (unsigned f=0; f < variables.selecteds.size(); ++f) {
-//            auto varid = variables.selecteds[f];
-//            if (varid>0 && solution.assignment.at(varid)) selecteds.push_back(f);
-//        }
-//        for (auto const& [varid, txids]:variables.goods_s_a) {
-//            if (varid>0 && solution.assignment.at(varid)) {
-//                for (unsigned txid:txids) {
-//                    goods.push_back(txid);
-//                }
-//            }
-//        }
-//        }
-//        return generate_dnf(good_s_a, selecteds);
-//    }
 
     bool D2LEncoding::are_transitions_d1d2_distinguishable(
             state_id_t s, state_id_t sp, state_id_t t, state_id_t tp, const std::vector<unsigned>& features) const {

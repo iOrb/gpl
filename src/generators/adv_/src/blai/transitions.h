@@ -36,7 +36,6 @@ namespace sltp {
         //! in one single step from s
         std::map<unsigned, std::set<unsigned>> agent_trdata_;
         std::map<unsigned, std::set<unsigned>> nondet_trdata_;
-        std::map<unsigned, std::set<unsigned>> representative_operation_trdata_;
 
 
         std::set<unsigned> alive_states_;
@@ -98,22 +97,6 @@ namespace sltp {
 
         const std::set<unsigned>& nondet_successors(unsigned s) const {
             return nondet_trdata_.at(s);
-        }
-
-        const std::map<unsigned , std::pair<unsigned, unsigned>>& operations_tx() const {
-            return op_tx_;
-        }
-
-        const std::pair<unsigned, unsigned>& get_op_tx(unsigned op) const {
-            return op_tx_.at(op);
-        }
-
-        unsigned num_op() const {
-            return op_tx_.size();
-        }
-
-        const std::map<unsigned, std::set<unsigned>>& get_representative_operation_trdata() const {
-            return representative_operation_trdata_;
         }
 
         bool is_alive(unsigned state) const { return alive_states_.find(state) != alive_states_.end(); }
@@ -200,15 +183,15 @@ namespace sltp {
 
             std::cout << "Read " << alive_states_.size() << " alive states" << std::endl;
 
-            // Read Operations Effects as transitions
-            unsigned num_operations = 0;
-            is >> num_operations;
-            for (unsigned i=0; i<num_operations; ++i) {
-                unsigned op = 0, t = 0, tp = 0;
-                is >> op >> t >> tp;
-                op_tx_[op] = std::make_pair(t, tp);
-                representative_operation_trdata_[t].insert(tp);
-            }
+//            // Read Operations Effects as transitions
+//            unsigned num_operations = 0;
+//            is >> num_operations;
+//            for (unsigned i=0; i<num_operations; ++i) {
+//                unsigned op = 0, t = 0, tp = 0;
+//                is >> op >> t >> tp;
+//                op_tx_[op] = std::make_pair(t, tp);
+//                representative_operation_trdata_[t].insert(tp);
+//            }
         }
 
         static TransitionSample read_dump(std::istream &is, bool verbose) {

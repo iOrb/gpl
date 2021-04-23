@@ -9,7 +9,7 @@ from .utils import stockfish_default_params
 from ..utils import unserialize_layout, get_operators
 from .grammar.objects import OBJECTS
 from generalization_grid_games_2.envs.checkmate_tactic import available_actions, check_game_status, act, player2_policy
-from .grammar.actions import create_representative_transitions, encode_op
+from .grammar.actions import encode_op
 
 # State: (representation, info, state_encoded)
 
@@ -26,7 +26,6 @@ class Task(ITask):
     def __init_task(self, instance_name):
         brd = unserialize_layout(instance_name)
         self.__representative_instance_name = "{}x{}".format(*brd.shape)
-        self.__representative_op_effects = create_representative_transitions(*brd.shape)
         r = (brd, OBJECTS.player.w)
         info = {'goal': 0, 'deadend': 0, 'reward': 0,}
         self.grammar = Grammar(self.get_domain_name(),)
@@ -156,11 +155,6 @@ class Task(ITask):
 
     def get_representative_instance_name(self):
         return self.__representative_instance_name
-
-    def get_representative_op_effect(self, op_encoded):
-        tx = self.__representative_op_effects[op_encoded]
-        (s0, s1) = tuple([self.colapse_state(r, False, False, None) for r in tx])
-        return (s0, s1)
 
     def encode_tx(self, tx):
         s, op, sp = tx

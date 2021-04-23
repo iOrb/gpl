@@ -21,8 +21,7 @@ namespace sltp::cnf {
 
         //! A map from transition IDs to SAT variable IDs:
         std::unordered_map<unsigned, cnfvar_t> goods;
-//        std::unordered_map<cnfvar_t, unsigned> goods_s_a; // {good_s_a_var: action}
-        std::unordered_map<cnfvar_t, std::pair<unsigned, unsigned>> goods_s_a; // {good_s_a_var: (s, a)}
+        std::unordered_map<cnfvar_t, std::set<unsigned>> goods_s_a; // {good_s_a_var: {tx1, tx2}}}
 
         explicit VariableMapping(unsigned nfeatures) : selecteds(nfeatures, std::numeric_limits<uint32_t>::max())
         {}

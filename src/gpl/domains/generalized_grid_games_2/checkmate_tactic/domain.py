@@ -5,7 +5,6 @@ from .task import Task
 from .utils import identify_margin
 from ..utils import unserialize_layout
 import copy
-from .grammar.actions import create_representative_transitions
 
 class Domain(IDomain):
     def __init__(self, domain_name):
