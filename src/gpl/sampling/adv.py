@@ -173,52 +173,6 @@ class TransitionSampleADV:
                     self.add_transition((s, op0, sp, op1, spp), task)
         return alive, goals, deadends
 
-    def resample(self):
-        """
-        sampling criterion of transitions:
-            - optimal transitions
-            - dead ends
-            - goals
-            - root
-            - dead ends
-        """
-        transitions = copy.deepcopy(self.transitions)
-        for s, optimal_targets in self.optimal_transitions.items():
-            for (op, sp), spps in self.transitions[s].items():
-                for t in spps:
-                    if t not in self.optimal_transitions and \
-                        t not in optimal_targets and \
-                        t not in self.deadends and \
-                        t not in self.goals and \
-                        t not in self.roots:
-                        try:
-                            transitions[s][(op, sp)].remove(t)
-                        except:
-                            pass
-                        self.__clear_state_from_sample(t)
-                if not transitions[s][(op, sp)]:
-                    try:
-                        del transitions[s][(op, sp)]
-                    except:
-                        pass
-                    self.__clear_state_from_sample(sp)
-        self.transitions = transitions
-
-    def __clear_state_from_sample(self, s):
-        try:
-            self.states_s_spp.remove(s)
-        except:
-            pass
-        try:
-            self.alive_states.remove(s)
-        except:
-            pass
-        try:
-            del self.states[s]
-            del self.instance[s]
-            del self.vstar[s]
-        except:
-            pass
 
 def process_sample(config, sample, rng):
 
@@ -237,10 +191,6 @@ def process_sample(config, sample, rng):
     mark_optimal_transitions(config, sample) # check if this sample is being updated
     logging.info(f"Entire sample: {sample.info()}")
 
-    # Resample the full sample and extract only a few specified states
-    if config.resample:
-        sample.resample()
-        logging.info(f"Sample after resampling: {sample.info()}")
     return sample
 
 def mark_optimal_transitions(config, sample):
