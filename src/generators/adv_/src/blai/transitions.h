@@ -37,7 +37,6 @@ namespace sltp {
         std::map<unsigned, std::set<unsigned>> agent_trdata_;
         std::map<unsigned, std::set<unsigned>> nondet_trdata_;
 
-
         std::set<unsigned> alive_states_;
         std::set<unsigned> goal_states_;
         std::set<unsigned> unsolvable_states_;
@@ -183,15 +182,6 @@ namespace sltp {
 
             std::cout << "Read " << alive_states_.size() << " alive states" << std::endl;
 
-//            // Read Operations Effects as transitions
-//            unsigned num_operations = 0;
-//            is >> num_operations;
-//            for (unsigned i=0; i<num_operations; ++i) {
-//                unsigned op = 0, t = 0, tp = 0;
-//                is >> op >> t >> tp;
-//                op_tx_[op] = std::make_pair(t, tp);
-//                representative_operation_trdata_[t].insert(tp);
-//            }
         }
 
         static TransitionSample read_dump(std::istream &is, bool verbose) {

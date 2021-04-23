@@ -97,6 +97,8 @@ def experiments():
         train_instances_to_expand=list(range(1000)),
     )
 
+
+
     exps["3"] = update_dict(
         exps["1"],
         instances=four_four_instances('a'),
@@ -117,7 +119,7 @@ def experiments():
 
         allow_bad_states=True,
         decreasing_transitions_must_be_good=True,
-        allow_cycles=True,
+        allow_cycles=False,
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],
@@ -125,14 +127,12 @@ def experiments():
 
         # rollouts
         num_episodes=1,
-        num_rollouts=1,
-        rollout_depth=1,
+        num_rollouts=5,
+        rollout_depth=5,
 
         train_instances_to_expand=[],
         # train_instances_to_expand=list(range(1000)),
     )
-
-
     return exps
 
 

@@ -399,34 +399,13 @@ namespace sltp::cnf {
         /////// CNF constraints ///////
 
       // Good(s, s') iff Good_a(s, a)
-//        std::unordered_map<unsigned, cnfvar_t> tx_s_a;
-//        for (const auto& [s, a, sp]:sample_.transitions_.agent_transitions()) {
-//            auto tx = get_transition_id(s, sp);
-//            if (is_necessarily_bad(get_representative_id(tx))) continue;
-//            tx_s_a[tx] = good_s_a[{s, a}];
-//            variables.goods_s_a[good_s_a[{s, a}]].insert(get_representative_id(tx));
-//        }
-
         std::unordered_map<unsigned, cnfvar_t> tx_s_a;
         for (const auto& [s, a, sp]:sample_.transitions_.agent_transitions()) {
             auto tx = get_transition_id(s, sp);
             if (is_necessarily_bad(get_representative_id(tx))) continue;
             tx_s_a[tx] = good_s_a[{s, a}];
-            variables.goods_s_a[good_s_a[{s, a}]].insert(tx);
+            variables.goods_s_a[good_s_a[{s, a}]].insert(get_representative_id(tx));
         }
-
-        // OR_{a in A} Good(s, a) for all (s, s') s.t. s is alive and not any s'' is dead
-//        for (const auto& s:sample_.transitions_.all_alive()) {
-//            cnfclause_t clause;
-//            for (const auto& a:s_to_as[s]) {
-//                if (is_necessarily_bad(get_representative_id(get_transition_id(s, s_a_to_sp[{s, a}])))) {
-//                    wr.cl({Wr::lit(good_s_a[{s, a}], false)});
-//                } else {
-//                    clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
-//                }
-//            }
-//            wr.cl(clause);
-//        }
 
         if (options.allow_bad_states) {
             // Bad(s) or OR_{a in A} Good(s, a):
