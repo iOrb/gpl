@@ -22,7 +22,7 @@ class TransitionSampleADV:
         self.parents = defaultdict(set)
         self.goals = set()
         self.alive_states = set()
-        self.optimal_transitions = set()
+        self.optimal_transitions = defaultdict(set)
         self.roots = set()  # The set of all roots
         self.instance_roots = dict()  # The root of each instance
         self.deadends = set()
@@ -114,7 +114,8 @@ class TransitionSampleADV:
         return sum(len(x) for x in self.transitions.values())
 
     def mark_as_optimal(self, optimal):
-        self.optimal_transitions.update(optimal)
+        for s, targets in optimal.items():
+            self.optimal_transitions[s] |= targets
 
     def mark_as_alive(self, states):
         self.alive_states.update(states)
@@ -132,8 +133,14 @@ class TransitionSampleADV:
 
     def info(self):
         return f"roots: {len(self.roots)}, states: {len(self.states)}, " \
-               f"transitions: {self.num_transitions()} ({len(self.optimal_transitions)} optimal)," \
+               f"transitions: {self.num_transitions()} ({self.num_optimal_transitions()} optimal)," \
                f" goals: {len(self.goals)}, alive: {len(self.alive_states)}"
+
+    def num_optimal_transitions(self):
+        count = 0
+        for s, targets in self.optimal_transitions.items():
+            count += len(targets)
+        return count
 
     def __str__(self):
         return "TransitionsSample[{}]".format(self.info())
@@ -166,6 +173,52 @@ class TransitionSampleADV:
                     self.add_transition((s, op0, sp, op1, spp), task)
         return alive, goals, deadends
 
+    def resample(self):
+        """
+        sampling criterion of transitions:
+            - optimal transitions
+            - dead ends
+            - goals
+            - root
+            - dead ends
+        """
+        transitions = copy.deepcopy(self.transitions)
+        for s, optimal_targets in self.optimal_transitions.items():
+            for (op, sp), spps in self.transitions[s].items():
+                for t in spps:
+                    if t not in self.optimal_transitions and \
+                        t not in optimal_targets and \
+                        t not in self.deadends and \
+                        t not in self.goals and \
+                        t not in self.roots:
+                        try:
+                            transitions[s][(op, sp)].remove(t)
+                        except:
+                            pass
+                        self.__clear_state_from_sample(t)
+                if not transitions[s][(op, sp)]:
+                    try:
+                        del transitions[s][(op, sp)]
+                    except:
+                        pass
+                    self.__clear_state_from_sample(sp)
+        self.transitions = transitions
+
+    def __clear_state_from_sample(self, s):
+        try:
+            self.states_s_spp.remove(s)
+        except:
+            pass
+        try:
+            self.alive_states.remove(s)
+        except:
+            pass
+        try:
+            del self.states[s]
+            del self.instance[s]
+            del self.vstar[s]
+        except:
+            pass
 
 def process_sample(config, sample, rng):
 
@@ -184,13 +237,10 @@ def process_sample(config, sample, rng):
     mark_optimal_transitions(config, sample) # check if this sample is being updated
     logging.info(f"Entire sample: {sample.info()}")
 
-    # if config.num_sampled_states is not None:
-    #     # Resample the full sample and extract only a few specified states
-    #     selected = sample_first_x_states(sample.instance_roots, config.num_sampled_states)
-    #     states_in_some_optimal_transition = sample.compute_optimal_states(include_goals=True)
-    #     selected.update(states_in_some_optimal_transition)
-    #     sample = sample.resample(set(selected))
-    #     logging.info(f"Sample after resampling: {sample.info()}")
+    # Resample the full sample and extract only a few specified states
+    if config.resample:
+        sample.resample()
+        logging.info(f"Sample after resampling: {sample.info()}")
     return sample
 
 def mark_optimal_transitions(config, sample):
@@ -213,9 +263,9 @@ def mark_all_optimal(goals, parents):
 
     # minactions contains a map between state IDs and a list with those successors that represent an optimal transition
     # from that state
-    optimal_txs = set()
+    optimal_txs = defaultdict(set)
     for s, targets in minactions.items():
-        _ = [optimal_txs.add((s, t)) for t in targets]
+        _ = [optimal_txs[s].add(t) for t in targets]
 
     # Incidentally, the set of alive states will contain all states with a mincost > 0 and which have been reached on
     # the backwards brfs (i.e. for which mincost[s] is actually defined). Note that the "reachable" part of a state
