@@ -109,7 +109,6 @@ it is called \emph{solvable} if there is a path from it to a goal
 state.
 A state is \emph{alive} if it is solvable, reachable and not a
 goal state~\cite{frances-et-al-ijcai2019}.
-
 We use $T$ to denote the set of all transitions $(s, s')$ in the training sample such that $s$ is alive.
 
 \subsection{Improvements}
@@ -130,26 +129,18 @@ We use \badtx{} to denote the set of transitions that have been determined at pr
 At the moment, this set contains all transitions that go from an alive to an unsolvable state and, if using
 equivalence relations, all those other transitions in whose equivalence class there is some other ``bad'' transition.
 
-
-\paragraph{Feature dominance.}
-Work In Progress.\footnote{This is implemented, but needs to be adapted to the equivalence classes improvement.}
-
 \newpage
 
-\subsection{Variables}
+\subsection{Fixed Pool $A$ of actions}
 
-\subsubsection{Main Variables}
+We here assume that all instances $P$ of the generalized problem have the same fixed set of actions $A$.
+We denote by $(s, a, s'') \in T$ tuples of state, action, and possible state $s''$ resulting from the adversary
+response to the application of $a$ in $s$.
 
-In any non deterministic domain the agent can go a pull of states $S'$ by executing an action $a$ in the state $s$, and then the nature or the adversary (doing anything) turns $s'$ into $s''$. Then all the transitions holds in the form $s \rightarrow a \rightarrow s'$, where $s' \epsilon~S'$.
-
-%We define the adversarial setting as transitions defined by $s \rightarrow a \rightarrow s' \rightarrow s"$, where the agent executes a in the state s and goes to some $s'$, and then the nature or the adversary (doing anything) turns $s'$ into $s''$. Therefore the transitions $(s, s')$ is deterministic and the transition $(s, s'')$ is non-deternimistic. If there is no possible $s''$ outgoing from $s'$ we just set $s'' = s'$.
-
-%If we are in a completely non-deterministic setting we can make it hold in the previous definition just by setting $s' = s''$.
-
-%We can face two different situations. One in which the actions space is defined and never change from one instance to another. In the other situation we have no defined action space $A$. When we are facing a non defined $A$, we just define the actions as efects to be discovered implicitly in the transitions $s \rightarrow s'$.
+\subsubsection{Variables}
 
 \begin{itemize}
- \item $Good(s, a)$ for $s$ alive, $s'$ solvable for all possible $s'$ result of executing a in $s$.
+ \item $Good(s, a)$ for $s$ alive, solvable, and $a \in A$.
 
  \item $Bad(s)$ for $s$ alive.
 
@@ -172,27 +163,27 @@ In any non deterministic domain the agent can go a pull of states $S'$ by execut
 %\end{itemize}
 
 
-\subsection{Hard Constraints}
+\subsubsection{Hard Constraints}
 
 \smallpar{C1}
 The policy has to be complete with respect to all possible actions applicable in s:
 \begin{align}
-\bigvee_{a \text{ s.t. } (s, a, S') \in T} Good(s, a),&\;\; \text{for $s$ alive.}
+\bigvee_{a \in A} Good(s, a),&\;\; \text{for $s$ alive.}
 \end{align}
 
 
 \smallpar{C2} $V$ is always descending along Good actions:
 \begin{align}
- Good(s, a) \land V(s', d) \rightarrow \bigvee_{d < k \leq D} V(s, k),&\;\; \text{for $s, a$ alive, $(s, a) \not\in \badtx$, $d \in [1, D)$.} \\
- V(s', D) \rightarrow \neg Good(s, a),&\;\; \text{for $s, a$ alive, $(s, a) \not\in \badtx$.} \tag{\theequation${}^\prime$}
+ Good(s, a) \land V(s'', d) \rightarrow \bigvee_{d < k \leq D} V(s, k),&\;\; \text{for $s$ alive, $(s, a, s'') \in T$, $d \in [1, D)$.} \\
+ V(s'', D) \rightarrow \neg Good(s, a),&\;\; \text{for $s$ alive, $(s, a, s'') \in T$.} \tag{\theequation${}^\prime$}
 \end{align}
 
 
-\smallpar{C3} All descending transitions must be considered Good:
-\begin{align}
- V(s, d) \land V(s', d') \rightarrow Good(s, a),&\;\; \text{for $s, s'$ alive, $(s, a, s') \not\in \badtx$, $1 \leq d' < d \leq D$,} \\
- Good(s, a),&\;\; \text{for $s$ alive, $s'$ goal.} \tag{\theequation${}^\prime$}
-\end{align}
+%\smallpar{C3} All descending transitions must be considered Good:
+%\begin{align}
+% V(s, d) \land V(s'', d') \rightarrow Good(s, a),&\;\; \text{for $s$ alive, $(s, a, s'') \in T$, $1 \leq d' < d \leq D$,} \\
+% Good(s, a),&\;\; \text{for $s$ alive, $s'$ goal.} \tag{\theequation${}^\prime$}
+%\end{align}
 
 %\smallpar{C4-5} Any upper bound on $V(s)$ (for $s$ not a goal) needs to be justified:
 %\begin{align}
@@ -215,24 +206,15 @@ and such that $V(s)$ is within lower bound $V^*(s)$ and upper bound $\delta \cdo
 \end{align}
 
 \smallpar{C5-6}
-Good pairs (s, a) can be distinguished from bad pairs (s, a).
-Let $(s, a)$ and $(s, a')$
-of two different equivalence classes such that $(s, a, S') \not\in \badtx$
-(which implies that any $s' \in S'$ is solvable). Then,
-
-
-
-%\smallpar{C5-6}
-%Good transitions can be distinguished from bad transitions.
+Good pairs $(s, a)$ can be distinguished from bad pairs $(s, a)$.
 %Let $(s, s')$ and $(t, t')$ be \emph{representative} transitions
 %of two different equivalence classes such that $(s, s') \not\in \badtx$
 %(which implies that $s'$ is solvable). Then,
-%\begin{align}
-% Good(s, s') \rightarrow Good(t, t') \lor
-% Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \not\in \badtx$.} \\
-% Good(s, s') \rightarrow
-% Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \in \badtx$.}
-%\end{align}
+\begin{align}
+ Good(s, a) \rightarrow Good(t, a) \lor
+ D1(s, t),&\;\; \text{for $s, t$ alive, $(t, a) \not\in \badtx$.} \\
+ Good(s, a) \rightarrow D1(s, t),&\;\; \text{for $s, t$ alive, $(t, a) \in \badtx$.}
+\end{align}
 
 \noindent where $Dist(s, s', t, t')$ is shorthand for $\bigvee_{f \in D1\&2(s, s', t, t')} Select(f)$.
 
@@ -243,20 +225,11 @@ Goals are distinguishable from non-goals.
 \bigvee_{f \in D1(s, s')} Select(f),&\;\; \text{for $s$ goal, $s$ not a goal}
 \end{align}
 
-\smallpar{C8 (Optional)}
-All selected features need to have some Good transition that takes them to $0$:
-\begin{align}
- Selected(f) \rightarrow \bigvee_{(s, s') \in Z(f)} Good(s, s'),&\;\; \text{for $f$ in pool}
-\end{align}
-
-\noindent where $Z(f)$ is the set transitions starting in an alive state that change the denotation of $f$ from something
-larger than 0 to 0.
 
 
-\subsection{Soft Constraints}
+\subsubsection{Soft Constraints}
 We simply post a constraint $\neg Select(f)$ for each feature $f$ in the pool, with weight equal to its complexity $\mathcal{K}(f)$.
 
-\section{Empirical Results}
 
 
 
