@@ -226,12 +226,10 @@ namespace sltp::dl {
         int prev_instance_id = -1;
         bool feature_can_distinguish_some_transition = false;
         int last_sf = -1, last_sfprime = -1;
-        for (auto s:transitions.all_alive()) {
             const State &state = sample.state(s);
 
             int sf = fsd[s];
 
-            for (unsigned sp:transitions.agent_successors(s)) {
                 int sfp = fsd[sp];
 
                 if (last_sfprime > 0 && are_transitions_d1d2_distinguished(last_sf, last_sfprime, sf, sfp)) {
@@ -258,6 +256,38 @@ namespace sltp::dl {
                 last_sfprime = -1;
             }
         }
+//        for (auto s:transitions.all_alive()) {
+//            const State &state = sample.state(s);
+//
+//            int sf = fsd[s];
+//
+//            for (unsigned sp:transitions.agent_successors(s)) {
+//                int sfp = fsd[sp];
+//
+//                if (last_sfprime > 0 && are_transitions_d1d2_distinguished(last_sf, last_sfprime, sf, sfp)) {
+//                    feature_can_distinguish_some_transition = true;
+//                }
+//
+//                last_sfprime = sfp;
+//                last_sf = sf;
+//            }
+//
+////            for (unsigned spp:transitions.nondet_successors(s)) {
+////                int sfpp = fsd[spp];
+////
+////                if (last_sfprime > 0 && are_transitions_d1d2_distinguished(last_sf, last_sfprime, sf, sfpp)) {
+////                    feature_can_distinguish_some_transition = true;
+////                }
+////
+////                last_sfprime = sfpp;
+////                last_sf = sf;
+////            }
+//
+//            if (prev_instance_id < 0) prev_instance_id = (int) state.instance_id();
+//            if (state.instance_id() != prev_instance_id) {
+//                last_sfprime = -1;
+//            }
+//        }
         return feature_can_distinguish_some_transition;
     }
 

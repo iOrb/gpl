@@ -283,7 +283,7 @@ def print_transition_matrix(sample, transitions_filename):
 
         # Print one line for each source state, representing all non-det transitions that start in that state,
         # with format:
-        #     source_id, vstar_src, num_sps, num_spps, <a1, sp1, spp11>, <a1, sp1, spp>, <a2, sp2, spp21>, ...
+        #     source_id, vstar_src, num_sps, num_spps, <a1, sp1, spp11>, <a1, sp1, spp12>, <a2, sp2, spp21>, ...
         for s in state_s_spp:
             o_edges = []
             num_ops = 0
