@@ -17,6 +17,7 @@ class Sample;
 using object_id_t = unsigned;
 using predicate_id_t = unsigned;
 using atom_id_t = unsigned;
+using op_id_t = unsigned;
 using state_id_t = uint32_t;
 using state_pair = std::pair<state_id_t, state_id_t>;
 using transition_id_t = uint32_t;

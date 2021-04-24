@@ -398,7 +398,7 @@ namespace sltp::cnf {
 
         /////// CNF constraints ///////
 
-      // Good(s, s') iff Good_a(s, a)
+        // Good(s, s') iff Good_a(s, a)
         std::unordered_map<unsigned, cnfvar_t> tx_s_a;
         for (const auto& [s, a, sp]:sample_.transitions_.agent_transitions()) {
             auto tx = get_transition_id(s, sp);

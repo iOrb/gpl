@@ -194,13 +194,14 @@ def process_sample(config, sample, rng):
     return sample
 
 def mark_optimal_transitions(config, sample):
-    """ Marks which transitions are optimal in a transition system according to some selection criterion
+    """
+    Marks which transitions are optimal in a transition system according to some selection criterion
     such as marking *all* optimal transitions.
-     """
-    # Mark all transitions that are optimal from some alive state
-    # We also mark which states are alive.
+    """
     optimal, alive, sample.vstar = mark_all_optimal(sample.goals, sample.parents)
+    # We also mark which states are alive.
     sample.mark_as_alive(alive)
+    # Mark all transitions that are optimal from some alive state
     sample.mark_as_optimal(optimal)
 
 
