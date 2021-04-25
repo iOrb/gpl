@@ -30,6 +30,7 @@ def state_to_atoms(domain_name, state):
 
     if use_player_as_feature:
         atoms.append(('player-{}'.format(state[0][1]),))
+
     return atoms
 
 

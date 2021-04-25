@@ -12,12 +12,9 @@ from gpl.defaults import ct_names
 
 DOMAIN_NAME = "checkmate_tactic"
 
-MODE = 'adv'  # could be on of {'fond', 'adv'}
-
 def experiments():
     base = dict(
         domain=Domain(DOMAIN_NAME),
-
         feature_namer=ct_names,
         maxsat_encoding="d2l",
         num_states="all",
@@ -30,9 +27,7 @@ def experiments():
         refinement_batch_size=1,
         verbosity=1,
         acyclicity='topological',
-
-        mode=MODE,
-
+        discrete_action_space=False,
         use_incremental_refinement=False,
     )
 
@@ -56,10 +51,10 @@ def experiments():
 
         allow_bad_states=True,
         decreasing_transitions_must_be_good=True,
-        allow_cycles=True,
+        allow_cycles=False,
 
-        skip_train_steps=[0, 1, 2],  # do not generate features twice!
-        # skip_train_steps=[],
+        # skip_train_steps=[0, 1, 2],  # do not generate features twice!
+        skip_train_steps=[],
         distinguish_goals=True,
 
         # rollouts

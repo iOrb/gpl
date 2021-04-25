@@ -86,9 +86,7 @@ namespace sltp {
             return transitions_;
         }
 
-        int vstar(unsigned sid) const {
-            return vstar_.at(sid);
-        }
+        int vstar(unsigned sid) const { return vstar_.at(sid); }
 
         const std::set<unsigned>& agent_successors(unsigned s) const {
             return agent_trdata_.at(s);

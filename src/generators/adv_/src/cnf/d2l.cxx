@@ -521,12 +521,12 @@ namespace sltp::cnf {
 
         // (8): Force D1(s1, s2) to be true if exactly one of the two states is a goal state
         if (options.distinguish_goals) {
-            for (unsigned s:sample_.transitions_.all_goals()) {
+            for (unsigned g:sample_.transitions_.all_goals()) {
                 for (unsigned s:sample_.transitions_.all_alive()) {
                     for (unsigned a:s_to_as[s]) {
                         unsigned t = s_a_to_sp[{s, a}];
                         if (!sample_.is_goal(t)) {
-                            const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
+                            const auto d1feats = compute_d1_distinguishing_features(sample_, g, t);
                             if (d1feats.empty()) {
                                 undist_goal_warning(s, t);
                             }

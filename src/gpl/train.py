@@ -6,8 +6,8 @@ from gpl.defaults import generate_experiment
 from sltp.util import console
 from sltp.returncodes import ExitCode
 
-from .utils import Bunch, _create_exception_msg, print_important_message, save_local_object, load_local_object, \
-    get_sampling_class
+from .utils import Bunch, _create_exception_msg, print_important_message, \
+    save_local_object, load_local_object, get_sampling_class
 from .train_steps import TRAIN_STEPS
 
 

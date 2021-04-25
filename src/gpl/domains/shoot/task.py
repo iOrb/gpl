@@ -5,11 +5,9 @@ from gpl.utils import unpack_state
 import random
 from .grammar.grammar import Grammar
 
-from ..utils import unserialize_layout, get_operators
+from .utils import unserialize_layout
 from .grammar.objects import OBJECTS
-from generalization_grid_games_2.envs.checkmate_tactic import available_actions, check_game_status, act, player2_policy
-from .grammar.actions import encode_op
-from .config import tie_is_deadend
+from .env.shoot import available_actions, check_game_status, act, player2_policy
 
 # State: (representation, info, state_encoded)
 
@@ -82,11 +80,6 @@ class Task(ITask):
         gstatus = check_game_status(r)
         if gstatus == 1:
             goal = True
-        if gstatus == 0:
-            if tie_is_deadend:
-                deadend = True
-            else:
-                goal = True
         return goal, deadend
 
     def colapse_state(self, rep1, goal, deadend, rep0):
@@ -162,12 +155,9 @@ class Task(ITask):
     def encode_tx(self, tx):
         s, op, sp = tx
         op_enc = self.encode_op(s, op)
-        tx_enc = '_'.join([str(s[2]), op_enc, str(sp[2])])
+        tx_enc = '_'.join([str(s[2]), str(op_enc), str(sp[2])])
         return tx_enc
 
     def encode_op(self, s, op):
-        piece = s[0][0][op[0][0], op[0][1]]
-        assert piece not in "empty"
-        o = copy.deepcopy(op)
-        return encode_op(piece, op)
+        return op
 

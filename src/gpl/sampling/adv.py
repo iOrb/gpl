@@ -34,6 +34,7 @@ class TransitionSampleADV:
         self.sid_count = 0
         self.oid_count = 0
         self.instance_id_count = 0
+        self.given_action_space = False
 
     def add_transition(self, tx, task):
         s, op0, sp, _, spp = tx # for now ignore op1
@@ -42,7 +43,8 @@ class TransitionSampleADV:
         spp = spp if spp is not None else copy.deepcopy(sp) # if sp is goal or deadend just extende it to spp
         sids = [self.check_state(s, task, instance_id) for s in [s, sp, spp]]
         self.states_s_spp |= {sids[0], sids[2]}
-        oid = self.check_operator(s, op0, task, instance_id)
+        if not self.given_action_space:
+            oid = self.check_operator(s, op0, task, instance_id)
         self.update_transitions(self.get_tx(sids, oid))
         if new_instance_:
             self.mark_as_root(sids[0], instance_id)
@@ -90,6 +92,11 @@ class TransitionSampleADV:
             self.operators[o] = self.oid_count
             self.oid_count += 1
         return self.operators[o]
+
+    def set_operators(self, ops):
+        self.given_action_space = True
+        for o in ops:
+            self.operators[o] = o
 
     def update_instance(self, sid, intance_id):
         self.instance[sid] = intance_id # {state_id: instance_id}
@@ -286,8 +293,21 @@ def print_transition_matrix(sample, transitions_filename):
             vstar = sample.vstar.get(s, -1)
             print(f"{s} {vstar} {num_ops} {len(o_edges)} {nondet_successors}", file=f)
 
+def print_states(sample, states_filename):
+    state_ids = sample.get_sorted_state_ids()
+
+    with open(states_filename, 'w') as f:
+        for id in state_ids:
+            if id in sample.goals:
+                print("{}* {}".format(id, sample.states[id]), file=f)
+            elif id in sample.deadends:
+                print("{}^ {}".format(id, sample.states[id]), file=f)
+            else:
+                print("{}º {}".format(id, sample.states[id]), file=f)
+
 
 def run(config, data, rng):
     sample = process_sample(config, data.sample, rng)
     print_transition_matrix(sample, config.transitions_info_filename)
+    print_states(sample, config.states_filename)
     return ExitCode.Success, dict(sample = sample)

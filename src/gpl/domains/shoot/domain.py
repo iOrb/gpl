@@ -1,17 +1,17 @@
-from gpl.domains.generalized_grid_games_2.checkmate_tactic.grammar.objects import OBJECTS
+from .grammar.objects import OBJECTS
 from gpl.domain import IDomain
 from tarski.fstrips import fstrips, create_fstrips_problem
 from .task import Task
 from .utils import identify_margin
-from ..utils import unserialize_layout
+from .utils import unserialize_layout
 import copy
+from .env.shoot import ACTION_SPACE
 from .config import use_player_as_feature
 
 class Domain(IDomain):
     def __init__(self, domain_name):
         super().__init__(domain_name)
-        self.type='adv'
-        self.action_space = False
+        self.action_space = ACTION_SPACE
 
     # Generate Language
     def generate_language(self):

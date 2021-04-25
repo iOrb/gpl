@@ -37,8 +37,9 @@ class TransitionSamplingStep:
         return ["sample", "sample_file"]
 
     def process_config(self, config):
-        config["resampled_states_filename"] = os.path.join(config["experiment_dir"], 'sample.txt')
+        # config["resampled_states_filename"] = os.path.join(config["experiment_dir"], 'sample.txt')
         config["transitions_info_filename"] = compute_info_filename(config, "transitions-info.io")
+        config["states_filename"] = compute_info_filename(config, "states.txt")
 
         ns = config["num_sampled_states"]
         if ns is not None:
@@ -61,9 +62,9 @@ class TransitionSamplingStep:
         return "Generation of the training sample"
 
     def get_step_runner(self, config):
-        if config.mode == 'adv':
+        if config.domain.type == 'adv':
             from .sampling.adv import run
-        elif config.mode == 'fond':
+        elif config.domain.type == 'fond':
             from .sampling.fond import run
         else:
             raise RuntimeError("Wrong mode provided: {}".format(config.mode))

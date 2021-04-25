@@ -1,0 +1,2 @@
+use_player_as_feature=True
+tie_is_deadend=True

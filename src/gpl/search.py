@@ -67,7 +67,7 @@ def rollout(config, data, get_policy, rng):
 
             # And now we inject our desired search and heuristic functions
             if i in config.train_instances_to_expand:
-                if config.mode == 'adv':
+                if config.domain.type == 'adv':
                     bfs_adv(config, data, search_policy, task, instance_name, rng)
                 else:
                     bfs_no_adv(config, data, search_policy, task, instance_name, rng)
@@ -157,7 +157,7 @@ def bfs_adv(config, data, search_policy, task, instance_name, rng):
 
         succcessors = task.get_successor_states(s)
 
-        alive, _, _ = data.sample.process_successors(s, succcessors, task)
+        alive, goals, deadends = data.sample.process_successors(s, succcessors, task)
 
         # if not alive:
         #     data.sample.mark_state_as_deadend(s, task) # perhabs goal
