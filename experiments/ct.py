@@ -35,7 +35,7 @@ def experiments():
 
     exps["1"] = update_dict(
         base,
-        instances=break_instances([0]),
+        instances=four_four_instances('a'),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
         #           break_instances('a') +
         #           all_instances([15, 16, 17]),
@@ -58,12 +58,12 @@ def experiments():
         distinguish_goals=True,
 
         # rollouts
-        # num_episodes=1,
-        # num_rollouts=1,
-        # rollout_depth=2,
+        num_episodes=1,
+        num_rollouts=5,
+        rollout_depth=5,
 
-        # train_instances_to_expand=[],
-        train_instances_to_expand=list(range(1000)),
+        train_instances_to_expand=[],
+        # train_instances_to_expand=list(range(1000)),
     )
 
     exps["2"] = update_dict(

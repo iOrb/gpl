@@ -49,7 +49,7 @@ class TransitionSampleFOND:
         """ main method """
         s, op0, sp = tx # IDs
         # s: {(op0, s'): {s'', ...}}
-        self.transitions[s][op0].add(spp)
+        self.transitions[s][op0].add(sp)
         # for simplicity we just take into account the adversary transitions as FOND
         self.parents[sp].add(s)
 
@@ -153,18 +153,15 @@ class TransitionSampleFOND:
 
     def process_successors(self, s, succs, task):
         alive, goals, deadends = list(), list(), list()
-        for op0, sp, spps in succs:
+        for op0, sp in succs:
             s_r, goal, deadend, s_encoded, info = unpack_state(sp)
             if goal:
-                assert not spps, "One state with successor is marked as Goal"
                 goals.append((op0, sp))
                 self.add_transition((s, op0, sp), task)
             elif deadend:
-                assert not spps, "One state with successor is marked as Dead"
                 deadends.append((op0, sp))
                 self.add_transition((s, op0, sp), task)
             else:
-                assert spps, "One state with not any successor is marked as Alive"
                 alive.append((op0, sp))
                 self.add_transition((s, op0, sp), task)
         return alive, goals, deadends
@@ -256,8 +253,7 @@ def print_transition_matrix(sample, transitions_filename):
     logging.info(f"Printing SAT transition matrix with {len(state_ids)} states,"
                  f" {num_s_with_outgoind_edge} states with some outgoing transition,"
                  f" {len(operator_ids)} operators,"
-                 f" {num_nondet_transitions} (non-det) transitions,"
-                 f" and {num_agent_transitions} (agent) transitions to '{transitions_filename}'")
+                 f" and {num_nondet_transitions} (non-det) transitions,")
 
     # State Ids should start at 0 and be contiguous
     # assert state_ids == list(range(0, len(state_ids)))
@@ -269,7 +265,7 @@ def print_transition_matrix(sample, transitions_filename):
         # Print one line for each source state, representing all non-det transitions that start in that state,
         # with format:
         #     source_id, vstar_src, num_ops, num_spps, <a1, sp1>, <a1, sp1>, <a2, sp2>, ...
-        for s in state_s_spp:
+        for s in state_ids:
             o_edges = []
             num_ops = 0
             for op, sps in transitions.get(s, {}).items():

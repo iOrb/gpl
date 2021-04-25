@@ -116,7 +116,6 @@ def run_test(config, search_policy, task, instance_name, rng):
         exitcode, good_succs = run_policy_based_search(config, search_policy, task, s, successors)
         if exitcode == ExitCode.AbstractPolicyNotCompleteOnTestInstances:
             raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
-        # op, sp = random.Random(rng).choice(good_succs)
         op, sp = good_succs[0]
 
         tx = task.encode_tx((s, op, sp))
@@ -136,86 +135,12 @@ def run_test(config, search_policy, task, instance_name, rng):
     return solution
 
 
-# def run_test_old(config, search_policy, task, instance_name, rng):
-#
-#     s = task.initial_state
-#     expanded = 0
-#
-#     parents = {s[2]: 'root'}  # We'll use this at the same time as closed list and to keep track of parents
-#
-#     solution = list()
-#
-#     goal_reached = False
-#
-#     while not goal_reached:
-#         expanded += 1
-#         if expanded % 1000 == 0:
-#             logging.debug(f"Number of expanded states so far in policy-based search: {expanded}")
-#
-#         successors = task.get_successor_states(s)
-#
-#         if not successors:
-#             raise PolicySearchException(ExitCode.NotSuccessorsFound)
-#
-#         exitcode, good_succs = run_policy_based_search(config, search_policy, task, s, successors)
-#         if exitcode != ExitCode.Success:
-#             raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
-#         op, succ = random.Random(rng).choice(good_succs)
-#
-#         if succ[1]['deadend']:
-#             raise PolicySearchException(ExitCode.DeadEndReached)
-#         if succ[1]['goal']:
-#             solution.append(encode_operator(op, task))
-#             goal_reached = True
-#             continue
-#         if succ[2] in parents:
-#             raise PolicySearchException(ExitCode.AbstractPolicyNonTerminatingOnTestInstances)
-#
-#         spp = task.transition_adversary(succ)
-#
-#         if spp[1]['deadend']:
-#             raise PolicySearchException(ExitCode.DeadEndReached)
-#         if spp[1]['goal']:
-#             solution.append(encode_operator(op, task))
-#             goal_reached = True
-#             continue
-#
-#         solution.append(encode_operator(op, task))
-#         parents[succ[2]] = s[2]
-#         s = spp
-#
-#     logging.info(f"Goal found after expanding {expanded} nodes")
-#     logging.info(f"The solution was: {solution}")
-#     return solution
-
-
-def run_policy_based_search(config, search_policy, task, state, successors):
-
-    # Show the successors to our D2L-type policy to let it pick one
-    exitcode, good_succs = search_policy(task, state, successors)
-
-    return exitcode, good_succs
-
-
-def translate_state(task, state, static_atoms):
-    """ Translate a pyperplan-like state into a list with the format required by SLTP's concept denotation processor """
-    translated_state = task.state_to_atoms(state) + list(static_atoms)
-    return translated_state
-
-
-def generate_model_from_state(task, model_factory, state, static_atoms):
-    translated = translate_state(task, state, static_atoms)
-    return FeatureModel(model_factory.create_model(translated))
-
-
 def create_action_selection_function_from_transition_policy(config, model_factory, static_atoms, policy):
     assert isinstance(policy, TransitionClassificationPolicy)
 
     def _policy(task, state, successors):
         m0 = generate_model_from_state(task, model_factory, state, static_atoms)
-
         good_succs = list()
-
         for op, sp, _ in successors:
             m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
             if policy.transition_is_good(m0, m1):
@@ -229,6 +154,22 @@ def create_action_selection_function_from_transition_policy(config, model_factor
     return _policy
 
 
+def run_policy_based_search(config, search_policy, task, state, successors):
+    # Show the successors to our D2L-type policy to let it pick one
+    return search_policy(task, state, successors)
+
+
+def translate_state(task, state, static_atoms):
+    """ Translate a pyperplan-like state into a list with the format required by SLTP's concept denotation processor """
+    translated_state = task.state_to_atoms(state) + list(static_atoms)
+    return translated_state
+
+
+def generate_model_from_state(task, model_factory, state, static_atoms):
+    translated = translate_state(task, state, static_atoms)
+    return FeatureModel(model_factory.create_model(translated))
+
+
 def run(config, data, rng):
     if not config.test_instances:
         logging.info("No test instances were specified")
@@ -238,10 +179,8 @@ def run(config, data, rng):
         return ExitCode.NotPolicySpecified, dict()
 
     def get_policy(model_factory, static_atoms, data):
-
         policy = create_action_selection_function_from_transition_policy(config, model_factory, static_atoms,
                                                                              data.d2l_policy)
-
         return policy
 
     # Test that the policy reaches a goal when applied on all test instances

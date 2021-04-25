@@ -519,6 +519,10 @@ namespace sltp::cnf {
             n_separation_clauses += 1;
         }
 
+        if (options.verbosity>0) {
+            std::cout << "Posting distinguishability constraints for goal states" << std::endl;
+        }
+
         // (8): Force D1(s1, s2) to be true if exactly one of the two states is a goal state
         if (options.distinguish_goals) {
             for (unsigned g:sample_.transitions_.all_goals()) {
@@ -528,7 +532,7 @@ namespace sltp::cnf {
                         if (!sample_.is_goal(t)) {
                             const auto d1feats = compute_d1_distinguishing_features(sample_, g, t);
                             if (d1feats.empty()) {
-                                undist_goal_warning(s, t);
+                                undist_goal_warning(g, t);
                             }
 
                             cnfclause_t clause;

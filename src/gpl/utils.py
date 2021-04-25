@@ -1,4 +1,6 @@
 import pickle
+import sys
+
 import dill
 
 def _create_exception_msg(step, e):

@@ -1,7 +1,6 @@
 import os
 import copy
 import logging
-import random
 from pathlib import Path
 
 from sltp.features import InstanceInformation
@@ -108,21 +107,21 @@ def run_rollout_adv(config, data, search_policy, task, instance_name, rng):
                 continue
                 # raise RuntimeError("No successors for expanded state: \n{}".format(state[1],))
             else:
-                rnd_op, rnd_sp, rnd_spps = random.Random(rng).choice(alive)
+                rnd_op, rnd_sp, rnd_spps = alive[0]
 
                 if search_policy is not None:
                     exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
                     if exitcode != ExitCode.Success:
                         op, sp, spps = rnd_op, rnd_sp, rnd_spps
                     else:
-                        op, sp, spps = random.Random(rng).choice(good_succs)
+                        op, sp, spps = good_succs[0]
                 else:
                     op, sp, spps = rnd_op, rnd_sp, rnd_spps
 
             if not sp[1]['goal'] and not sp[1]['deadend']:
                 spps_alive = [t for _, t in spps if not t[1]['goal'] and not t[1]['deadend']]
                 if spps_alive:
-                    spp = random.Random(rng).choice(spps_alive) # (FOND Adv) transition
+                    spp = spps_alive[0] # (FOND Adv) transition
                 else:
                     spp = sp
             else:
@@ -189,15 +188,7 @@ def bfs_no_adv(config, data, search_policy, task, instance_name, rng):
 
         succcessors = task.get_successor_states(s)
 
-        alive, goals, deadends = data.sample.process_successors(s, succcessors, task)
-
-        for op, succ in goals:
-            if succ[2] not in visited:
-                visited.add(succ[2])
-
-        for op, succ in deadends:
-            if succ[2] not in visited:
-                visited.add(succ[2])
+        alive, _, _ = data.sample.process_successors(s, succcessors, task)
 
         for op, succ in alive:
             if succ[2] not in visited:

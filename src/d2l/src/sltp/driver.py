@@ -12,6 +12,7 @@ from .util.naming import compute_serialization_name
 from .util.serialization import deserialize, serialize
 from .util import performance
 
+import numpy
 
 BASEDIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 BENCHMARK_DIR = os.path.join(BASEDIR, 'domains')
@@ -153,7 +154,7 @@ class StepRunner:
         # RNG state between pipeline steps.
         # However, because at the moment we're not using the RNG from Python, I'm leaving the implementation of all
         # this to the future, if necessary.
-        rng = None
+        rng = numpy.random.default_rng(config.seed)
 
         try:
             exitcode, output = self.target(config=config, data=data, rng=rng)

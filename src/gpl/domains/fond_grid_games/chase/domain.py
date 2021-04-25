@@ -5,14 +5,14 @@ from .task import Task
 from .utils import identify_margin
 from .utils import unserialize_layout
 import copy
-from .env.shoot import ACTION_SPACE
-from .config import use_player_as_feature
+from .env.chase import ACTION_SPACE
+from .config import use_player_as_feature, to_scann
 
 class Domain(IDomain):
     def __init__(self, domain_name):
         super().__init__(domain_name)
         self.action_space = ACTION_SPACE
-        self.type = 'adv'
+        self.type = 'fond'
 
     # Generate Language
     def generate_language(self):
@@ -31,8 +31,6 @@ class Domain(IDomain):
 
 
 GRID_DIRECTIONS = ['up', 'rightup', 'right', 'rightdown', 'down', 'leftdown', 'left', 'leftup']
-# TO_SCANN = ['row', 'col', 'd1', 'd2']
-TO_SCANN = ['row', 'col']
 
 def generate_lang(domain_name,):
     lang, statics = generate_base_lang(domain_name)
@@ -64,7 +62,7 @@ def load_general_lang(lang, statics,):
         _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player.w, OBJECTS.player.b}]
 
     # Scanning ==================================
-    for c in TO_SCANN:
+    for c in to_scann:
         c = 'same_{}'.format(c)
         lang.predicate(c, 'cell', 'cell')
         statics.add(c)
@@ -174,12 +172,12 @@ def scan(lang, problem, layout):
             # Column cells
             col_ = [(row, c) for row in range(nrows)]
 
-            if 'row' in TO_SCANN:
+            if 'row' in to_scann:
                 # Add the same_row predicate for the current cell
                 _ = [problem.init.add(lang.get(f'same_row'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
                      for r_, c_ in row_ if (r_, c_) != (r, c)]
 
-            if 'col' in  TO_SCANN:
+            if 'col' in  to_scann:
                 # Add the same_col predicate for the current cell
                 _ = [problem.init.add(lang.get(f'same_col'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
                      for r_, c_ in col_ if (r_, c_) != (r, c)]
@@ -202,12 +200,12 @@ def scan(lang, problem, layout):
             # Inverse diagonal:
             d2_ = left_down_ + right_up_
 
-            if 'd1' in TO_SCANN:
+            if 'd1' in to_scann:
                 # Add the same_d1 predicate for the current cell
                 _ = [problem.init.add(lang.get(f'same_d1'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
                      for r_, c_ in d1_ if (r_, c_) != (r, c)]
 
-            if 'd1' in TO_SCANN:
+            if 'd1' in to_scann:
                 # Add the same_d2 predicate for the current cell
                 _ = [problem.init.add(lang.get(f'same_d2'), lang.get(f'c{r}-{c}'), lang.get(f'c{r_}-{c_}'))
                      for r_, c_ in d2_ if (r_, c_) != (r, c)]

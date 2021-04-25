@@ -38,13 +38,18 @@ class TransitionSampleADV:
 
     def add_transition(self, tx, task):
         s, op0, sp, _, spp = tx # for now ignore op1
-        assert None not in [s, op0, sp]
+        try:
+            assert None not in [s, op0, sp]
+        except:
+            pass
         new_instance_, instance_id = self.check_instance_name(task)
         spp = spp if spp is not None else copy.deepcopy(sp) # if sp is goal or deadend just extende it to spp
         sids = [self.check_state(s, task, instance_id) for s in [s, sp, spp]]
         self.states_s_spp |= {sids[0], sids[2]}
         if not self.given_action_space:
             oid = self.check_operator(s, op0, task, instance_id)
+        else:
+            oid = op0
         self.update_transitions(self.get_tx(sids, oid))
         if new_instance_:
             self.mark_as_root(sids[0], instance_id)
@@ -293,15 +298,15 @@ def print_transition_matrix(sample, transitions_filename):
             vstar = sample.vstar.get(s, -1)
             print(f"{s} {vstar} {num_ops} {len(o_edges)} {nondet_successors}", file=f)
 
+
 def print_states(sample, states_filename):
     state_ids = sample.get_sorted_state_ids()
-
     with open(states_filename, 'w') as f:
         for id in state_ids:
             if id in sample.goals:
-                print("{}* {}".format(id, sample.states[id]), file=f)
+                print("{} {}".format(id, sample.states[id]), file=f)
             elif id in sample.deadends:
-                print("{}^ {}".format(id, sample.states[id]), file=f)
+                print("{}* {}".format(id, sample.states[id]), file=f)
             else:
                 print("{}º {}".format(id, sample.states[id]), file=f)
 
