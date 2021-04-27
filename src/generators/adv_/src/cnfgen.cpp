@@ -127,6 +127,7 @@ public:
     }
 };
 
+/*
 class ASPPolicyComputationStrategy : public PolicyComputationStrategy {
 public:
     std::pair<CNFGenerationOutput, DNFPolicy> run(const Options& options, const StateSpaceSample& sample, TimeStats& time) override {
@@ -136,7 +137,7 @@ public:
         const auto instance = options.workspace + "/instance.lp";
         auto os = utils::get_ofstream(instance);
 //        auto output = generator.generate_asp_instance_1(os);
-        auto output = generator.generate_asp_instance_10(os);
+//        auto output = generator.generate_asp_instance_10(os);
         os.close();
         time.generation_time += utils::read_time_in_seconds() - gent0;
 
@@ -167,9 +168,9 @@ public:
         return {CNFGenerationOutput::Success, dnf};
     }
 };
+*/
 
 std::unique_ptr<PolicyComputationStrategy> choose_strategy(const Options& options) {
-    if (options.acyclicity == "asp") return std::make_unique<ASPPolicyComputationStrategy>();
     return std::make_unique<SATPolicyComputationStrategy>();
 }
 

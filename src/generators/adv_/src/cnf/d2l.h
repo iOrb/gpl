@@ -61,9 +61,6 @@ namespace sltp::cnf {
 
         virtual ~D2LEncoding() = default;
 
-        sltp::cnf::CNFGenerationOutput generate_asp_instance_1(std::ofstream& os);
-        sltp::cnf::CNFGenerationOutput generate_asp_instance_10(std::ofstream& os);
-
         virtual std::pair<cnf::CNFGenerationOutput, VariableMapping> generate(CNFWriter& wr);
 
         inline unsigned get_transition_id(state_id_t s, state_id_t t) const { return transition_ids_.at(state_pair(s, t)); }
