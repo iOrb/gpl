@@ -61,10 +61,9 @@ namespace sltp::cnf {
 
         virtual ~D2LEncoding() = default;
 
-        sltp::cnf::CNFGenerationOutput generate_asp_instance_1(std::ofstream& os);
-        sltp::cnf::CNFGenerationOutput generate_asp_instance_10(std::ofstream& os);
-
         virtual std::pair<cnf::CNFGenerationOutput, VariableMapping> generate(CNFWriter& wr);
+
+        // Transitions (s, s')
 
         inline unsigned get_transition_id(state_id_t s, state_id_t t) const { return transition_ids_.at(state_pair(s, t)); }
 
@@ -79,6 +78,22 @@ namespace sltp::cnf {
         inline bool is_necessarily_bad(unsigned tx) const {
             return necessarily_bad_transitions_.find(tx) != necessarily_bad_transitions_.end();
         }
+
+        // Pairs (s, a)
+
+//        inline unsigned get_transition_id(state_id_t s, state_id_t t) const { return transition_ids_.at(state_pair(s, t)); }
+//
+//        inline unsigned get_representative_id(unsigned tx) const { return from_transition_to_eq_class_.at(tx); }
+//
+//        inline unsigned get_class_representative(state_id_t s, state_id_t t) const {
+//            return get_representative_id(get_transition_id(s, t));
+//        }
+//
+//        inline const state_pair& get_state_pair(unsigned tx) const { return transition_ids_inv_.at(tx); }
+//
+//        inline bool is_necessarily_bad(unsigned tx) const {
+//            return necessarily_bad_transitions_.find(tx) != necessarily_bad_transitions_.end();
+//        }
 
         inline int get_vstar(unsigned s) const {
             return sample_.transitions_.vstar(s);

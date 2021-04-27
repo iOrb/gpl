@@ -63,7 +63,7 @@ namespace sltp {
                     << " (" << num_alive << " alive: " << alive_string << ")"
                     //          << " (" << transitions_.num_marked_transitions() << " marked)"
                     << ", unsolvable: " << transitions_.num_unsolvable()
-                    << ", goals: " << transitions_.all_goals().size()
+                    << ", goals: " << transitions_.all_goal().size()
                     << ", features: " << matrix_.num_features()
                     << ", est. size: " << std::setprecision(2) << std::fixed << est_size << " MB.]";
             return os;

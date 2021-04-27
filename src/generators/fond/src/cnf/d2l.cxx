@@ -30,13 +30,19 @@ namespace sltp::cnf {
                 if (!sample_.is_solvable(sp)) {
                     all_sp_solvable = false;
                 }
+            }
 
-                auto tx = std::make_pair((state_id_t) s, (op_id_t) sp);
+            for (auto const& sp:sps) {
+                auto tx = std::make_pair((state_id_t) s, (state_id_t) sp);
                 auto id = (unsigned) transition_ids_inv_.size(); // Assign a sequential ID to the transition
 
                 transition_ids_inv_.push_back(tx);
                 auto it1 = transition_ids_.emplace(tx, id);
                 assert(it1.second);
+
+                if (!all_sp_solvable) { // An alive-to-dead transition cannot be Good
+                    necessarily_bad_transitions_.emplace(id);
+                }
 
                 if (!options.use_equivalence_classes) {
                     // If we don't want to use equivalence classes, we simply create one fictitious equivalence class
@@ -64,19 +70,12 @@ namespace sltp::cnf {
                     // We already have other transitions undistinguishable from this one
                     assert(it->second < id);
                     from_transition_to_eq_class_.push_back(it->second);
-
-//                if (types_[it->second] != types_[id]) {
-//                    // We have to non-distinguishable transitions, one from alive to solvable, and one from alive
-//                    // to dead; hence, both will need to be labeled as not Good
-//                    throw std::runtime_error("Found two non-distinguishable transitions with different types");
-//                }
                 }
-
             }
 
-            if (!all_sp_solvable) { // An alive-to-dead transition cannot be Good
-                necessarily_bad_transitions_.emplace(id);
-            }
+//            if (!all_sp_solvable) { // An alive-to-dead transition cannot be Good
+//                // do something, e.g. register "necessarily bad (s, a)"
+//            }
         }
 
         // All transitions that belong to some class where at least one transition must be bad, must be bad
@@ -121,162 +120,6 @@ namespace sltp::cnf {
             }
             std::cout << std::endl << std::endl;
         }
-    }
-
-
-    CNFGenerationOutput D2LEncoding::generate_asp_instance_1(std::ofstream& os) {
-        const auto& mat = sample_.matrix();
-        const unsigned max_d = compute_D();
-
-        os << "#const maxd=" << max_d << "." << std::endl;
-        os << "#const delta=" << options.v_slack << "." << std::endl;
-        os << std::endl;
-
-        os << "state(0.." << mat.num_states() << ")." << std::endl;
-        os << "feature(0.." << mat.num_features() << ")." << std::endl;
-        os << std::endl;
-
-//    for (unsigned s = 0; s < mat.num_states(); ++s) {
-        for (auto const& [s, o, spp]:sample_.transitions_.nondet_transitions()) {
-            if (!sample_.is_solvable(s)) {
-                os << "dead(" << s << ")." << std::endl;
-            }
-            else if (sample_.is_goal(s)) {
-                os << "goal(" << s << ")." << std::endl;
-            }
-            else {
-                os << "alive(" << s << ")." << std::endl;
-                os << "vstar(" << s << ", " << get_vstar(s) << ")." << std::endl;
-            }
-
-            for (unsigned sprime:sample_.agent_successors(s)) {
-                os << "transition(" << s << ", " << sprime << ")." << std::endl;
-            }
-        }
-        os << std::endl;
-
-        for (unsigned f = 0; f < mat.num_features(); ++f) {
-            for (unsigned s = 0; s < mat.num_states(); ++s) {
-                os << "val(" << f << ", " << s << ", " << mat.entry(s, f) << ")." << std::endl;
-            }
-        }
-        os << std::endl;
-
-        for (unsigned f = 0; f < mat.num_features(); ++f) {
-            os << "weight(" << f << ", " << sample_.feature_weight(f) << ")." << std::endl;
-        }
-        os << std::endl;
-
-        return CNFGenerationOutput::Success;
-    }
-
-
-    CNFGenerationOutput D2LEncoding::generate_asp_instance_10(std::ofstream& os) {
-        unsigned n_bad_transitions = 0;
-        unsigned n_separation_clauses = 0;
-        unsigned n_goal_clauses = 0;
-        unsigned nrules = 0;
-
-        const auto& mat = sample_.matrix();
-
-//    os << "state(0.." << mat.num_states() << ")." << std::endl;
-        os << "%% We have a total of " << mat.num_features() << " features" << std::endl;
-        os << "feature(0.." << mat.num_features()-1 << ")." << std::endl;
-        os << std::endl;
-
-        os << "%% There are " << sample_.transitions_.num_states() << " in the sample" << std::endl;
-//        os << "%% There are " << sample_.states_.size() << " in the sample" << std::endl;
-//        for (auto s:sample_.states_) os << "sampled(" << s << "). ";
-        os << std::endl << std::endl;
-
-        os << "%% Sample description" << std::endl;
-        for (auto const& [s, o, spp]:sample_.transitions_.nondet_transitions()) {
-//            if (!sample_.in_sample(s)) continue;
-
-            if (!sample_.is_solvable(s)) {
-                os << "dead(" << s << ")." << std::endl;
-            }
-            else if (sample_.is_goal(s)) {
-                os << "goal(" << s << ")." << std::endl;
-            }
-            else {
-                os << "alive(" << s << ")." << std::endl;
-
-                for (unsigned sprime:sample_.agent_successors(s)) {
-                    os << "transition(" << s << ", " << sprime << ")." << std::endl;
-                    const auto& [t, tprime] = get_state_pair(get_class_representative(s, sprime));
-                    os << "repr(" << s << ", " << sprime << ", " << t << ", " << tprime << " )." << std::endl;
-                    nrules += 1;
-                }
-            }
-            nrules += 1;
-        }
-        os << std::endl;
-
-        if (options.distinguish_goals) {
-            os << "%% Goal distinguishability (" << sample_.transitions_.all_goals().size() << " goals):" << std::endl;
-            for (unsigned s:sample_.transitions_.all_goals()) {
-                for (unsigned t:sample_.transitions_.all_dead()) {
-
-                    const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
-                    if (d1feats.empty()) {
-                        undist_goal_warning(s, t);
-                        return CNFGenerationOutput::UnsatTheory;
-                    }
-
-                    os << ":-";
-                    for (unsigned i=0, m=d1feats.size(); i<m; ++i) {
-                        os << "not sel(" << d1feats[i];
-                        if (i < m-1) os << "), ";
-                    }
-                    os << ")." << std::endl;
-                    n_goal_clauses += 1;
-                    nrules += 1;
-                }
-            }
-            os << std::endl;
-        }
-
-        os << "%% Bad transitions: " << std::endl;
-        for (const auto tx1:class_representatives_) {
-            if (is_necessarily_bad(tx1)) {
-                const auto& [s, sprime] = get_state_pair(tx1);
-                os << ":- good(" << s << ", " << sprime << ")." << std::endl;
-                n_bad_transitions += 1;
-                nrules += 1;
-            }
-        }
-        os << std::endl;
-
-
-        auto transitions_to_distinguish = distinguish_all_transitions();
-        os << "%% Distinguishability constraints for " << transitions_to_distinguish.size() << " pairs of transitions" << std::endl;
-        for (const auto& tpair:transitions_to_distinguish) {
-            assert (!is_necessarily_bad(tpair.tx1));
-            const auto& [s, sprime] = get_state_pair(tpair.tx1);
-            const auto& [t, tprime] = get_state_pair(tpair.tx2);
-
-            os << ":- good(" << s << ", " << sprime << "), not good(" << t << ", " << tprime << ")";
-            for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sprime, t, tprime)) {
-                os << ", " << "not sel(" << f << ")";
-            }
-            os << "." << std::endl;
-            n_separation_clauses += 1;
-            nrules += 1;
-        }
-        os << std::endl;
-
-        os << "%% Feature weights" << std::endl;
-        for (unsigned f = 0; f < mat.num_features(); ++f) {
-            os << "weight(" << f << ", " << sample_.feature_weight(f) << ")." << std::endl;
-            nrules += 1;
-        }
-        os << std::endl;
-
-        // Print a breakdown of the clauses
-        std::cout << "A total of " << nrules << " ground rules were created" << std::endl;
-
-        return CNFGenerationOutput::Success;
     }
 
 
@@ -352,12 +195,9 @@ namespace sltp::cnf {
         // Create all variables Good_a(s, a) for any possible pair (s, a) in a non-det transition (s, a, s').
         // We use this loop to index possible non-det transitions in maps s_to_as and s_a_to_s too.
         using sa_pair_t = std::pair<unsigned, unsigned>;
-        std::unordered_map<unsigned, std::vector<unsigned>> s_to_as;
-        std::unordered_map<sa_pair_t, unsigned, boost::hash<sa_pair_t>> s_a_to_sp;
-        std::unordered_map<sa_pair_t, std::set<unsigned>, boost::hash<sa_pair_t>> s_a_to_spp;
         // Map `good_s_a` from transition IDs to SAT variable IDs:
         std::unordered_map<sa_pair_t, cnfvar_t, boost::hash<sa_pair_t>> good_s_a;
-        for (const auto& [s, a, sp, spps]:sample_.transitions_.transitions()) {
+        for (const auto& [s, a, sps]:sample_.transitions_.nondet_transitions()) {
             if (sample_.is_alive(s)) {
                 const auto it = good_s_a.find({s, a});
                 cnfvar_t good_s_a_var = 0;
@@ -366,23 +206,22 @@ namespace sltp::cnf {
                     good_s_a_var = wr.var("Good_a(" + std::to_string(s) + ", " + std::to_string(a) + ")");
                     varmapstream << good_s_a_var << " " << s << " " << a << std::endl;
                     good_s_a.emplace(std::make_pair(s, a), good_s_a_var);
-                    s_to_as[s].push_back(a);
                 }
                 else {
                     good_s_a_var = it->second;
                 }
-                s_a_to_sp[{s, a}] = sp;
-                s_a_to_spp[{s, a}].insert(spps.begin(), spps.end());
             }
         }
 
         // Create a variable "Bad(s)" for each alive state
         std::unordered_map<unsigned, cnfvar_t, boost::hash<unsigned>> bad_s;
-        for (unsigned s:sample_.transitions_.all_alive()) {
-            cnfvar_t bad_s_var = 0;
-            bad_s_var = wr.var("Bad(" + std::to_string(s) + ")");
-            bad_s.emplace(s, bad_s_var);
-            varmapstream << bad_s_var << " " << s << std::endl;
+        if (options.allow_bad_states) {
+            for (unsigned s:sample_.transitions_.all_alive()) {
+                cnfvar_t bad_s_var = 0;
+                bad_s_var = wr.var("Bad(" + std::to_string(s) + ")");
+                bad_s.emplace(s, bad_s_var);
+                varmapstream << bad_s_var << " " << s << std::endl;
+            }
         }
 
         // From this point on, no more variables will be created. Print total count.
@@ -390,7 +229,7 @@ namespace sltp::cnf {
             std::cout << "A total of " << wr.nvars() << " variables were created" << std::endl;
             std::cout << "\tSelect(f): " << variables.selecteds.size() << std::endl;
             std::cout << "\tGood_a(s, a): " << good_s_a.size() << std::endl;
-            std::cout << "\tBad(s): " << bad_s.size() << std::endl;
+            if (options.allow_bad_states) { std::cout << "\tBad(s): " << bad_s.size() << std::endl; }
             std::cout << "\tV(s, d): " << vs.size() << std::endl;
         }
 
@@ -401,21 +240,22 @@ namespace sltp::cnf {
 
       // Good(s, s') iff Good_a(s, a)
         std::unordered_map<unsigned, cnfvar_t> tx_s_a;
-        for (const auto& [s, a, sp]:sample_.transitions_.agent_transitions()) {
-            auto tx = get_transition_id(s, sp);
-            if (is_necessarily_bad(get_representative_id(tx))) continue;
-            tx_s_a[tx] = good_s_a[{s, a}];
-            variables.goods_s_a[good_s_a[{s, a}]].insert(get_representative_id(tx));
+        for (const auto& [s, a, sps]:sample_.transitions_.nondet_transitions()) {
+            for (const auto& sp:sps) {
+                auto tx = get_transition_id(s, sp);
+//                if (is_necessarily_bad(get_representative_id(tx))) continue;
+                tx_s_a[tx] = good_s_a[{s, a}];
+                variables.goods_s_a[good_s_a[{s, a}]].insert(get_representative_id(tx));
+            }
         }
 
         if (options.allow_bad_states) {
             // Bad(s) or OR_{a in A} Good(s, a):
-            for (const auto s:sample_.transitions_.all_alive()) {
+            for (const auto& s:sample_.transitions_.all_alive()) {
                 cnfclause_t clause;
                 clause.push_back(Wr::lit(bad_s.at(s), true));
 
-                for (const auto a:s_to_as[s]) {
-                    if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
+                for (const auto& a:sample_.transitions_.s_as(s)) {
                     clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
                 }
 
@@ -426,17 +266,14 @@ namespace sltp::cnf {
             }
         }
 
-
-//    1. Good(s, a) implies V(s") < V(s),                        equiv. to (using binary variables):
-//    2. Good(s, a) implies V(s")=d" and V(s)=d, for some d"<d   equiv. to (move things around):
-//    3. Good(s, a) and V(s")=d"  implies OR_{d>d"}  V(s)=d      equiv. to (implication to disjunc.):
-//    4. not Good(s, a) or not V(s")=d" or OR_{d>d"}  V(s)=d
+//    1. Good(s, a) implies V(s') < V(s),                        equiv. to (using binary variables):
+//    2. Good(s, a) implies V(s')=d" and V(s)=d, for some d'<d   equiv. to (move things around):
+//    3. Good(s, a) and V(s')=d'  implies OR_{d>d'}  V(s)=d      equiv. to (implication to disjunc.):
+//    4. not Good(s, a) or not V(s')=d' or OR_{d>d'}  V(s)=d
         for (unsigned s:sample_.transitions_.all_alive()) {
-            for (unsigned a:s_to_as[s]) {
-                unsigned sp = s_a_to_sp[{s, a}];
-                if (is_necessarily_bad(get_representative_id(get_transition_id(s, sp)))) continue; // includes alive-to-dead transitions
-                for (unsigned spp:s_a_to_spp[{s, a}]) {
-                    if (!sample_.is_solvable(spp)) continue;
+            for (unsigned a:sample_.transitions_.s_as(s)) {
+                for (unsigned sp:sample_.transitions_.nondet_successors({s, a})) {
+                    if (!sample_.is_solvable(sp)) continue;
 //                   if (!sample_.in_sample(spp)) continue;
 //                   if (get_vstar(s) > acyclicity_radius) continue;
 
@@ -444,39 +281,39 @@ namespace sltp::cnf {
 
                     if (options.decreasing_transitions_must_be_good) {
                         // (3') Border condition: if s' is a goal, then (s, s') must be good
-                        if (sample_.is_goal(spp)) {
+                        if (sample_.is_goal(sp)) {
                             wr.cl({Wr::lit(good_s_a_var, true)});
                             ++n_descending_clauses;
                         }
                     }
 
-                    if (!sample_.is_alive(spp)) continue;
+                    if (!sample_.is_alive(sp)) continue;
 
-                    for (unsigned dpp=1; dpp < max_d; ++dpp) {
+                    for (unsigned dp=1; dp < max_d; ++dp) {
 
                         cnfclause_t clause;
                         // (2) Good(s, a) and V(s", d") -> V(s) > d"
                         clause.push_back(Wr::lit(good_s_a_var, false));
-                        clause.push_back(Wr::lit(vs.at({spp, dpp}), false));
+                        clause.push_back(Wr::lit(vs.at({sp, dp}), false));
 
                         if (options.allow_cycles) {
-                            // (2) Good(s, a) and V(s", d") -> V(s) = d"
-                            clause.push_back(Wr::lit(vs.at({s, dpp}), true));
+                            // (2) Good(s, a) and V(s', d') -> V(s) = d'
+                            clause.push_back(Wr::lit(vs.at({s, dp}), true));
 
-//                            // (3') Soft clause Good(s, a) and V(s", d") -> V(s) = d"
+//                            // (3') Soft clause Good(s, a) and V(s', d') -> V(s) = d'
                             wr.cl({Wr::lit(good_s_a_var , false),
-                                   Wr::lit(vs.at({spp, dpp}), false),
-                                   Wr::lit(vs.at({s, dpp}), true)}, 99999);
+                                   Wr::lit(vs.at({sp, dp}), false),
+                                   Wr::lit(vs.at({s, dp}), true)}, 99999);
                             ++n_descending_clauses;
                         }
 
-                        for (unsigned d = dpp + 1; d <= max_d; ++d) {
-                            clause.push_back(Wr::lit(vs.at({s, d}), true));
+                        for (unsigned d = dp + 1; d <= max_d; ++d) {
+                            clause.push_back(Wr::lit(vs.at({s, d}),true));
 
                             if (options.decreasing_transitions_must_be_good) {
-                                // (3) V(s") < V(s) -> Good(s, a)
+                                // (3) V(s') < V(s) -> Good(s, a)
                                 wr.cl({Wr::lit(vs.at({s, d}), false),
-                                       Wr::lit(vs.at({spp, dpp}), false),
+                                       Wr::lit(vs.at({sp, dp}), false),
                                        Wr::lit(good_s_a_var, true)});
                                 ++n_descending_clauses;
                             }
@@ -486,10 +323,10 @@ namespace sltp::cnf {
                         ++n_descending_clauses;
                     }
 
-//               (2') Border condition: V(s", D) implies -Good(s, a)
-//                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
-//                           Wr::lit(good_s_a_var, false)});
-//                    ++n_descending_clauses;
+//               (2') Border condition: V(s', D) implies -Good(s, a)
+                    wr.cl({Wr::lit(vs.at({sp, max_d}), false),
+                           Wr::lit(good_s_a_var, false)});
+                    ++n_descending_clauses;
                 }
             }
         }
@@ -522,23 +359,27 @@ namespace sltp::cnf {
 
         // (8): Force D1(s1, s2) to be true if exactly one of the two states is a goal state
         if (options.distinguish_goals) {
-            for (unsigned g:sample_.transitions_.all_goals()) {
+            if (options.verbosity>0) {
+                std::cout << "Posting distinguishability constraints for goal states" << std::endl;
+            }
+            for (unsigned g:sample_.transitions_.all_goal()) {
                 for (unsigned s:sample_.transitions_.all_alive()) {
-                    for (unsigned a:s_to_as[s]) {
-                        unsigned t = s_a_to_sp[{s, a}];
-                        if (!sample_.is_goal(t)) {
-                            const auto d1feats = compute_d1_distinguishing_features(sample_, g, t);
-                            if (d1feats.empty()) {
-                                undist_goal_warning(g, t);
-                            }
+                    for (unsigned a:sample_.transitions_.s_as(s)) {
+                        for (unsigned t:sample_.transitions_.nondet_successors({s, a})) {
+                            if (!sample_.is_goal(t)) {
+                                const auto d1feats = compute_d1_distinguishing_features(sample_, g, t);
+                                if (d1feats.empty()) {
+                                    undist_goal_warning(g, t);
+                                }
 
-                            cnfclause_t clause;
-                            for (unsigned f:d1feats) {
-                                clause.push_back(Wr::lit(variables.selecteds.at(f), true));
-                            }
+                                cnfclause_t clause;
+                                for (unsigned f:d1feats) {
+                                    clause.push_back(Wr::lit(variables.selecteds.at(f), true));
+                                }
 
-                            wr.cl(clause);
-                            n_goal_clauses += 1;
+                                wr.cl(clause);
+                                n_goal_clauses += 1;
+                            }
                         }
                     }
                 }

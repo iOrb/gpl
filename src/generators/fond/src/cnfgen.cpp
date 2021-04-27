@@ -127,49 +127,7 @@ public:
     }
 };
 
-class ASPPolicyComputationStrategy : public PolicyComputationStrategy {
-public:
-    std::pair<CNFGenerationOutput, DNFPolicy> run(const Options& options, const StateSpaceSample& sample, TimeStats& time) override {
-        // Generate the encoding
-        float gent0 = utils::read_time_in_seconds();
-        D2LEncoding generator(sample, options);
-        const auto instance = options.workspace + "/instance.lp";
-        auto os = utils::get_ofstream(instance);
-//        auto output = generator.generate_asp_instance_1(os);
-        auto output = generator.generate_asp_instance_10(os);
-        os.close();
-        time.generation_time += utils::read_time_in_seconds() - gent0;
-
-        // If encoding already UNSAT, abort
-        if (output != CNFGenerationOutput::Success) {
-            std::cout << "Theory detected as UNSAT during generation." << std::endl;
-            return {output, DNFPolicy()};
-        }
-
-        // Else try solving the encoding
-        float solt0 = utils::read_time_in_seconds();
-        auto solution = solve_asp(
-                options.encodings_dir + "/encoding10.lp",
-                instance,
-                options.workspace + "/clingo_output.log",
-                options.verbosity>1);
-        auto tsolution = utils::read_time_in_seconds() - solt0;
-        time.solution_time += tsolution;
-
-        if (!solution.solved) {
-            std::cout << "Theory detected as UNSAT by solver." << std::endl;
-            return {CNFGenerationOutput::UnsatTheory, DNFPolicy()};
-        }
-        std::cout << "Solution with cost " << solution.cost << " found in " << tsolution << "sec." << std::endl;
-
-        auto dnf = generator.generate_dnf(solution.goods, solution.selecteds);
-//            dnf = minimize_dnf();
-        return {CNFGenerationOutput::Success, dnf};
-    }
-};
-
 std::unique_ptr<PolicyComputationStrategy> choose_strategy(const Options& options) {
-    if (options.acyclicity == "asp") return std::make_unique<ASPPolicyComputationStrategy>();
     return std::make_unique<SATPolicyComputationStrategy>();
 }
 

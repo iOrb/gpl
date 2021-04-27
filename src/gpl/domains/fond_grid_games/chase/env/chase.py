@@ -30,9 +30,10 @@ UP = 0 # 'up'
 DOWN = 1 # 'down'
 RIGHT = 2 # 'right'
 LEFT = 3 # 'left'
+STAY = 4 # 'left'
 
 
-ACTION_SPACE = {UP, DOWN, RIGHT, LEFT}
+ACTION_SPACE = {UP, DOWN, RIGHT, LEFT, STAY}
 
 
 ACTION_MOVE_DIRECTION = {
@@ -40,6 +41,7 @@ ACTION_MOVE_DIRECTION = {
     DOWN: (1, 0),
     RIGHT: (0, 1),
     LEFT: (0, -1),
+    STAY: (0, 0),
 }
 
 MAX_ACTIONS_BY_TURN = {
@@ -52,6 +54,7 @@ MOVE_ACTION = {
     (1, 0): {WHITE: DOWN, BLACK: DOWN},
     (0, 1): {WHITE: RIGHT, BLACK: RIGHT},
     (0, -1): {WHITE: LEFT, BLACK: LEFT},
+    (0, 0): {WHITE: STAY, BLACK: STAY},
 }
 
 # Begin Chase =================================
@@ -143,7 +146,7 @@ def player2_policy(rep):
 def king_valid_actions(pos, layout, color):
     valid_action = []
     # for direction in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
-    for direction in [(-1, 0), (0, -1), (0, 1), (1, 0)]:
+    for direction in ACTION_MOVE_DIRECTION.values():
         running_pos = np.add(pos, direction)
         if np.any(running_pos < 0):
             continue

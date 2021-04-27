@@ -46,10 +46,7 @@ class TransitionSampleADV:
         spp = spp if spp is not None else copy.deepcopy(sp) # if sp is goal or deadend just extende it to spp
         sids = [self.check_state(s, task, instance_id) for s in [s, sp, spp]]
         self.states_s_spp |= {sids[0], sids[2]}
-        if not self.given_action_space:
-            oid = self.check_operator(s, op0, task, instance_id)
-        else:
-            oid = op0
+        oid = op0 if self.given_action_space else self.check_operator(s, op0, task, instance_id)
         self.update_transitions(self.get_tx(sids, oid))
         if new_instance_:
             self.mark_as_root(sids[0], instance_id)
@@ -304,7 +301,7 @@ def print_states(sample, states_filename):
     with open(states_filename, 'w') as f:
         for id in state_ids:
             if id in sample.goals:
-                print("{} {}".format(id, sample.states[id]), file=f)
+                print("{}^ {}".format(id, sample.states[id]), file=f)
             elif id in sample.deadends:
                 print("{}* {}".format(id, sample.states[id]), file=f)
             else:

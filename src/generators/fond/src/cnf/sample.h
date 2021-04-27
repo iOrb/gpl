@@ -65,7 +65,6 @@ namespace sltp::cnf {
         std::set<unsigned> alive_states_;
         std::set<unsigned> goal_states_;
         std::set<unsigned> nongoal_states_;
-        std::set<unsigned> alive_states_sp_;
 
         StateSpaceSample(const FeatureMatrix& matrix, const TransitionSample& transitions, std::set<unsigned> states) :
                 matrix_(matrix), transitions_(transitions), states_(states.begin(), states.end())
@@ -75,7 +74,6 @@ namespace sltp::cnf {
                 if (is_alive(s)) alive_states_.insert(s);
                 if (is_goal(s)) goal_states_.insert(s);
                 if (is_unsolvable(s)) nongoal_states_.insert(s);
-                else if (is_alive_sp(s)) alive_states_sp_.insert(s);
             }
         }
 
@@ -94,15 +92,13 @@ namespace sltp::cnf {
 
         //! Return all alive states in this sample
         const std::set<unsigned>& alive_states() const { return transitions_.all_alive(); }
-//        const std::set<unsigned>& goal_states() const { return transitions_.all_goals(); }
-//        const std::set<unsigned>& nongoal_states() const { return transitions_.all_dead(); }
-//        const std::set<unsigned>& alive_states_sp() const { return transitions_.all_alive_sp(); }
+        const std::set<unsigned>& goal_states() const { return transitions_.all_goal(); }
+        const std::set<unsigned>& nongoal_states() const { return transitions_.all_dead(); }
 
         bool is_goal(unsigned s) const { return transitions_.is_goal(s); }
         bool is_alive(unsigned s) const { return transitions_.is_alive(s); }
         bool is_solvable(unsigned s) const { return is_alive(s) || is_goal(s); }
         bool is_unsolvable(unsigned s) const { return transitions_.is_unsolvable(s); }
-        bool is_alive_sp(unsigned s) const { return transitions_.is_alive_sp(s);}
 
         inline FeatureMatrix::feature_value_t value(unsigned s, unsigned f) const {
             return matrix_.entry(s, f);
@@ -112,12 +108,8 @@ namespace sltp::cnf {
             return matrix_.feature_cost(f);
         }
 
-        const std::set<unsigned>& nondet_successors(unsigned s) const {
+        const std::unordered_set<unsigned>& nondet_successors(unsigned s) const {
             return transitions_.nondet_successors(s);
-        }
-
-        const std::set<unsigned>& agent_successors(unsigned s) const {
-            return transitions_.agent_successors(s);
         }
 
         const TransitionSample& full_training_set() const {

@@ -388,7 +388,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     // C2.a Force D1(s1, s2) to be true if exactly one of the two states is a goal state
     std::set< cnfclause_t > aux_c2;
     for ( const auto s : sample_.full_training_set().all_alive()) {
-        for( const auto t : sample_.full_training_set().all_goals()) {
+        for( const auto t : sample_.full_training_set().all_goal()) {
             const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
             if (d1feats.empty()) {
                 undist_goal_warning(s, t);

@@ -22,7 +22,7 @@ namespace sltp {
 
         //! nondet_transitions_ represents the entire non-deterministic transition function by storing a vector of
         //! possible tuples (s, a, S').
-        std::set<std::tuple<unsigned, unsigned, std::unordered_set<unsigned>>> nondet_transitions_;
+        std::set<std::tuple<unsigned, unsigned, std::set<unsigned>>> nondet_transitions_;
 
         // Operations
         std::map<unsigned, std::unordered_set<unsigned>> s_as_; // {s: {a1, a2, ...}}
@@ -32,9 +32,9 @@ namespace sltp {
         std::map<unsigned, std::unordered_set<unsigned>> trdata_s; // {s: {s1', s2', ...}}
         std::map<std::pair<unsigned, unsigned>, std::unordered_set<unsigned>> trdata_s_a; // {(s, a): {s1', s2', ...}}
 
-        std::unordered_set<unsigned> alive_states_;
-        std::unordered_set<unsigned> goal_states_;
-        std::unordered_set<unsigned> unsolvable_states_;
+        std::set<unsigned> alive_states_;
+        std::set<unsigned> goal_states_;
+        std::set<unsigned> unsolvable_states_;
 
         std::unordered_map<unsigned, int> vstar_;
 
@@ -59,7 +59,7 @@ namespace sltp {
         std::size_t num_states() const { return num_states_;}
         std::size_t num_nondet_transitions() const { return num_nondet_transitions_; }
 
-        const std::set<std::tuple<unsigned, unsigned, std::unordered_set<unsigned>>>& nondet_transitions() const {
+        const std::set<std::tuple<unsigned, unsigned, std::set<unsigned>>>& nondet_transitions() const {
             return nondet_transitions_;
         }
 
@@ -87,9 +87,9 @@ namespace sltp {
             return unsolvable_states_.size();
         }
 
-        const std::unordered_set<unsigned>& all_alive() const { return alive_states_; }
-        const std::unordered_set<unsigned>& all_goals() const { return goal_states_; }
-        const std::unordered_set<unsigned>& all_dead() const { return unsolvable_states_; }
+        const std::set<unsigned>& all_alive() const { return alive_states_; }
+        const std::set<unsigned>& all_goal() const { return goal_states_; }
+        const std::set<unsigned>& all_dead() const { return unsolvable_states_; }
 
         //! Print a representation of the object to the given stream.
         friend std::ostream& operator<<(std::ostream &os, const TransitionSample& o) { return o.print(os); }
@@ -108,9 +108,9 @@ namespace sltp {
 
             // read transitions, in format: s_id, vstar, num_ops, num_spp, (op0, sp0), (op0, sp1)...
             for (unsigned i = 0; i < num_states_; ++i) {
-                unsigned s = 0, n_sp = 0, n_spp = 0, op = 0, sp = 0;
+                unsigned s = 0, n_a = 0, n_sp = 0, op = 0, sp = 0;
                 int vstar = 0;
-                is >> s >> vstar >> n_sp >> n_spp;
+                is >> s >> vstar >> n_a >> n_sp;
 //                assert(i==src);
 //                assert(src < num_states_ && 0 <= count);
 
@@ -124,11 +124,11 @@ namespace sltp {
                 }
                 vstar_[s] = vstar;
 
-                if (n_spp > 0) {
+                if (n_sp > 0) {
 //                    std::vector<bool> seen(num_states_s_spp_ + num_states_sp_, false);
-                    std::map<unsigned,std::unordered_set<unsigned>> tmp_a_sps;
+                    std::map<unsigned,std::set<unsigned>> tmp_a_sps;
 
-                    for (unsigned j = 0; j < n_spp; ++j) {
+                    for (unsigned j = 0; j < n_sp; ++j) {
                         is >> op >> sp;
 //                        assert(spp < num_states_);
                         trdata_s[s].insert(sp);

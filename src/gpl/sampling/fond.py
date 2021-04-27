@@ -33,13 +33,14 @@ class TransitionSampleFOND:
         self.sid_count = 0
         self.oid_count = 0
         self.instance_id_count = 0
+        self.given_action_space = False
 
     def add_transition(self, tx, task):
         s, op0, sp = tx # for now ignore op1
         assert None not in [s, op0, sp]
         new_instance_, instance_id = self.check_instance_name(task)
         sids = [self.check_state(s, task, instance_id) for s in [s, sp]]
-        oid = self.check_operator(s, op0, task, instance_id)
+        oid = op0 if self.given_action_space else self.check_operator(s, op0, task, instance_id)
         self.update_transitions(self.get_tx(sids, oid))
         if new_instance_:
             self.mark_as_root(sids[0], instance_id)
@@ -87,6 +88,11 @@ class TransitionSampleFOND:
             self.operators[o] = self.oid_count
             self.oid_count += 1
         return self.operators[o]
+
+    def set_operators(self, ops):
+        self.given_action_space = True
+        for o in ops:
+            self.operators[o] = o
 
     def update_instance(self, sid, intance_id):
         self.instance[sid] = intance_id # {state_id: instance_id}
@@ -155,26 +161,17 @@ class TransitionSampleFOND:
         alive, goals, deadends = list(), list(), list()
         for op0, sp in succs:
             s_r, goal, deadend, s_encoded, info = unpack_state(sp)
+            self.add_transition((s, op0, sp), task)
             if goal:
                 goals.append((op0, sp))
-                self.add_transition((s, op0, sp), task)
             elif deadend:
                 deadends.append((op0, sp))
-                self.add_transition((s, op0, sp), task)
             else:
                 alive.append((op0, sp))
-                self.add_transition((s, op0, sp), task)
         return alive, goals, deadends
 
 
 def process_sample(config, sample, rng):
-
-    # if not config.create_goal_features_automatically and not config.sample.goals:
-    #     raise logging.warning("No goal found in the sample - increase number of expanded states!")
-
-    # # Make sure all edge IDs have actually been declared as a state
-    # for src in config.sample.transitions:
-    #     assert src in state_atoms and all(dst in state_atoms for dsts in transitions[src] for dst in dsts)
 
     num_tx_entries = sum(len(tx) for tx in sample.transitions.values())
     num_tx = sum(len(t) for tx in sample.transitions.values() for t in tx.values())
@@ -276,8 +273,19 @@ def print_transition_matrix(sample, transitions_filename):
             vstar = sample.vstar.get(s, -1)
             print(f"{s} {vstar} {num_ops} {len(o_edges)} {nondet_successors}", file=f)
 
+def print_states(sample, states_filename):
+    state_ids = sample.get_sorted_state_ids()
+    with open(states_filename, 'w') as f:
+        for id in state_ids:
+            if id in sample.goals:
+                print("{}^ {}".format(id, sample.states[id]), file=f)
+            elif id in sample.deadends:
+                print("{}* {}".format(id, sample.states[id]), file=f)
+            else:
+                print("{}º {}".format(id, sample.states[id]), file=f)
 
 def run(config, data, rng):
     sample = process_sample(config, data.sample, rng)
     print_transition_matrix(sample, config.transitions_info_filename)
+    print_states(sample, config.states_filename)
     return ExitCode.Success, dict(sample = sample)

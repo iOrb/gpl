@@ -36,16 +36,14 @@ namespace sltp::cnf {
         return false;
     }
 
-
     int select_action(unsigned s, const DNFPolicy& dnf, const TrainingSet& trset) {
-        for (unsigned sprime:trset.transitions().agent_successors(s)) {
+        for (unsigned sprime:trset.transitions().nondet_successors(s)) {
             if (evaluate_dnf(s, sprime, dnf, trset.matrix())) {
                 return (int) sprime;
             }
         }
         return -1;
     }
-
 
     void detect_cycles(const DNFPolicy& dnf, const TrainingSet& trset, unsigned batch_size, const std::set<unsigned>& alive, std::vector<unsigned>& flaws) {
         const unsigned N = trset.transitions().num_states();
@@ -55,7 +53,7 @@ namespace sltp::cnf {
 
         // Build graph
         for (unsigned s:alive) {
-            for (unsigned sp:trset.transitions().agent_successors(s)) {
+            for (unsigned sp:trset.transitions().nondet_successors(s)) {
                 if (trset.transitions().is_alive(sp) && evaluate_dnf(s, sp, dnf, trset.matrix())) {
                     boost::add_edge(s, sp, graph);
                 }
@@ -116,7 +114,7 @@ namespace sltp::cnf {
             }
 
             // Check (2)
-            for (unsigned sprime:trset.transitions().agent_successors(s)) {
+            for (unsigned sprime:trset.transitions().nondet_successors(s)) {
                 bool is_good = evaluate_dnf(s, sprime, dnf, trset.matrix());
                 if (is_good && trset.transitions().is_unsolvable(sprime)) {
                     flaws.push_back(s);
