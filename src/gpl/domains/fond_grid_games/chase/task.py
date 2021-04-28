@@ -7,7 +7,7 @@ from .grammar.grammar import Grammar
 
 from .utils import unserialize_layout
 from .grammar.objects import OBJECTS
-from .env.chase import available_actions, check_game_status, act
+from .env.chase import available_actions, check_game_status, act, player2_policy
 
 # State: (representation, info, state_encoded)
 
@@ -56,7 +56,7 @@ class Task(ITask):
         assert not goal and not deadend
         r1 = act(r0, operator)  # our move
         goal, deadend = self.infer_info(r1)
-        if goal or deadend:
+        if goal or deadend or r1[1] == OBJECTS.player.w:
             return self.colapse_state(r1, goal, deadend)
         op = player2_policy(r1)
         r2 = act(r1, op)  # adversary move
@@ -111,7 +111,7 @@ class Task(ITask):
                     if tx_enc in visited_tx:
                         continue
                     visited_tx.add(state2[2])
-                    succs_spp.append((op1, state2))
+                    succs_spp.append((op0, state2))
                 if succs_spp:
                     succs_sp += succs_spp
         return succs_sp

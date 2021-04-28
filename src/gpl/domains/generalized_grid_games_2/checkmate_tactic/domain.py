@@ -1,9 +1,8 @@
-from gpl.domains.generalized_grid_games_2.checkmate_tactic.grammar.objects import OBJECTS
+from .grammar.objects import OBJECTS
 from gpl.domain import IDomain
 from tarski.fstrips import fstrips, create_fstrips_problem
 from .task import Task
-from .utils import identify_margin
-from ..utils import unserialize_layout
+from .utils import identify_margin, unserialize_layout
 import copy
 from .config import use_player_as_feature
 

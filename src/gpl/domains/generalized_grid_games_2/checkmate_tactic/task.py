@@ -5,9 +5,9 @@ from gpl.utils import unpack_state
 import random
 from .grammar.grammar import Grammar
 
-from ..utils import unserialize_layout, get_operators
+from .utils import unserialize_layout
 from .grammar.objects import OBJECTS
-from generalization_grid_games_2.envs.checkmate_tactic import available_actions, check_game_status, act, player2_policy
+from .env.checkmate_tactic import available_actions, check_game_status, act, player2_policy
 from .grammar.actions import encode_op
 from .config import tie_is_deadend
 
@@ -50,17 +50,6 @@ class Task(ITask):
 
     def state_to_atoms_string(self, state,):
         return self.grammar.atom_tuples_to_string(self.state_to_atom_tuples(state,))
-
-    def transition_adversary(self, sp):  # (FOND Adversary) s' -> a -> s"
-        r0 = sp[0]
-        goal, deadend = self.infer_info(r0)
-        assert not goal and not deadend
-
-        op = player2_policy(r0)
-        r1 = act(r0, op)  # adversary move
-        goal, deadend = self.infer_info(r1)
-        assert not goal and not deadend
-        return self.colapse_state(r1, goal, deadend, r0)
 
     def transition(self, state0, operator):  # s -> a -> s' -> a -> s"
         r0 = state0[0]

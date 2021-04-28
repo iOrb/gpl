@@ -118,8 +118,8 @@ def run_test(config, search_policy, task, instance_name, rng):
             raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
         op, sp = good_succs[0]
 
-        tx = task.encode_tx((s, op, sp))
         spp = task.transition(s, op)
+        tx = task.encode_tx((s, op, spp))
 
         if spp[1]['deadend']:
             raise PolicySearchException(ExitCode.DeadEndReached)

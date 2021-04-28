@@ -267,7 +267,7 @@ def print_transition_matrix(sample, transitions_filename):
     num_agent_transitions = sum(len(tx) for tx in transitions.values())
     num_nondet_transitions = sum(len(t) for tx in transitions.values() for t in tx.values())
     operator_ids = sample.get_sorted_op_ids()
-    num_s_with_outgoind_edge = len(transitions.keys()) - len(sample.goals) - len(sample.deadends)
+    num_s_with_outgoind_edge = num_agent_transitions - len(sample.goals) - len(sample.deadends)
     logging.info(f"Printing SAT transition matrix with {len(state_ids)} states,"
                  f" {num_s_with_outgoind_edge} states with some outgoing transition,"
                  f" {len(operator_ids)} operators,"

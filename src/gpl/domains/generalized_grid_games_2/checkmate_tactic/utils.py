@@ -1,5 +1,14 @@
 from .grammar.objects import OBJECTS
 import numpy as np
+from .config import no_king_piece
+from .grammar.objects import WHITE_TOWER, WHITE_QUEEN
+import json
+
+def unserialize_layout(filename):
+    with open(filename, 'r') as f:
+        l = np.array(json.loads(f.read()), dtype=object)
+    l = np.where(l == WHITE_QUEEN, no_king_piece, l)
+    return l
 
 def identify_margin(r, c, nrows, ncols):
     if r < 0 and 0 <= c < ncols:

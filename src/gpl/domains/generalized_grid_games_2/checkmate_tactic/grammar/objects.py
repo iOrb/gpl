@@ -6,11 +6,13 @@ EMPTY = 'empty'
 BLACK_KING = 'black_king'
 WHITE_KING = 'white_king'
 WHITE_QUEEN = 'white_queen'
+WHITE_TOWER = 'white_tower'
 
 OBJECTS = Bunch({
     'general': {BLACK_KING,
                 WHITE_KING,
-                WHITE_QUEEN},
+                WHITE_QUEEN,
+                WHITE_TOWER},
     'empty': EMPTY,
     'player': Bunch({'w': "white",
                      'b': "black"}),
