@@ -48,10 +48,10 @@ class TransitionSampleFOND:
 
     def update_transitions(self, tx):
         """ main method """
-        s, op0, sp = tx # IDs
+        s, op, sp = tx # IDs
         # s: {(op0, s'): {s'', ...}}
-        self.transitions[s][op0].add(sp)
-        # for simplicity we just take into account the adversary transitions as FOND
+        self.transitions[s][op].add(sp)
+        # for simplicity we just take into account the adversary transitions as deterministic
         self.parents[sp].add(s)
 
     def get_tx(self, sids, oid):
@@ -188,19 +188,20 @@ def mark_optimal_transitions(config, sample):
     Marks which transitions are optimal in a transition system according to some selection criterion
     such as marking *all* optimal transitions.
     """
-    optimal, alive, sample.vstar = mark_all_optimal(sample.goals, sample.parents)
+    optimal, alive, sample.vstar = mark_all_optimal(sample)
     # We also mark which states are alive.
     sample.mark_as_alive(alive)
     # Mark all transitions that are optimal from some alive state
     sample.mark_as_optimal(optimal)
 
 
-def mark_all_optimal(goals, parents):
+def mark_all_optimal(sample):
+    goals, parents = sample.goals, sample.parents
     """ Collect all transitions that lie on at least one optimal plan starting from some alive state (i.e. solvable,
      reachable, and not a goal). """
     vstar, minactions = {}, {}
     for g in goals:
-        run_backwards_brfs(g, parents, vstar, minactions)
+        run_backwards_brfs(g, parents, vstar, minactions, sample)
 
     # minactions contains a map between state IDs and a list with those successors that represent an optimal transition
     # from that state
@@ -217,10 +218,12 @@ def mark_all_optimal(goals, parents):
     return optimal_txs, alive, vstar
 
 
-def run_backwards_brfs(g, parents, mincosts, minactions):
+def run_backwards_brfs(g, parents, mincosts, minactions, sample):
     queue = deque([g])
     mincosts[g] = 0
     minactions[g] = []
+
+    prev_parcost = dict()
 
     # Run a breadth-first search backwards from the given goal state g
     while queue:

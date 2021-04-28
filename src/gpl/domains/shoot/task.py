@@ -132,7 +132,7 @@ class Task(ITask):
                     # assert not state2[1]['goal']
                     # if state2[1]['deadend']:
                     #     deadend = True
-                    succs_spp.append((op1, state2))
+                    succs_spp.append((op0, state2))
                     # succs_sp.append((op0, state2, None))
                 # if deadend:
                 # #     If any succ(s') is dead-end, then s' is dead-end

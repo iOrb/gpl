@@ -44,6 +44,34 @@ def experiments():
         max_concept_size=5,
         distance_feature_max_complexity=5,
         concept_generation_timeout=15000,
+        allow_bad_states=False,
+        decreasing_transitions_must_be_good=True,
+        allow_cycles=False,
+        # skip_train_steps=[0, 1, 2],  # do not generate features twice!
+        skip_train_steps=[],
+        distinguish_goals=True,
+        # rollouts
+        # num_episodes=1,
+        # num_rollouts=1,
+        # rollout_depth=2,
+        # train_instances_to_expand=[],
+        train_instances_to_expand=list(range(1000)),
+    )
+
+    exps["2"] = update_dict(
+        base,
+        instances=all_instances([24]),
+        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
+        #           break_instances('a') +
+        #           all_instances([15, 16, 17]),
+        # instances=break_instances('a'),
+        test_instances=four_four_instances('a') +
+                       break_instances('a') +
+                       all_instances('a'),
+        # test_instances=all_instances([16]),
+        max_concept_size=5,
+        distance_feature_max_complexity=5,
+        concept_generation_timeout=15000,
         allow_bad_states=True,
         decreasing_transitions_must_be_good=True,
         allow_cycles=False,
