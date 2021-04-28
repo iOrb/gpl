@@ -142,6 +142,7 @@ namespace sltp::cnf {
         unsigned n_selected_clauses = 0;
         unsigned n_separation_clauses = 0;
         unsigned n_goal_clauses = 0;
+        unsigned n_bad_states_clauses = 0;
 
         if (options.verbosity>0) {
             std::cout << "Generating CNF encoding for " << sample_.transitions_.all_alive().size() << " alive states, "
@@ -179,7 +180,7 @@ namespace sltp::cnf {
                 }
             }
 
-            // Add clauses (4), (5)
+            // Add clauses C3-4
             wr.cl(within_range_clause);
             n_v_function_clauses += 1;
 
@@ -191,291 +192,210 @@ namespace sltp::cnf {
             }
         }
 
-        // Create all variables Good_a(s, a) for any possible pair (s, a) in a non-det transition (s, a, s').
+        // Create all variables Good(s, a) for any possible pair (s, a) in a non-det transition (s, a, s').
         // We use this loop to index possible non-det transitions in maps s_to_as and s_a_to_s too.
         using sa_pair_t = std::pair<unsigned, unsigned>;
-        std::unordered_map<unsigned, std::vector<unsigned>> s_to_as;
-        std::unordered_map<sa_pair_t, unsigned, boost::hash<sa_pair_t>> s_a_to_sp;
-        std::unordered_map<sa_pair_t, std::set<unsigned>, boost::hash<sa_pair_t>> s_a_to_spp;
-        // Map `good_s_a` from transition IDs to SAT variable IDs:
-        std::unordered_map<sa_pair_t, cnfvar_t, boost::hash<sa_pair_t>> good_s_a;
+        std::unordered_map<unsigned, std::unordered_set<unsigned>> s_to_as;
+        std::unordered_map<sa_pair_t, std::unordered_set<unsigned>, boost::hash<sa_pair_t>> s_a_to_spp;
+
         for (const auto& [s, a, sp, spps]:sample_.transitions_.transitions()) {
             if (sample_.is_alive(s)) {
-                const auto it = good_s_a.find({s, a});
-                cnfvar_t good_s_a_var = 0;
-
-                if (it == good_s_a.end()) {
-                    good_s_a_var = wr.var("Good_a(" + std::to_string(s) + ", " + std::to_string(a) + ")");
+                if (variables.goods_s_a.find({s, a}) == variables.goods_s_a.end()) {
+                    auto good_s_a_var = wr.var("Good(" + std::to_string(s) + ", " + std::to_string(a) + ")");
                     varmapstream << good_s_a_var << " " << s << " " << a << std::endl;
-                    good_s_a.emplace(std::make_pair(s, a), good_s_a_var);
-                    s_to_as[s].push_back(a);
+                    variables.goods_s_a.emplace(std::make_pair(s, a), good_s_a_var);
+                    s_to_as[s].insert(a);
                 }
-                else {
-                    good_s_a_var = it->second;
-                }
-                s_a_to_sp[{s, a}] = sp;
                 s_a_to_spp[{s, a}].insert(spps.begin(), spps.end());
             }
         }
 
         // Create a variable "Bad(s)" for each alive state
         std::unordered_map<unsigned, cnfvar_t, boost::hash<unsigned>> bad_s;
-        for (unsigned s:sample_.transitions_.all_alive()) {
-            cnfvar_t bad_s_var = 0;
-            bad_s_var = wr.var("Bad(" + std::to_string(s) + ")");
-            bad_s.emplace(s, bad_s_var);
-            varmapstream << bad_s_var << " " << s << std::endl;
+        if (options.allow_bad_states) {
+            for (unsigned s:sample_.transitions_.all_alive()) {
+                cnfvar_t bad_s_var = 0;
+                bad_s_var = wr.var("Bad(" + std::to_string(s) + ")");
+                bad_s.emplace(s, bad_s_var);
+                varmapstream << bad_s_var << " " << s << std::endl;
+            }
         }
 
         // From this point on, no more variables will be created. Print total count.
         if (options.verbosity>0) {
             std::cout << "A total of " << wr.nvars() << " variables were created" << std::endl;
             std::cout << "\tSelect(f): " << variables.selecteds.size() << std::endl;
-            std::cout << "\tGood_a(s, a): " << good_s_a.size() << std::endl;
+            std::cout << "\tGood(s, a): " << variables.goods_s_a.size() << std::endl;
             std::cout << "\tBad(s): " << bad_s.size() << std::endl;
             std::cout << "\tV(s, d): " << vs.size() << std::endl;
         }
 
         // Check our variable count is correct
-        assert(wr.nvars() == variables.selecteds.size() + good_s_a.size() + bad_s.size() + vs.size());
+        assert(wr.nvars() == variables.selecteds.size() + variables.goods_s_a.size() + bad_s.size() + vs.size());
 
         /////// CNF constraints ///////
 
-        // Good(s, s') iff Good_a(s, a)
-        std::unordered_map<unsigned, cnfvar_t> tx_s_a;
-        for (const auto& [s, a, sp]:sample_.transitions_.agent_transitions()) {
-            auto tx = get_transition_id(s, sp);
-            if (is_necessarily_bad(get_representative_id(tx))) continue;
-            tx_s_a[tx] = good_s_a[{s, a}];
-            variables.goods_s_a[good_s_a[{s, a}]].insert(get_representative_id(tx));
+        // C1. For each alive state s, at least one Good(s, a) must be true,
+        // or (optionally) the state must be marked as bad
+        for (const auto s:sample_.transitions_.all_alive()) {
+            cnfclause_t clause;
+
+            if (options.allow_bad_states) {
+                clause.push_back(Wr::lit(bad_s.at(s), true));
+            }
+
+            for (const auto a:s_to_as[s]) {
+                // TODO: If (s,a) leads to unsolvable state, skip it
+                // if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
+                clause.push_back(Wr::lit(variables.goods_s_a.at({s, a}), true));
+            }
+            wr.cl(clause);
+            n_good_tx_clauses += 1;
         }
 
+
+        // Minimize the number of Bad(s) atoms that are true
         if (options.allow_bad_states) {
-            // Bad(s) or OR_{a in A} Good(s, a):
             for (const auto s:sample_.transitions_.all_alive()) {
-                cnfclause_t clause;
-                clause.push_back(Wr::lit(bad_s.at(s), true));
-
-                for (const auto a:s_to_as[s]) {
-                    if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
-                    clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
-                }
-
-                // Soft clauses Bad(s):
-                wr.cl({Wr::lit(bad_s.at(s), false)}, 99999);
-
-                wr.cl(clause);
+                wr.cl({Wr::lit(bad_s.at(s), false)}, 1);
+                n_bad_states_clauses += 1;
             }
         }
 
-
-//    1. Good(s, a) implies V(s") < V(s),                        equiv. to (using binary variables):
-//    2. Good(s, a) implies V(s")=d" and V(s)=d, for some d"<d   equiv. to (move things around):
-//    3. Good(s, a) and V(s")=d"  implies OR_{d>d"}  V(s)=d      equiv. to (implication to disjunc.):
-//    4. not Good(s, a) or not V(s")=d" or OR_{d>d"}  V(s)=d
+        // C2. Good(s, a) implies V(s') < V(s), for s' in res(s, a)  \equiv
+        // Good(s, a) and V(s)=k implies OR_{0<=k'<k}  V(s')=k'      \equiv
+        // -Good(s, a) or -V(s, k) or OR_{0<=k'<k} V(s', k')
         for (unsigned s:sample_.transitions_.all_alive()) {
             for (unsigned a:s_to_as[s]) {
-                unsigned sp = s_a_to_sp[{s, a}];
-                if (is_necessarily_bad(get_representative_id(get_transition_id(s, sp)))) continue; // includes alive-to-dead transitions
+                // TODO Check if (s, a) can lead to unsolvable state. If it can, then post -Good(s, a)
+                cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
+
                 for (unsigned spp:s_a_to_spp[{s, a}]) {
                     if (!sample_.is_solvable(spp)) continue;
 //                   if (!sample_.in_sample(spp)) continue;
-
-                    cnfvar_t good_s_a_var = good_s_a.at({s, a});
-
-                    if (options.decreasing_transitions_must_be_good) {
-                        // (3') Border condition: if s' is a goal, then (s, s') must be good
-                        if (sample_.is_goal(spp)) {
-                            wr.cl({Wr::lit(good_s_a_var, true)});
-                            ++n_descending_clauses;
-                        }
-                    }
-
                     if (!sample_.is_alive(spp)) continue;
 
-                    for (unsigned dpp=1; dpp < max_d; ++dpp) {
+                    for (unsigned k=1; k <= max_d; ++k) {
+                        cnfclause_t clause{Wr::lit(good_s_a_var, false),
+                                           Wr::lit(vs.at({s, k}), false)};
 
-                        cnfclause_t clause;
-                        // (2) Good(s, a) and V(s", d") -> V(s) > d"
-                        clause.push_back(Wr::lit(good_s_a_var, false));
-                        clause.push_back(Wr::lit(vs.at({spp, dpp}), false));
-
-                        if (options.allow_cycles) {
-                            // (2) Good(s, a) and V(s", d") -> V(s) = d"
-                            clause.push_back(Wr::lit(vs.at({s, dpp}), true));
-
-//                            // (3') Soft clause Good(s, a) and V(s", d") -> V(s) = d"
-                            wr.cl({Wr::lit(good_s_a_var , false),
-                                   Wr::lit(vs.at({spp, dpp}), false),
-                                   Wr::lit(vs.at({s, dpp}), true)}, 99999);
-                            ++n_descending_clauses;
-                        }
-
-                        for (unsigned d = dpp + 1; d <= max_d; ++d) {
-                            clause.push_back(Wr::lit(vs.at({s, d}), true));
-
-                            if (options.decreasing_transitions_must_be_good) {
-                                // (3) V(s") < V(s) -> Good(s, a)
-                                wr.cl({Wr::lit(vs.at({s, d}), false),
-                                       Wr::lit(vs.at({spp, dpp}), false),
-                                       Wr::lit(good_s_a_var, true)});
-                                ++n_descending_clauses;
-                            }
-
+                        for (unsigned kp = 1; kp<k; ++kp) {
+                            clause.push_back(Wr::lit(vs.at({spp, kp}), true));
                         }
                         wr.cl(clause);
                         ++n_descending_clauses;
                     }
-
-//               (2') Border condition: V(s", D) implies -Good(s, a)
-//                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
-//                           Wr::lit(good_s_a_var, false)});
-//                    ++n_descending_clauses;
                 }
             }
         }
 
-        // Clauses (6), (7):
-        auto transitions_to_distinguish = distinguish_all_transitions();
+        // Clauses C5-6: Good actions must be distinguishable from bad actions.
         if (options.verbosity>0) {
-            std::cout << "Posting distinguishability constraints for " << transitions_to_distinguish.size()
-                      << " pairs of transitions" << std::endl;
+            std::cout << "Posting distinguishability constraints" << std::endl;
         }
-        for (const auto& tpair:transitions_to_distinguish) {
-            assert (!is_necessarily_bad(tpair.tx1));
-            const auto& [s, sp] = get_state_pair(tpair.tx1);
-            const auto& [t, tp] = get_state_pair(tpair.tx2);
 
-            cnfclause_t clause{Wr::lit(tx_s_a[tpair.tx1], false)};
+        for (unsigned s:sample_.transitions_.all_alive()) {
+            // TODO: Take unsolvability into account
+            for (auto a:sample_.transitions_.action_ids()) {
+                auto it = variables.goods_s_a.find({s, a});
+                if (it == variables.goods_s_a.end()) {
+                    // The action is not applicable in s, hence cannot be good.
+                    continue;
+                }
 
-            // Compute first the Selected(f) terms
-            for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
-                clause.push_back(Wr::lit(variables.selecteds.at(f), true));
+                cnfvar_t good_s_a_var = it->second;
+                for (unsigned sp:sample_.transitions_.all_alive()) {
+                    cnfclause_t clause{Wr::lit(good_s_a_var, false)};
+
+                    auto it = variables.goods_s_a.find({sp, a});
+                    if (it != variables.goods_s_a.end()) {
+                        clause.push_back(Wr::lit(it->second, true));
+                    }
+
+                    for (feature_t f:compute_d1_distinguishing_features(sample_, s, sp)) {
+                        clause.push_back(Wr::lit(variables.selecteds.at(f), true));
+                    }
+
+                    wr.cl(clause);
+                    n_separation_clauses += 1;
+                }
             }
-
-            if (!is_necessarily_bad(tpair.tx2)) {
-                auto good_t_a = tx_s_a[tpair.tx2];
-                clause.push_back(Wr::lit(good_t_a, true));
-            }
-            wr.cl(clause);
-            n_separation_clauses += 1;
         }
 
         if (options.verbosity>0) {
             std::cout << "Posting distinguishability constraints for goal states" << std::endl;
         }
 
-        // (8): Force D1(s1, s2) to be true if exactly one of the two states is a goal state
+        // C7: Force D1(s1, s2) to be true if exactly one of the two states is a goal state
         if (options.distinguish_goals) {
-            for (unsigned g:sample_.transitions_.all_goals()) {
-                for (unsigned s:sample_.transitions_.all_alive()) {
-                    for (unsigned a:s_to_as[s]) {
-                        unsigned t = s_a_to_sp[{s, a}];
-                        if (!sample_.is_goal(t)) {
-                            const auto d1feats = compute_d1_distinguishing_features(sample_, g, t);
-                            if (d1feats.empty()) {
-                                undist_goal_warning(g, t);
-                            }
-
-                            cnfclause_t clause;
-                            for (unsigned f:d1feats) {
-                                clause.push_back(Wr::lit(variables.selecteds.at(f), true));
-                            }
-
-                            wr.cl(clause);
-                            n_goal_clauses += 1;
-                        }
+            for ( const auto s : sample_.transitions_.all_alive()) {
+                for( const auto t : sample_.transitions_.all_goals()) {
+                    const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
+                    if (d1feats.empty()) {
+                        undist_goal_warning(s, t);
                     }
+
+                    cnfclause_t clause;
+                    for (unsigned f:d1feats) {
+                        clause.push_back(Wr::lit(variables.selecteds.at(f), true));
+                    }
+
+                    wr.cl(clause);
+                    n_goal_clauses += 1;
                 }
             }
         }
 
-        if (!options.validate_features.empty()) {
-            // If we only want to validate a set of features, we just force the Selected(f) to be true for them,
-            // plus we don't really need any soft constraints.
-//        std::cout << "Enforcing " << feature_ids.size() << " feature selections and ignoring soft constraints" << std::endl;
-            for (unsigned f:feature_ids) {
-                wr.cl({Wr::lit(variables.selecteds[f], true)});
-            }
-        } else {
-//        std::cout << "Posting (weighted) soft constraints for " << variables.selecteds.size() << " features" << std::endl;
-            for (unsigned f:feature_ids) {
-                wr.cl({Wr::lit(variables.selecteds[f], false)}, sample_.feature_weight(f));
-            }
+        for (unsigned f:feature_ids) {
+            wr.cl({Wr::lit(variables.selecteds[f], false)}, sample_.feature_weight(f));
         }
-
         n_selected_clauses += feature_ids.size();
 
         if (options.verbosity>0) {
             // Print a breakdown of the clauses
             std::cout << "A total of " << wr.nclauses() << " clauses were created" << std::endl;
-            std::cout << "\tPolicy completeness [1]: " << n_good_tx_clauses << std::endl;
-            std::cout << "\tTransition separation [5,6]: " << n_separation_clauses << std::endl;
-            std::cout << "\tV descending along good transitions [X]: " << n_descending_clauses << std::endl;
-            std::cout << "\tV is total function within bounds [X]: " << n_v_function_clauses << std::endl;
-            std::cout << "\tGoal separation [X]: " << n_goal_clauses << std::endl;
+            std::cout << "\tPolicy completeness: " << n_good_tx_clauses << std::endl;
+            std::cout << "\tTransition separation: " << n_separation_clauses << std::endl;
+            std::cout << "\tV descending along good transitions: " << n_descending_clauses << std::endl;
+            std::cout << "\tV is total function within bounds: " << n_v_function_clauses << std::endl;
+            std::cout << "\tGoal separation: " << n_goal_clauses << std::endl;
+            std::cout << "\t(Weighted) Bad(s): " << n_bad_states_clauses << std::endl;
             std::cout << "\t(Weighted) Select(f): " << n_selected_clauses << std::endl;
             assert(wr.nclauses() == n_selected_clauses + n_good_tx_clauses + n_descending_clauses
-                                    + n_v_function_clauses + n_separation_clauses
-                                    + n_goal_clauses + n_reachability_clauses);
+                                    + n_v_function_clauses + n_separation_clauses + n_bad_states_clauses
+                                    + n_goal_clauses);
         }
         return {CNFGenerationOutput::Success, variables};
     }
 
 
-    std::vector<transition_pair> D2LEncoding::distinguish_all_transitions() const {
-        std::vector<transition_pair> transitions_to_distinguish;
-        transitions_to_distinguish.reserve(class_representatives_.size() * class_representatives_.size());
-        for (const auto tx1:class_representatives_) {
-            if (is_necessarily_bad(tx1)) continue;
-            for (const auto tx2:class_representatives_) {
-                if (tx1 != tx2) {
-                    transitions_to_distinguish.emplace_back(tx1, tx2);
-                }
-            }
-        }
-        return transitions_to_distinguish;
-    }
-
-    DNFPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const {
-        DNFPolicy dnf(selecteds);
-        for (const auto& [s, sp]:goods) {
-            DNFPolicy::term_t clause;
+    FixedActionPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const {
+        FixedActionPolicy dnf(selecteds);
+        for (const auto& [s, a]:goods) {
+            FixedActionPolicy::term_t clause;
 
             for (const auto& f:selecteds) {
                 const auto& fs = sample_.matrix().entry(s, f);
-                const auto& fsprime = sample_.matrix().entry(sp, f);
-
-                clause.emplace_back(f, DNFPolicy::compute_state_value(fs));
-                clause.emplace_back(f, DNFPolicy::compute_transition_value(fs, fsprime));
+                clause.emplace_back(f, FixedActionPolicy::compute_state_value(fs));
             }
 
-            dnf.terms.insert(clause);
+            dnf.terms.emplace(clause, a);
         }
         return dnf;
     }
 
-    DNFPolicy D2LEncoding::generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& selecteds) const {
-        std::vector<std::pair<unsigned, unsigned>> pairs;
-        pairs.reserve(goods.size());
-        for (const auto& tx:goods) {
-            pairs.push_back(get_state_pair(tx));
-        }
-        return generate_dnf(pairs, selecteds);
-    }
-
-    DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const {
+    FixedActionPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const {
         // Let's parse the relevant bits of the CNF solution:
-        std::vector<unsigned> selecteds, goods;
+        std::vector<unsigned> selecteds;
+        std::vector<std::pair<unsigned, unsigned>> goods;
         for (unsigned f=0; f < variables.selecteds.size(); ++f) {
             auto varid = variables.selecteds[f];
             if (varid>0 && solution.assignment.at(varid)) selecteds.push_back(f);
         }
-        for (auto const& [varid, txids]:variables.goods_s_a) {
+        for (auto const& [sa_pair, varid]:variables.goods_s_a) {
             if (varid>0 && solution.assignment.at(varid)) {
-                for (unsigned txid:txids) {
-                    goods.push_back(txid);
-                }
+                std::cout << "Good(" << sa_pair.first << ", " << sa_pair.second << ")" << std::endl;
+                goods.push_back(sa_pair);
             }
         }
         return generate_dnf(goods, selecteds);

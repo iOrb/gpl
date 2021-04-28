@@ -71,7 +71,7 @@ generate_maxsat_cnf(D2LEncoding& generator, const StateSpaceSample& sample, cons
 }
 
 
-void print_features(const StateSpaceSample& sample, const DNFPolicy& dnf) {
+void print_features(const StateSpaceSample& sample, const FixedActionPolicy& dnf) {
     cout << "Features: " << endl;
     unsigned i = 0;
     for (unsigned f:dnf.features) {
@@ -90,12 +90,12 @@ struct TimeStats {
 
 class PolicyComputationStrategy {
 public:
-    virtual std::pair<CNFGenerationOutput, DNFPolicy> run(const Options& options, const StateSpaceSample& sample, TimeStats& time) = 0;
+    virtual std::pair<CNFGenerationOutput, FixedActionPolicy> run(const Options& options, const StateSpaceSample& sample, TimeStats& time) = 0;
 };
 
 class SATPolicyComputationStrategy : public PolicyComputationStrategy {
 public:
-    std::pair<CNFGenerationOutput, DNFPolicy> run(const Options& options, const StateSpaceSample& sample, TimeStats& time) override {
+    std::pair<CNFGenerationOutput, FixedActionPolicy> run(const Options& options, const StateSpaceSample& sample, TimeStats& time) override {
         // Generate the encoding
         float gent0 = utils::read_time_in_seconds();
         auto encoder = D2LEncoding::create(sample, options);
@@ -105,7 +105,7 @@ public:
         // If encoding already UNSAT, abort
         if (output != CNFGenerationOutput::Success) {
             std::cout << "Theory detected as UNSAT during generation." << std::endl;
-            return {output, DNFPolicy()};
+            return {output, FixedActionPolicy()};
         }
 
         // Else try solving the encoding
@@ -117,7 +117,7 @@ public:
 
         if (!solution.solved) {
             std::cout << "Theory detected as UNSAT by solver." << std::endl;
-            return {CNFGenerationOutput::UnsatTheory, DNFPolicy()};
+            return {CNFGenerationOutput::UnsatTheory, FixedActionPolicy()};
         }
 
         std::cout << "Solution with cost " << solution.cost << " found in " << tsolution << "sec." << std::endl;

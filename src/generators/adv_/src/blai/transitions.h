@@ -37,6 +37,8 @@ namespace sltp {
         std::map<unsigned, std::set<unsigned>> agent_trdata_;
         std::map<unsigned, std::set<unsigned>> nondet_trdata_;
 
+        std::vector<unsigned> action_ids_;
+
         std::set<unsigned> alive_states_;
         std::set<unsigned> goal_states_;
         std::set<unsigned> unsolvable_states_;
@@ -101,6 +103,8 @@ namespace sltp {
         bool is_unsolvable(unsigned state) const { return unsolvable_states_.find(state) != unsolvable_states_.end(); }
         bool is_alive_sp(unsigned state) const { return alive_states_sp_.find(state) != alive_states_sp_.end(); }
 
+        const std::vector<unsigned>& action_ids() const { return action_ids_; }
+
         unsigned num_unsolvable() const {
             return unsolvable_states_.size();
         }
@@ -125,6 +129,8 @@ namespace sltp {
 
             // read number of states that have been expanded, for which we'll have one state per line next
             unsigned n_read_transitions = 0;
+
+            std::unordered_set<unsigned> action_ids_set;
 
             // read transitions, in format: s_id, vstar, num_sp, num_spp, (op0, sp0, spp0), (op0, sp0, spp1)...
             for (unsigned i = 0; i < num_states_s_spp_; ++i) {
@@ -151,6 +157,7 @@ namespace sltp {
                     for (unsigned j = 0; j < n_spp; ++j) {
                         is >> op0 >> sp >> spp;
 //                        assert(spp < num_states_);
+                        action_ids_set.insert(op0);
                         agent_trdata_[s].insert(sp);
                         nondet_trdata_[s].insert(spp);
                         agent_transitions_.insert(std::make_tuple(s, op0, sp));
@@ -163,8 +170,8 @@ namespace sltp {
                         transitions_.insert(std::make_tuple(s, pair.first, pair.second, spps));
                     }
 
-                    assert(agent_trdata_[s].empty());
-                    assert(nondet_trdata_[s].empty());
+//                    assert(agent_trdata_[s].empty()); // ??? GFM: Not sure why these should be empty
+//                    assert(nondet_trdata_[s].empty()); // ???
 
                 }
             }
@@ -176,11 +183,14 @@ namespace sltp {
                 }
             }
 
-            assert(n_read_transitions==num_nondet_transitions);
+//            assert(n_read_transitions==num_nondet_transitions);
 
             std::cout << "Read " << alive_states_.size() << " alive states" << std::endl;
 
+            action_ids_ = std::vector<unsigned>(action_ids_set.begin(), action_ids_set.end());
         }
+
+
 
         static TransitionSample read_dump(std::istream &is, bool verbose) {
             unsigned num_states = 0, num_states_s_spp = 0, num_nondet_transitions = 0, num_agent_transitions = 0;

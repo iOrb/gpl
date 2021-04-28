@@ -19,11 +19,17 @@ namespace sltp::cnf {
         //! A map from each feature index to the SAT variable ID of Selected(f)
         std::vector<cnfvar_t> selecteds;
 
-        //! A map from transition IDs to SAT variable IDs:
+        //! A map from transition IDs to SAT variable IDs
         std::unordered_map<unsigned, cnfvar_t> goods;
-        std::unordered_map<cnfvar_t, std::set<unsigned>> goods_s_a; // {good_s_a_var: {tx1, tx2}}}
 
-        explicit VariableMapping(unsigned nfeatures) : selecteds(nfeatures, std::numeric_limits<uint32_t>::max())
+        //! A map from pairs of (state, action) to SAT variable IDs
+        using uint_pair = std::pair<unsigned, unsigned>;
+        std::unordered_map<uint_pair, cnfvar_t, boost::hash<uint_pair>> goods_s_a;
+
+        explicit VariableMapping(unsigned nfeatures) :
+            selecteds(nfeatures, std::numeric_limits<uint32_t>::max()),
+            goods(),
+            goods_s_a()
         {}
     };
 
@@ -101,10 +107,10 @@ namespace sltp::cnf {
         bool are_transitions_d1d2_distinguishable(
                 state_id_t s, state_id_t sprime, state_id_t t, state_id_t tprime, const std::vector<unsigned>& features) const;
 
-        DNFPolicy generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const;
+        FixedActionPolicy generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const;
 
-        DNFPolicy generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& selecteds) const;
-        DNFPolicy generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const;
+//        DNFPolicy generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& selecteds) const;
+        FixedActionPolicy generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const;
 
 
     protected:
@@ -138,8 +144,6 @@ namespace sltp::cnf {
         void compute_equivalence_relations();
 
         void report_eq_classes() const;
-
-        std::vector<transition_pair> distinguish_all_transitions() const;
     };
 
 } // namespaces

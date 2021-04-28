@@ -134,6 +134,7 @@ namespace sltp::cnf {
         options.validate_features = parse_id_list(vm["validate-features"].as<std::string>());
         options.encodings_dir = vm["encodings_dir"].as<std::string>();
         options.sampling_strategy = vm["sampling_strategy"].as<std::string>();
+        options.allow_bad_states = vm.count("allow_bad_states") > 0;
         options.acyclicity = vm["acyclicity"].as<std::string>();
         if (options.acyclicity != "asp" &&
             options.acyclicity != "topological" &&
