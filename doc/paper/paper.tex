@@ -172,10 +172,10 @@ The policy has to be complete with respect to all possible actions applicable in
 \end{align}
 
 
-\smallpar{C2} $V$ is always descending along Good actions:
+\smallpar{C2} $V$ is always descending along Good actions. For each $(s, a, s')$ in the set of non-deterministic transitions
+such that both $s$ and $s'$ are alive, post:
 \begin{align}
- Good(s, a) \land V(s'', d) \rightarrow \bigvee_{d < k \leq D} V(s, k),&\;\; \text{for $s$ alive, $(s, a, s'') \in T$, $d \in [1, D)$.} \\
- V(s'', D) \rightarrow \neg Good(s, a),&\;\; \text{for $s$ alive, $(s, a, s'') \in T$.} \tag{\theequation${}^\prime$}
+ Good(s, a) \land V(s, k) \rightarrow \bigvee_{1 \leq k' \leq k} V(s', k'),&\;\; \text{for } k \in [1, D].
 \end{align}
 
 
