@@ -241,7 +241,7 @@ namespace sltp::cnf {
                 auto tx = get_transition_id(s, sp);
 //                if (is_necessarily_bad(get_representative_id(tx))) continue;
                 tx_s_a[tx] = variables.goods_s_a[{s, a}];
-                variables.sa_txs[{s, a}].insert(get_representative_id(tx));
+                variables.goods_s_a_txs[{s, a}].insert(get_representative_id(tx));
             }
         }
 
@@ -468,7 +468,7 @@ namespace sltp::cnf {
         }
         for (auto const& [sa_pair, varid]:variables.goods_s_a) {
             if (varid>0 && solution.assignment.at(varid)) {
-                for (unsigned txid:variables.sa_txs.at(sa_pair)) {
+                for (unsigned txid:variables.goods_s_a_txs.at(sa_pair)) {
                     goods.push_back(txid);
                 }
             }

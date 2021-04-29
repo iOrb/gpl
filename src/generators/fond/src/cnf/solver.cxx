@@ -59,5 +59,4 @@ SatSolution solve_cnf(const std::string& cnf_filename, const std::string& output
 }
 
 
-
 } // namespaces

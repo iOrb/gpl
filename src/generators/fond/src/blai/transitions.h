@@ -30,7 +30,9 @@ namespace sltp {
         //! trdata_[s] contains a vector with all state IDs of the states s' that can be reached in the state space
         //! in one single step from s
         std::map<unsigned, std::unordered_set<unsigned>> trdata_s; // {s: {s1', s2', ...}}
-        std::map<std::pair<unsigned, unsigned>, std::unordered_set<unsigned>> trdata_s_a; // {(s, a): {s1', s2', ...}}
+        std::map<sa_pair, std::unordered_set<unsigned>> trdata_s_a; // {(s, a): {s1', s2', ...}}
+
+        std::set<action_id_t> action_ids_;
 
         std::set<unsigned> alive_states_;
         std::set<unsigned> goal_states_;
@@ -71,8 +73,8 @@ namespace sltp {
             return trdata_s.at(s);
         }
 
-        const std::unordered_set<unsigned>& nondet_successors(std::pair<unsigned, unsigned> sa) const {
-            return trdata_s_a.at({sa.first, sa.second});
+        const std::unordered_set<unsigned>& nondet_successors(sa_pair sa) const {
+            return trdata_s_a.at(sa);
         }
 
         const std::unordered_set<unsigned>& s_as(unsigned s) const {
@@ -82,6 +84,8 @@ namespace sltp {
         bool is_alive(unsigned state) const { return alive_states_.find(state) != alive_states_.end(); }
         bool is_goal(unsigned state) const { return goal_states_.find(state) != goal_states_.end(); }
         bool is_unsolvable(unsigned state) const { return unsolvable_states_.find(state) != unsolvable_states_.end(); }
+
+        const std::set<action_id_t>& action_ids() const { return action_ids_; };
 
         unsigned num_unsolvable() const {
             return unsolvable_states_.size();
@@ -134,6 +138,7 @@ namespace sltp {
                         trdata_s[s].insert(sp);
                         trdata_s_a[{s, op}].insert(sp);
                         s_as_[s].insert(op);
+                        action_ids_.insert(op);
                         tmp_a_sps[op].insert(sp);
                         n_read_transitions++;
                     }
