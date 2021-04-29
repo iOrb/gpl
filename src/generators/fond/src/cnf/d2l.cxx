@@ -159,7 +159,6 @@ namespace sltp::cnf {
         }
 
         // Create variables V(s, d) variables for all alive state s and d in 1..D
-        //    unsigned acyclicity_radius = 99999;
         for (const auto s:sample_.transitions_.all_alive()) {
             const auto min_vs = get_vstar(s);
             const auto max_vs = get_max_v(s);
