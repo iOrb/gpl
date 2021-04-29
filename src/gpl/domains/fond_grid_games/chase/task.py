@@ -87,17 +87,12 @@ class Task(ITask):
             return self.colapse_state(r1, goal, deadend)
         r0 = state0[0]
         succs_sp = []
-        visited_tx = set()
         ava_actions = available_actions(r0)
         for op0 in ava_actions:
             state1 = __transition_player(state0, op0)
             if state1[1]['goal'] or state1[1]['deadend'] or state1[0][1] == OBJECTS.player.w:
                 if state1[2] == state0[2]:
                     continue
-                tx_enc = self.encode_tx((state0, op0, state1))
-                if tx_enc in visited_tx:
-                    continue
-                visited_tx.add(tx_enc)
                 succs_sp.append((op0, state1))
             else:
                 succs_spp = []
@@ -107,10 +102,6 @@ class Task(ITask):
                     state2 = __transition_player(state1, op1)
                     if state2[2] == state1[2]:
                         continue
-                    tx_enc = self.encode_tx((state0, op0, state2))
-                    if tx_enc in visited_tx:
-                        continue
-                    visited_tx.add(state2[2])
                     succs_spp.append((op0, state2))
                 if succs_spp:
                     succs_sp += succs_spp
@@ -119,7 +110,7 @@ class Task(ITask):
     def get_representative_instance_name(self):
         return self.__representative_instance_name
 
-    def encode_tx(self, tx):
-        s, op, sp = tx
-        tx_enc = '_'.join([str(s[2]), str(op), str(sp[2])])
-        return tx_enc
+    def encode_sa_pair(self, sa):
+        s, op = sa
+        sa_enc = '_'.join([str(s[2]), str(op)])
+        return sa_enc

@@ -126,8 +126,8 @@ namespace sltp::cnf {
 
         DNFPolicy generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const;
 
-        DNFPolicy generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& selecteds) const;
-        DNFPolicy generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const;
+        DNFPolicy generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& bads, const std::vector<unsigned>& selecteds) const;
+        DNFPolicy generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& bads, const std::vector<unsigned>& selecteds) const;
 
 
     protected:

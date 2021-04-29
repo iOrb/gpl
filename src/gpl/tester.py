@@ -99,8 +99,7 @@ def run_test(config, search_policy, task, instance_name, rng):
     s = task.initial_state
     expanded = 0
 
-    transitions = defaultdict(lambda: 0) # We'll use this at the same time as closed list and to keep track of parents
-    transitions[s[2]] = 1
+    sa_pairs = defaultdict(lambda: 0) # We'll use this at the same time as closed list and to keep track of parents
     solution = list()
 
     while not s[1]['goal']:
@@ -117,29 +116,27 @@ def run_test(config, search_policy, task, instance_name, rng):
         if exitcode == ExitCode.AbstractPolicyNotCompleteOnTestInstances:
             raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
 
-        for op, sp in good_succs:
-            spp = task.transition(s, op)
-            tx = task.encode_tx((s, op, spp))
-            if tx in transitions:
+        for op, _ in good_succs:
+            sa_pair_enc = task.encode_sa_pair((s, op))
+            if sa_pair_enc in sa_pairs:
                 continue
             else:
                 break
 
-        spp = task.transition(s, op)
-        tx = task.encode_tx((s, op, spp))
+        sa_pair_enc = task.encode_sa_pair((s, op))
+        sp = task.transition(s, op)
 
         r=s[0][0]
         rp=sp[0][0]
-        rpp=spp[0][0]
 
-        if spp[1]['deadend']:
+        if sp[1]['deadend']:
             raise PolicySearchException(ExitCode.DeadEndReached)
-        if transitions[tx] > 2:
+        if sa_pairs[sa_pair_enc] > 1:
             raise PolicySearchException(ExitCode.AbstractPolicyNonTerminatingOnTestInstances)
 
         solution.append(encode_operator(s, op, task))
-        transitions[tx] += 1
-        s = spp
+        sa_pairs[sa_pair_enc] += 1
+        s = sp
 
     logging.info(f"Goal found after expanding {expanded} nodes")
     logging.info(f"The solution was: {solution}")

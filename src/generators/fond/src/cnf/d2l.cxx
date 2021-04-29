@@ -272,12 +272,13 @@ namespace sltp::cnf {
                 for (unsigned sp:sample_.transitions_.nondet_successors({s, a})) {
                     if (!sample_.is_solvable(sp)) continue;
 //                   if (!sample_.in_sample(spp)) continue;
-//                   if (get_vstar(s) > acyclicity_radius) continue;
 
                     cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
 
                     if (options.decreasing_transitions_must_be_good) {
-                        // (3') Border condition: if s' is a goal, then (s, s') must be good
+                        // TODO: create a class "necessarily good (s,a) if S' just contain goal states (?)"
+                        // TODO: create a class "necessarily good (s,a) if S' just contain solvable states (?)"
+                        // Border condition: if s' is a goal, then (s, s') must be good
                         if (sample_.is_goal(sp)) {
                             wr.cl({Wr::lit(good_s_a_var, true)});
                             ++n_descending_clauses;
@@ -294,10 +295,10 @@ namespace sltp::cnf {
                         clause.push_back(Wr::lit(vs.at({sp, dp}), false));
 
                         if (options.allow_cycles) {
-                            // (2) Good(s, a) and V(s', d') -> V(s) = d'
+                            // Good(s, a) and V(s', d') -> V(s) = d'
                             clause.push_back(Wr::lit(vs.at({s, dp}), true));
 
-//                            // (3') Soft clause Good(s, a) and V(s', d') -> V(s) = d'
+//                            // Soft clause Good(s, a) and V(s', d') -> V(s) = d'
                             wr.cl({Wr::lit(good_s_a_var , false),
                                    Wr::lit(vs.at({sp, dp}), false),
                                    Wr::lit(vs.at({s, dp}), true)}, 1);
@@ -308,10 +309,10 @@ namespace sltp::cnf {
                             clause.push_back(Wr::lit(vs.at({s, d}),true));
 
                             if (options.decreasing_transitions_must_be_good) {
-                                // (3) V(s') < V(s) -> Good(s, a)
+                                // V(s') < V(s) -> Good(s, a)
                                 wr.cl({Wr::lit(vs.at({s, d}), false),
                                        Wr::lit(vs.at({sp, dp}), false),
-                                       Wr::lit(good_s_a_var, true)});
+                                       Wr::lit(good_s_a_var, true)}, 1);
                                 ++n_descending_clauses;
                             }
 
@@ -320,10 +321,12 @@ namespace sltp::cnf {
                         ++n_descending_clauses;
                     }
 
-//               (2') Border condition: V(s', D) implies -Good(s, a)
-                    wr.cl({Wr::lit(vs.at({sp, max_d}), false),
-                           Wr::lit(good_s_a_var, false)});
-                    ++n_descending_clauses;
+                    if (options.decreasing_transitions_must_be_good) {
+                        // Border condition: V(s', D) implies -Good(s, a)
+                        wr.cl({Wr::lit(vs.at({sp, max_d}), false),
+                               Wr::lit(good_s_a_var, false)} , 1);
+                        ++n_descending_clauses;
+                    }
                 }
             }
         }
@@ -430,7 +433,7 @@ namespace sltp::cnf {
         return transitions_to_distinguish;
     }
 
-    DNFPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const {
+    DNFPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& bads, const std::vector<unsigned>& selecteds) const {
         DNFPolicy dnf(selecteds);
         for (const auto& [s, sp]:goods) {
             DNFPolicy::term_t clause;
@@ -448,13 +451,13 @@ namespace sltp::cnf {
         return dnf;
     }
 
-    DNFPolicy D2LEncoding::generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& selecteds) const {
+    DNFPolicy D2LEncoding::generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& bads, const std::vector<unsigned>& selecteds) const {
         std::vector<std::pair<unsigned, unsigned>> pairs;
         pairs.reserve(goods.size());
         for (const auto& tx:goods) {
             pairs.push_back(get_state_pair(tx));
         }
-        return generate_dnf(pairs, selecteds);
+        return generate_dnf(pairs, bads, selecteds);
     }
 
     DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const {
@@ -476,7 +479,7 @@ namespace sltp::cnf {
                 bads.push_back(s);
             }
         }
-        return generate_dnf(goods, selecteds);
+        return generate_dnf(goods, bads, selecteds);
     }
 
     bool D2LEncoding::are_transitions_d1d2_distinguishable(
