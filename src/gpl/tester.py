@@ -116,10 +116,21 @@ def run_test(config, search_policy, task, instance_name, rng):
         exitcode, good_succs = run_policy_based_search(config, search_policy, task, s, successors)
         if exitcode == ExitCode.AbstractPolicyNotCompleteOnTestInstances:
             raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
-        op, sp = good_succs[0]
+
+        for op, sp in good_succs:
+            spp = task.transition(s, op)
+            tx = task.encode_tx((s, op, spp))
+            if tx in transitions:
+                continue
+            else:
+                break
 
         spp = task.transition(s, op)
         tx = task.encode_tx((s, op, spp))
+
+        r=s[0][0]
+        rp=sp[0][0]
+        rpp=spp[0][0]
 
         if spp[1]['deadend']:
             raise PolicySearchException(ExitCode.DeadEndReached)
@@ -141,7 +152,7 @@ def create_action_selection_function_from_transition_policy(config, model_factor
     def _policy(task, state, successors):
         m0 = generate_model_from_state(task, model_factory, state, static_atoms)
         good_succs = list()
-        for op, sp, _ in successors:
+        for op, sp in successors:
             m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
             if policy.transition_is_good(m0, m1):
                 # return ExitCode.Success, op, sp

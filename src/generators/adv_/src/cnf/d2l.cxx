@@ -196,6 +196,7 @@ namespace sltp::cnf {
         // We use this loop to index possible non-det transitions in maps s_to_as and s_a_to_s too.
         using sa_pair_t = std::pair<unsigned, unsigned>;
         std::unordered_map<unsigned, std::unordered_set<unsigned>> s_to_as;
+        std::unordered_map<sa_pair_t, unsigned, boost::hash<sa_pair_t>> s_a_to_sp;
         std::unordered_map<sa_pair_t, std::unordered_set<unsigned>, boost::hash<sa_pair_t>> s_a_to_spp;
 
         for (const auto& [s, a, sp, spps]:sample_.transitions_.transitions()) {
@@ -206,6 +207,7 @@ namespace sltp::cnf {
                     variables.goods_s_a.emplace(std::make_pair(s, a), good_s_a_var);
                     s_to_as[s].insert(a);
                 }
+                s_a_to_sp[{s, a}] = sp;
                 s_a_to_spp[{s, a}].insert(spps.begin(), spps.end());
             }
         }
@@ -245,14 +247,19 @@ namespace sltp::cnf {
             }
 
             for (const auto a:s_to_as[s]) {
-                // TODO: If (s,a) leads to unsolvable state, skip it
-                // if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
+                // Check if (s, a) can lead to unsolvable state. If it can, then post -Good(s, a)
+                if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) {
+                    wr.cl({Wr::lit(variables.goods_s_a.at({s, a}), false)});
+                    // If (s,a) leads to unsolvable state, skip it
+                    continue;
+                }
+
                 clause.push_back(Wr::lit(variables.goods_s_a.at({s, a}), true));
             }
+
             wr.cl(clause);
             n_good_tx_clauses += 1;
         }
-
 
         // Minimize the number of Bad(s) atoms that are true
         if (options.allow_bad_states) {
@@ -262,65 +269,110 @@ namespace sltp::cnf {
             }
         }
 
-        // C2. Good(s, a) implies V(s') < V(s), for s' in res(s, a)  \equiv
-        // Good(s, a) and V(s)=k implies OR_{0<=k'<k}  V(s')=k'      \equiv
-        // -Good(s, a) or -V(s, k) or OR_{0<=k'<k} V(s', k')
+        // C2. Good(s, a) implies V(s") < V(s), for s" in res(s, a)  \equiv
+        // Good(s, a) and V(s)=k implies OR_{0<=k"<k}  V(s")=k"      \equiv
+        // -Good(s, a) or -V(s, k) or OR_{0<=k"<k} V(s", k")
         for (unsigned s:sample_.transitions_.all_alive()) {
             for (unsigned a:s_to_as[s]) {
-                // TODO Check if (s, a) can lead to unsolvable state. If it can, then post -Good(s, a)
                 cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
+
+                // Check if (s, a) can lead to unsolvable state. If it can, then post -Good(s, a)
+                if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) { continue; }
 
                 for (unsigned spp:s_a_to_spp[{s, a}]) {
                     if (!sample_.is_solvable(spp)) continue;
 //                   if (!sample_.in_sample(spp)) continue;
+
+                    if (options.decreasing_transitions_must_be_good) {
+                        // Border condition: if s' is a goal, then (s, s') must be good
+                        if (sample_.is_goal(spp)) {
+                            wr.cl({Wr::lit(good_s_a_var, true)});
+                            ++n_descending_clauses;
+                        }
+                    }
+
                     if (!sample_.is_alive(spp)) continue;
 
                     for (unsigned k=1; k <= max_d; ++k) {
+                        // Good(s, a) and V(s", d") -> V(s) > d"
                         cnfclause_t clause{Wr::lit(good_s_a_var, false),
                                            Wr::lit(vs.at({s, k}), false)};
 
-                        for (unsigned kp = 1; kp<k; ++kp) {
-                            clause.push_back(Wr::lit(vs.at({spp, kp}), true));
+                        if (options.allow_cycles) {
+                            // (2) Good(s, a) and V(s", d") -> V(s) = d"
+                            clause.push_back(Wr::lit(vs.at({s, k}), true));
+
+//                            // (3') Soft clause Good(s, a) and V(s", d") -> V(s) = d"
+                            wr.cl({Wr::lit(good_s_a_var , false),
+                                   Wr::lit(vs.at({spp, k}), false),
+                                   Wr::lit(vs.at({s, k}), true)}, 1);
+                            ++n_descending_clauses;
+                        }
+
+                        for (unsigned kpp = 1; kpp < k; ++kpp) {
+                            clause.push_back(Wr::lit(vs.at({spp, kpp}), true));
+
+                            if (options.decreasing_transitions_must_be_good) {
+                                // (3) V(s") < V(s) -> Good(s, a)
+                                wr.cl({Wr::lit(vs.at({s, kpp}), false),
+                                       Wr::lit(vs.at({spp, k}), false),
+                                       Wr::lit(good_s_a_var, true)});
+                                ++n_descending_clauses;
+                            }
                         }
                         wr.cl(clause);
                         ++n_descending_clauses;
                     }
+
+//                     Border condition: V(s", D) implies -Good(s, a)
+//                    wr.cl({Wr::lit(vs.at({spp, max_d}), false),
+//                           Wr::lit(good_s_a_var, false)});
+//                    ++n_descending_clauses;
                 }
             }
         }
 
         // Clauses C5-6: Good actions must be distinguishable from bad actions.
-        if (options.verbosity>0) {
-            std::cout << "Posting distinguishability constraints" << std::endl;
-        }
-
-        for (unsigned s:sample_.transitions_.all_alive()) {
-            // TODO: Take unsolvability into account
-            for (auto a:sample_.transitions_.action_ids()) {
-                auto it = variables.goods_s_a.find({s, a});
-                if (it == variables.goods_s_a.end()) {
-                    // The action is not applicable in s, hence cannot be good.
-                    continue;
-                }
-
-                cnfvar_t good_s_a_var = it->second;
-                for (unsigned sp:sample_.transitions_.all_alive()) {
-                    cnfclause_t clause{Wr::lit(good_s_a_var, false)};
-
-                    auto it = variables.goods_s_a.find({sp, a});
-                    if (it != variables.goods_s_a.end()) {
-                        clause.push_back(Wr::lit(it->second, true));
-                    }
-
-                    for (feature_t f:compute_d1_distinguishing_features(sample_, s, sp)) {
-                        clause.push_back(Wr::lit(variables.selecteds.at(f), true));
-                    }
-
-                    wr.cl(clause);
-                    n_separation_clauses += 1;
-                }
-            }
-        }
+//        if (options.verbosity>0) {
+//            std::cout << "Posting distinguishability constraints" << std::endl;
+//        }
+//
+//        for (unsigned s:sample_.transitions_.all_alive()) {
+//            // TODO: Take unsolvability into account
+//            for (auto a:sample_.transitions_.action_ids()) {
+//                auto it = variables.goods_s_a.find({s, a});
+//                // The action is not applicable in s, hence cannot be good.
+//                if (it == variables.goods_s_a.end()) { continue; }
+//                // pair (s, a) leads to unsolvable state
+////                if (is_necessarily_bad(get_transition_id(s, s_a_to_sp[{s, a}]))) continue;
+//
+//                cnfvar_t good_s_a_var = it->second;
+//
+//                for (unsigned spp:sample_.transitions_.all_alive()) {
+//
+//                    auto it = variables.goods_s_a.find({spp, a});
+//
+////                    if (s == spp) { continue; }
+//                    // The action is not applicable in s, hence cannot be good.
+////                    if (it == variables.goods_s_a.end()) { continue; }
+//                    // pair (spp, a) leads to unsolvable state
+////                    if (is_necessarily_bad(get_transition_id(spp, s_a_to_sp[{spp, a}]))) continue;
+//
+//                    cnfclause_t clause{Wr::lit(good_s_a_var, false)};
+//
+//                    if (it != variables.goods_s_a.end()) {
+//                        clause.push_back(Wr::lit(it->second, true));
+//                    }
+//
+//                    for (feature_t f:compute_d1_distinguishing_features(sample_, s, spp)) {
+//                        clause.push_back(Wr::lit(variables.selecteds.at(f), true));
+//                    }
+//
+//                    wr.cl(clause);
+//                    n_separation_clauses += 1;
+//                }
+//            }
+//        }
 
         if (options.verbosity>0) {
             std::cout << "Posting distinguishability constraints for goal states" << std::endl;

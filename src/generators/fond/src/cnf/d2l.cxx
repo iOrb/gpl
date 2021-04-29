@@ -194,18 +194,16 @@ namespace sltp::cnf {
 
         // Create all variables Good_a(s, a) for any possible pair (s, a) in a non-det transition (s, a, s').
         // We use this loop to index possible non-det transitions in maps s_to_as and s_a_to_s too.
-        using sa_pair_t = std::pair<unsigned, unsigned>;
         // Map `good_s_a` from transition IDs to SAT variable IDs:
-        std::unordered_map<sa_pair_t, cnfvar_t, boost::hash<sa_pair_t>> good_s_a;
         for (const auto& [s, a, sps]:sample_.transitions_.nondet_transitions()) {
             if (sample_.is_alive(s)) {
-                const auto it = good_s_a.find({s, a});
+                const auto it = variables.goods_s_a.find({s, a});
                 cnfvar_t good_s_a_var = 0;
 
-                if (it == good_s_a.end()) {
+                if (it == variables.goods_s_a.end()) {
                     good_s_a_var = wr.var("Good_a(" + std::to_string(s) + ", " + std::to_string(a) + ")");
                     varmapstream << good_s_a_var << " " << s << " " << a << std::endl;
-                    good_s_a.emplace(std::make_pair(s, a), good_s_a_var);
+                    variables.goods_s_a.emplace(std::make_pair(s, a), good_s_a_var);
                 }
                 else {
                     good_s_a_var = it->second;
@@ -214,12 +212,11 @@ namespace sltp::cnf {
         }
 
         // Create a variable "Bad(s)" for each alive state
-        std::unordered_map<unsigned, cnfvar_t, boost::hash<unsigned>> bad_s;
         if (options.allow_bad_states) {
             for (unsigned s:sample_.transitions_.all_alive()) {
                 cnfvar_t bad_s_var = 0;
                 bad_s_var = wr.var("Bad(" + std::to_string(s) + ")");
-                bad_s.emplace(s, bad_s_var);
+                variables.bad_s.emplace(s, bad_s_var);
                 varmapstream << bad_s_var << " " << s << std::endl;
             }
         }
@@ -228,13 +225,13 @@ namespace sltp::cnf {
         if (options.verbosity>0) {
             std::cout << "A total of " << wr.nvars() << " variables were created" << std::endl;
             std::cout << "\tSelect(f): " << variables.selecteds.size() << std::endl;
-            std::cout << "\tGood_a(s, a): " << good_s_a.size() << std::endl;
-            if (options.allow_bad_states) { std::cout << "\tBad(s): " << bad_s.size() << std::endl; }
+            std::cout << "\tGood_a(s, a): " << variables.goods_s_a.size() << std::endl;
+            if (options.allow_bad_states) { std::cout << "\tBad(s): " << variables.bad_s.size() << std::endl; }
             std::cout << "\tV(s, d): " << vs.size() << std::endl;
         }
 
         // Check our variable count is correct
-        assert(wr.nvars() == variables.selecteds.size() + good_s_a.size() + bad_s.size() + vs.size());
+        assert(wr.nvars() == variables.selecteds.size() + good_s_a.size() + variables.bad_s.size() + vs.size());
 
         /////// CNF constraints ///////
 
@@ -244,8 +241,8 @@ namespace sltp::cnf {
             for (const auto& sp:sps) {
                 auto tx = get_transition_id(s, sp);
 //                if (is_necessarily_bad(get_representative_id(tx))) continue;
-                tx_s_a[tx] = good_s_a[{s, a}];
-                variables.goods_s_a[good_s_a[{s, a}]].insert(get_representative_id(tx));
+                tx_s_a[tx] = variables.goods_s_a[{s, a}];
+                variables.sa_txs[{s, a}].insert(get_representative_id(tx));
             }
         }
 
@@ -253,14 +250,14 @@ namespace sltp::cnf {
             // Bad(s) or OR_{a in A} Good(s, a):
             for (const auto& s:sample_.transitions_.all_alive()) {
                 cnfclause_t clause;
-                clause.push_back(Wr::lit(bad_s.at(s), true));
+                clause.push_back(Wr::lit(variables.bad_s.at(s), true));
 
                 for (const auto& a:sample_.transitions_.s_as(s)) {
-                    clause.push_back(Wr::lit(good_s_a.at({s, a}), true));
+                    clause.push_back(Wr::lit(variables.goods_s_a.at({s, a}), true));
                 }
 
                 // Soft clauses Bad(s):
-                wr.cl({Wr::lit(bad_s.at(s), false)}, 99999);
+                wr.cl({Wr::lit(variables.bad_s.at(s), false)}, 1);
 
                 wr.cl(clause);
             }
@@ -277,7 +274,7 @@ namespace sltp::cnf {
 //                   if (!sample_.in_sample(spp)) continue;
 //                   if (get_vstar(s) > acyclicity_radius) continue;
 
-                    cnfvar_t good_s_a_var = good_s_a.at({s, a});
+                    cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
 
                     if (options.decreasing_transitions_must_be_good) {
                         // (3') Border condition: if s' is a goal, then (s, s') must be good
@@ -303,7 +300,7 @@ namespace sltp::cnf {
 //                            // (3') Soft clause Good(s, a) and V(s', d') -> V(s) = d'
                             wr.cl({Wr::lit(good_s_a_var , false),
                                    Wr::lit(vs.at({sp, dp}), false),
-                                   Wr::lit(vs.at({s, dp}), true)}, 99999);
+                                   Wr::lit(vs.at({s, dp}), true)}, 1);
                             ++n_descending_clauses;
                         }
 
@@ -462,16 +459,21 @@ namespace sltp::cnf {
 
     DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const {
         // Let's parse the relevant bits of the CNF solution:
-        std::vector<unsigned> selecteds, goods;
+        std::vector<unsigned> selecteds, goods, bads;
         for (unsigned f=0; f < variables.selecteds.size(); ++f) {
             auto varid = variables.selecteds[f];
             if (varid>0 && solution.assignment.at(varid)) selecteds.push_back(f);
         }
-        for (auto const& [varid, txids]:variables.goods_s_a) {
+        for (auto const& [sa_pair, varid]:variables.goods_s_a) {
             if (varid>0 && solution.assignment.at(varid)) {
-                for (unsigned txid:txids) {
+                for (unsigned txid:variables.sa_txs.at(sa_pair)) {
                     goods.push_back(txid);
                 }
+            }
+        }
+        for (auto const& [s, varid]:variables.bad_s) {
+            if (varid>0 && solution.assignment.at(varid)) {
+                bads.push_back(s);
             }
         }
         return generate_dnf(goods, selecteds);

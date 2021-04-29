@@ -94,11 +94,12 @@ def act(rep, action):
     old_r, old_c = pos
     new_r, new_c = running_pos
     piece = l[old_r, old_c]
-    l[new_r, new_c] = piece
+    if not l[new_r, new_c] == WHITE_KING:
+        l[new_r, new_c] = piece
     l[old_r, old_c] = EMPTY
-    if color == WHITE and BLACK_KING in l: # just the white king can shot
-        attakig_mask = get_attaking_mask((l, color))
-        opposite_pos = runnable_position((l, opposite_color(color)))
+    if BLACK_KING in l: # just the white king can shoot
+        attakig_mask = get_attaking_mask((l, WHITE))
+        opposite_pos = runnable_position((l, BLACK))
         if any((opposite_pos == att).all() for att in attakig_mask):
             l[opposite_pos[0], opposite_pos[1]] = EMPTY
     return (l, opposite_color(color))
@@ -136,7 +137,7 @@ def check_game_status(rep):
 
 
 def checkmate(rep):
-    layout, player = rep
+    layout, color = rep
     if BLACK_KING not in layout:
         return True
     else:

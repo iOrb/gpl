@@ -53,9 +53,9 @@ def experiments():
         distance_feature_max_complexity=3,
         concept_generation_timeout=15000,
 
-        allow_bad_states=True,
+        allow_bad_states=False,
         decreasing_transitions_must_be_good=True,
-        allow_cycles=False,
+        allow_cycles=True,
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],

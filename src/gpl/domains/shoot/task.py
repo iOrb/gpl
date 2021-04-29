@@ -58,7 +58,7 @@ class Task(ITask):
         r1 = act(r0, op)  # adversary move
         goal, deadend = self.infer_info(r1)
         assert not goal and not deadend
-        return self.colapse_state(r1, goal, deadend, r0)
+        return self.colapse_state(r1, goal, deadend)
 
     def transition(self, state0, operator):  # s -> a -> s' -> a -> s"
         r0 = state0[0]
@@ -68,12 +68,12 @@ class Task(ITask):
         r1 = act(r0, operator)  # our move
         goal, deadend = self.infer_info(r1)
         if goal or deadend:
-            return self.colapse_state(r1, goal, deadend, r0)
+            return self.colapse_state(r1, goal, deadend)
 
         op = player2_policy(r1)
         r2 = act(r1, op)  # adversary move
         goal, deadend = self.infer_info(r2)
-        return self.colapse_state(r2, goal, deadend, r1)
+        return self.colapse_state(r2, goal, deadend)
 
     def infer_info(self, r):
         goal, deadend = [0] * 2
@@ -82,10 +82,9 @@ class Task(ITask):
             goal = True
         return goal, deadend
 
-    def colapse_state(self, rep1, goal, deadend, rep0):
+    def colapse_state(self, rep1, goal, deadend):
         info = {'goal': goal,
-                'deadend': deadend,
-                'prev_repr': rep0}
+                'deadend': deadend}
         s_encoded = self.encode_state(rep1, info)
         state1 = (rep1, info, s_encoded)
         return state1
@@ -100,7 +99,7 @@ class Task(ITask):
 
             r1 = act(r, op)  # player move
             goal, deadend = self.infer_info(r1)
-            return self.colapse_state(r1, goal, deadend, r)
+            return self.colapse_state(r1, goal, deadend)
 
         r0 = state0[0]
         succs_sp = []

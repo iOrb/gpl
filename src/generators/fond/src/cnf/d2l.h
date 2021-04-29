@@ -19,9 +19,14 @@ namespace sltp::cnf {
         //! A map from each feature index to the SAT variable ID of Selected(f)
         std::vector<cnfvar_t> selecteds;
 
-        //! A map from transition IDs to SAT variable IDs:
+        //! A map from transition IDs to SAT variable IDs
         std::unordered_map<unsigned, cnfvar_t> goods;
-        std::unordered_map<cnfvar_t, std::set<unsigned>> goods_s_a; // {good_s_a_var: {tx1, tx2}}}
+
+        //! A map from transition IDs to SAT variable IDs:
+        using uint_pair = std::pair<unsigned, unsigned>;
+        std::unordered_map<uint_pair, cnfvar_t, boost::hash<uint_pair>> goods_s_a;
+        std::unordered_map<uint_pair, std::set<unsigned>, boost::hash<uint_pair>> sa_txs; // {good_s_a_var: {tx1, tx2}}}
+        std::unordered_map<unsigned, cnfvar_t, boost::hash<unsigned>> bad_s; // {bad(s)}
 
         explicit VariableMapping(unsigned nfeatures) : selecteds(nfeatures, std::numeric_limits<uint32_t>::max())
         {}

@@ -63,9 +63,9 @@ namespace sltp::cnf {
 
         // Build graph
         for (unsigned s:alive) {
-            for (unsigned sp:trset.transitions().agent_successors(s)) {
-                if (trset.transitions().is_alive(sp) && evaluate_dnf(s, dnf, trset.matrix())) {
-                    boost::add_edge(s, sp, graph);
+            for (unsigned spp:trset.transitions().nondet_successors(s)) {
+                if (trset.transitions().is_alive(spp) && evaluate_dnf(s, dnf, trset.matrix())) {
+                    boost::add_edge(s, spp, graph);
                 }
             }
         }

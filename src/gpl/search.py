@@ -152,7 +152,7 @@ def bfs_adv(config, data, search_policy, task, instance_name, rng):
 
     while queue:
         s = queue.pop(0)
-        sr, _, _, s_encoded, info = unpack_state(s)
+        _, _, _, s_encoded, info = unpack_state(s)
 
         succcessors = task.get_successor_states(s)
 

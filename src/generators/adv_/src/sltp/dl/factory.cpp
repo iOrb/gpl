@@ -232,14 +232,14 @@ namespace sltp::dl {
 
             int sf = fsd[s];
 
-            for (unsigned sp:transitions.agent_successors(s)) {
-                int sfp = fsd[sp];
+            for (unsigned spp:transitions.nondet_successors(s)) {
+                int sfpp = fsd[spp];
 
-                if (last_sfprime > 0 && are_transitions_d1d2_distinguished(last_sf, last_sfprime, sf, sfp)) {
+                if (last_sfprime > 0 && are_transitions_d1d2_distinguished(last_sf, last_sfprime, sf, sfpp)) {
                     feature_can_distinguish_some_transition = true;
                 }
 
-                last_sfprime = sfp;
+                last_sfprime = sfpp;
                 last_sf = sf;
             }
 

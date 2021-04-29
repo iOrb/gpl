@@ -141,6 +141,9 @@ namespace sltp::cnf {
             throw po::validation_error(po::validation_error::invalid_option_value, "acyclicity");
         }
         options.maxsat_iter = vm["maxsat_iter"].as<unsigned>();
+        options.allow_bad_states = vm.count("allow_bad_states") > 0;
+        options.decreasing_transitions_must_be_good = vm.count("decreasing_transitions_must_be_good") > 0;
+        options.allow_cycles = vm.count("allow_cycles") > 0;
 
         return options;
     }

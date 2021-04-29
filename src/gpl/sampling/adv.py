@@ -38,10 +38,7 @@ class TransitionSampleADV:
 
     def add_transition(self, tx, task):
         s, op0, sp, _, spp = tx # for now ignore op1
-        try:
-            assert None not in [s, op0, sp]
-        except:
-            pass
+        assert None not in [s, op0, sp]
         new_instance_, instance_id = self.check_instance_name(task)
         spp = spp if spp is not None else copy.deepcopy(sp) # if sp is goal or deadend just extende it to spp
         sids = [self.check_state(s, task, instance_id) for s in [s, sp, spp]]
