@@ -17,35 +17,53 @@ namespace sltp::cnf {
     }
 
 
-    bool evaluate_dnf(unsigned s, unsigned sprime, const DNFPolicy &dnf, const sltp::FeatureMatrix& matrix) {
-        for (const auto& term:dnf.terms) {
+//    bool evaluate_dnf(unsigned s, unsigned sprime, const DNFPolicy &dnf, const sltp::FeatureMatrix& matrix) {
+//        for (const auto& term:dnf.terms) {
+//            bool term_satisfied = true;
+//
+//            for (const auto& [f, fval]:term) {
+//                const auto& fs = matrix.entry(s, f);
+//                const auto& fsprime = matrix.entry(sprime, f);
+//
+//                if (fval != DNFPolicy::compute_state_value(fs) && fval != DNFPolicy::compute_transition_value(fs, fsprime)) {
+//                    // one of the literals of the conjunctive term is not satisfied
+//                    term_satisfied = false;
+//                    break;
+//                }
+//            }
+//            if (term_satisfied) return true;
+//        }
+//        return false;
+//    }
+
+    //! Return the action to apply in s, or -1 if the policy is not defined there
+    int evaluate_dnf(unsigned s, const FixedActionPolicy &dnf, const sltp::FeatureMatrix& matrix) {
+        for (const auto& [term, a]:dnf.terms) {
             bool term_satisfied = true;
 
             for (const auto& [f, fval]:term) {
                 const auto& fs = matrix.entry(s, f);
-                const auto& fsprime = matrix.entry(sprime, f);
-
-                if (fval != DNFPolicy::compute_state_value(fs) && fval != DNFPolicy::compute_transition_value(fs, fsprime)) {
+                if (fval != FixedActionPolicy::compute_state_value(fs)) {
                     // one of the literals of the conjunctive term is not satisfied
                     term_satisfied = false;
                     break;
                 }
             }
-            if (term_satisfied) return true;
-        }
-        return false;
-    }
-
-    int select_action(unsigned s, const DNFPolicy& dnf, const TrainingSet& trset) {
-        for (unsigned sprime:trset.transitions().nondet_successors(s)) {
-            if (evaluate_dnf(s, sprime, dnf, trset.matrix())) {
-                return (int) sprime;
-            }
+            if (term_satisfied) return a;
         }
         return -1;
     }
 
-    void detect_cycles(const DNFPolicy& dnf, const TrainingSet& trset, unsigned batch_size, const std::set<unsigned>& alive, std::vector<unsigned>& flaws) {
+//    int select_action(unsigned s, const DNFPolicy& dnf, const TrainingSet& trset) {
+//        for (unsigned sprime:trset.transitions().nondet_successors(s)) {
+//            if (evaluate_dnf(s, sprime, dnf, trset.matrix())) {
+//                return (int) sprime;
+//            }
+//        }
+//        return -1;
+//    }
+
+    void detect_cycles(const FixedActionPolicy& dnf, const TrainingSet& trset, unsigned batch_size, const std::set<unsigned>& alive, std::vector<unsigned>& flaws) {
         const unsigned N = trset.transitions().num_states();
 
         using graph_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS>;
@@ -54,7 +72,7 @@ namespace sltp::cnf {
         // Build graph
         for (unsigned s:alive) {
             for (unsigned sp:trset.transitions().nondet_successors(s)) {
-                if (trset.transitions().is_alive(sp) && evaluate_dnf(s, sp, dnf, trset.matrix())) {
+                if (trset.transitions().is_alive(sp) && evaluate_dnf(s, dnf, trset.matrix())) {
                     boost::add_edge(s, sp, graph);
                 }
             }
@@ -88,7 +106,7 @@ namespace sltp::cnf {
     }
 
 
-    std::vector<unsigned> RandomSampler::sample_flaws(const DNFPolicy& dnf, unsigned batch_size) {
+    std::vector<unsigned> RandomSampler::sample_flaws(const FixedActionPolicy& dnf, unsigned batch_size) {
         // We randomize the order in which we check alive states
         return sample_flaws(dnf, batch_size, randomize_all_alive_states());
     }
@@ -99,7 +117,7 @@ namespace sltp::cnf {
     }
 
 
-    std::vector<unsigned> StateSampler::sample_flaws(const DNFPolicy& dnf, unsigned batch_size, const std::set<unsigned>& states_to_check) {
+    std::vector<unsigned> StateSampler::sample_flaws(const FixedActionPolicy& dnf, unsigned batch_size, const std::set<unsigned>& states_to_check) {
         std::vector<unsigned> flaws;
 
         // We want to check the following over the  entire training set:
@@ -108,19 +126,20 @@ namespace sltp::cnf {
         //   (3) There is no cycle among Good transitions
         for (unsigned s:states_to_check) {
             // Check (1)
-            if (select_action(s, dnf, trset) == -1) {
+            if (evaluate_dnf(s, dnf, trset.matrix()) == -1) {
                 //std::cout << "No transition defined as good for state " << s << ", adding it to flaw list" << std::endl;
                 flaws.push_back(s);
             }
 
+            // TODO Reactive
             // Check (2)
-            for (unsigned sprime:trset.transitions().nondet_successors(s)) {
-                bool is_good = evaluate_dnf(s, sprime, dnf, trset.matrix());
-                if (is_good && trset.transitions().is_unsolvable(sprime)) {
-                    flaws.push_back(s);
-                    break;
-                }
-            }
+//            for (unsigned sprime:trset.transitions().nondet_successors(s)) {
+//                bool is_good = evaluate_dnf(s, dnf, trset.matrix());
+//                if (is_good && trset.transitions().is_unsolvable(sprime)) {
+//                    flaws.push_back(s);
+//                    break;
+//                }
+//            }
 
             if (flaws.size()>=batch_size) break;
         }
@@ -130,9 +149,9 @@ namespace sltp::cnf {
         }
 
         // Check (3)
-        if (flaws.size()<batch_size) {
-            detect_cycles(dnf, trset, batch_size, states_to_check, flaws);
-        }
+//        if (flaws.size()<batch_size) {
+//            detect_cycles(dnf, trset, batch_size, states_to_check, flaws);
+//        }
 
         // Remove any excedent of flaws to conform to the required amount
         flaws.resize(std::min(flaws.size(), (std::size_t) batch_size));
@@ -164,13 +183,13 @@ namespace sltp::cnf {
     }
 
 
-    std::vector<unsigned> GoalDistanceSampler::sample_flaws(const DNFPolicy& dnf, unsigned batch_size) {
+    std::vector<unsigned> GoalDistanceSampler::sample_flaws(const FixedActionPolicy& dnf, unsigned batch_size) {
         // We look for samples in order of increasing distance to goal.
         return sample_flaws(dnf, batch_size, randomize_and_sort_alive_states());
     }
 
 
-    std::string print_term(const sltp::FeatureMatrix& matrix, const DNFPolicy::term_t& term, bool txt) {
+    std::string print_term(const sltp::FeatureMatrix& matrix, const FixedActionPolicy::term_t& term, bool txt) {
         std::string res;
         unsigned i = 0;
         for (const auto& [f, fval]:term) {
@@ -186,7 +205,7 @@ namespace sltp::cnf {
         return res;
     }
 
-    void print_classifier(const sltp::FeatureMatrix& matrix, const DNFPolicy& dnf, const std::string& filename) {
+    void print_classifier(const sltp::FeatureMatrix& matrix, const FixedActionPolicy& dnf, const std::string& filename) {
         auto os = utils::get_ofstream(filename + ".dnf");
         auto ostxt = utils::get_ofstream(filename + ".txt");
 
@@ -195,9 +214,9 @@ namespace sltp::cnf {
         }
         os << std::endl;
 
-        for (const auto& term:dnf.terms) {
-            os << print_term(matrix, term, false) << std::endl;
-            ostxt << print_term(matrix, term, true) << std::endl;
+        for (const auto& [term, a]:dnf.terms) {
+            os << print_term(matrix, term, false) << ": " << "do(" << a << ")" << std::endl;
+            ostxt << print_term(matrix, term, true) << ": " << "do(" << a << ")" <<  std::endl;
         }
 
         os.close();

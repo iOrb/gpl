@@ -81,21 +81,9 @@ namespace sltp::cnf {
             return necessarily_bad_transitions_.find(tx) != necessarily_bad_transitions_.end();
         }
 
-        // Pairs (s, a)
-
-//        inline unsigned get_transition_id(state_id_t s, state_id_t t) const { return transition_ids_.at(state_pair(s, t)); }
-//
-//        inline unsigned get_representative_id(unsigned tx) const { return from_transition_to_eq_class_.at(tx); }
-//
-//        inline unsigned get_class_representative(state_id_t s, state_id_t t) const {
-//            return get_representative_id(get_transition_id(s, t));
-//        }
-//
-//        inline const state_pair& get_state_pair(unsigned tx) const { return transition_ids_inv_.at(tx); }
-//
-//        inline bool is_necessarily_bad(unsigned tx) const {
-//            return necessarily_bad_transitions_.find(tx) != necessarily_bad_transitions_.end();
-//        }
+        inline bool is_necessarily_bad_sa(sa_pair sa) const {
+            return necessarily_bad_sa_.find(sa) != necessarily_bad_sa_.end();
+        }
 
         inline int get_vstar(unsigned s) const {
             return sample_.transitions_.vstar(s);
@@ -121,10 +109,12 @@ namespace sltp::cnf {
         bool are_transitions_d1d2_distinguishable(
                 state_id_t s, state_id_t sprime, state_id_t t, state_id_t tprime, const std::vector<unsigned>& features) const;
 
-        DNFPolicy generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const;
+        FixedActionPolicy generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const;
+        FixedActionPolicy generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& bads, const std::vector<unsigned>& selecteds) const;
 
-        DNFPolicy generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& bads, const std::vector<unsigned>& selecteds) const;
-        DNFPolicy generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& bads, const std::vector<unsigned>& selecteds) const;
+//        DNFPolicy generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const;
+//        DNFPolicy generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& bads, const std::vector<unsigned>& selecteds) const;
+//        DNFPolicy generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& bads, const std::vector<unsigned>& selecteds) const;
 
 
     protected:
@@ -150,6 +140,7 @@ namespace sltp::cnf {
         std::vector<unsigned> from_transition_to_eq_class_;
 
         std::unordered_set<unsigned> necessarily_bad_transitions_;
+        std::set<sa_pair> necessarily_bad_sa_;
 
         //! The only feature IDs that we will consider for the encoding
         std::vector<unsigned> feature_ids;

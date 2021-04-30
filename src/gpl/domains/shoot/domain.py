@@ -12,7 +12,7 @@ class Domain(IDomain):
     def __init__(self, domain_name):
         super().__init__(domain_name)
         self.action_space = ACTION_SPACE
-        self.type = 'adv'
+        self.type = 'fond'
 
     # Generate Language
     def generate_language(self):

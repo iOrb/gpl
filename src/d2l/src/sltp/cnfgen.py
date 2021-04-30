@@ -3,7 +3,7 @@ import os
 
 from tarski.dl import FeatureValueChange
 
-from sltp.separation import TransitionClassificationPolicy, DNFAtom
+from sltp.separation import TransitionClassificationPolicy, StateActionClassificationPolicy, DNFAtom
 
 from .util.tools import load_selected_features, IdentifiedFeature
 from .util.command import execute, read_file
@@ -50,11 +50,13 @@ def run(config, data, rng):
         return ExitCode.Success, dict(d2l_policy=None) # keep trying
 
     # Parse the DNF transition-classifier and transform it into a policy
-    policy = parse_dnf_policy(config)
+    # policy = parse_dnf_policy(config)
+    policy = parse_dnfa_policy(config)
 
-    policy.minimize()
+    # policy.minimize()
     print("Final Policy:")
-    policy.print_aaai20()
+    # policy.print_aaai20()
+    policy.print()
 
     return exitcode, dict(d2l_policy=policy)
 
@@ -85,4 +87,35 @@ def parse_dnf_policy(config):
             fid = int(f[2:-1])
             clause.append(DNFAtom(fmap[fid], fval_map[val]))
         policy.add_clause(frozenset(clause))
+    return policy
+
+
+def parse_dnfa_policy(config):
+    fval_map = {
+        "=0": False,
+        ">0": True,
+        "INC": FeatureValueChange.INC,
+        "DEC": FeatureValueChange.DEC,
+        "NIL": FeatureValueChange.NIL,
+    }
+    language = config.language_creator(config)
+    policy = None
+    fmap = {}
+    for i, line in enumerate(read_file(config.experiment_dir + "/classifier.dnf"), 0):
+        if i == 0:  # First line contains feature IDs only
+            fids = list(map(int, line.split()))
+            fs = load_selected_features(language, fids, config.serialized_feature_filename)
+            fmap = {i: IdentifiedFeature(f, i, config.feature_namer(str(f))) for i, f in zip(fids, fs)}
+            policy = StateActionClassificationPolicy(list(fmap.values()))
+            continue
+
+        clause = []
+        line.split()
+        lits, do_a = line.split(':')
+        a = int(do_a[4:-1])
+        for lit in lits.split(', '):
+            f, val = lit.split(' ')
+            fid = int(f[2:-1])
+            clause.append(DNFAtom(fmap[fid], fval_map[val]))
+        policy.add_clause(frozenset(clause), a)
     return policy

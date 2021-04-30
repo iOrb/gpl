@@ -292,3 +292,100 @@ class TransitionClassificationPolicy:
             policy.add_clause(frozenset(atoms))
 
         return policy
+
+
+class StateActionClassificationPolicy:
+    def __init__(self, features):
+        self.features = features
+        self.dnfa = set()
+
+    def add_clause(self, clause, a):
+        self.dnfa.add((clause, a))
+
+    def transition_is_good(self, m0, a0):
+        # If the given transition satisfies any of the clauses in the SA, we consider it "good"
+        return any(self.does_transition_satisfy_clause(clause, a, m0, a0) for clause, a in self.dnfa)
+
+    @staticmethod
+    def does_transition_satisfy_clause(clause, a, m0, a0, explain=False):
+        if a != a0:
+            return False
+        for atom in clause:
+            feat = atom.feature
+
+            if atom.is_state_feature():
+                state_val = feat.denotation(m0) != 0
+                if state_val != atom.value:
+                    return False
+        return True
+
+    def print(self):
+        self.print_header()
+        print("Policy:")
+        for i, (clause, a) in enumerate(self.dnfa, start=1):
+            print(f"  {i}. " + self.print_clause(clause) + f" : do( {a} )")
+
+    # def print_aaai20(self):
+    #     self.print_header()
+    #     # Group by state features
+    #     grouped = defaultdict(list)
+    #     for clause in self.dnf:
+    #         key = frozenset(atom for atom in clause if atom.value in {True, False})
+    #         value = frozenset(atom for atom in clause if atom.value not in {True, False})
+    #         grouped[key].append(value)
+    #
+    #     distinct_values = defaultdict(set)
+    #     for key in grouped.keys():
+    #         for atom in key:
+    #             distinct_values[atom.feature].add(atom.value)
+    #
+    #     invariant_value_features = {f: next(iter(vals)) for f, vals in distinct_values.items() if len(vals) == 1}
+    #     print("Invariants: " + ','.join(f"{f}{'>0' if v is True else '=0'}" for f, v in invariant_value_features.items()))
+    #     print("Policy:")
+    #     for i, (statef, transitionf) in enumerate(grouped.items(), start=1):
+    #         state_conds = ' AND '.join(sorted(map(str, statef)))
+    #         feature_conds = ', '.join(self.print_effect_list(e) for e in transitionf)
+    #         print(f"  {i}. {state_conds} -> {feature_conds}")
+
+    def print_header(self):
+        max_k = max(f.feature.complexity() for f in self.features)
+        total_k = sum(f.feature.complexity() for f in self.features)
+        print(f"Features (#: {len(self.features)}; total k: {total_k}; max k = {max_k}):")
+        for f in self.features:
+            print(f"  {f} [k={f.feature.complexity()}]")
+
+    @staticmethod
+    def print_clause(clause):
+        return ' AND '.join(sorted(map(str, clause)))
+
+    @staticmethod
+    def parse(rules, language, feature_namer):
+        """ Create a classification policy from a set of strings representing the clauses """
+        policy = TransitionClassificationPolicy(features=[])
+
+        allfeatures = dict()
+
+        for clause in rules:
+            atoms = []
+            for feature_str, value in clause:
+                f = allfeatures.get(feature_str)
+                if f is None:
+                    f = unserialize_feature(language, feature_str)
+                    allfeatures[feature_str] = f = IdentifiedFeature(f, len(allfeatures), feature_namer(str(f)))
+
+                # Convert the value to an object
+                value = {
+                    "=0": False,
+                    ">0": True,
+                    "INC": FeatureValueChange.INC,
+                    "NIL": FeatureValueChange.NIL,
+                    "DEC": FeatureValueChange.DEC,
+                    "ADD": FeatureValueChange.ADD,
+                    "DEL": FeatureValueChange.DEL,
+                }[value]
+
+                atoms.append(DNFAtom(f, value))
+
+            policy.add_clause(frozenset(atoms))
+
+        return policy

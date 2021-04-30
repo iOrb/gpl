@@ -7,7 +7,7 @@ from pathlib import Path
 from sltp.features import InstanceInformation
 from sltp.models import FeatureModel, DLModelFactory
 from sltp.returncodes import ExitCode
-from sltp.separation import generate_user_provided_policy, TransitionClassificationPolicy
+from sltp.separation import generate_user_provided_policy, TransitionClassificationPolicy, StateActionClassificationPolicy
 from sltp.tester import PolicySearchException
 from sltp.util.misc import compute_universe_from_pddl_model, state_as_atoms, types_as_atoms
 from tarski.dl import compute_dl_vocabulary
@@ -144,14 +144,16 @@ def run_test(config, search_policy, task, instance_name, rng):
 
 
 def create_action_selection_function_from_transition_policy(config, model_factory, static_atoms, policy):
-    assert isinstance(policy, TransitionClassificationPolicy)
+    assert isinstance(policy, StateActionClassificationPolicy)
+    # assert isinstance(policy, TransitionClassificationPolicy)
 
     def _policy(task, state, successors):
         m0 = generate_model_from_state(task, model_factory, state, static_atoms)
         good_succs = list()
         for op, sp in successors:
-            m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
-            if policy.transition_is_good(m0, m1):
+            # m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
+            if policy.transition_is_good(m0, op):
+            # if policy.transition_is_good(m0, m1):
                 # return ExitCode.Success, op, sp
                 good_succs.append((op, sp))
         if not good_succs:
@@ -183,7 +185,8 @@ def run(config, data, rng):
         logging.info("No test instances were specified")
         return ExitCode.NotTestInstancesSpecified, dict()
 
-    if not isinstance(data.d2l_policy, TransitionClassificationPolicy):
+    # if not isinstance(data.d2l_policy, TransitionClassificationPolicy):
+    if not isinstance(data.d2l_policy, StateActionClassificationPolicy):
         return ExitCode.NotPolicySpecified, dict()
 
     def get_policy(model_factory, static_atoms, data):

@@ -52,6 +52,25 @@ public:
 
 };
 
+class FixedActionPolicy {
+public:
+    using literal_t = std::pair<uint32_t, FeatureValue>;
+    using term_t = std::vector<literal_t>;
+
+    static FeatureValue compute_state_value(unsigned x) {
+        return x>0 ? FeatureValue::Gt0 : FeatureValue::Eq0;
+    }
+
+    FixedActionPolicy() = default;
+    explicit FixedActionPolicy(std::vector<unsigned> features_) :
+            features(std::move(features_)), terms()
+    {}
+
+    std::vector<unsigned> features;
+    std::unordered_set<std::pair<term_t, unsigned>, boost::hash<std::pair<term_t, unsigned>>> terms;
+};
+
+
 namespace sltp::cnf {
 
     class StateSpaceSample {
@@ -131,7 +150,7 @@ namespace sltp::cnf {
         }
     };
 
-    void print_classifier(const sltp::FeatureMatrix& matrix, const DNFPolicy& dnf, const std::string& filename);
+    void print_classifier(const sltp::FeatureMatrix& matrix, const FixedActionPolicy& dnf, const std::string& filename);
 
     class StateSampler {
     protected:
@@ -147,12 +166,12 @@ namespace sltp::cnf {
 
         virtual StateSpaceSample* sample_initial_states(unsigned n) = 0;
 
-        virtual std::vector<unsigned> sample_flaws(const DNFPolicy& dnf, unsigned batch_size) = 0;
+        virtual std::vector<unsigned> sample_flaws(const FixedActionPolicy& dnf, unsigned batch_size) = 0;
 
 
     protected:
         std::set<unsigned> randomize_all_alive_states(unsigned n = std::numeric_limits<unsigned>::max());
-        std::vector<unsigned> sample_flaws(const DNFPolicy& dnf, unsigned batch_size, const std::set<unsigned>& states_to_check);
+        std::vector<unsigned> sample_flaws(const FixedActionPolicy& dnf, unsigned batch_size, const std::set<unsigned>& states_to_check);
 
     };
 
@@ -163,7 +182,7 @@ namespace sltp::cnf {
         {}
 
         StateSpaceSample* sample_initial_states(unsigned n) override;
-        std::vector<unsigned> sample_flaws(const DNFPolicy& dnf, unsigned batch_size) override;
+        std::vector<unsigned> sample_flaws(const FixedActionPolicy& dnf, unsigned batch_size) override;
 
     protected:
         using StateSampler::sample_flaws;
@@ -176,7 +195,7 @@ namespace sltp::cnf {
         {}
 
         StateSpaceSample* sample_initial_states(unsigned n) override;
-        std::vector<unsigned> sample_flaws(const DNFPolicy& dnf, unsigned batch_size) override;
+        std::vector<unsigned> sample_flaws(const FixedActionPolicy& dnf, unsigned batch_size) override;
 
         std::set<unsigned> randomize_and_sort_alive_states(unsigned n = std::numeric_limits<unsigned>::max());
 
