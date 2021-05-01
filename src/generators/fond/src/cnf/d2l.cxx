@@ -261,9 +261,9 @@ namespace sltp::cnf {
 
             for (const auto& a:sample_.transitions_.s_as(s)) {
                 // TODO: If (s,a) leads to unsolvable state, skip it
-                 if (is_necessarily_bad_sa({s, a})) continue;
+//                if (is_necessarily_bad_sa({s, a})) continue;
                 clause.push_back(Wr::lit(variables.goods_s_a.at({s, a}), true));
-//                wr.cl({Wr::lit(variables.goods_s_a.at({s, a}), true)}, 1);
+//               wr.cl({Wr::lit(variables.goods_s_a.at({s, a}), true)}, 1);
             }
 
             wr.cl(clause);
@@ -272,102 +272,101 @@ namespace sltp::cnf {
         // C2. Good(s, a) implies V(s') < V(s), for s' in res(s, a)  \equiv
         // Good(s, a) and V(s)=k implies OR_{0<=k'<k}  V(s')=k'      \equiv
         // -Good(s, a) or -V(s, k) or OR_{0<=k'<k} V(s', k')
-        for (unsigned s:sample_.transitions_.all_alive()) {
-            for (unsigned a:sample_.transitions_.s_as(s)) {
-                for (unsigned sp:sample_.transitions_.nondet_successors({s, a})) {
-                    if (!sample_.is_solvable(sp)) continue;
-//                   if (!sample_.in_sample(spp)) continue;
-
-                    cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
-
-                    // TODO Check if (s, a) can lead to unsolvable state. If it can, then post -Good(s, a)
-                    if (is_necessarily_bad_sa({s, a})) {
-                        wr.cl({Wr::lit(good_s_a_var, false)});
-                        continue;
-                    }
-
-                    if (options.decreasing_transitions_must_be_good) {
-                        // TODO: create a class "necessarily good (s,a) if S' just contain goal states (?)"
-                        // TODO: create a class "necessarily good (s,a) if S' just contain solvable states (?)"
-                        // Border condition: if s' is a goal, then (s, s') must be good
-                        if (sample_.is_goal(sp)) {
-                            wr.cl({Wr::lit(good_s_a_var, true)}, 1);
-                            ++n_descending_clauses;
-                        }
-                    }
-
-                    if (!sample_.is_alive(sp)) continue;
-
-                    for (unsigned k=1; k <= max_d; ++k) {
-
-                        // (2) Good(s, a) and V(s", d") -> V(s)=d > d"
-                        cnfclause_t clause{Wr::lit(good_s_a_var, false),
-                                           Wr::lit(vs.at({s, k}), false)};
-
-                        if (options.allow_cycles) {
-                            // Good(s, a) and V(s', d') -> V(s) = d'
-                            clause.push_back(Wr::lit(vs.at({sp, k}), true));
-
-                            // Soft clause Good(s, a) and V(s', d') -> V(s) = d'
-                            wr.cl({Wr::lit(good_s_a_var , false),
-                                   Wr::lit(vs.at({s, k}), false),
-                                   Wr::lit(vs.at({sp, k}), true)}, 1);
-                            ++n_descending_clauses;
-                        }
-
-                        for (unsigned kp = 1; kp < k; ++kp) {
-                            clause.push_back(Wr::lit(vs.at({sp, kp}), true));
-
-                            if (options.decreasing_transitions_must_be_good) {
-                                // V(s') < V(s) -> Good(s, a)
-                                wr.cl({Wr::lit(vs.at({s, k}), false),
-                                       Wr::lit(vs.at({sp, kp}), false),
-                                       Wr::lit(good_s_a_var, true)}, 1);
-                                ++n_descending_clauses;
-                            }
-
-                        }
-                        wr.cl(clause);
-                        ++n_descending_clauses;
-                    }
-
-                    if (options.decreasing_transitions_must_be_good) {
-                        // Border condition: V(s', D) implies -Good(s, a)
-                        wr.cl({Wr::lit(vs.at({sp, max_d}), false),
-                               Wr::lit(good_s_a_var, false)} , 1);
-                        ++n_descending_clauses;
-                    }
-                }
-            }
-        }
-
-
 //        for (unsigned s:sample_.transitions_.all_alive()) {
 //            for (unsigned a:sample_.transitions_.s_as(s)) {
 //                for (unsigned sp:sample_.transitions_.nondet_successors({s, a})) {
 //                    if (!sample_.is_solvable(sp)) continue;
 ////                   if (!sample_.in_sample(spp)) continue;
-//                    if (!sample_.is_alive(sp)) continue;
 //
-//                    // TODO Check if (s, a) can lead to unsolvable state. If it can, then post -Good(s, a)
 //                    cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
 //
-//                    for (unsigned k=1; k < max_d; ++k) {
+//                    // TODO Check if (s, a) can lead to unsolvable state. If it can, then post -Good(s, a)
+//                    if (is_necessarily_bad_sa({s, a})) {
+//                        wr.cl({Wr::lit(good_s_a_var, false)});
+//                        continue;
+//                    }
 //
-//                        // Minimize Good(s, a) and V(s", d") -> V(s) < d"
-//                        cnfclause_t clause{Wr::lit(good_s_a_var, false),
-//                                           Wr::lit(vs.at({sp, k}), false)};
-//
-//                        for (unsigned kp = k; kp <= max_d; ++kp) {
-//                            clause.push_back(Wr::lit(vs.at({s, kp}),true));
+//                    if (options.decreasing_transitions_must_be_good) {
+//                        // TODO: create a class "necessarily good (s,a) if S' just contain goal states (?)"
+//                        // TODO: create a class "necessarily good (s,a) if S' just contain solvable states (?)"
+//                        // Border condition: if s' is a goal, then (s, s') must be good
+//                        if (sample_.is_goal(sp)) {
+//                            wr.cl({Wr::lit(good_s_a_var, true)}, 1);
+//                            ++n_descending_clauses;
 //                        }
-//                        wr.cl(clause, 1);
+//                    }
+//
+//                    if (!sample_.is_alive(sp)) continue;
+//
+//                    for (unsigned k=1; k <= max_d; ++k) {
+//
+//                        // (2) Good(s, a) and V(s", d") -> V(s)=d > d"
+//                        cnfclause_t clause{Wr::lit(good_s_a_var, false),
+//                                           Wr::lit(vs.at({s, k}), false)};
+//
+//                        if (options.allow_cycles) {
+//                            // Good(s, a) and V(s', d') -> V(s) = d'
+//                            clause.push_back(Wr::lit(vs.at({sp, k}), true));
+//
+//                            // Soft clause Good(s, a) and V(s', d') -> V(s) = d'
+//                            wr.cl({Wr::lit(good_s_a_var , false),
+//                                   Wr::lit(vs.at({s, k}), false),
+//                                   Wr::lit(vs.at({sp, k}), true)}, 1);
+//                            ++n_descending_clauses;
+//                        }
+//
+//                        for (unsigned kp = 1; kp < k; ++kp) {
+//                            clause.push_back(Wr::lit(vs.at({sp, kp}), true));
+//
+//                            if (options.decreasing_transitions_must_be_good) {
+//                                // V(s') < V(s) -> Good(s, a)
+//                                wr.cl({Wr::lit(vs.at({s, k}), false),
+//                                       Wr::lit(vs.at({sp, kp}), false),
+//                                       Wr::lit(good_s_a_var, true)}, 1);
+//                                ++n_descending_clauses;
+//                            }
+//
+//                        }
+//                        wr.cl(clause);
 //                        ++n_descending_clauses;
 //                    }
 //
+//                    if (options.decreasing_transitions_must_be_good) {
+//                        // Border condition: V(s', D) implies -Good(s, a)
+//                        wr.cl({Wr::lit(vs.at({sp, max_d}), false),
+//                               Wr::lit(good_s_a_var, false)} , 1);
+//                        ++n_descending_clauses;
+//                    }
 //                }
 //            }
 //        }
+
+        for (unsigned s:sample_.transitions_.all_alive()) {
+            for (unsigned a:sample_.transitions_.s_as(s)) {
+                for (unsigned sp:sample_.transitions_.nondet_successors({s, a})) {
+                    if (!sample_.is_solvable(sp)) continue;
+//                   if (!sample_.in_sample(spp)) continue;
+                    if (!sample_.is_alive(sp)) continue;
+
+                    // TODO Check if (s, a) can lead to unsolvable state. If it can, then post -Good(s, a)
+                    cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
+
+                    for (unsigned k=1; k < max_d; ++k) {
+
+                        // Minimize Good(s, a) and V(s", d") -> V(s) < d"
+                        cnfclause_t clause{Wr::lit(good_s_a_var, false),
+                                           Wr::lit(vs.at({s, k}), false)};
+
+                        for (unsigned kp = k; kp <= max_d; ++kp) {
+                            clause.push_back(Wr::lit(vs.at({sp, kp}),true));
+                        }
+                        wr.cl(clause, 1);
+                        ++n_descending_clauses;
+                    }
+
+                }
+            }
+        }
 
         // Clauses (6), (7):
 //        auto transitions_to_distinguish = distinguish_all_transitions();
@@ -399,7 +398,6 @@ namespace sltp::cnf {
         if (options.verbosity>0) {
             std::cout << "Posting distinguishability constraints" << std::endl;
         }
-        unsigned prob_bound = 0;
         for (unsigned s:sample_.transitions_.all_alive()) {
             // TODO: Take unsolvability into account
             for (auto a:sample_.transitions_.action_ids()) {
@@ -408,7 +406,6 @@ namespace sltp::cnf {
                     // The action is not applicable in s, hence cannot be good.
                     continue;
                 }
-                if (rand() % 100 < prob_bound) continue;
 
                 cnfvar_t good_s_a_var = it->second;
                 for (unsigned sp:sample_.transitions_.all_alive()) {
@@ -416,10 +413,7 @@ namespace sltp::cnf {
                     auto it = variables.goods_s_a.find({sp, a});
                     if (it != variables.goods_s_a.end()) {
                         clause.push_back(Wr::lit(it->second, true));
-                    } else {
-                        continue;
                     }
-                    if (rand() % 100 < prob_bound) continue;
                     for (feature_t f:compute_d1_distinguishing_features(sample_, s, sp)) {
                         clause.push_back(Wr::lit(variables.selecteds.at(f), true));
                     }
@@ -490,7 +484,6 @@ namespace sltp::cnf {
         return {CNFGenerationOutput::Success, variables};
     }
 
-
 //    std::vector<transition_pair> D2LEncoding::distinguish_all_transitions() const {
 //        std::vector<transition_pair> transitions_to_distinguish;
 //        transitions_to_distinguish.reserve(class_representatives_.size() * class_representatives_.size());
@@ -540,12 +533,17 @@ namespace sltp::cnf {
         unsigned n_good_s_a = 0;
         for (auto const& [sa_pair, varid]:variables.goods_s_a) {
             if (varid>0 && solution.assignment.at(varid)) {
-                if (options.verbosity) {std::cout << "Good(" << sa_pair.first << ", " << sa_pair.second << ")" << std::endl;}
+                if (options.verbosity) {
+                    if (n_good_s_a % 10 == 0) {
+                        std::cout << std::endl;
+                    }
+                    std::cout << "Good(" << sa_pair.first << ", " << sa_pair.second << ") ";
+                }
                 goods.push_back(sa_pair);
                 ++n_good_s_a;
             }
         }
-        if (options.verbosity) {std::cout << "Num Good(s, a) selected: " << n_good_s_a << std::endl;}
+        if (options.verbosity) {std::cout << std::endl << "Num Good(s, a) selected: " << n_good_s_a << std::endl;}
         for (auto const& [s, varid]:variables.bad_s) {
             if (varid>0 && solution.assignment.at(varid)) {
                 bads.push_back(s);

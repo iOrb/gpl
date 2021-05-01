@@ -3,7 +3,7 @@ import copy
 
 from ..utils import identify_margin
 from .objects import OBJECTS
-from ..config import use_player_as_feature
+from ..config import use_player_as_feature, use_margin_as_feature
 
 # General State to atoms
 def state_to_atoms(domain_name, state):
@@ -24,7 +24,10 @@ def state_to_atoms(domain_name, state):
                     continue
             else:
                 # Add the None value for cells outside the world
-                a = f'{identify_margin(r, c, nrows, ncols)}'
+                if use_margin_as_feature:
+                    a = f'{identify_margin(r, c, nrows, ncols)}'
+                else:
+                    a = f'{OBJECTS.none}'
 
             atoms.append((a, f'c{r}-{c}'))
 

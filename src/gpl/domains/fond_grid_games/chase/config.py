@@ -1,3 +1,9 @@
-use_player_as_feature=True
-to_scann=['row', 'col']
+use_player_as_feature=False
+use_margin_as_feature=False
+use_diagonal_directions=False
+use_relaxed_grid_directions=True
+sorts_to_use = {'col', 'row', 'cell'}
+cell_directions = {'row', 'col', 'd1', 'd2'}
+to_scann=[]
+# to_scann=['row', 'col']
 # TO_SCANN = ['row', 'col', 'd1', 'd2']

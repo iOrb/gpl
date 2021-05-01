@@ -34,10 +34,9 @@ def experiments():
     )
 
     exps = dict()
-
     exps["1"] = update_dict(
         base,
-        instances=four_four_instances([0, 3, 4, 5]),
+        instances=four_four_instances('a'),
         # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
         #           break_instances('a') +
         #           all_instances([15, 16, 17]),
@@ -50,8 +49,13 @@ def experiments():
         max_concept_size=5,
         distance_feature_max_complexity=5,
         concept_generation_timeout=15000,
+        cond_feature_max_complexity=0,
+        comparison_features=True,
+        generate_goal_concepts=True,
+        print_denotations=True,
+        print_hstar_in_feature_matrix=True,
 
-        allow_bad_states=True,
+        allow_bad_states=False,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
 
@@ -67,6 +71,7 @@ def experiments():
         # train_instances_to_expand=[],
         train_instances_to_expand=list(range(1000)),
     )
+
     return exps
 
 

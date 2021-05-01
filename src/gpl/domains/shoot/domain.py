@@ -6,7 +6,7 @@ from .utils import identify_margin
 from .utils import unserialize_layout
 import copy
 from .env.shoot import ACTION_SPACE
-from .config import use_player_as_feature
+from .config import use_player_as_feature, use_margin_as_feature, use_diagonal_directions
 
 class Domain(IDomain):
     def __init__(self, domain_name):
@@ -30,8 +30,8 @@ class Domain(IDomain):
         return Task(self._domain_name, instance_name, config)
 
 
+# GRID_DIRECTIONS = ['up', 'right', 'down', 'left']
 GRID_DIRECTIONS = ['up', 'rightup', 'right', 'rightdown', 'down', 'leftdown', 'left', 'leftup']
-# TO_SCANN = ['row', 'col', 'd1', 'd2']
 TO_SCANN = ['row', 'col']
 
 def generate_lang(domain_name,):
@@ -57,8 +57,11 @@ def load_general_lang(lang, statics,):
     statics.update(set(GRID_DIRECTIONS))
 
     _ = [lang.predicate(f'cell-hv-{o}', 'cell') for o in OBJECTS.general]
-    _ = [lang.predicate(f'{o}', 'cell') for o in OBJECTS.margin.values()]
-    # _ = [statics.add(f'{o}') for o in OBJECTS.margin.values()]
+    if use_margin_as_feature:
+        _ = [lang.predicate(f'{o}', 'cell') for o in OBJECTS.margin.values()]
+        _ = [statics.add(f'{o}') for o in OBJECTS.margin.values()]
+    else:
+        lang.predicate(f'{OBJECTS.none}', 'cell')
 
     if use_player_as_feature:
         _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player.w, OBJECTS.player.b}]
@@ -112,7 +115,10 @@ def load_general_problem(problem, lang, rep):
                     continue
             else:
                 # Add the None value for cells outside the world
-                a = f'{identify_margin(r, c, nrows, ncols)}'
+                if use_margin_as_feature:
+                    a = f'{identify_margin(r, c, nrows, ncols)}'
+                else:
+                    a = f'{OBJECTS.none}'
 
             # Add the atoms such as hv-drawn(c12,) to the initial state of the problem
             problem.init.add(lang.get(a), cell)
@@ -120,6 +126,7 @@ def load_general_problem(problem, lang, rep):
     scan(lang, problem, brd)
 
     # Let's specify the entire pick_package topology:
+   # up, right, down, left = [lang.get(d) for d in GRID_DIRECTIONS]
     up, rightup, right, rightdown, down, leftdown, left, leftup = [lang.get(d) for d in GRID_DIRECTIONS]
 
     # The format we use is the following:  an atom at(rightup,x, y) denotes that cell y is to the right and up of

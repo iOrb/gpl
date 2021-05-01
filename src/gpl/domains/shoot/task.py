@@ -99,6 +99,7 @@ class Task(ITask):
             else:
                 succs_spp = []
                 ava_actions1 = available_actions(state1[0])
+                # ava_actions1 = [random.choice(available_actions(state1[0]))]
                 # deadend = False
                 for op1 in ava_actions1:
                     state2 = __transition_player(state1, op1)
