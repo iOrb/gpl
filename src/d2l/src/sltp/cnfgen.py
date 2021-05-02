@@ -34,6 +34,7 @@ def invoke_cpp_module(config, data, validate_features=None):
     args += ["--allow_bad_states"] if config.allow_bad_states else []
     args += ["--decreasing_transitions_must_be_good"] if config.decreasing_transitions_must_be_good else []
     args += ["--allow_cycles"] if config.allow_cycles else []
+    args += ["--use_action_ids"] if config.use_action_ids else []
     retcode = execute([cmd] + args)
 
     return {  # Let's map the numeric code returned by the c++ app into an ExitCode object

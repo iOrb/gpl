@@ -14,7 +14,6 @@ def state_to_atoms(domain_name, state):
     atoms = list()
 
     for r in range(-1, nrows + 1):
-
         for c in range(-1, ncols + 1):
 
             if nrows > r >= 0 and ncols > c >= 0:

@@ -14,10 +14,10 @@ namespace sltp::cnf {
 
 
 //! Factory method
-/*std::unique_ptr<D2LEncoding> D2LEncoding::create(const StateSpaceSample& sample, const Options& options) {
+std::unique_ptr<D2LEncoding> D2LEncoding::create(const StateSpaceSample& sample, const Options& options) {
     if (options.acyclicity == "sd2l") return std::make_unique<SD2LEncoding>(sample, options);
     return std::make_unique<D2LEncoding>(sample, options);
-}*/
+}
 
 // 2-comp for <=
 void SD2LEncoding::two_comparator(CNFWriter &wr, int &prefix_id, const cnfvar_t &x1, const cnfvar_t &x2, std::vector< cnfvar_t > &y ){
@@ -193,7 +193,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
 
     // Create a variable "Good(s, s')" for each transition (s, s') such that s' is solvable and (s, s') is not in BAD
     for( const auto s : sample_.alive_states()){
-        for( const auto s_prime : sample_.successors(s) ){
+        for( const auto s_prime : sample_.nondet_successors(s) ){
             auto tx = get_transition_id(s,s_prime);
             auto repr = get_representative_id(tx);
 
@@ -298,8 +298,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
             }
         }
 
-        if( min_vs > K ) continue; // Possible bug
-
         // Add clauses (4), (5)
         wr.cl(within_range_clause);
         cl_counter[6] += 1;
@@ -390,7 +388,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     // C2.a Force D1(s1, s2) to be true if exactly one of the two states is a goal state
     std::set< cnfclause_t > aux_c2;
     for ( const auto s : sample_.full_training_set().all_alive()) {
-        for( const auto t : sample_.full_training_set().all_goals()) {
+        for( const auto t : sample_.full_training_set().all_goal()) {
             const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
             if (d1feats.empty()) {
                 undist_goal_warning(s, t);
@@ -410,7 +408,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     }
     //aux_c2.clear();
     for( const auto t : sample_.alive_states()){
-        for( const auto t_prime : sample_.successors(t) ){
+        for( const auto t_prime : sample_.nondet_successors(t) ){
             if( sample_.is_solvable(t_prime) ) continue;
             const auto t_tx = get_transition_id(t,t_prime);
             const auto t_repr = get_representative_id( t_tx );
@@ -418,7 +416,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
             if( t_tx != t_repr ) continue;
 
             for( const auto s : sample_.alive_states()){
-                for (const auto s_prime : sample_.successors(s)) {
+                for (const auto s_prime : sample_.nondet_successors(s)) {
                     if( !sample_.is_solvable(s_prime) ) continue;
                     const auto s_tx = get_transition_id(s,s_prime);
                     const auto s_repr = get_representative_id( s_tx );
@@ -442,7 +440,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
             cl_counter[2]++;
         }
     }
-
     // C3.b -Good(s,s') iff s is alive and s' is a dead-end
     /*std::set< unsigned > c2_repr;
     for( const auto s : sample_.alive_states() ){
@@ -463,7 +460,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     if (options.verbosity>0) std::cout << "Encoding clause C3..." << std::endl;
     for( const auto s : sample_.alive_states()){
         std::set< unsigned > c3_repr;
-        for (unsigned s_prime:sample_.successors(s)) {
+        for (unsigned s_prime:sample_.nondet_successors(s)) {
             if( !sample_.is_solvable(s_prime) ) continue;
             auto tx = get_transition_id(s, s_prime);
             auto repr = get_representative_id( tx );
@@ -484,7 +481,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     if (options.verbosity>0) std::cout << "Encoding clause C4..." << std::endl;
     // C4.a Good(s,s') -> OR_f Select(f)
     for( const auto s : sample_.alive_states()){
-        for( const auto s_prime : sample_.successors( s ) ) {
+        for( const auto s_prime : sample_.nondet_successors( s ) ) {
             if( !sample_.is_solvable(s_prime) ) continue;
             auto tx = get_transition_id(s, s_prime);
             auto repr = get_representative_id(tx);
@@ -506,7 +503,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     // C4.b
     for( unsigned i = 0; i < m; i++ ){
         for( const auto s : sample_.alive_states()){
-            for (const auto s_prime : sample_.successors(s)) {
+            for (const auto s_prime : sample_.nondet_successors(s)) {
                 if( !sample_.is_solvable(s_prime) ) continue;
                 cnfclause_t incs_clause, decs_clause, unchanges_clause;
 
@@ -588,7 +585,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
             cl_counter[4] += 3;
 
             for( const auto s : sample_.alive_states()){
-                for( const auto s_prime : sample_.successors(s) ){
+                for( const auto s_prime : sample_.nondet_successors(s) ){
                     if( !sample_.is_solvable(s_prime) ) continue;
                     auto tx = get_transition_id(s, s_prime);
                     auto repr = get_representative_id(tx);
@@ -643,7 +640,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
 
     // C5.a Good(s,s') -> -Inc(m-1,s,s')
     for( const auto s : sample_.alive_states()){
-        for( const auto s_prime : sample_.successors(s) ){
+        for( const auto s_prime : sample_.nondet_successors(s) ){
             if( !sample_.is_solvable(s_prime) ) continue;
             auto tx = get_transition_id(s,s_prime);
             auto repr = get_representative_id(tx);
@@ -673,7 +670,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     if (options.verbosity>0) std::cout << "Encoding clause C6..." << std::endl;
 
     for (const auto s:sample_.alive_states()) {
-        for (const auto sprime:sample_.successors(s)) {
+        for (const auto sprime:sample_.nondet_successors(s)) {
             if (is_necessarily_bad(get_transition_id(s, sprime))) continue; // includes alive-to-dead transitions
             if (!sample_.is_alive(sprime)) continue;
             if (!sample_.in_sample(sprime)) continue;
@@ -764,7 +761,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
     for (const auto s : sample_.alive_states()) {
         const auto min_vs = get_vstar(s);
         if (min_vs <= options.optimal_steps ) {
-            for (unsigned s_prime:sample_.successors(s)) {
+            for (unsigned s_prime:sample_.nondet_successors(s)) {
                 auto tx = get_transition_id(s, s_prime);
                 auto repr = get_representative_id(tx);
 

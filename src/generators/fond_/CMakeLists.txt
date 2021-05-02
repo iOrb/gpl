@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
+SET(CMAKE_C_FLAGS_DEBUG "-D_DEBUG")
 
 # Uncomment for debug build. Alternatively, build with `cmake -DCMAKE_BUILD_TYPE=Debug .`
 #set(CMAKE_BUILD_TYPE Debug)
@@ -35,8 +38,6 @@ set(CNFGEN_SOURCE_FILES
     src/cnfgen.cpp
     src/cnf/d2l.cxx
     src/cnf/sd2l.cxx
-    src/cnf/dtl.cxx
-    src/cnf/encoding_factory.h
     src/cnf/types.cxx
     src/cnf/generator
     src/cnf/cnfwriter.h

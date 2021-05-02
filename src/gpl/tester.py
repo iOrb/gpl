@@ -131,7 +131,7 @@ def run_test(config, search_policy, task, instance_name, rng):
 
         if sp[1]['deadend']:
             raise PolicySearchException(ExitCode.DeadEndReached)
-        if sa_pairs[sa_pair_enc] > 1:
+        if sa_pairs[sa_pair_enc] > 0:
             raise PolicySearchException(ExitCode.AbstractPolicyNonTerminatingOnTestInstances)
 
         solution.append(encode_operator(s, op, task))

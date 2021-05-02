@@ -39,8 +39,7 @@ struct Options {
     bool generate_goal_concepts;
     bool print_denotations;
     bool print_hstar;
-    bool generate_or_concepts;
-    bool infty_feat_as_zero;
+    bool use_action_ids;
 };
 
 //! We use this to store a number of properties of the denotations of concepts
@@ -107,7 +106,7 @@ public:
     // apply one iteration of the concept generation grammar
     // new concepts are left on a new last layer in concepts_
     // new concepts are non-redundant if sample != nullptr
-    std::pair<int, int> advance_step(unsigned target_k, Cache &cache, const Sample &sample, const std::clock_t& start_time, const std::vector<std::vector<const Role*>>& roles_by_complexity);
+    int advance_step(Cache &cache, const Sample &sample, const std::clock_t& start_time);
 
     //! Retrieve the predicate at the basis of a given role (given the current grammar restrictions, there will be
     //! exactly one such predicate
@@ -175,7 +174,7 @@ public:
 
     std::ostream& report_dl_data(std::ostream &os) const;
 
-    void output_feature_matrix(std::ostream &os, const Cache &cache, const Sample &sample, const sltp::TransitionSample& transitions) const;
+    void output_feature_matrix(std::ostream &os, const Cache &cache, const Sample &sample, const sltp::TransitionSample& transitions, bool print_hstar) const;
 
     void log_all_concepts_and_features(const std::vector<const Concept*>& concepts,
                                        const Cache &cache, const Sample &sample,
@@ -186,8 +185,6 @@ public:
 
     static bool check_some_transition_pair_distinguished(
             const feature_sample_denotation_t &fsd, const Sample &sample, const TransitionSample &transitions) ;
-
-    int generate_goal_equality_concepts(const Sample& sample, Cache& cache);
 };
 
 } // namespaces

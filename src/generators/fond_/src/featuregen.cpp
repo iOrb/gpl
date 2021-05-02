@@ -41,8 +41,6 @@ sltp::dl::Options parse_options(int argc, const char **argv) {
             ("generate-goal-concepts", "Whether to automatically generate goal-distinguishing concepts and roles.")
             ("print-denotations", "Whether print the denotations of all generated features.")
             ("print_hstar", "Print hstar value as a feature matrix column.")
-            ("generate_or_concepts", "Generate DL disjunctions.")
-            ("infty_feat_as_zero", "Interpret infinity values of features as zero.")
     ;
 
     po::variables_map vm;
@@ -72,14 +70,13 @@ sltp::dl::Options parse_options(int argc, const char **argv) {
     options.generate_goal_concepts = vm.count("generate-goal-concepts") > 0;
     options.print_denotations = vm.count("print-denotations") > 0;
     options.print_hstar = vm.count("print_hstar") > 0;
-    options.generate_or_concepts = vm.count("generate_or_concepts") > 0;
-    options.infty_feat_as_zero = vm.count("infty_feat_as_zero") > 0;
+    options.use_action_ids = vm.count("use_action_ids") > 0;
     return options;
 }
 
 int main(int argc, const char **argv) {
     auto start_time = std::clock();
-    const sltp::dl::Options options = parse_options(argc, argv);
+    sltp::dl::Options options = parse_options(argc, argv);
 
     const sltp::Sample sample = read_input_sample(options.workspace);
     const std::vector<std::string> nominals = read_nominals(options.workspace);
@@ -90,12 +87,10 @@ int main(int argc, const char **argv) {
     sltp::dl::Cache cache;
     factory.generate_basis(sample);
 
-    std::vector<const sltp::dl::Concept*> goal_concepts;
-    /*
+    std::vector<const sltp::dl::Concept*> goal_concepts{};
     if (options.generate_goal_concepts) {
         goal_concepts = factory.generate_goal_concepts_and_roles(cache, sample);
     }
-    */
 
     factory.generate_roles(cache, sample);
 
@@ -108,7 +103,7 @@ int main(int argc, const char **argv) {
     string output(options.workspace + "/feature-matrix.io");
     ofstream output_file(output);
     if( output_file.fail() ) throw runtime_error("Could not open filename '" + output + "'");
-    factory.output_feature_matrix(output_file, cache, sample, transitions);
+    factory.output_feature_matrix(output_file, cache, sample, transitions, options.print_hstar);
 
     return 0;
 }
