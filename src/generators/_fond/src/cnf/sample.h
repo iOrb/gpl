@@ -129,7 +129,7 @@ public:
         return transitions_.successors(s);
     }
 
-    const std::set<unsigned>& successors(sa_pair sa) const {
+    const std::set<unsigned>& successors(std::pair<unsigned,unsigned> sa) const {
         return transitions_.successors(sa);
     }
 

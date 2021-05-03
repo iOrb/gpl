@@ -51,13 +51,13 @@ def run(config, data, rng):
         return ExitCode.Success, dict(d2l_policy=None) # keep trying
 
     # Parse the DNF transition-classifier and transform it into a policy
-    # policy = parse_dnf_policy(config)
-    policy = parse_dnfa_policy(config)
+    policy = parse_dnf_policy(config)
+    # policy = parse_dnfa_policy(config)
 
-    # policy.minimize()
+    policy.minimize()
     print("Final Policy:")
-    # policy.print_aaai20()
-    policy.print()
+    policy.print_aaai20()
+    # policy.print()
 
     return exitcode, dict(d2l_policy=policy)
 

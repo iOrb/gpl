@@ -31,10 +31,10 @@ namespace sltp {
         std::vector<std::vector<unsigned>> trdata_;
         std::map<std::pair<unsigned, unsigned>, std::set<unsigned>> trdata_s_a_;
 
-        std::set<unsigned> alive_states_;
-        std::set<unsigned> goal_states_;
-        std::set<unsigned> unsolvable_states_;
-        std::set<unsigned> unknown_states_;
+        std::vector<unsigned> alive_states_;
+        std::vector<unsigned> goal_states_;
+        std::vector<unsigned> unsolvable_states_;
+        std::vector<unsigned> unknown_states_;
 
         std::vector<int> vstar_;
 
@@ -45,6 +45,8 @@ namespace sltp {
                   trdata_(num_states),
                   alive_states_(),
                   goal_states_(),
+                  unsolvable_states_(),
+                  unknown_states_(),
                   vstar_(num_states)
         {
             if (num_states_ > std::numeric_limits<state_id_t>::max()) {
@@ -81,10 +83,15 @@ namespace sltp {
             return s_as_.at(s);
         }
 
-        bool is_alive(unsigned state) const { return alive_states_.find(state) != alive_states_.end(); }
-        bool is_goal(unsigned state) const { return goal_states_.find(state) != goal_states_.end(); }
-        bool is_unsolvable(unsigned state) const { return unsolvable_states_.find(state) != unsolvable_states_.end(); }
-        bool is_unknown(unsigned state) const { return unknown_states_.find(state) != unknown_states_.end() ; }
+        bool is_alive(unsigned state) const { return std::find(alive_states_.begin(), alive_states_.end(), state) != alive_states_.end(); }
+        bool is_goal(unsigned state) const { return std::find(goal_states_.begin(), goal_states_.end(), state) != goal_states_.end(); }
+        bool is_unsolvable(unsigned state) const { return std::find(unsolvable_states_.begin(), unsolvable_states_.end(), state) != unsolvable_states_.end(); }
+        bool is_unknown(unsigned state) const { return std::find(unknown_states_.begin(), unknown_states_.end(), state) != unknown_states_.end(); }
+//
+//        bool is_alive(unsigned state) const { return alive_states_.find(state) != alive_states_.end(); }
+//        bool is_goal(unsigned state) const { return goal_states_.find(state) != goal_states_.end(); }
+//        bool is_unsolvable(unsigned state) const { return unsolvable_states_.find(state) != unsolvable_states_.end(); }
+//        bool is_unknown(unsigned state) const { return unknown_states_.find(state) != unknown_states_.end() ; }
 
         unsigned num_unsolvable() const {
             unsigned c = 0;
@@ -95,21 +102,11 @@ namespace sltp {
         }
 
         const std::vector<unsigned>& all_alive() const {
-            std::vector<unsigned> v;
-            v.reserve(alive_states_.size());
-            for (auto const& s:alive_states_) {
-                v.push_back(s);
-            }
-            return v;
+            return alive_states_;
         }
 
         const std::vector<unsigned>& all_goals() const {
-            std::vector<unsigned> v;
-            v.reserve(goal_states_.size());
-            for (auto const& s:goal_states_) {
-                v.push_back(s);
-            }
-            return v;
+            return goal_states_;
         }
 
         //! Print a representation of the object to the given stream.
@@ -122,6 +119,10 @@ namespace sltp {
 
         // readers
         void read(std::istream &is) {
+            std::set<unsigned> alives;
+            std::set<unsigned> goals;
+            std::set<unsigned> unsolvables;
+            std::set<unsigned> unknowns;
             for (unsigned i = 0; i < num_states_; ++i) {
                 unsigned s = 0, n_a = 0, n_sp = 0, a = 0, sp = 0;
                 int vstar = 0;
@@ -129,13 +130,13 @@ namespace sltp {
 
                 // Store the value of V^*(s) for each state s
                 if (vstar > 0) {
-                    alive_states_.insert(s);
+                    alives.insert(s);
                 } else if (vstar == 0) {
-                    goal_states_.insert(s);
+                    goals.insert(s);
                 } else if (vstar == -1) {
-                    unsolvable_states_.insert(s);
+                    unsolvables.insert(s);
                 } else if (vstar == -2) {
-                    unknown_states_.insert(s);
+                    unknowns.insert(s);
                 } else {
                     assert (vstar < -1);
                     // No need to do anything, we don't know whether the state is unsolvable or not
@@ -157,6 +158,10 @@ namespace sltp {
                     assert(trdata_[s].empty());
                 }
             }
+            std::copy(alives.begin(), alives.end(), std::back_inserter(alive_states_));
+            std::copy(goals.begin(), goals.end(), std::back_inserter(goal_states_));
+            std::copy(unsolvables.begin(), unsolvables.end(), std::back_inserter(unsolvable_states_));
+            std::copy(unknowns.begin(), unknowns.end(), std::back_inserter(unsolvable_states_));
         }
 
 

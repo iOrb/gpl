@@ -66,6 +66,8 @@ class TransitionSampleFOND:
                 state)  # this should be the representation as atoms
             self.sid_count += 1
         id = self.get_state_id(s_encoded)
+        if id == 8 or id == 26:
+            pass
         if goal:
             self.goals.add(id)
         elif deadend:

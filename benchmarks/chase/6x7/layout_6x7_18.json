@@ -1,7 +1,0 @@
-[["wall", "wall", "wall", "wall", "wall", "wall"],
-  ["wall", "empty", "empty", "target", "empty", "wall"],
-  ["wall", "empty", "agent", "empty", "empty", "wall"],
-  ["wall", "empty", "empty", "empty", "empty", "wall"],
-  ["wall", "empty", "empty", "empty", "empty", "wall"],
-  ["wall", "wall", "wall", "wall", "wall", "wall"],
-  ["wall", "wall", "down_arrow", "up_arrow", "left_arrow", "right_arrow"]]

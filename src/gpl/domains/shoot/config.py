@@ -1,3 +1,0 @@
-use_player_as_feature=False
-use_margin_as_feature=False
-use_diagonal_directions=False

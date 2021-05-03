@@ -1,5 +1,0 @@
-[["empty", "empty", "falling_token", "empty", "empty"],
-  ["empty", "empty", "empty", "red_token", "red_token"],
-  ["empty", "empty", "empty", "red_token", "red_token"],
-  ["red_token", "red_token", "drawn_token", "advance_token", "static_token"],
-  ["red_token", "red_token", "static_token", "static_token", "static_token"]]

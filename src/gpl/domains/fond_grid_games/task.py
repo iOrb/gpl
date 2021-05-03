@@ -7,7 +7,6 @@ from .grammar.grammar import Grammar
 
 from .utils import unserialize_layout
 from .grammar.objects import OBJECTS
-from .envs.chase import available_actions, check_game_status, act, player2_policy
 
 # State: (representation, info, state_encoded)
 
@@ -15,14 +14,15 @@ class Task(ITask):
     """
     General Planning task
     """
-    def __init__(self, domain_name, instance_name, config):
+    def __init__(self, domain_name, instance_name, env, config):
         super().__init__(domain_name, instance_name)
 
+        self.env = env
         self.config = config
         self.__init_task(instance_name)
 
     def __init_task(self, instance_name):
-        brd = unserialize_layout(instance_name)
+        brd = self.env.get_grid(instance_name)
         self.__representative_instance_name = "{}x{}".format(*brd.shape)
         num_actions_executed = 0
         r = (brd, OBJECTS.player.w, num_actions_executed)
@@ -44,18 +44,18 @@ class Task(ITask):
         r0 = state0[0]
         goal, deadend = self.infer_info(r0)
         assert not goal and not deadend
-        r1 = act(r0, operator)  # our move
+        r1 = self.env.act(r0, operator)  # our move
         goal, deadend = self.infer_info(r1)
         if goal or deadend or r1[1] == OBJECTS.player.w:
             return self.colapse_state(r1, goal, deadend)
-        op = player2_policy(r1)
-        r2 = act(r1, op)  # adversary move
+        op = self.env.player2_policy(r1)
+        r2 = self.env.act(r1, op)  # adversary move
         goal, deadend = self.infer_info(r2)
         return self.colapse_state(r2, goal, deadend)
 
     def infer_info(self, r):
         goal, deadend = [0] * 2
-        gstatus = check_game_status(r)
+        gstatus = self.env.check_game_status(r)
         if gstatus == 1:
             goal = True
         return goal, deadend
@@ -71,13 +71,15 @@ class Task(ITask):
         def __transition_player(state, op):  # s -> a -> s'
             r = state[0]
             goal, deadend = self.infer_info(r)
-            assert not goal and not deadend
-            r1 = act(r, op)  # player move
+            if goal or deadend:
+                return self.colapse_state(r, goal, deadend)
+            # assert not goal and not deadend
+            r1 = self.env.act(r, op)  # player move
             goal, deadend = self.infer_info(r1)
             return self.colapse_state(r1, goal, deadend)
         r0 = state0[0]
         succs_sp = []
-        ava_actions = available_actions(r0)
+        ava_actions = self.env.available_actions(r0)
         for op0 in ava_actions:
             state1 = __transition_player(state0, op0)
             if state1[1]['goal'] or state1[1]['deadend'] or state1[0][1] == OBJECTS.player.w:
@@ -86,7 +88,7 @@ class Task(ITask):
                 succs_sp.append((op0, state1))
             else:
                 succs_spp = []
-                ava_actions1 = available_actions(state1[0])
+                ava_actions1 = self.env.available_actions(state1[0])
                 # deadend = False
                 for op1 in ava_actions1:
                     state2 = __transition_player(state1, op1)

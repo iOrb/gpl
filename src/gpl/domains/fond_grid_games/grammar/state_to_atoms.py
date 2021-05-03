@@ -4,7 +4,6 @@ from .objects import OBJECTS
 from .language import *
 from gpl.domains.fond_grid_games import configd
 
-
 # General State to atoms
 def state_to_atoms(domain_name, state):
     brd = copy.deepcopy(state[0][0])
@@ -28,7 +27,6 @@ def state_to_atoms(domain_name, state):
         atoms.append(('player-{}'.format(state[0][1]),))
 
     return atoms
-
 
 def atom_tuples_to_string(atom_tuples):
     return ' '.join(f"{a[0]}({','.join(str(var) for var in a[1:])})" for a in atom_tuples)

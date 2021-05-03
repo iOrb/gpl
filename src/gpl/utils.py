@@ -54,10 +54,8 @@ def encode_operator(s, op, task):
     return o
 
 def get_sampling_class(config):
-    from .sampling.adv import TransitionSampleADV
     from .sampling.fond import TransitionSampleFOND
     sampling_class = {
-        'adv': TransitionSampleADV(),
         'fond': TransitionSampleFOND(),
     }[config.domain.type]
     if config.discrete_action_space:

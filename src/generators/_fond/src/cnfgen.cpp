@@ -360,6 +360,12 @@ int run(const Options& options) {
             break;
         }
 
+        if (it == options.maxsat_iter) {
+            std::cout << "Max iter reached in iteration #" << it << std::endl;
+            print_classifier(sample->matrix(), dnf, options.workspace + "/classifier");
+            break;
+        }
+
 //        print_classifier(sample->matrix(), dnf, options.workspace + "/classifier_" + std::to_string(it));
         std::cout << "Solution found in iteration #" << it << " has " << flaws.size() << " flaws" << std::endl;
         sample = std::unique_ptr<StateSpaceSample>(sample->add_states(flaws));

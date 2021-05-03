@@ -78,7 +78,7 @@ MOVE_ACTION = {
 # check_game_status, act, available_actions
 
 def act(rep, action):
-    layout, color = rep
+    layout, color, _ = rep
     l = layout.copy()
     valid_actions = available_actions(rep)
     assert action in valid_actions
@@ -97,12 +97,12 @@ def act(rep, action):
     if not l[new_r, new_c] == WHITE_KING:
         l[new_r, new_c] = piece
     l[old_r, old_c] = EMPTY
-    if BLACK_KING in l: # just the white king can shoot
-        attakig_mask = get_attaking_mask((l, WHITE))
-        opposite_pos = runnable_position((l, BLACK))
-        if any((opposite_pos == att).all() for att in attakig_mask):
-            l[opposite_pos[0], opposite_pos[1]] = EMPTY
-    return (l, opposite_color(color))
+    # if BLACK_KING in l: # just the white king can shoot
+    #     attakig_mask = get_attaking_mask((l, WHITE, 0))
+    #     opposite_pos = runnable_position((l, BLACK, 0))
+        # if any((opposite_pos == att).all() for att in attakig_mask):
+        #     l[opposite_pos[0], opposite_pos[1]] = EMPTY
+    return (l, opposite_color(color), 0)
 
 
 def get_action_from_move(move, color):
@@ -110,7 +110,7 @@ def get_action_from_move(move, color):
 
 
 def runnable_position(rep):
-    layout, player = rep
+    layout, player, _ = rep
     if player == 'white':
         return np.argwhere(layout == WHITE_KING)[0]
     elif player == 'black':
@@ -118,7 +118,7 @@ def runnable_position(rep):
 
 
 def available_actions(rep):
-    layout, player = rep
+    layout, player, _ = rep
     actions = []
     if player == 'white':
         c0 = np.argwhere(layout == WHITE_KING)[0]
@@ -137,11 +137,17 @@ def check_game_status(rep):
 
 
 def checkmate(rep):
-    layout, color = rep
-    if BLACK_KING not in layout:
+    attakig_mask = get_attaking_mask((rep[0], WHITE, 0))
+    opposite_pos = runnable_position((rep[0], BLACK, 0))
+    if any((opposite_pos == att).all() for att in attakig_mask):
         return True
     else:
         return False
+    # layout, color, _ = rep
+    # if BLACK_KING not in layout:
+    #     return True
+    # else:
+    #     return False
 
 
 def player2_policy(rep):
@@ -198,7 +204,7 @@ def king_valid_actions(pos, layout, color):
 
 
 def get_attaking_mask(rep):
-    layout, color = rep
+    layout, color, _ = rep
     attaking_mask = []
     assert color=='white'
 

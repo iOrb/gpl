@@ -2,11 +2,7 @@
 
 from sltp.util.misc import update_dict
 
-from gpl.domains.fond_grid_games.chase.domain import Domain
-
-from instances.ct_instances import four_four_instances, all_instances, \
-    break_instances
-
+from gpl.domains.fond_grid_games.domain import Domain
 
 DOMAIN_NAME = "chase"
 
@@ -18,40 +14,35 @@ def experiments():
         concept_generator=None,
         parameter_generator=None,
         v_slack=2,
-        maxsat_iter=1,
-        teach_policies=None,
-        initial_sample_size=1,
-        refinement_batch_size=1,
-        verbosity=1,
         acyclicity='topological',
         discrete_action_space=False,
         use_incremental_refinement=False,
     )
 
     exps = dict()
-
     exps["1"] = update_dict(
         base,
-        instances=four_four_instances([0]),
-        # instances=four_four_instances([1, 2, 3, 5, 6, 8, 9]) +
-        #           break_instances('a') +
-        #           all_instances([15, 16, 17]),
-        # test_instances=four_four_instances([0]),
-        test_instances=four_four_instances('a') +
-                       break_instances('a') +
-                       all_instances('a'),
-        # test_instances=all_instances([16]),
-        max_concept_size=6,
-        distance_feature_max_complexity=6,
+        instances=[0],
+        test_instances=[0],
+        max_concept_size=5,
+        distance_feature_max_complexity=5,
         concept_generation_timeout=15000,
         cond_feature_max_complexity=0,
-        comparison_features=True,
-        generate_goal_concepts=True,
+        comparison_features=False,
+        generate_goal_concepts=False,
         print_denotations=True,
-        print_hstar_in_feature_matrix=True,
+        print_hstar_in_feature_matrix=False,
+
+        verbosity=1,
+        initial_sample_size=20,
+        refinement_batch_size=20,
+        maxsat_iter=12,
+
         allow_bad_states=False,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
+        use_action_ids=True,
+
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],
         distinguish_goals=True,

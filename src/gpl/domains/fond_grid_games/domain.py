@@ -4,17 +4,16 @@ from tarski.fstrips import fstrips, create_fstrips_problem
 from .task import Task
 from .utils import unserialize_layout
 import copy
-from .envs.chase import ACTION_SPACE
 from .grammar.language import *
-from gpl.domains.fond_grid_games import configd
+from . import configd
 import importlib
 ANCHOR = 'gpl.domains.fond_grid_games'
-env_lib = importlib.import_module(f'.envs.chase', ANCHOR)
 
 class Domain(IDomain):
     def __init__(self, domain_name):
         super().__init__(domain_name)
-        self.action_space = env_lib.ACTION_SPACE
+        self.env = importlib.import_module(f'.envs.{domain_name}', ANCHOR).Env
+        self.action_space = self.env.get_action_space()
         self.type = 'fond'
 
     # Generate Language
@@ -25,12 +24,12 @@ class Domain(IDomain):
     # Generate Problem
     def generate_problem(self, lang, instance_name):
         """ Generate the Tarski problem corresponding to the given domain and particular layout. """
-        return generate_problem(self._domain_name, lang, instance_name)
+        return generate_problem(self._domain_name, lang, self.env, instance_name)
 
     # Generate Task
     def generate_task(self, instance_name, config):
         """ Generate a Task object, according to the Interface ITask """
-        return Task(self._domain_name, instance_name, config)
+        return Task(self._domain_name, instance_name, self.env, config)
 
 
 def load_general_lang(lang, statics,):
@@ -122,9 +121,10 @@ def generate_base_lang(domain_name):
     return lang, set()
 
 
-def generate_problem(domain_name, lang, instance_name):
+def generate_problem(domain_name, lang, env, instance_name):
     problem = generate_base_problem(domain_name, lang, instance_name)
-    rep = unserialize_layout(instance_name)
+    # rep = unserialize_layout(instance_name)
+    rep = env.get_grid(instance_name)
     load_general_problem(problem, lang, rep)
     return problem
 

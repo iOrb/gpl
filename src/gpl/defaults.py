@@ -19,7 +19,6 @@ BENCHMARK_DIR = os.path.join(BASEDIR, 'benchmarks')
 
 GENERATORS = {
     'fond': os.path.join(os.path.dirname(GPL_SRC_DIR), "generators/_fond"),
-    'adv': os.path.join(os.path.dirname(GPL_SRC_DIR), "generators/adv_"),
 }
 
 def generate_experiment(expid, **kwargs):
