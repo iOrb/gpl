@@ -284,6 +284,7 @@ public:
     }
 };
 
+
 std::unique_ptr<PolicyComputationStrategy> choose_strategy(const Options& options) {
     return std::make_unique<SATPolicyComputationStrategy>();
 }

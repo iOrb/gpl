@@ -363,7 +363,6 @@ namespace sltp::cnf {
                         wr.cl(clause, 1);
                         ++n_descending_clauses;
                     }
-
                 }
             }
         }

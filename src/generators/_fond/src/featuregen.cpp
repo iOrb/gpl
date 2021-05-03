@@ -43,9 +43,7 @@ sltp::dl::Options parse_options(int argc, const char **argv) {
             ("print_hstar", "Print hstar value as a feature matrix column.")
             ("generate_or_concepts", "Generate DL disjunctions.")
             ("infty_feat_as_zero", "Interpret infinity values of features as zero.")
-
-            ("use_action_ids",
-             "use the IDs of the actions that trigger the transitions to distinguish transitions")
+            ("use_action_ids","use the IDs of the actions that trigger the transitions to distinguish transitions")
     ;
 
     po::variables_map vm;

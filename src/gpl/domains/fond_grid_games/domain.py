@@ -9,12 +9,12 @@ from .grammar.language import *
 from gpl.domains.fond_grid_games import configd
 import importlib
 ANCHOR = 'gpl.domains.fond_grid_games'
+env_lib = importlib.import_module(f'.envs.chase', ANCHOR)
 
 class Domain(IDomain):
     def __init__(self, domain_name):
         super().__init__(domain_name)
-        self.env = importlib.import_module(f'.envs.{domain_name}', ANCHOR)
-        self.action_space = self.env.ACTION_SPACE
+        self.action_space = env_lib.ACTION_SPACE
         self.type = 'fond'
 
     # Generate Language

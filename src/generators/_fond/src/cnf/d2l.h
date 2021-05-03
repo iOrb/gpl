@@ -20,6 +20,7 @@ struct VariableMapping {
     std::vector<cnfvar_t> selecteds;
 
     //! A map from transition IDs to SAT variable IDs:
+    std::unordered_map<unsigned, cnfvar_t> goods;
     std::unordered_map<sa_pair, cnfvar_t, boost::hash<sa_pair>> goods_s_a;
     std::unordered_map<state_id_t, cnfvar_t, boost::hash<state_id_t>> bad_s; // bad(s)
 

@@ -2,7 +2,7 @@ import logging
 import sys
 
 from .models import FeatureModel
-from .separation import TransitionClassificationPolicy, generate_user_provided_policy
+from .separation import TransitionClassificationPolicy, StateActionClassificationPolicy, generate_user_provided_policy
 from .features import generate_model_cache, create_model_factory, compute_static_atoms
 from .returncodes import ExitCode
 from .sampling import read_transitions_from_files

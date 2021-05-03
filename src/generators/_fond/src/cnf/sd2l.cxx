@@ -200,7 +200,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> SD2LEncoding::generate(CNFW
             if( tx != repr ) continue;
 
             cnfvar_t good_s_sprime = wr.var("Good(" + std::to_string(s) + ", " + std::to_string(s_prime) + ")");
-            auto it = variables.goods_s_a.emplace(tx, good_s_sprime);
+            auto it = variables.goods.emplace(tx, good_s_sprime);
             assert(it.second); // i.e. the SAT variable Good(s, s') is necessarily new
             varmapstream << good_s_sprime << " " << s << " " << s_prime << std::endl;
             n_good_vars++;
