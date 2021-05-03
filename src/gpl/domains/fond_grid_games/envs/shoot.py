@@ -77,36 +77,73 @@ MOVE_ACTION = {
 
 # check_game_status, act, available_actions
 
-def act(rep, action):
-    layout, color, _ = rep
-    l = layout.copy()
-    valid_actions = available_actions(rep)
-    assert action in valid_actions
+class Env(object):
+    @staticmethod
+    def act(rep, action):
+        layout, color, _ = rep
+        l = layout.copy()
+        valid_actions = Env.available_actions(rep)
+        assert action in valid_actions
 
-    pos = runnable_position(rep)
-    running_pos = np.add(pos, ACTION_MOVE_DIRECTION[action])
-    assert not np.any(running_pos < 0)
-    try:
-        next_cell = l[running_pos[0], running_pos[1]]
-    except IndexError:
-        print("Index error")
-        sys.exit(1)
-    old_r, old_c = pos
-    new_r, new_c = running_pos
-    piece = l[old_r, old_c]
-    if not l[new_r, new_c] == WHITE_KING:
-        l[new_r, new_c] = piece
-    l[old_r, old_c] = EMPTY
-    # if BLACK_KING in l: # just the white king can shoot
-    #     attakig_mask = get_attaking_mask((l, WHITE, 0))
-    #     opposite_pos = runnable_position((l, BLACK, 0))
-        # if any((opposite_pos == att).all() for att in attakig_mask):
-        #     l[opposite_pos[0], opposite_pos[1]] = EMPTY
-    return (l, opposite_color(color), 0)
+        pos = runnable_position(rep)
+        running_pos = np.add(pos, ACTION_MOVE_DIRECTION[action])
+        assert not np.any(running_pos < 0)
+        try:
+            next_cell = l[running_pos[0], running_pos[1]]
+        except IndexError:
+            print("Index error")
+            sys.exit(1)
+        old_r, old_c = pos
+        new_r, new_c = running_pos
+        piece = l[old_r, old_c]
+        if not l[new_r, new_c] == WHITE_KING:
+            l[new_r, new_c] = piece
+        l[old_r, old_c] = EMPTY
+        # if BLACK_KING in l: # just the white king can shoot
+        #     attakig_mask = get_attaking_mask((l, WHITE, 0))
+        #     opposite_pos = runnable_position((l, BLACK, 0))
+            # if any((opposite_pos == att).all() for att in attakig_mask):
+            #     l[opposite_pos[0], opposite_pos[1]] = EMPTY
+        return (l, opposite_color(color), 0)
 
+    @staticmethod
+    def available_actions(rep):
+        layout, player, _ = rep
+        actions = []
+        if player == 'white':
+            c0 = np.argwhere(layout == WHITE_KING)[0]
+            actions += [a for a in PIECE_VALID_ACTIONS[WHITE_KING](c0, layout)]
+        elif player == 'black':
+            c0 = np.argwhere(layout == BLACK_KING)[0]
+            actions += [a for a in PIECE_VALID_ACTIONS[BLACK_KING](c0, layout)]
+        return actions
 
-def get_action_from_move(move, color):
-    return MOVE_ACTION[move][color]
+    @staticmethod
+    def check_game_status(rep):
+        if checkmate(rep):
+            return 1
+        else:
+            return -1
+
+    @staticmethod
+    def player2_policy(rep):
+        assert (BLACK_KING in rep[0])
+        assert (rep[1] in 'black')
+        bk = np.argwhere(rep[0] == BLACK_KING)[0]
+        wk = np.argwhere(rep[0] == WHITE_KING)[0]
+        valid_actions = Env.available_actions(rep)
+        if not valid_actions:
+            return bk
+        else:
+            return valid_actions[0]
+
+    @staticmethod
+    def get_grid(key):
+        return generate_gird(key)
+
+    @staticmethod
+    def get_action_space():
+        return ACTION_SPACE
 
 
 def runnable_position(rep):
@@ -115,54 +152,6 @@ def runnable_position(rep):
         return np.argwhere(layout == WHITE_KING)[0]
     elif player == 'black':
         return np.argwhere(layout == BLACK_KING)[0]
-
-
-def available_actions(rep):
-    layout, player, _ = rep
-    actions = []
-    if player == 'white':
-        c0 = np.argwhere(layout == WHITE_KING)[0]
-        actions += [a for a in PIECE_VALID_ACTIONS[WHITE_KING](c0, layout)]
-    elif player == 'black':
-        c0 = np.argwhere(layout == BLACK_KING)[0]
-        actions += [a for a in PIECE_VALID_ACTIONS[BLACK_KING](c0, layout)]
-    return actions
-
-
-def check_game_status(rep):
-    if checkmate(rep):
-        return 1
-    else:
-        return -1
-
-
-def checkmate(rep):
-    attakig_mask = get_attaking_mask((rep[0], WHITE, 0))
-    opposite_pos = runnable_position((rep[0], BLACK, 0))
-    if any((opposite_pos == att).all() for att in attakig_mask):
-        return True
-    else:
-        return False
-    # layout, color, _ = rep
-    # if BLACK_KING not in layout:
-    #     return True
-    # else:
-    #     return False
-
-
-def player2_policy(rep):
-    assert (BLACK_KING in rep[0])
-    assert (rep[1] in 'black')
-    bk = np.argwhere(rep[0] == BLACK_KING)[0]
-    wk = np.argwhere(rep[0] == WHITE_KING)[0]
-    valid_actions = available_actions(rep)
-    if not valid_actions:
-        return bk
-    else:
-        return valid_actions[0]
-
-
-# End Checkmate =================================
 
 
 def king_valid_moves(pos, layout, color):
@@ -202,6 +191,8 @@ def king_valid_actions(pos, layout, color):
         valid_action.append(get_action_from_move(direction, color))
     return valid_action
 
+def get_action_from_move(move, color):
+    return MOVE_ACTION[move][color]
 
 def get_attaking_mask(rep):
     layout, color, _ = rep
@@ -232,3 +223,36 @@ def get_attaking_mask(rep):
 
     return attaking_mask
 
+
+def checkmate(rep):
+    attakig_mask = get_attaking_mask((rep[0], WHITE, 0))
+    opposite_pos = runnable_position((rep[0], BLACK, 0))
+    if any((opposite_pos == att).all() for att in attakig_mask):
+        return True
+    else:
+        return False
+    # layout, color, _ = rep
+    # if BLACK_KING not in layout:
+    #     return True
+    # else:
+    #     return False
+
+
+### Instances
+def generate_gird(key):
+    height, width, cell_agent, cell_target = LAYOUTS[key]
+    grid = np.full((height, width), EMPTY, dtype=object)
+    grid[cell_agent] = WHITE_KING
+    grid[cell_target] = BLACK_KING
+    return grid
+
+LAYOUTS = {
+    0: (4, 8, (0, 0), (3, 5)),
+    1: (8, 4, (3, 3), (0, 0)),
+    2: (7, 7, (0, 0), (5, 5)),
+    3: (10, 10, (3, 3), (0, 0)),
+    4: (11, 4, (3, 3), (0, 0)),
+    5: (8, 9, (3, 3), (0, 0)),
+    6: (4, 4, (3, 3), (0, 0)),
+    7: (4, 4, (0, 0), (3, 3)),
+}

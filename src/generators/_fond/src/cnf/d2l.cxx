@@ -292,10 +292,9 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                         cnfvar_t good_t_b_var = variables.goods_s_a.at({t, b});
                         for (const auto tp:sample_.successors({t, b})) {
 
+                            cnfclause_t clause{Wr::lit(good_s_a_var, false)};
+
                             if ((a == b) and (s != t)) {
-
-                                cnfclause_t clause{Wr::lit(good_s_a_var, false)};
-
                                 // Compute first the Selected(f) terms
                                 for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
                                     clause.push_back(Wr::lit(variables.selecteds.at(f), true));
@@ -306,7 +305,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                                 }
                                 wr.cl(clause);
                                 n_separation_clauses += 1;
-
                             }
                         }
                     }

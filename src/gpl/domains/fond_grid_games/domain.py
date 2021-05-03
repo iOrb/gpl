@@ -83,11 +83,13 @@ def load_general_problem(problem, lang, rep):
                 __add_direction_predicate(problem, lang, RIGHT, sort, const, row, col + 1)
             # Left
             if col > -1:
-                __add_direction_predicate(problem, lang, LEFT, sort, const, row, col - 1)
+                __add_direction_predicate(problem, lang, RIGHT, sort, const, row, col - 1)
+                # __add_direction_predicate(problem, lang, LEFT, sort, const, row, col - 1)
         if not COL_S in sort:
             # Down
             if row < nrows:
-                __add_direction_predicate(problem, lang, DOWN, sort, const, row + 1, col)
+                __add_direction_predicate(problem, lang, UP, sort, const, row + 1, col)
+                # __add_direction_predicate(problem, lang, DOWN, sort, const, row + 1, col)
             # Up
             if row > -1:
                 __add_direction_predicate(problem, lang, UP, sort, const, row - 1, col)
@@ -117,13 +119,11 @@ def generate_lang(domain_name,):
 def generate_base_lang(domain_name):
     from tarski.theories import Theory
     lang = fstrips.language(domain_name, theories=[Theory.EQUALITY])
-    # lang = tarski.language(theories=[Theory.EQUALITY])
     return lang, set()
 
 
 def generate_problem(domain_name, lang, env, instance_name):
     problem = generate_base_problem(domain_name, lang, instance_name)
-    # rep = unserialize_layout(instance_name)
     rep = env.get_grid(instance_name)
     load_general_problem(problem, lang, rep)
     return problem
