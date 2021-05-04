@@ -168,7 +168,6 @@ class TransitionSampleFOND:
                 alive.append((op0, sp))
         return alive, goals, deadends
 
-
 def process_sample(config, sample, rng):
 
     num_tx_entries = sum(len(tx) for tx in sample.transitions.values())
@@ -180,6 +179,7 @@ def process_sample(config, sample, rng):
     logging.info(f"Entire sample: {sample.info()}")
 
     return sample
+
 
 def mark_optimal_transitions(config, sample):
     """
@@ -274,6 +274,7 @@ def print_transition_matrix(sample, transitions_filename):
             vstar = sample.vstar.get(s, -1)
             print(f"{s} {vstar} {num_ops} {len(o_edges)} {nondet_successors}", file=f)
 
+
 def print_states(sample, states_filename):
     state_ids = sample.get_sorted_state_ids()
     with open(states_filename, 'w') as f:
@@ -284,6 +285,7 @@ def print_states(sample, states_filename):
                 print("{}* {}".format(id, sample.states[id]), file=f)
             else:
                 print("{}º {}".format(id, sample.states[id]), file=f)
+
 
 def run(config, data, rng):
     sample = process_sample(config, data.sample, rng)

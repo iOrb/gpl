@@ -2,6 +2,10 @@ import sys
 
 import numpy as np
 
+
+WHITE = 1 # player 1
+BLACK = 2 # player 2
+
 EMPTY = 'empty'
 BLACK_KING = 'black_king'
 WHITE_KING = 'white_king'
@@ -9,31 +13,25 @@ WHITE_KING = 'white_king'
 ALL_TOKENS = [EMPTY, BLACK_KING, WHITE_KING]
 
 COLOR_TO_PIECES = {
-    'white': [WHITE_KING,],
-    'black': [BLACK_KING,],
+    WHITE: [WHITE_KING,],
+    BLACK: [BLACK_KING,],
 }
 
-WHITE = 'white'
-BLACK = 'black'
 
-opposite_color = lambda c: 'black' if c == 'white' else 'white'
+opposite_color = lambda c: BLACK if c == WHITE else WHITE
 
 PIECE_VALID_MOVES = {
-    WHITE_KING: lambda pos, layout: king_valid_moves(pos, layout, 'white'),
-    BLACK_KING: lambda pos, layout: king_valid_moves(pos, layout, 'black'),
+    WHITE_KING: lambda pos, layout: king_valid_moves(pos, layout, WHITE),
+    BLACK_KING: lambda pos, layout: king_valid_moves(pos, layout, BLACK),
 }
 
 PIECE_VALID_ACTIONS = {
-    WHITE_KING: lambda pos, layout: king_valid_actions(pos, layout, 'white'),
-    BLACK_KING: lambda pos, layout: king_valid_actions(pos, layout, 'black'),
+    WHITE_KING: lambda pos, layout: king_valid_actions(pos, layout, WHITE),
+    BLACK_KING: lambda pos, layout: king_valid_actions(pos, layout, BLACK),
 }
 
 # Actions IDs
 
-UP_S = 0 # 'move_up_and_shoot'
-DOWN_S = 1 # 'move_down_and_shoot'
-RIGHT_S = 2 # 'move_right_and_shoot'
-LEFT_S = 3 # 'move_left_and_shoot'
 UP = 4 # 'up'
 DOWN = 5 # 'down'
 RIGHT = 6 # 'right'
@@ -54,10 +52,10 @@ ACTION_MOVE_DIRECTION = {
 }
 
 MOVE_ACTION = {
-    (-1, 0): {WHITE: UP_S, BLACK: UP},
-    (1, 0): {WHITE: DOWN_S, BLACK: DOWN},
-    (0, 1): {WHITE: RIGHT_S, BLACK: RIGHT},
-    (0, -1): {WHITE: LEFT_S, BLACK: LEFT},
+    (-1, 0): {WHITE: UP, BLACK: UP},
+    (1, 0): {WHITE: DOWN, BLACK: DOWN},
+    (0, 1): {WHITE: RIGHT, BLACK: RIGHT},
+    (0, -1): {WHITE: LEFT, BLACK: LEFT},
 }
 
 # Begin Shoot =================================
@@ -97,10 +95,10 @@ class Env(object):
     def available_actions(rep):
         layout, player, _ = rep
         actions = []
-        if player == 'white':
+        if player == WHITE:
             c0 = np.argwhere(layout == WHITE_KING)[0]
             actions += [a for a in PIECE_VALID_ACTIONS[WHITE_KING](c0, layout)]
-        elif player == 'black':
+        elif player == BLACK:
             c0 = np.argwhere(layout == BLACK_KING)[0]
             actions += [a for a in PIECE_VALID_ACTIONS[BLACK_KING](c0, layout)]
         return actions
@@ -115,7 +113,6 @@ class Env(object):
     @staticmethod
     def player2_policy(rep):
         assert (BLACK_KING in rep[0])
-        assert (rep[1] in 'black')
         bk = np.argwhere(rep[0] == BLACK_KING)[0]
         wk = np.argwhere(rep[0] == WHITE_KING)[0]
         valid_actions = Env.available_actions(rep)
@@ -135,9 +132,9 @@ class Env(object):
 
 def runnable_position(rep):
     layout, player, _ = rep
-    if player == 'white':
+    if player == WHITE:
         return np.argwhere(layout == WHITE_KING)[0]
-    elif player == 'black':
+    elif player == BLACK:
         return np.argwhere(layout == BLACK_KING)[0]
 
 
@@ -184,7 +181,7 @@ def get_action_from_move(move, color):
 def get_attaking_mask(rep):
     layout, color, _ = rep
     attaking_mask = []
-    assert color=='white'
+    assert color==WHITE
 
     pos = runnable_position(rep)
     # for direction in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:

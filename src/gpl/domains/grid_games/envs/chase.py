@@ -2,6 +2,9 @@ import sys
 
 import numpy as np
 
+WHITE = 1
+BLACK = 2
+
 EMPTY = 'empty'
 BLACK_KING = 'black_king'
 WHITE_KING = 'white_king'
@@ -9,19 +12,16 @@ WHITE_KING = 'white_king'
 ALL_TOKENS = [EMPTY, BLACK_KING, WHITE_KING]
 
 COLOR_TO_PIECES = {
-    'white': [WHITE_KING,],
-    'black': [BLACK_KING,],
+    WHITE: [WHITE_KING,],
+    BLACK: [BLACK_KING,],
 }
 
-WHITE = 'white'
-BLACK = 'black'
-
-opposite_color = lambda c: 'black' if c == 'white' else 'white'
+opposite_color = lambda c: BLACK if c == WHITE else WHITE
 
 
 PIECE_VALID_ACTIONS = {
-    WHITE_KING: lambda pos, layout: king_valid_actions(pos, layout, 'white'),
-    BLACK_KING: lambda pos, layout: king_valid_actions(pos, layout, 'black'),
+    WHITE_KING: lambda pos, layout: king_valid_actions(pos, layout, WHITE),
+    BLACK_KING: lambda pos, layout: king_valid_actions(pos, layout, BLACK),
 }
 
 # Actions IDs
@@ -120,10 +120,10 @@ class Env(object):
     def available_actions(rep):
         layout, player, nact = rep
         actions = []
-        if player == 'white':
+        if player == WHITE:
             c0 = np.argwhere(layout == WHITE_KING)[0]
             actions += PIECE_VALID_ACTIONS[WHITE_KING](c0, layout)
-        elif player == 'black':
+        elif player == BLACK:
             c0 = np.argwhere(layout == BLACK_KING)[0]
             actions += PIECE_VALID_ACTIONS[BLACK_KING](c0, layout)
         return actions
@@ -131,7 +131,7 @@ class Env(object):
     @staticmethod
     def player2_policy(rep):
         assert (BLACK_KING in rep[0])
-        assert (rep[1] in 'black')
+        assert (rep[1] == BLACK)
         bk = np.argwhere(rep[0] == BLACK_KING)[0]
         wk = np.argwhere(rep[0] == WHITE_KING)[0]
         valid_actions = Env.available_actions(rep)
@@ -160,9 +160,9 @@ def get_action_from_move(move, color):
 
 def runnable_position(rep):
     layout, player, nact = rep
-    if player == 'white':
+    if player == WHITE:
         return np.argwhere(layout == WHITE_KING)[0]
-    elif player == 'black':
+    elif player == BLACK:
         return np.argwhere(layout == BLACK_KING)[0]
 
 
@@ -197,7 +197,7 @@ def king_valid_actions(pos, layout, color):
 def get_attaking_mask(rep):
     layout, color, _ = rep
     attaking_mask = []
-    assert color=='white'
+    assert color==WHITE
 
     pos = runnable_position(rep)
     for direction in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:

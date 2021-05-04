@@ -1,3 +1,4 @@
+import math
 
 from sltp.util.misc import update_dict
 
@@ -52,6 +53,7 @@ def experiments():
         # rollout_depth=2,
         # train_instances_to_expand=[],
         train_instances_to_expand=list(range(1000)),
+        max_states_expanded=math.inf,
     )
 
     return exps

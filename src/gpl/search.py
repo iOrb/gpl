@@ -68,8 +68,8 @@ def rollout(config, data, get_policy, rng):
             if i in config.train_instances_to_expand:
                 bfs(config, data, search_policy, task, instance_name, rng)
             else:
-                pass
-                # run_rollout_adv(config, data, search_policy, task, instance_name, rng)
+                # pass
+                run_rollout(config, data, search_policy, task, instance_name, rng)
 
         except PolicySearchException as e:
             logging.warning(f"Rollout of policy failed with code: {e.code}")
@@ -78,54 +78,45 @@ def rollout(config, data, get_policy, rng):
     return ExitCode.Success
 
 
-# def run_rollout_adv(config, data, search_policy, task, instance_name, rng):
-#
-#     logging.info(f'Appying rollout in train instance "{instance_name}"')
-#
-#     root_state = task.initial_state
-#
-#     for _ in range(config.num_rollouts):
-#
-#         end_node_reached = False
-#         rollout_depth = 0
-#         state = copy.deepcopy(root_state)
-#         succcessors = task.get_successor_states(state)
-#         alive, _, _ = data.sample.process_successors(state, succcessors, task)
-#         if not alive:
-#             break
-#
-#         while rollout_depth < config.rollout_depth and not end_node_reached:
-#             rollout_depth += 1
-#             succcessors = task.get_successor_states(state)
-#
-#             alive, _, _ = data.sample.process_successors(state, succcessors, task)
-#
-#             if not alive:
-#                 end_node_reached = True;
-#                 continue
-#                 # raise RuntimeError("No successors for expanded state: \n{}".format(state[1],))
-#             else:
-#                 rnd_op, rnd_sp, rnd_spps = alive[0]
-#
-#                 if search_policy is not None:
-#                     exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
-#                     if exitcode != ExitCode.Success:
-#                         op, sp, spps = rnd_op, rnd_sp, rnd_spps
-#                     else:
-#                         op, sp, spps = good_succs[0]
-#                 else:
-#                     op, sp, spps = rnd_op, rnd_sp, rnd_spps
-#
-#             if not sp[1]['goal'] and not sp[1]['deadend']:
-#                 spps_alive = [t for _, t in spps if not t[1]['goal'] and not t[1]['deadend']]
-#                 if spps_alive:
-#                     spp = spps_alive[0] # (FOND Adv) transition
-#                 else:
-#                     spp = sp
-#             else:
-#                 spp = sp
-#
-#             state = spp
+def run_rollout(config, data, search_policy, task, instance_name, rng):
+
+    logging.info(f'Appying rollout in train instance "{instance_name}"')
+
+    root_state = task.initial_state
+
+    for _ in range(config.num_rollouts):
+
+        end_node_reached = False
+        rollout_depth = 0
+        state = copy.deepcopy(root_state)
+        succcessors = task.get_successor_states(state)
+        alive, _, _ = data.sample.process_successors(state, succcessors, task)
+        if not alive:
+            break
+
+        while rollout_depth < config.rollout_depth and not end_node_reached:
+            rollout_depth += 1
+            succcessors = task.get_successor_states(state)
+
+            alive, _, _ = data.sample.process_successors(state, succcessors, task)
+
+            if not alive:
+                end_node_reached = True;
+                continue
+                # raise RuntimeError("No successors for expanded state: \n{}".format(state[1],))
+            else:
+                rnd_op, rnd_sp = alive[0]
+
+                if search_policy is not None:
+                    exitcode, good_succs = run_policy_based_search(config, search_policy, task, state, alive)
+                    if exitcode != ExitCode.Success:
+                        op, sp = rnd_op, rnd_sp
+                    else:
+                        op, sp = good_succs[0]
+                else:
+                    op, sp = rnd_op, rnd_sp
+
+            state = sp
 
 
 def run_policy_based_search(config, search_policy, task, state, successors):
@@ -142,7 +133,6 @@ def bfs(config, data, search_policy, task, instance_name, rng):
 
     visited = set()
     istate = task.initial_state
-
     queue = [istate]
 
     while queue:
@@ -154,6 +144,8 @@ def bfs(config, data, search_policy, task, instance_name, rng):
             if succ[2] not in visited:
                 visited.add(succ[2])
                 queue.append(succ)
+        if data.sample.num_states() > config.max_states_expanded:
+            break
 
 
 def translate_state(task, state, static_atoms):
@@ -175,11 +167,11 @@ def create_action_selection_function_from_transition_policy(config, model_factor
 
         good_succs = list()
 
-        for op, sp, spps in successors:
+        for op, sp in successors:
             m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
             if policy.transition_is_good(m0, m1):
                 # return ExitCode.Success, op, sp
-                good_succs.append((op, sp, spps))
+                good_succs.append((op, sp))
         if not good_succs:
             return ExitCode.AbstractPolicyNotCompleteOnTestInstances, None
         else:

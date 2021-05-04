@@ -122,6 +122,11 @@ def layout_after_agent_action(layout, action_id):
     piece = l[old_r, old_c]
     if layout[new_r, new_c] != PIT:  # not running into pits!
         l[new_r, new_c] = piece
+    # rand = np.random.randint(0, 100)
+    # if rand > 70:
+    #     l[old_r, old_c] = PIT
+    # else:
+    #     l[old_r, old_c] = EMPTY
     l[old_r, old_c] = EMPTY
     return l
 
@@ -132,16 +137,16 @@ def layout_after_agent_action(layout, action_id):
 def generate_gird(key):
     height, width, cell_agent, num_packages = LAYOUTS[key]
     grid = np.full((height, width), EMPTY, dtype=object)
-    # grid.flat[np.random.choice(height*width, 3, replace=False)] = PIT
+    grid.flat[np.random.choice(height*width, 3, replace=False)] = PIT
     grid.flat[np.random.choice(height*width, num_packages, replace=False)] = PACKAGE
     grid[cell_agent] = AGENT
     return grid
 
 LAYOUTS = {
-    0: (4, 4, (1, 0), 5),
-    1: (4, 4, (2, 2), 5),
-    2: (4, 4, (3, 2), 5),
-    3: (4, 4, (1, 2), 5),
+    0: (4, 4, (1, 0), 3),
+    1: (4, 4, (2, 2), 3),
+    2: (4, 4, (3, 2), 3),
+    3: (4, 4, (1, 2), 3),
     4: (10, 4, (2, 2), 5),
     5: (10, 10, (5, 5), 10),
     6: (5, 5, (0, 0), 4),

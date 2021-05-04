@@ -1,3 +1,5 @@
+import math
+
 from sltp.util.misc import update_dict
 from gpl.domains.grid_games.domain import Domain
 from domain_params import pick_package_params
@@ -17,9 +19,9 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=[0],
+        instances=[0, 1, 2, 3, 6],
         # instances=[0, 2, 3],
-        test_instances=[0, 1, 2, 3],
+        test_instances=[0, 1, 2, 3, 4, 5, 6],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
@@ -47,10 +49,11 @@ def experiments():
         distinguish_goals=True,
         # rollouts
         # num_episodes=1,
-        # num_rollouts=1,
-        # rollout_depth=2,
+        # num_rollouts=10,
+        # rollout_depth=10,
         # train_instances_to_expand=[],
         train_instances_to_expand=list(range(1000)),
+        max_states_expanded=math.inf,
     )
 
     return exps
