@@ -111,6 +111,9 @@ Options parse_options(int argc, const char **argv) {
 
         ("use_action_ids",
          "use the IDs of the actions that trigger the transitions to distinguish transitions")
+
+         ("use_weighted_tx",
+         "the transitions can be weighted")
          ;
 
 
@@ -164,6 +167,7 @@ Options parse_options(int argc, const char **argv) {
     options.decreasing_transitions_must_be_good = vm.count("decreasing_transitions_must_be_good") > 0;
     options.allow_cycles = vm.count("allow_cycles") > 0;
     options.use_action_ids = vm.count("use_action_ids") > 0;
+    options.use_weighted_tx = vm.count("use_weighted_tx") > 0;
 
     return options;
 }

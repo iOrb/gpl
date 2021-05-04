@@ -3,11 +3,11 @@ from sltp.util.misc import update_dict
 
 from gpl.domains.fond_grid_games.domain import Domain
 
-DOMAIN_NAME = "shoot"
+from domain_params import shoot_params
 
 def experiments():
     base = dict(
-        domain=Domain(DOMAIN_NAME),
+        domain=Domain(shoot_params),
         maxsat_encoding="d2l",
         num_states="all",
         concept_generator=None,
@@ -41,6 +41,7 @@ def experiments():
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=True,
+        use_weighted_tx=False,
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],

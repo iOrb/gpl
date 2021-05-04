@@ -2,11 +2,11 @@ from sltp.util.misc import update_dict
 
 from gpl.domains.fond_grid_games.domain import Domain
 
-DOMAIN_NAME = "space_invaders"
+from domain_params import space_invaders_params
 
 def experiments():
     base = dict(
-        domain=Domain(DOMAIN_NAME),
+        domain=Domain(space_invaders_params),
         maxsat_encoding="d2l",
         num_states="all",
         concept_generator=None,
@@ -20,9 +20,8 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=[1],
-        # instances=[0, 2, 3],
-        test_instances=[0, 1],
+        instances=[2],
+        test_instances=[0, 1, 2],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
@@ -41,6 +40,7 @@ def experiments():
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=True,
+        use_weighted_tx=True,
 
         sampling_strategy="goal",
 

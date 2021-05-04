@@ -261,7 +261,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
             // TODO: If (s,a) leads to unsolvable state, skip it
 //                if (is_necessarily_bad_sa({s, a})) continue;
             clause.push_back(Wr::lit(variables.goods_s_a.at({s, a}), true));
-               wr.cl({Wr::lit(variables.goods_s_a.at({s, a}), false)}, 1);
+//               wr.cl({Wr::lit(variables.goods_s_a.at({s, a}), false)}, 1);
         }
 
         wr.cl(clause);
@@ -289,7 +289,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                         clause.push_back(Wr::lit(vs.at({sp, kp}),true));
                     }
 
-                    wr.cl(clause, 1);
+                    wr.cl(clause);
                     ++n_descending_clauses;
                 }
             }
@@ -302,12 +302,14 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
 //            Good(s, a) -> Good(s, a, s')
             cnfclause_t clause{Wr::lit(variables.goods_s_a.at({s, a}), false)};
             for (const auto& sp:sample_.successors({s, a})) {
-//                if (sample_.is_goal(sp)) {
-//                    wr.cl({Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true)}, 1);
-//                    ++n_descending_clauses;
-//                }
+                if (sample_.is_goal(sp)) {
+                    wr.cl({Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true)}, 1);
+                    ++n_descending_clauses;
+                }
                 clause.push_back(Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true));
-               wr.cl({Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), false)}, 1);
+                if (options.use_weighted_tx) {
+                    wr.cl({Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), false)}, 1);
+                }
             }
             wr.cl(clause);
             ++n_good_tx_clauses;

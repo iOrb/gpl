@@ -18,8 +18,8 @@ class Grammar:
         self.domain_name = domain_name
         self.object_bytes = self.objects_to_bytes()
 
-    def state_to_atoms(self, state,):
-        return state_to_atoms(self.domain_name, state,)
+    def state_to_atoms(self, state, p):
+        return state_to_atoms(self.domain_name, state, p)
 
     def state_to_atoms_string(self, state,):
         return atom_tuples_to_string(self.state_to_atoms(state,))

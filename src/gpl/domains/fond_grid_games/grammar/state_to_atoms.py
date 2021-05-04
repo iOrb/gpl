@@ -1,11 +1,10 @@
 import copy
 
-from .objects import OBJECTS
 from .language import *
-from gpl.domains.fond_grid_games import configd
+from .objects import OBJECTS
 
 # General State to atoms
-def state_to_atoms(domain_name, state):
+def state_to_atoms(domain_name, state, p):
     brd = copy.deepcopy(state[0][0])
     nrows, ncols = brd.shape
 
@@ -14,7 +13,7 @@ def state_to_atoms(domain_name, state):
 
     for r in range(-1, nrows + 1):
         for c in range(-1, ncols + 1):
-            for sort in configd.sorts_to_use:
+            for sort in p.sorts_to_use:
                 if nrows > r >= 0 and ncols > c >= 0:
                     o = brd[r, c]
                 else:
@@ -23,7 +22,7 @@ def state_to_atoms(domain_name, state):
                 if o not in {OBJECTS.empty, OBJECTS.none}:
                     atoms.append((f'{sort}-hv-{o}', CONST[sort](r, c)))
 
-    if configd.use_player_as_feature:
+    if p.use_player_as_feature:
         atoms.append(('player-{}'.format(state[0][1]),))
 
     return atoms

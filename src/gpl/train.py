@@ -99,7 +99,7 @@ def init_tasks(config, data, rng):
     data.tasks = list()
 
     for i, instance_name in enumerate(config.instances):
-        task = config.domain.generate_task(instance_name, config)
+        task = config.domain.generate_task(instance_name)
         data.tasks.append(task)
 
 def post_process_data(config, data):

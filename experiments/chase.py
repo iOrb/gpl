@@ -1,12 +1,13 @@
 from sltp.util.misc import update_dict
 
+
 from gpl.domains.fond_grid_games.domain import Domain
 
-DOMAIN_NAME = "chase"
+from domain_params import chase_params
 
 def experiments():
     base = dict(
-        domain=Domain(DOMAIN_NAME),
+        domain=Domain(chase_params),
         maxsat_encoding="d2l",
         num_states="all",
         concept_generator=None,
@@ -41,6 +42,7 @@ def experiments():
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=True,
+        use_weighted_tx=True,
 
         sampling_strategy="goal",
 
@@ -56,7 +58,6 @@ def experiments():
     )
 
     return exps
-
 
 
 

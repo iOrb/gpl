@@ -2,41 +2,40 @@ from .grammar.objects import OBJECTS
 from gpl.domain import IDomain
 from tarski.fstrips import fstrips, create_fstrips_problem
 from .task import Task
-from .utils import unserialize_layout
 import copy
 from .grammar.language import *
-from . import configd
 import importlib
 ANCHOR = 'gpl.domains.fond_grid_games'
 
 class Domain(IDomain):
-    def __init__(self, domain_name):
-        super().__init__(domain_name)
-        self.env = importlib.import_module(f'.envs.{domain_name}', ANCHOR).Env
+    def __init__(self, params):
+        super().__init__(params.domain_name)
+        self.params = params
+        self.env = importlib.import_module(f'.envs.{params.domain_name}', ANCHOR).Env
         self.action_space = self.env.get_action_space()
         self.type = 'fond'
 
     # Generate Language
     def generate_language(self):
         """ Generate the Tarski language corresponding to the given domain. """
-        return generate_lang(self._domain_name,)
+        return generate_lang(self._domain_name, self.params)
 
     # Generate Problem
     def generate_problem(self, lang, instance_name):
         """ Generate the Tarski problem corresponding to the given domain and particular layout. """
-        return generate_problem(self._domain_name, lang, self.env, instance_name)
+        return generate_problem(self._domain_name, lang, self.env, instance_name, self.params)
 
     # Generate Task
-    def generate_task(self, instance_name, config):
+    def generate_task(self, instance_name):
         """ Generate a Task object, according to the Interface ITask """
-        return Task(self._domain_name, instance_name, self.env, config)
+        return Task(self._domain_name, instance_name, self.env, self.params)
 
 
-def load_general_lang(lang, statics,):
+def load_general_lang(lang, statics, params):
     """ Return the FOL language corresponding to the Reach for the Star domain,
      plus a set with the names of those predicates / functions that are static. """
 
-    for sort in configd.sorts_to_use:
+    for sort in params.sorts_to_use:
         lang.sort(sort)
         # for o in OBJECTS.general | {OBJECTS.none}:
         for o in OBJECTS.general:
@@ -45,22 +44,22 @@ def load_general_lang(lang, statics,):
             lang.predicate(f'{d}_{sort}', sort, sort)
             statics.add(f'{d}_{sort}')
 
-    if configd.use_player_as_feature:
+    if params.use_player_as_feature:
         _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player.w, OBJECTS.player.b}]
 
     return lang, statics
 
 
-def load_general_problem(problem, lang, rep):
+def load_general_problem(problem, lang, rep, params):
     brd = copy.deepcopy(rep)
     nrows, ncols = rep.shape
-    if configd.use_player_as_feature:
+    if params.use_player_as_feature:
         problem.init.add(lang.get('player-{}'.format(OBJECTS.player.w)),)
 
     map_sorts = dict()
     for r in range(-1, nrows + 1):
         for c in range(-1, ncols + 1):
-            for sort in configd.sorts_to_use:
+            for sort in params.sorts_to_use:
                 try:
                     map_sorts[(r, c, sort)] = lang.constant(CONST[sort](r, c), lang.get(sort))
                 except:
@@ -77,7 +76,7 @@ def load_general_problem(problem, lang, rep):
         problem.init.add(lang.get(f'{direction}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
 
     for (row, col, sort), const in map_sorts.items():
-        if sort in CELL_S and not configd.map_cells:
+        if sort in CELL_S and not params.map_cells:
             continue
         if not ROW_S in sort:
             # Right
@@ -112,9 +111,9 @@ def load_general_problem(problem, lang, rep):
     return problem
 
 
-def generate_lang(domain_name,):
+def generate_lang(domain_name, params):
     lang, statics = generate_base_lang(domain_name)
-    load_general_lang(lang, statics,)
+    load_general_lang(lang, statics, params)
     return lang, statics
 
 
@@ -124,10 +123,10 @@ def generate_base_lang(domain_name):
     return lang, set()
 
 
-def generate_problem(domain_name, lang, env, instance_name):
+def generate_problem(domain_name, lang, env, instance_name, params):
     problem = generate_base_problem(domain_name, lang, instance_name)
     rep = env.get_grid(instance_name)
-    load_general_problem(problem, lang, rep)
+    load_general_problem(problem, lang, rep, params)
     return problem
 
 

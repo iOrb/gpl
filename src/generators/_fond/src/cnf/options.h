@@ -79,6 +79,7 @@ struct Options {
     bool decreasing_transitions_must_be_good;
     bool allow_cycles;
     bool use_action_ids;
+    bool use_weighted_tx;
 };
 
 Options parse_options(int argc, const char** argv);

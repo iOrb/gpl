@@ -1,4 +1,5 @@
 import copy
+import random
 import sys
 
 import numpy as np
@@ -35,7 +36,7 @@ AGENT_ACTION_SPACE = {
 MARTIANS_ACTION_SPACE = {
     RIGHT,
     LEFT,
-    DOWN,
+    # DOWN,
 }
 
 ACTION_MOVE_DIRECTION = {
@@ -45,7 +46,7 @@ ACTION_MOVE_DIRECTION = {
 }
 
 MAX_ACTIONS_BY_TURN = {
-    WHITE:5,
+    WHITE:1,
     BLACK:1,
 }
 
@@ -101,13 +102,9 @@ class Env(object):
 
     @staticmethod
     def player2_policy(rep):
-        assert (BLACK_KING in rep[0])
-        assert (rep[1] in BLACK)
-        bk = np.argwhere(rep[0] == BLACK_KING)[0]
-        wk = np.argwhere(rep[0] == WHITE_KING)[0]
         valid_actions = Env.available_actions(rep)
         assert valid_actions
-        return valid_actions[0]
+        return random.choice(valid_actions)
 
     @staticmethod
     def get_action_space():
@@ -218,12 +215,13 @@ def generate_gird(key):
     height, width, col_agent, martian_rows = LAYOUTS[key]
     grid = np.full((height, width), EMPTY, dtype=object)
     grid[height - 1, col_agent] = WHITE_KING
-    grid[martian_rows, :-1] = BLACK_KING
+    grid[martian_rows, :-2] = BLACK_KING
     return grid
 
 LAYOUTS = {
     0: (6, 4, 2, [0]),
     1: (10, 4, 1, [0]),
+    2: (10, 10, 1, [0]),
 }
 
 

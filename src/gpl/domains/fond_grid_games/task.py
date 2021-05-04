@@ -5,7 +5,6 @@ from gpl.utils import unpack_state
 import random
 from .grammar.grammar import Grammar
 
-from .utils import unserialize_layout
 from .grammar.objects import OBJECTS
 
 # State: (representation, info, state_encoded)
@@ -14,11 +13,11 @@ class Task(ITask):
     """
     General Planning task
     """
-    def __init__(self, domain_name, instance_name, env, config):
+    def __init__(self, domain_name, instance_name, env, params):
         super().__init__(domain_name, instance_name)
 
+        self.params = params
         self.env = env
-        self.config = config
         self.__init_task(instance_name)
 
     def __init_task(self, instance_name):
@@ -34,8 +33,8 @@ class Task(ITask):
     def encode_state(self, rep, info):
         return self.grammar.encode_state(rep, info)
 
-    def state_to_atoms(self, state,):
-        return self.grammar.state_to_atoms(state,)
+    def state_to_atoms(self, state):
+        return self.grammar.state_to_atoms(state, self.params)
 
     def state_to_atoms_string(self, state,):
         return self.grammar.atom_tuples_to_string(self.state_to_atom_tuples(state,))
@@ -73,7 +72,10 @@ class Task(ITask):
         def __transition_player(state, op):  # s -> a -> s'
             r = state[0]
             goal, deadend = self.infer_info(r)
-            assert not goal and not deadend
+            try:
+                assert not goal and not deadend
+            except:
+                pass
             r1 = self.env.act(r, op)  # player move
             goal, deadend = self.infer_info(r1)
             return self.colapse_state(r1, goal, deadend)
@@ -89,7 +91,6 @@ class Task(ITask):
             else:
                 succs_spp = []
                 ava_actions1 = self.env.available_actions(state1[0])
-                # deadend = False
                 for op1 in ava_actions1:
                     state2 = __transition_player(state1, op1)
                     if state2[2] == state1[2]:

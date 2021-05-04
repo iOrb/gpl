@@ -35,6 +35,7 @@ def invoke_cpp_module(config, data, validate_features=None):
     args += ["--decreasing_transitions_must_be_good"] if config.decreasing_transitions_must_be_good else []
     args += ["--allow_cycles"] if config.allow_cycles else []
     args += ["--use_action_ids"] if config.use_action_ids else []
+    args += ["--use_weighted_tx"] if config.use_weighted_tx else []
     retcode = execute([cmd] + args)
 
     return {  # Let's map the numeric code returned by the c++ app into an ExitCode object
@@ -51,12 +52,12 @@ def run(config, data, rng):
         return ExitCode.Success, dict(d2l_policy=None) # keep trying
 
     # Parse the DNF transition-classifier and transform it into a policy
-    # policy = parse_dnf_policy(config)
-    policy = parse_dnfa_policy(config)
+    policy = parse_dnf_policy(config)
+    # policy = parse_dnfa_policy(config)
 
     # policy.minimize()
-    print("Policy:")
-    policy.print()
+    # print("Policy:")
+    # policy.print()
     print("\nFINAL POLICY:")
     policy.print_aaai20()
 

@@ -73,7 +73,7 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
             search_policy = get_policy(model_factory, static_atoms, data)
 
             # define the Task
-            task = config.domain.generate_task(instance_name, config)
+            task = config.domain.generate_task(instance_name)
 
             # And now we inject our desired search and heuristic functions
             run_test(config, search_policy, task, instance_name, rng)
@@ -131,7 +131,7 @@ def run_test(config, search_policy, task, instance_name, rng):
 
         if sp[1]['deadend']:
             raise PolicySearchException(ExitCode.DeadEndReached)
-        if sa_pairs[sa_pair_enc] > 5:
+        if sa_pairs[sa_pair_enc] > 2:
             raise PolicySearchException(ExitCode.AbstractPolicyNonTerminatingOnTestInstances)
 
         solution.append(encode_operator(s, op, task))
