@@ -302,6 +302,10 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
 //            Good(s, a) -> Good(s, a, s')
             cnfclause_t clause{Wr::lit(variables.goods_s_a.at({s, a}), false)};
             for (const auto& sp:sample_.successors({s, a})) {
+//                if (sample_.is_goal(sp)) {
+//                    wr.cl({Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true)}, 1);
+//                    ++n_descending_clauses;
+//                }
                 clause.push_back(Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true));
                wr.cl({Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), false)}, 1);
             }
@@ -400,8 +404,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
 std::vector<transition_pair> D2LEncoding::distinguish_all_transitions() const {
     std::vector<transition_pair> transitions_to_distinguish;
     transitions_to_distinguish.reserve(class_representatives_.size() * class_representatives_.size());
-
-
     for (const auto tx1:class_representatives_) {
         if (is_necessarily_bad(tx1)) continue;
         for (const auto tx2:class_representatives_) {
@@ -474,9 +476,9 @@ DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variabl
     }
 
     if (options.verbosity) {std::cout << std::endl << "Num Good(s, a, sp) selected: " << n_good_s_a_sp << std::endl;}
-    if (options.verbosity) {std::cout << "Num Good(s, sp) selected: " << goods.size() << std::endl;}
+    if (options.verbosity) {std::cout << "Num (s, sp) from Good(s, a, sp): " << goods.size() << std::endl;}
     if (options.verbosity) {std::cout << "Num Good(s, a) selected: " << n_good_s_a << std::endl;}
-    if (options.verbosity) {std::cout << "Num (s, sp) involved: " << s_sp_involved.size() << std::endl;}
+    if (options.verbosity) {std::cout << "Num (s, sp) from Good(s, a): " << s_sp_involved.size() << std::endl;}
     std::vector<std::pair<unsigned, unsigned>> goods_{goods.begin(), goods.end()};
     return generate_dnf(goods_, selecteds);
 }

@@ -142,6 +142,7 @@ namespace sltp {
                     // No need to do anything, we don't know whether the state is unsolvable or not
                 }
                 vstar_[s] = vstar;
+                if (is_unsolvable(s)) continue;
 
                 if (n_sp > 0) {
                     std::set<unsigned> tmp_sps;
