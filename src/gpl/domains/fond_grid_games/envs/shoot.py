@@ -123,7 +123,7 @@ class Env(object):
         if checkmate(rep):
             return 1
         else:
-            return -1
+            return 0
 
     @staticmethod
     def player2_policy(rep):

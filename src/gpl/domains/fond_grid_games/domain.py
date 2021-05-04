@@ -77,6 +77,8 @@ def load_general_problem(problem, lang, rep):
         problem.init.add(lang.get(f'{direction}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
 
     for (row, col, sort), const in map_sorts.items():
+        if sort in CELL_S and not configd.map_cells:
+            continue
         if not ROW_S in sort:
             # Right
             if col < ncols:

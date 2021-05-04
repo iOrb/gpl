@@ -58,6 +58,5 @@ def get_sampling_class(config):
     sampling_class = {
         'fond': TransitionSampleFOND(),
     }[config.domain.type]
-    if config.discrete_action_space:
-        sampling_class.set_operators(config.domain.action_space)
+    sampling_class.set_operators(config.domain.action_space)
     return sampling_class

@@ -66,8 +66,6 @@ class TransitionSampleFOND:
                 state)  # this should be the representation as atoms
             self.sid_count += 1
         id = self.get_state_id(s_encoded)
-        if id == 8 or id == 26:
-            pass
         if goal:
             self.goals.add(id)
         elif deadend:
@@ -79,9 +77,6 @@ class TransitionSampleFOND:
 
     def get_instance_id(self, instance_name):
         return self.instance_ids[instance_name]
-
-    def get_representative_op_effect(self, oid):
-        return self.representative_op_effects[oid]
 
     def check_operator(self, s, op, task, instance_id):
         o_raw = encode_operator(s, op, task)

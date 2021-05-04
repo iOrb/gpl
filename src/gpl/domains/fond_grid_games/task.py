@@ -58,6 +58,8 @@ class Task(ITask):
         gstatus = self.env.check_game_status(r)
         if gstatus == 1:
             goal = True
+        elif gstatus == -1:
+            deadend = True
         return goal, deadend
 
     def colapse_state(self, rep1, goal, deadend):
@@ -71,9 +73,7 @@ class Task(ITask):
         def __transition_player(state, op):  # s -> a -> s'
             r = state[0]
             goal, deadend = self.infer_info(r)
-            if goal or deadend:
-                return self.colapse_state(r, goal, deadend)
-            # assert not goal and not deadend
+            assert not goal and not deadend
             r1 = self.env.act(r, op)  # player move
             goal, deadend = self.infer_info(r1)
             return self.colapse_state(r1, goal, deadend)

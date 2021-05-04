@@ -22,6 +22,7 @@ struct VariableMapping {
     //! A map from transition IDs to SAT variable IDs:
     std::unordered_map<unsigned, cnfvar_t> goods;
     std::unordered_map<sa_pair, cnfvar_t, boost::hash<sa_pair>> goods_s_a;
+    std::unordered_map<tx_triple, cnfvar_t, boost::hash<tx_triple>> goods_s_a_sp;
     std::unordered_map<state_id_t, cnfvar_t, boost::hash<state_id_t>> bad_s; // bad(s)
 
     explicit VariableMapping(unsigned nfeatures) : selecteds(nfeatures, std::numeric_limits<uint32_t>::max())
@@ -73,9 +74,9 @@ public:
 
     inline const state_pair& get_state_pair(unsigned tx) const { return transition_ids_inv_.at(tx); }
 
-//    inline const state_id_t& get_s(tx_triple tx) const { return std::get<0>(tx); }
-//    inline const state_id_t& get_a(tx_triple tx) const { return std::get<1>(tx); }
-//    inline const state_id_t& get_sp(tx_triple tx) const { return std::get<2>(tx); }
+    inline const state_id_t& get_s(tx_triple tx) const { return std::get<0>(tx); }
+    inline const state_id_t& get_a(tx_triple tx) const { return std::get<1>(tx); }
+    inline const state_id_t& get_sp(tx_triple tx) const { return std::get<2>(tx); }
 
     inline bool is_necessarily_bad(unsigned tx) const {
         return necessarily_bad_transitions_.find(tx) != necessarily_bad_transitions_.end();
