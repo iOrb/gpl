@@ -1,29 +1,25 @@
 from sltp.util.misc import update_dict
-
-
 from gpl.domains.grid_games.domain import Domain
-
-from domain_params import chase_params
+from domain_params import pick_package_params
 
 def experiments():
     base = dict(
-        domain=Domain(chase_params),
+        domain=Domain(pick_package_params),
         maxsat_encoding="d2l",
         num_states="all",
         concept_generator=None,
         parameter_generator=None,
         v_slack=2,
         acyclicity='topological',
-        discrete_action_space=False,
         use_incremental_refinement=False,
     )
 
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=[3],
+        instances=[0],
         # instances=[0, 2, 3],
-        test_instances=[0, 1, 2, 3, 4, 5, 6, 7],
+        test_instances=[0, 1, 2, 3],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
@@ -34,15 +30,15 @@ def experiments():
         print_hstar_in_feature_matrix=False,
 
         verbosity=1,
-        initial_sample_size=10,
-        refinement_batch_size=20,
+        initial_sample_size=100,
+        refinement_batch_size=200,
         maxsat_iter=10,
 
         allow_bad_states=False,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=True,
-        use_weighted_tx=True,
+        use_weighted_tx=False,
 
         sampling_strategy="goal",
 

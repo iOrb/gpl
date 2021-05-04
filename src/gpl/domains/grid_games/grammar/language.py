@@ -10,6 +10,7 @@ CONST = {
 
 ALL_GRID_DIRECTIONS = ['up', 'rightup', 'right', 'rightdown', 'down', 'leftdown', 'left', 'leftup']
 UP, RIGHTUP, RIGHT, RIGHTDOWN, DOWN, LEFTDOWN, LEFT, LEFTUP = [d for d in ALL_GRID_DIRECTIONS]
+ADJACENT = 'adjacent'
 
 GRID_DIRECTIONS = {
     CELL_S: ALL_GRID_DIRECTIONS,

@@ -2,7 +2,7 @@ import string
 import sys
 
 from .state_to_atoms import state_to_atoms, atom_tuples_to_string
-from .objects import OBJECTS
+from .objects import get_domain_objects
 
 ASCII = string.printable
 # ASCII = ''.join(chr(x) for x in range(50, 1000))
@@ -45,6 +45,8 @@ class Grammar:
 
     def objects_to_bytes(self):
 
+        OBJECTS = get_domain_objects(self.domain_name)
+
         object_bytes = dict()
         possible_chars = ASCII
 
@@ -52,7 +54,7 @@ class Grammar:
             possible_chars, b = possible_chars[1:], possible_chars[0]
             object_bytes[obj] = ord(b)
 
-        for obj in {OBJECTS.player.w, OBJECTS.player.b}:
+        for obj in {OBJECTS.player1, OBJECTS.player2}:
             possible_chars, b = possible_chars[1:], possible_chars[0]
             object_bytes[obj] = ord(b)
 

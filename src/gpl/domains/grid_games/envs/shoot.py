@@ -39,27 +39,14 @@ DOWN = 5 # 'down'
 RIGHT = 6 # 'right'
 LEFT = 7 # 'left'
 
-# ACTION_SPACE = {SHOOT, UP, DOWN, RIGHT, LEFT}
-ACTION_SPACE = {UP_S, DOWN_S, RIGHT_S, LEFT_S, UP, DOWN, RIGHT, LEFT}
-
-# ACTION_ID  = {
-#     UP_S:1,
-#     DOWN_S:2,
-#     RIGHT_S:3,
-#     LEFT_S:4,
-#     UP:5,
-#     DOWN:6,
-#     RIGHT:7,
-#     LEFT:8,
-# }
-
-# ID_ACTION  = {ACTION_ID[k]:k for k in ACTION_ID.keys()}
+ACTION_SPACE = {
+    UP,
+    DOWN,
+    RIGHT,
+    LEFT
+}
 
 ACTION_MOVE_DIRECTION = {
-    UP_S: (-1, 0),
-    DOWN_S: (1, 0),
-    RIGHT_S: (0, 1),
-    LEFT_S: (0, -1),
     UP: (-1, 0),
     DOWN: (1, 0),
     RIGHT: (0, 1),

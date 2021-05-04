@@ -1,6 +1,6 @@
 from sltp.util.misc import update_dict
 
-from gpl.domains.fond_grid_games.domain import Domain
+from gpl.domains.grid_games.domain import Domain
 
 from domain_params import space_invaders_params
 

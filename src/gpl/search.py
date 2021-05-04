@@ -148,11 +148,8 @@ def bfs(config, data, search_policy, task, instance_name, rng):
     while queue:
         s = queue.pop(0)
         sr, _, _, s_encoded, info = unpack_state(s)
-
         succcessors = task.get_successor_states(s)
-
         alive, _, _ = data.sample.process_successors(s, succcessors, task)
-
         for op, succ in alive:
             if succ[2] not in visited:
                 visited.add(succ[2])

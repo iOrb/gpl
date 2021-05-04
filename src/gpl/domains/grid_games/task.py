@@ -5,7 +5,7 @@ from gpl.utils import unpack_state
 import random
 from .grammar.grammar import Grammar
 
-from .grammar.objects import OBJECTS
+from .grammar.objects import get_domain_objects
 
 # State: (representation, info, state_encoded)
 
@@ -18,13 +18,14 @@ class Task(ITask):
 
         self.params = params
         self.env = env
+        self.objects = get_domain_objects(domain_name)
         self.__init_task(instance_name)
 
     def __init_task(self, instance_name):
         brd = self.env.get_grid(instance_name)
         self.__representative_instance_name = "{}x{}".format(*brd.shape)
         num_actions_executed = 0
-        r = (brd, OBJECTS.player.w, num_actions_executed)
+        r = (brd, self.objects.player1, num_actions_executed)
         info = {'goal': 0, 'deadend': 0}
         self.grammar = Grammar(self.get_domain_name(),)
         encoded_s = self.grammar.encode_state(r, info)
@@ -45,7 +46,7 @@ class Task(ITask):
         assert not goal and not deadend
         r1 = self.env.act(r0, operator)  # our move
         goal, deadend = self.infer_info(r1)
-        if goal or deadend or r1[1] == OBJECTS.player.w:
+        if goal or deadend or r1[1] == self.objects.player1:
             return self.colapse_state(r1, goal, deadend)
         op = self.env.player2_policy(r1)
         r2 = self.env.act(r1, op)  # adversary move
@@ -81,7 +82,7 @@ class Task(ITask):
         ava_actions = self.env.available_actions(r0)
         for op0 in ava_actions:
             state1 = __transition_player(state0, op0)
-            if state1[1]['goal'] or state1[1]['deadend'] or state1[0][1] == OBJECTS.player.w:
+            if state1[1]['goal'] or state1[1]['deadend'] or state1[0][1] == self.objects.player1:
                 if state1[2] == state0[2]:
                     continue
                 succs_sp.append((op0, state1))

@@ -1,11 +1,12 @@
-from .grammar.objects import OBJECTS
+from .grammar.objects import get_domain_objects
 from gpl.domain import IDomain
 from tarski.fstrips import fstrips, create_fstrips_problem
 from .task import Task
 import copy
 from .grammar.language import *
 import importlib
-ANCHOR = 'gpl.domains.fond_grid_games'
+ANCHOR = 'gpl.domains.grid_games'
+OBJECTS = None
 
 class Domain(IDomain):
     def __init__(self, params):
@@ -14,6 +15,11 @@ class Domain(IDomain):
         self.env = importlib.import_module(f'.envs.{params.domain_name}', ANCHOR).Env
         self.action_space = self.env.get_action_space()
         self.type = 'fond'
+        self.set_objects()
+
+    def set_objects(self):
+        global OBJECTS
+        OBJECTS = get_domain_objects(self.get_domain_name())
 
     # Generate Language
     def generate_language(self):
@@ -40,9 +46,13 @@ def load_general_lang(lang, statics, params):
         # for o in OBJECTS.general | {OBJECTS.none}:
         for o in OBJECTS.general:
             lang.predicate(f'{sort}-hv-{o}', sort)
-        for d in GRID_DIRECTIONS[sort]:
-            lang.predicate(f'{d}_{sort}', sort, sort)
-            statics.add(f'{d}_{sort}')
+        if CELL_S in sort and params.use_adjacency_for_map_cells:
+            lang.predicate(f'{ADJACENT}_{sort}', sort, sort)
+            statics.add(f'{ADJACENT}_{sort}')
+        else:
+            for d in GRID_DIRECTIONS[sort]:
+                lang.predicate(f'{d}_{sort}', sort, sort)
+                statics.add(f'{d}_{sort}')
 
     if params.use_player_as_feature:
         _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player.w, OBJECTS.player.b}]
@@ -73,7 +83,10 @@ def load_general_problem(problem, lang, rep, params):
                     problem.init.add(lang.get(f'{sort}-hv-{o}'), lang.get(CONST[sort](r, c)))
 
     def __add_direction_predicate(problem, lang, direction, sort, const, new_r, new_c):
-        problem.init.add(lang.get(f'{direction}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
+        if CELL_S in sort and params.use_adjacency_for_map_cells:
+            problem.init.add(lang.get(f'{ADJACENT}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
+        else:
+            problem.init.add(lang.get(f'{direction}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
 
     for (row, col, sort), const in map_sorts.items():
         if sort in CELL_S and not params.map_cells:
