@@ -205,7 +205,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
 
     // Create a variable "Bad(s)" for each alive state
     if (options.allow_bad_states) {
-        for (unsigned s:sample_.transitions_.all_alive()) {
+        for (unsigned s:sample_.expanded_states()) {
             cnfvar_t bad_s_var = 0;
             bad_s_var = wr.var("Bad(" + std::to_string(s) + ")");
             variables.bad_s.emplace(s, bad_s_var);
@@ -292,6 +292,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                         for (const auto& tp:sample_.successors({t, b})) {
                             cnfclause_t clause{Wr::lit(good_s_a_sp_var, false)};
                             if (a != b) continue;
+                            if (s == t) continue;
                             // Compute first the Selected(f) terms
                             for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
                                 clause.push_back(Wr::lit(variables.selecteds.at(f), true));

@@ -19,9 +19,8 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=[0, 1, 2, 3, 6],
-        # instances=[0, 2, 3],
-        test_instances=[0, 1, 2, 3, 4, 5, 6],
+        instances=[8, 9, 10, 11, 12],
+        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
@@ -42,7 +41,7 @@ def experiments():
         use_action_ids=True,
         use_weighted_tx=False,
 
-        sampling_strategy="goal",
+        sampling_strategy="random",
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],

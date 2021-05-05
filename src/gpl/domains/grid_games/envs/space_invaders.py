@@ -4,6 +4,9 @@ import sys
 
 import numpy as np
 
+WHITE = 1
+BLACK = 2
+
 EMPTY = 'empty'
 BLACK_KING = 'black_king'
 WHITE_KING = 'white_king'
@@ -11,14 +14,11 @@ WHITE_KING = 'white_king'
 ALL_TOKENS = [EMPTY, BLACK_KING, WHITE_KING]
 
 COLOR_TO_PIECES = {
-    'white': [WHITE_KING,],
-    'black': [BLACK_KING,],
+    WHITE: [WHITE_KING,],
+    BLACK: [BLACK_KING,],
 }
 
-WHITE = 'white'
-BLACK = 'black'
-
-opposite_color = lambda c: 'black' if c == 'white' else 'white'
+opposite_color = lambda c: BLACK if c == WHITE else WHITE
 
 # Actions IDs
 
@@ -36,7 +36,7 @@ AGENT_ACTION_SPACE = {
 MARTIANS_ACTION_SPACE = {
     RIGHT,
     LEFT,
-    DOWN,
+    # DOWN,
 }
 
 ACTION_MOVE_DIRECTION = {
@@ -46,7 +46,7 @@ ACTION_MOVE_DIRECTION = {
 }
 
 MAX_ACTIONS_BY_TURN = {
-    WHITE:1,
+    WHITE:2,
     BLACK:1,
 }
 
@@ -69,9 +69,9 @@ class Env(object):
         assert not terminated(rep)
         valid_actions = Env.available_actions(rep)
         assert action_id in valid_actions
-        if color in WHITE:
+        if color == WHITE:
             l = layout_after_agent_action(layout, action_id)
-        elif color in BLACK:
+        elif color == BLACK:
             l = layout_after_env_action(layout, action_id)
         if nact + 1 < MAX_ACTIONS_BY_TURN[color]:
             return (l, color, nact + 1)
@@ -93,10 +93,10 @@ class Env(object):
     def available_actions(rep):
         layout, player, nact = rep
         actions = []
-        if player == 'white':
+        if player == WHITE:
             pos = np.argwhere(layout == WHITE_KING)[0]
             actions += PIECE_VALID_ACTIONS[WHITE_KING](pos, layout)
-        elif player == 'black':
+        elif player == BLACK:
             actions += PIECE_VALID_ACTIONS[BLACK_KING](layout)
         return actions
 
@@ -222,17 +222,6 @@ LAYOUTS = {
     0: (6, 4, 2, [0]),
     1: (10, 4, 1, [0]),
     2: (10, 10, 1, [0]),
+    3: (7, 5, 2, [0]),
+    4: (9, 5, 4, [0, 1]),
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

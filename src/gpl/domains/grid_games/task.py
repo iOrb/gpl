@@ -73,10 +73,7 @@ class Task(ITask):
         def __transition_player(state, op):  # s -> a -> s'
             r = state[0]
             goal, deadend = self.infer_info(r)
-            try:
-                assert not goal and not deadend
-            except:
-                raise
+            assert not goal and not deadend
             r1 = self.env.act(r, op)  # player move
             goal, deadend = self.infer_info(r1)
             return self.colapse_state(r1, goal, deadend)

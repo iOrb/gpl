@@ -131,6 +131,9 @@ def bfs(config, data, search_policy, task, instance_name, rng):
 
     logging.info(f'Expanding train instance: {task.get_domain_name()} - {instance_name}')
 
+    if config.verbosity > 0:
+        print(task.initial_state[0][0])
+
     visited = set()
     istate = task.initial_state
     queue = [istate]
