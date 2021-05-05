@@ -302,8 +302,8 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                 if (options.decreasing_transitions_must_be_good) {
                     // (3') Border condition: if s' is a goal, then (s, s') must be good
                     if (sample_.is_goal(sp)) {
-                        wr.cl({Wr::lit(good_s_a_var, true)}, 1);
-                        wr.cl({Wr::lit(good_s_a_sp_var, true)}, 1);
+                        wr.cl({Wr::lit(good_s_a_var, true)});
+                        wr.cl({Wr::lit(good_s_a_sp_var, true)});
                         ++n_descending_clauses;
                     }
                 }
@@ -327,10 +327,10 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                         if (options.decreasing_transitions_must_be_good) {
                             wr.cl({Wr::lit(vs.at({sp, k}), false),
                                    Wr::lit(vs.at({s, kp}), false),
-                                   Wr::lit(good_s_a_var, true)}, 1);
+                                   Wr::lit(good_s_a_var, true)});
                             wr.cl({Wr::lit(vs.at({sp, k}), false),
                                    Wr::lit(vs.at({s, kp}), false),
-                                   Wr::lit(good_s_a_sp_var, true)}, 1);
+                                   Wr::lit(good_s_a_sp_var, true)});
                             ++n_descending_clauses;
                         }
                     }

@@ -89,7 +89,7 @@
 
 \maketitle
 
-\section{Learning of Generalized Features \& Policy in Adversarial FOND domains}
+\section{Learning of Generalized Features \& Policy in FOND domains unsipervised}
 
 Encoding is parametrized by
 \begin{itemize}
@@ -129,18 +129,20 @@ We use \badtx{} to denote the set of transitions that have been determined at pr
 At the moment, this set contains all transitions that go from an alive to an unsolvable state and, if using
 equivalence relations, all those other transitions in whose equivalence class there is some other ``bad'' transition.
 
+\paragraph{Bad'}
+
 \newpage
 
-\subsection{Fixed Pool $A$ of actions}
+\subsection{Encoding for FOND domains}
 
-We here assume that all instances $P$ of the generalized problem have the same fixed set of actions $A$.
-We denote by $(s, a, s'') \in T$ tuples of state, action, and possible state $s''$ resulting from the adversary
-response to the application of $a$ in $s$.
+We here assume that all instances $P$ of the generalized problem have a set of actions $A$.
+We denote by $(s, a, s') \in T$ tuples of state, action, and possible state $s'$ resulting from executing $a$ in $s$.
 
-\subsubsection{Variables}
+\subsubsection{Main Variables}
 
 \begin{itemize}
  \item $Good(s, a)$ for $s$ alive, solvable, and $a \in A$.
+ \item $Good(s, a, s')$ for $s$ alive, solvable, and $a \in A$.
 
  \item $Bad(s)$ for $s$ alive.
 
@@ -171,6 +173,11 @@ The policy has to be complete with respect to all possible actions applicable in
 \bigvee_{a \in A} Good(s, a),&\;\; \text{for $s$ alive.}
 \end{align}
 
+\smallpar{C1}
+The policy has to be complete with respect to all alive states:
+\begin{align}
+\bigvee_{s' \text{ s.t. } (s, s') \in T \setminus \badtx} Good(s, s'),&\;\; \text{for $s$ alive.}
+\end{align}
 
 \smallpar{C2} $V$ is always descending along Good actions. For each $(s, a, s')$ in the set of non-deterministic transitions
 such that both $s$ and $s'$ are alive, post:

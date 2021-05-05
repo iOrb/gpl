@@ -44,7 +44,7 @@ def experiments():
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=True,
-        use_weighted_tx=True,
+        use_weighted_tx=False,
         distinguish_goals=True,
 
         sampling_strategy="goal",
