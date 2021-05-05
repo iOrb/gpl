@@ -42,7 +42,7 @@ AGENT_ACTION_SPACE = {
 MARTIANS_ACTION_SPACE = {
     RIGHT,
     LEFT,
-    # DOWN,
+    DOWN,
 }
 
 ACTION_MOVE_DIRECTION = {
@@ -52,7 +52,7 @@ ACTION_MOVE_DIRECTION = {
 }
 
 MAX_ACTIONS_BY_TURN = {
-    WHITE:2,
+    WHITE:3,
     BLACK:1,
 }
 
@@ -158,8 +158,11 @@ def layout_after_env_action(layout, action_id):
     for pos in zip(martians_pos[0], martians_pos[1]):
         running_pos = np.add(pos, ACTION_MOVE_DIRECTION[action_id])
         martians_new_pos.append((running_pos[0], running_pos[1]))
+    nrows, ncols = layout.shape
     for pos in martians_new_pos:
         l[pos] = BLACK_KING
+        if pos[0] == nrows-2:
+            l = np.where(l == WHITE_KING, EMPTY, l)
     return l
 
 
@@ -178,7 +181,8 @@ def agent_valid_actions(pos, layout):
         if next_cell in [BLACK_KING]:
             continue
         valid_action.append(action_id)
-    valid_action.append(SHOOT)
+    if SHOOT in AGENT_ACTION_SPACE:
+        valid_action.append(SHOOT)
     return valid_action
 
 
@@ -198,7 +202,8 @@ def layout_after_agent_action(layout, action_id):
         if layout[new_r, new_c] != BLACK_KING:  # not running into martians!
             l[new_r, new_c] = piece
         l[old_r, old_c] = EMPTY
-        return l
+        return layout_after_agent_shoot(running_pos, l)
+        # return l
 
 
 def layout_after_agent_shoot(pos, layout):
@@ -221,17 +226,34 @@ def layout_after_agent_shoot(pos, layout):
 
 ### Instances
 def generate_gird(key):
-    height, width, col_agent, martian_rows = LAYOUTS[key]
+    height, width, col_agent, martian_rows, martian_columns = LAYOUTS[key]
     grid = np.full((height, width), EMPTY, dtype=object)
     grid[height - 1, col_agent] = WHITE_KING
-    grid[martian_rows, :-2] = BLACK_KING
+    for c in martian_columns:
+        grid[martian_rows, c] = BLACK_KING
     return grid
 
+LAYOUTS_ = {
+    0: (6, 4, 2, [0], [0]),
+    1: (10, 4, 1, [0], [3]),
+    2: (10, 10, 1, [0],[9]),
+    3: (7, 5, 2, [0], [4]),
+    4: (9, 5, 4, [0], [2]),
+    5: (20, 8, 6, [0], [1]),
+    6: (20, 10, 0, [0], [8]),
+    7: (20, 20, 15, [0], [0]),
+    8: (9, 6, 0, [0], [5]),
+}
+
+
 LAYOUTS = {
-    0: (6, 4, 2, [0]),
-    1: (10, 4, 1, [0]),
-    2: (10, 10, 1, [0]),
-    3: (7, 5, 2, [0]),
-    4: (9, 5, 4, [0, 1]),
-    5: (20, 8, 4, list(range(6))),
+    0: (6, 4, 2, [0], [0, 2, 3]),
+    1: (10, 4, 1, [0], [0, 2, 3]),
+    2: (10, 10, 1, [0],[0, 2, 3]),
+    3: (7, 5, 2, [0], [0, 2, 3]),
+    4: (9, 5, 4, [0, 1], [0, 2, 3]),
+    5: (20, 8, 4, list(range(6)), [0, 2, 3]),
+    6: (20, 10, 0, [0], [0, 2, 3]),
+    7: (20, 20, 4, [0], [0, 19]),
+    8: (9, 6, 4, [0, 1], [0, 2, 4]),
 }

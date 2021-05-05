@@ -14,6 +14,8 @@ shoot_params = Bunch({
     'domain_name': 'shoot',
     'use_player_as_feature': False,
     'map_cells': False,
+    'use_diagonals_for_map_cells': False,
+    'use_adjacency': False,
     'sorts_to_use': {COL_S, ROW_S}
 })
 
@@ -21,9 +23,9 @@ space_invaders_params = Bunch({
     'domain_name': 'space_invaders',
     'use_player_as_feature': False,
     'map_cells': False,
-    'use_diagonals_for_map_cells': True,
-    'use_adjacency_for_map_cells': False,
-    'sorts_to_use': {COL_S}
+    'use_diagonals_for_map_cells': False,
+    'use_adjacency': False,
+    'sorts_to_use': {CELL_S},
 })
 
 pick_package_params = Bunch({

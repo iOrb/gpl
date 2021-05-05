@@ -22,34 +22,36 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=[4],
-        test_instances=[0, 1, 2, 3, 4, 5],
+        # instances=[0],
+        instances=[0, 2, 3, 4],
+        # instances=[0, 3, 4, 8],
+        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
         cond_feature_max_complexity=0,
         comparison_features=False,
-        generate_goal_concepts=False,
+        generate_goal_concepts=True,
         print_denotations=True,
         print_hstar_in_feature_matrix=False,
 
         verbosity=1,
         initial_sample_size=100,
-        refinement_batch_size=100,
-        maxsat_iter=10,
+        refinement_batch_size=20,
+        maxsat_iter=20,
 
-        allow_bad_states=False,
+        allow_bad_states=True,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=True,
-        use_weighted_tx=True,
+        use_weighted_tx=False,
         use_state_novelty=True,
+        distinguish_goals=True,
 
-        sampling_strategy="full",
+        sampling_strategy="random",
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],
-        distinguish_goals=True,
         # rollouts
         # num_episodes=1,
         # num_rollouts=1,
