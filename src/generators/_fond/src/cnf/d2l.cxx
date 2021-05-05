@@ -312,7 +312,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
             for (const auto& sp:sample_.successors({s, a})) {
                 if (options.use_weighted_tx) {
                     if (sample_.is_goal(sp)) {
-                        wr.cl({Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true)});
+                        wr.cl({Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true)}, 1);
                     }
                 }
                 clause.push_back(Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true));
@@ -328,29 +328,23 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     }
     for (const auto& s:sample_.expanded_states()) {
         for (const auto& a:sample_.s_as(s)) {
-            cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
             for (const auto& sp:sample_.successors({s, a})) {
                 cnfvar_t good_s_a_sp_var = variables.goods_s_a_sp.at({s, a, sp});
                 if (is_necessarily_bad(get_representative_id(get_transition_id(s, sp)))) continue;
 
                 for (const auto& t:sample_.expanded_states()) {
                     for (const auto& b:sample_.s_as(t)) {
-                        cnfvar_t good_t_b_var = variables.goods_s_a.at({t, b});
                         for (const auto& tp:sample_.successors({t, b})) {
                             cnfvar_t good_t_b_tp_var = variables.goods_s_a_sp.at({t, b, tp});
-                            cnfclause_t clause_s_a{Wr::lit(good_s_a_var, false)};
                             cnfclause_t clause_s_a_sp{Wr::lit(good_s_a_sp_var, false)};
                             if (a == b and s == t) continue;
                             // Compute first the Selected(f) terms
                             for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
-                                clause_s_a.push_back(Wr::lit(variables.selecteds.at(f), true));
                                 clause_s_a_sp.push_back(Wr::lit(variables.selecteds.at(f), true));
                             }
                             if (!is_necessarily_bad(get_representative_id(get_transition_id(t, tp)))) {
-                                clause_s_a.push_back(Wr::lit(good_t_b_var, true));
                                 clause_s_a_sp.push_back(Wr::lit(good_t_b_tp_var, true));
                             }
-                            wr.cl(clause_s_a);
                             wr.cl(clause_s_a_sp);
                             n_separation_clauses += 1;
                         }
@@ -494,7 +488,7 @@ DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variabl
         std::cout << "Num Good(s, a) selected: " << n_good_s_a << " (" << percentage_of_good_sa_selected <<"%)" << std::endl;
         std::cout << "Num (s, sp) involved: " << s_sp_involved.size() << std::endl;
     }
-    std::vector<std::pair<unsigned, unsigned>> goods_{s_sp_involved.begin(), s_sp_involved.end()};
+    std::vector<std::pair<unsigned, unsigned>> goods_{goods.begin(), goods.end()};
     return generate_dnf(goods_, selecteds);
 }
 

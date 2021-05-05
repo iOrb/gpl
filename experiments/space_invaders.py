@@ -23,7 +23,7 @@ def experiments():
     exps["1"] = update_dict(
         base,
         instances=[4],
-        test_instances=[0, 1, 2, 3, 4],
+        test_instances=[0, 1, 2, 3, 4, 5],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
@@ -43,6 +43,7 @@ def experiments():
         allow_cycles=False,
         use_action_ids=True,
         use_weighted_tx=True,
+        use_state_novelty=True,
 
         sampling_strategy="full",
 

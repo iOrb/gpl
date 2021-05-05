@@ -10,6 +10,12 @@ EMPTY = 'empty'
 BLACK_KING = 'black_king'
 WHITE_KING = 'white_king'
 
+SIMPLIFIED_OBJECT = {
+    EMPTY:'.',
+    BLACK_KING:'T',
+    WHITE_KING:'A',
+}
+
 ALL_TOKENS = [EMPTY, BLACK_KING, WHITE_KING]
 
 COLOR_TO_PIECES = {
@@ -32,16 +38,18 @@ PIECE_VALID_ACTIONS = {
 
 # Actions IDs
 
-UP = 4 # 'up'
-DOWN = 5 # 'down'
-RIGHT = 6 # 'right'
-LEFT = 7 # 'left'
+UP = 4
+DOWN = 5
+RIGHT = 6
+LEFT = 7
+# SHOOT = 8
 
 ACTION_SPACE = {
     UP,
     DOWN,
     RIGHT,
-    LEFT
+    LEFT,
+    # SHOOT,
 }
 
 ACTION_MOVE_DIRECTION = {
@@ -129,6 +137,10 @@ class Env(object):
     def get_action_space():
         return ACTION_SPACE
 
+    @staticmethod
+    def get_simplified_objects():
+        return SIMPLIFIED_OBJECT
+
 
 def runnable_position(rep):
     layout, player, _ = rep
@@ -198,12 +210,7 @@ def get_attaking_mask(rep):
 
             if next_cell in COLOR_TO_PIECES[color]:
                 break
-            elif next_cell == EMPTY or 'king' in next_cell:
-                attaking_mask.append(running_pos.copy())
-            else:
-                assert next_cell in COLOR_TO_PIECES[opposite_color(color)]
-                attaking_mask.append(running_pos.copy())
-                break
+            attaking_mask.append(running_pos.copy())
 
     return attaking_mask
 

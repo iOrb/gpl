@@ -11,6 +11,12 @@ EMPTY = 'empty'
 BLACK_KING = 'black_king'
 WHITE_KING = 'white_king'
 
+SIMPLIFIED_OBJECT = {
+    EMPTY:'.',
+    BLACK_KING:'M',
+    WHITE_KING:'A',
+}
+
 ALL_TOKENS = [EMPTY, BLACK_KING, WHITE_KING]
 
 COLOR_TO_PIECES = {
@@ -59,7 +65,6 @@ PIECE_VALID_ACTIONS = {
     WHITE_KING: lambda pos, layout: agent_valid_actions(pos, layout),
     BLACK_KING: lambda layout: martians_valid_actions(layout),
 }
-
 
 class Env(object):
     @staticmethod
@@ -113,6 +118,10 @@ class Env(object):
     @staticmethod
     def get_grid(key):
         return generate_gird(key)
+
+    @staticmethod
+    def get_simplified_objects():
+        return SIMPLIFIED_OBJECT
 
 # Helper mehtods =================================
 
@@ -224,4 +233,5 @@ LAYOUTS = {
     2: (10, 10, 1, [0]),
     3: (7, 5, 2, [0]),
     4: (9, 5, 4, [0, 1]),
+    5: (20, 8, 4, list(range(6))),
 }

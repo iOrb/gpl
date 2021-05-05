@@ -5,7 +5,9 @@ chase_params = Bunch({
     'domain_name': 'chase',
     'use_player_as_feature': False,
     'map_cells': False,
-    'sorts_to_use': {COL_S, ROW_S}
+    'use_diagonals_for_map_cells': True,
+    'use_adjacency': True,
+    'sorts_to_use': {CELL_S, COL_S, ROW_S},
 })
 
 shoot_params = Bunch({
@@ -29,7 +31,7 @@ pick_package_params = Bunch({
     'use_player_as_feature': False,
     'map_cells': True,
     'use_diagonals_for_map_cells': False,
-    'use_adjacency_for_map_cells': True,
+    'use_adjacency': True,
     'sorts_to_use': {CELL_S},
 })
 

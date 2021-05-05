@@ -23,8 +23,8 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=[3],
-        # instances=[0, 2, 3],
+        # instances=[3],
+        instances=[0,],
         test_instances=[0, 1, 2, 3, 4, 5, 6, 7],
         max_concept_size=5,
         distance_feature_max_complexity=4,
@@ -38,19 +38,20 @@ def experiments():
         verbosity=1,
         initial_sample_size=10,
         refinement_batch_size=20,
-        maxsat_iter=10,
+        maxsat_iter=5,
 
         allow_bad_states=False,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=True,
         use_weighted_tx=True,
+        distinguish_goals=True,
 
         sampling_strategy="goal",
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],
-        distinguish_goals=True,
+
         # rollouts
         # num_episodes=1,
         # num_rollouts=1,
@@ -58,6 +59,7 @@ def experiments():
         # train_instances_to_expand=[],
         train_instances_to_expand=list(range(1000)),
         max_states_expanded=math.inf,
+        use_state_novelty=True,
     )
 
     return exps

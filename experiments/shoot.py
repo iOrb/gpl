@@ -43,6 +43,7 @@ def experiments():
         allow_cycles=False,
         use_action_ids=True,
         use_weighted_tx=False,
+        use_state_novelty=True,
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],

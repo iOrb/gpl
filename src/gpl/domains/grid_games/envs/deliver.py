@@ -39,7 +39,6 @@ RIGHTDOWN = 6
 LEFTDOWN = 7
 
 
-
 AGENT_ACTION_SPACE = {
     UP,
     DOWN,

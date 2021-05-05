@@ -9,6 +9,12 @@ EMPTY = 'empty'
 BLACK_KING = 'black_king'
 WHITE_KING = 'white_king'
 
+SIMPLIFIED_OBJECT = {
+    EMPTY:'.',
+    BLACK_KING:'T',
+    WHITE_KING:'A',
+}
+
 ALL_TOKENS = [EMPTY, BLACK_KING, WHITE_KING]
 
 COLOR_TO_PIECES = {
@@ -144,6 +150,10 @@ class Env(object):
     def get_grid(key):
         return generate_gird(key)
 
+    @staticmethod
+    def get_simplified_objects():
+        return SIMPLIFIED_OBJECT
+
 # Helper mehtods =================================
 
 def terminated(rep):
@@ -155,14 +165,12 @@ def terminated(rep):
 def get_action_from_move(move, color):
     return MOVE_ACTION[move][color]
 
-
 def runnable_position(rep):
     layout, player, nact = rep
     if player == WHITE:
         return np.argwhere(layout == WHITE_KING)[0]
     elif player == BLACK:
         return np.argwhere(layout == BLACK_KING)[0]
-
 
 def catched(rep):
     attakig_mask = get_attaking_mask((rep[0], WHITE, 0))
@@ -171,7 +179,6 @@ def catched(rep):
         return True
     else:
         return False
-
 
 def king_valid_actions(pos, layout, color):
     valid_action = []
@@ -240,4 +247,5 @@ LAYOUTS = {
     8: (8, 9, (3, 3), (0, 0)),
     9: (4, 4, (3, 3), (0, 0)),
     10: (4, 4, (0, 0), (3, 3)),
+    11: (4, 4, (0, 1), (3, 3)),
 }
