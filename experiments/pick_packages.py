@@ -19,7 +19,8 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=[8, 9, 10, 11, 12],
+        instances=[0, 1, 2],
+        # instances=[0, 1, 2, 3],
         test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8],
         max_concept_size=5,
         distance_feature_max_complexity=4,
@@ -31,8 +32,8 @@ def experiments():
         print_hstar_in_feature_matrix=False,
 
         verbosity=1,
-        initial_sample_size=100,
-        refinement_batch_size=200,
+        initial_sample_size=10,
+        refinement_batch_size=50,
         maxsat_iter=10,
 
         allow_bad_states=False,
@@ -40,8 +41,9 @@ def experiments():
         allow_cycles=False,
         use_action_ids=True,
         use_weighted_tx=False,
+        use_state_novelty=True,
 
-        sampling_strategy="random",
+        sampling_strategy="full",
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],

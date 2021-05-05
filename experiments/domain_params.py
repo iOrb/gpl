@@ -29,7 +29,7 @@ pick_package_params = Bunch({
     'use_player_as_feature': False,
     'map_cells': True,
     'use_diagonals_for_map_cells': False,
-    'use_adjacency_for_map_cells': False,
+    'use_adjacency_for_map_cells': True,
     'sorts_to_use': {CELL_S},
 })
 
@@ -37,7 +37,7 @@ deliver_params = Bunch({
     'domain_name': 'deliver',
     'use_player_as_feature': False,
     'map_cells': True,
-    'use_diagonals_for_map_cells': False,
-    'use_adjacency_for_map_cells': False,
-    'sorts_to_use': {ROW_S, COL_S, CELL_S},
+    'use_diagonals_for_map_cells': True,
+    'use_adjacency': True,
+    'sorts_to_use': {CELL_S},
 })

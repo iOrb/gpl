@@ -23,8 +23,8 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=[0, 1, 2, 5],
-        test_instances=[0, 2, 3, 4, 5],
+        instances=[5],
+        test_instances=[0, 2, 3, 4, 5, 6],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
@@ -39,17 +39,18 @@ def experiments():
         refinement_batch_size=20,
         maxsat_iter=10,
 
-        allow_bad_states=True,
+        allow_bad_states=False,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
-        use_action_ids=True,
+        use_action_ids=False,
         use_weighted_tx=True,
+        use_state_novelty=True,
+        distinguish_goals=False,
 
-        sampling_strategy="full",
+        sampling_strategy="goal",
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],
-        distinguish_goals=True,
         # rollouts
         # num_episodes=1,
         # num_rollouts=1,

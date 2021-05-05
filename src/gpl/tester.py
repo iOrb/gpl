@@ -38,7 +38,6 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
     solved_instances, unsolved_instances = list(), list()
 
     for instance_name in config.test_instances:
-        logging.info(f'Appying rollout in train instance "{instance_name}"')
 
         try:
             """ Run a search on the test instances that follows the given policy or DFS """
@@ -76,16 +75,25 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
             task = config.domain.generate_task(instance_name)
 
             # And now we inject our desired search and heuristic functions
-            run_test(config, search_policy, task, instance_name, rng)
+            exitcode, solution, path, expanded = run_test(config, search_policy, task, instance_name, rng)
 
-            # Add instance to solved instances
-            solved_instances.append(instance_name)
+            if config.verbosity > 0:
+                task.print_path(path)
+
+            if exitcode == ExitCode.Success:
+                # Add instance to solved instances
+                solved_instances.append(instance_name)
+                logging.info(f"Goal found after expanding {expanded} nodes")
+                logging.info(f"The solution was: {solution}")
+            else:
+                logging.warning(f"Testing of policy failed with code: {exitcode}")
+                unsolved_instances.append(instance_name)
+                continue
 
         except PolicySearchException as e:
             logging.warning(f"Testing of policy failed with code: {e.code}")
-            unsolved_instances.append(instance_name)
-            continue
-            # return e.code
+            return e.code
+
     logging.info("Learnt policy solves the {}% of test instances: {}/{}"
                  .format(round(len(solved_instances) / len(config.test_instances) * 100, 2),
                          len(solved_instances), len(config.test_instances)))
@@ -96,11 +104,15 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
 
 def run_test(config, search_policy, task, instance_name, rng):
 
+    logging.info(f'Testing policy in instance: {task.get_domain_name()} - {instance_name}')
+
     s = task.initial_state
     expanded = 0
-
-    sa_pairs = defaultdict(lambda: 0) # We'll use this at the same time as closed list and to keep track of parents
+    visited_sa = defaultdict(lambda: 0)
+    visited_sp = defaultdict(lambda: 0)
     solution = list()
+    path = list()
+    path.append(s[0])
 
     while not s[1]['goal']:
         expanded += 1
@@ -114,33 +126,49 @@ def run_test(config, search_policy, task, instance_name, rng):
 
         exitcode, good_succs = run_policy_based_search(config, search_policy, task, s, successors)
         if exitcode == ExitCode.AbstractPolicyNotCompleteOnTestInstances:
-            raise PolicySearchException(ExitCode.AbstractPolicyNotCompleteOnTestInstances)
+            exitcode = ExitCode.AbstractPolicyNotCompleteOnTestInstances
+            break
 
-        for op, _ in good_succs:
+        not_novelty_sp = dict()
+        for op, sp_ in good_succs:
+            r = s[0][0]
+            rp = sp_[0][0]
             sa_pair_enc = task.encode_sa_pair((s, op))
-            if sa_pair_enc in sa_pairs:
+            if config.use_state_novelty:
+                times_seen = visited_sp[sp_[2]]
+                if times_seen > 0:
+                    not_novelty_sp[(op, sp_[2])] = times_seen
+                    continue
+                else:
+                    break
+            elif sa_pair_enc in visited_sa:
                 continue
-            else:
-                break
+            break
+        else:
+            op, _ = min(not_novelty_sp, key=not_novelty_sp.get)
+            if config.verbosity>2:
+                print("WARNING: not novel transition for state:\n{}".format(task.get_printable_rep(s[0])))
+            # exitcode = ExitCode.AbstractPolicyNonTerminatingOnTestInstances
+            # break
 
+        # Execute the selected action
         sa_pair_enc = task.encode_sa_pair((s, op))
         sp = task.transition(s, op)
-
-        r=s[0][0]
-        rp=sp[0][0]
+        path.append(sp[0])
 
         if sp[1]['deadend']:
-            raise PolicySearchException(ExitCode.DeadEndReached)
-        if sa_pairs[sa_pair_enc] > 10:
-            raise PolicySearchException(ExitCode.AbstractPolicyNonTerminatingOnTestInstances)
+            exitcode = ExitCode.DeadEndReached
+            break
+        if visited_sa[sa_pair_enc] > 3:
+            exitcode = ExitCode.AbstractPolicyNonTerminatingOnTestInstances
+            break
 
         solution.append(encode_operator(s, op, task))
-        sa_pairs[sa_pair_enc] += 1
+        visited_sa[sa_pair_enc] += 1
+        visited_sp[sp[2]] += 1
         s = sp
 
-    logging.info(f"Goal found after expanding {expanded} nodes")
-    logging.info(f"The solution was: {solution}")
-    return solution
+    return exitcode, solution, path, expanded
 
 
 def create_action_selection_function_from_transition_policy(config, model_factory, static_atoms, policy):

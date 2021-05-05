@@ -12,6 +12,16 @@ AGENT_WITH_PACKAGE = f'{AGENT}_with_{PACKAGE}'
 AGENT_IN_DESTINY_WITH_PACKAGE = f'{AGENT}_in_{DESTINY}_with_{PACKAGE}'
 AGENT_IN_DESTINY_WITHOUT_PACKAGE = f'{AGENT}_in_{DESTINY}_without_{PACKAGE}'
 
+SIMPLIFIED_OBJECT = {
+    EMPTY:' . ',
+    PACKAGE:' P ',
+    AGENT:' A ',
+    DESTINY:' D ',
+    AGENT_WITH_PACKAGE:'A_P',
+    AGENT_IN_DESTINY_WITH_PACKAGE:'ADP',
+    AGENT_IN_DESTINY_WITHOUT_PACKAGE:'A_D'
+}
+
 ALL_TOKENS = [EMPTY, PACKAGE, AGENT, DESTINY, AGENT_WITH_PACKAGE, AGENT_IN_DESTINY_WITH_PACKAGE, AGENT_IN_DESTINY_WITHOUT_PACKAGE]
 
 PLAYER_1 = 1
@@ -19,27 +29,33 @@ PLAYER_2 = 2
 
 # Actions IDs
 
-LEFT = 1
+UP = 0
+DOWN = 1
 RIGHT = 2
-DOWN = 3
-UP = 4
-# PICK = 5
-# DROP = 6
+LEFT = 3
+LEFTUP = 4
+RIGHTUP = 5
+RIGHTDOWN = 6
+LEFTDOWN = 7
+
+
 
 AGENT_ACTION_SPACE = {
-    RIGHT,
-    LEFT,
     UP,
     DOWN,
-    # PICK,
-    # DROP
+    RIGHT,
+    LEFT,
 }
 
 ACTION_MOVE_DIRECTION = {
+    UP: (-1, 0),
+    DOWN: (1, 0),
     RIGHT: (0, 1),
     LEFT: (0, -1),
-    DOWN: (1, 0),
-    UP: (-1, 0),
+    LEFTUP: (-1, -1),
+    RIGHTUP: (-1, 1),
+    RIGHTDOWN: (1, 1),
+    LEFTDOWN: (1, -1),
 }
 
 MOVE_ACTION = {
@@ -92,9 +108,23 @@ class Env(object):
     def get_grid(key):
         return generate_gird(key)
 
+    @staticmethod
+    def print_rep(rep):
+        layout, player, nact = rep
+        nrows, ncols = layout.shape
+        for r in range(0, nrows):
+            tmp_str = ""
+            for c in range(0, ncols):
+                tmp_str += SIMPLIFIED_OBJECT[layout[r, c]]
+            print(tmp_str)
+        print("#"*ncols)
+
+    @staticmethod
+    def get_simplified_objects():
+        return SIMPLIFIED_OBJECT
+
 
 # Helper mehtods =================================
-
 
 def agent_valid_actions(pos, layout):
     valid_action = []
@@ -170,10 +200,11 @@ def generate_gird(key):
 LAYOUTS = {
     0: (7, 7, (1, 0), (4, 4), (0, 0)),
     1: (7, 7, (4, 4), (0, 0), (4, 4)),
-    2: (7, 7, (1, 0), (4, 4), (0, 0)),
+    2: (7, 7, (0, 0), (3, 4), (6, 0)),
     3: (8, 8, (5, 5), (3, 6), (4, 4)),
     4: (9, 8, (1, 0), (4, 4), (0, 0)),
     5: (4, 4, (1, 0), (3, 3), (0, 0)),
+    6: (6, 6, (5, 4), (0, 0), (5, 5)),
 }
 
 

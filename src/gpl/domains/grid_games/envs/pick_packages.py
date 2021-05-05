@@ -9,6 +9,13 @@ AGENT = 'agent'
 PACKAGE = 'package'
 PIT = 'pit'
 
+SIMPLIFIED_OBJECT = {
+    EMPTY:'.',
+    PACKAGE:'P',
+    AGENT:'A',
+    PIT:'*',
+}
+
 ALL_TOKENS = [EMPTY, PACKAGE, AGENT, PIT]
 
 PLAYER_1 = 1
@@ -16,23 +23,37 @@ PLAYER_2 = 2
 
 # Actions IDs
 
-LEFT = 1
+UP = 0
+DOWN = 1
 RIGHT = 2
-DOWN = 3
-UP = 4
+LEFT = 3
+LEFTUP = 4
+RIGHTUP = 5
+RIGHTDOWN = 6
+LEFTDOWN = 7
+
 
 AGENT_ACTION_SPACE = {
-    RIGHT,
-    LEFT,
     UP,
     DOWN,
+    RIGHT,
+    LEFT,
+    LEFTUP,
+    RIGHTUP,
+    RIGHTDOWN,
+    LEFTDOWN,
 }
 
 ACTION_MOVE_DIRECTION = {
+    UP: (-1, 0),
+    DOWN: (1, 0),
     RIGHT: (0, 1),
     LEFT: (0, -1),
-    DOWN: (1, 0),
-    UP: (-1, 0),
+    LEFTUP: (-1, -1),
+    RIGHTUP: (-1, 1),
+    RIGHTDOWN: (1, 1),
+    LEFTDOWN: (1, -1),
+    # STAY: (0, 0),
 }
 
 MOVE_ACTION = {
@@ -40,6 +61,10 @@ MOVE_ACTION = {
     ACTION_MOVE_DIRECTION[LEFT]: LEFT,
     ACTION_MOVE_DIRECTION[UP]: UP,
     ACTION_MOVE_DIRECTION[DOWN]: DOWN,
+    ACTION_MOVE_DIRECTION[RIGHTUP]: RIGHTUP,
+    ACTION_MOVE_DIRECTION[RIGHTDOWN]: RIGHTDOWN,
+    ACTION_MOVE_DIRECTION[LEFTUP]: LEFTDOWN,
+    ACTION_MOVE_DIRECTION[LEFTUP]: LEFTUP,
 }
 
 PIECE_VALID_ACTIONS = {
@@ -87,6 +112,10 @@ class Env(object):
     def get_grid(key):
         return generate_gird(key)
 
+    @staticmethod
+    def get_simplified_objects():
+        return SIMPLIFIED_OBJECT
+
 
 # Helper mehtods =================================
 
@@ -133,17 +162,18 @@ def layout_after_agent_action(layout, action_id):
 
 ### Instances
 
+rng = np.random.default_rng(0)
 
 def generate_gird(key):
     height, width, cell_agent, num_packages = LAYOUTS[key]
     grid = np.full((height, width), EMPTY, dtype=object)
-    grid.flat[np.random.choice(height*width, 4, replace=False)] = PIT
-    grid.flat[np.random.choice(height*width, num_packages, replace=False)] = PACKAGE
+    grid.flat[rng.choice(height*width, 4, replace=False)] = PIT
+    grid.flat[rng.choice(height*width, num_packages, replace=False)] = PACKAGE
     grid[cell_agent] = AGENT
     return grid
 
 LAYOUTS = {
-    0: (4, 4, (1, 0), 1),
+    0: (4, 4, (1, 0), 3),
     1: (4, 4, (2, 2), 3),
     2: (4, 4, (3, 2), 3),
     3: (4, 4, (1, 2), 3),
@@ -151,12 +181,12 @@ LAYOUTS = {
     5: (10, 10, (5, 5), 10),
     6: (5, 5, (0, 0), 4),
     7: (5, 5, (0, 0), 3),
-    8: (6, 6, (3, 3), 1),
-    8: (6, 6, (3, 3), 1),
-    9: (6, 6, (3, 3), 1),
-    10: (6, 6, (3, 3), 1),
-    11: (6, 6, (3, 3), 1),
-    12: (6, 6, (3, 3), 1),
+    8: (6, 6, (3, 3), 2),
+    8: (6, 6, (3, 3), 3),
+    9: (6, 6, (3, 2), 4),
+    10: (6, 6, (1, 3), 5),
+    11: (6, 6, (3, 4), 8),
+    12: (6, 6, (2, 3), 10),
 }
 
 

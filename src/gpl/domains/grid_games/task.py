@@ -105,3 +105,33 @@ class Task(ITask):
         s, op = sa
         sa_enc = '_'.join([str(s[2]), str(op)])
         return sa_enc
+
+    def print_state(self, s):
+        self.env.print_rep(s[0])
+
+    def print_path(self, reps):
+        simplified_objects = self.env.get_simplified_objects()
+        nrows, ncols = reps[0][0].shape
+        total_path_rep = ""
+        for row in range(nrows):
+            tmp_full_row = ""
+            for rep in reps:
+                layout = rep[0]
+                tmp_row = ""
+                for o in layout[row, :]:
+                    tmp_row += simplified_objects[o]
+                tmp_full_row += "{} # ".format(tmp_row)
+            total_path_rep += "{}\n".format(tmp_full_row)
+        print(total_path_rep)
+
+    def get_printable_rep(self, rep):
+        simplified_objects = self.env.get_simplified_objects()
+        nrows, ncols = rep[0].shape
+        layout = rep[0]
+        total_rep = ""
+        for row in range(nrows):
+            tmp_row = ""
+            for o in layout[row, :]:
+                tmp_row += simplified_objects[o]
+            total_rep += "#{}#\n".format(tmp_row)
+        return total_rep

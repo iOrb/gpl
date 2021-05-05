@@ -46,7 +46,7 @@ def load_general_lang(lang, statics, params):
         # for o in OBJECTS.general | {OBJECTS.none}:
         for o in OBJECTS.general:
             lang.predicate(f'{sort}-hv-{o}', sort)
-        if CELL_S in sort and params.use_adjacency_for_map_cells:
+        if CELL_S == sort and params.use_adjacency:
             lang.predicate(f'{ADJACENT}_{sort}', sort, sort)
             statics.add(f'{ADJACENT}_{sort}')
         else:
@@ -83,7 +83,7 @@ def load_general_problem(problem, lang, rep, params):
                     problem.init.add(lang.get(f'{sort}-hv-{o}'), lang.get(CONST[sort](r, c)))
 
     def __add_direction_predicate(problem, lang, direction, sort, const, new_r, new_c):
-        if CELL_S in sort and params.use_adjacency_for_map_cells:
+        if CELL_S == sort and params.use_adjacency:
             problem.init.add(lang.get(f'{ADJACENT}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
         else:
             problem.init.add(lang.get(f'{direction}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
