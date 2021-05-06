@@ -84,7 +84,6 @@
 % directly follow a colon or long dash
 %\author{GFM}
 
-
 \begin{document}
 
 \maketitle
@@ -101,7 +100,6 @@ Encoding is parametrized by
  \item A parameter $\delta$ which is a ``slack'' value to determine the maximum deviation from the optimal $V^*(s)$
  what we will allow in our policy. This will be made clearer in the encoding below.
 \end{itemize}
-
 
 \subsection{Terminology}
 A state is called \emph{reachable} if there is a path to it from $s_0$, and
@@ -129,20 +127,31 @@ We use \badtx{} to denote the set of transitions that have been determined at pr
 At the moment, this set contains all transitions that go from an alive to an unsolvable state and, if using
 equivalence relations, all those other transitions in whose equivalence class there is some other ``bad'' transition.
 
-\paragraph{Bad'}
+\newpage
+
+\paragraph{Bullet points}
+\begin{itemize}
+\item Learning generalized policies in unsupervised FOND domains from small examples.
+\item FOND encoding, introducing Good(s, a) features to deal with non-determinism. Where $a \in A$, and $A$ is not required to be fixed. However, if $A$ is fixed we show a way to exploit it, reducing the number of transitions to distinguish.
+\item Being complete in domains where not all states have a good transition, with the optional constraint Bad(s).
+\item Empirical results with five domains: Chase, Shoot, Space Invaders, Delivery, Wumpus world.
+\item Incremental policy learning, to address the scalability problem. First a random sample is taken from the whole graph and the policy is then refined incrementally by iteratively increasing the sample size. The strategy for increasing the size of the sample can be goal-directed or random.
+%\item Introducing the sort of novelty to choose between the different successors classified as good by our policy
+\item Use of a uniform grammar for the different grid domains.
+\end{itemize}
 
 \newpage
 
 \subsection{Encoding for FOND domains}
 
-We here assume that all instances $P$ of the generalized problem have a set of actions $A$.
+We here assume that all instances $P$ of the generalized problem have a set of actions $A$. We do not need $A$ begin fixed.
 We denote by $(s, a, s') \in T$ tuples of state, action, and possible state $s'$ resulting from executing $a$ in $s$.
 
 \subsubsection{Main Variables}
 
 \begin{itemize}
  \item $Good(s, a)$ for $s$ alive, solvable, and $a \in A$.
- \item $Good(s, a, s')$ for $s$ alive, solvable, and $a \in A$.
+ \item $Good(s, a, s')$ for $s$ alive, $s'$ solvable, and $(s, a, s') \not\in \badtx$.
 
  \item $Bad(s)$ for $s$ alive.
 
@@ -157,6 +166,7 @@ We denote by $(s, a, s') \in T$ tuples of state, action, and possible state $s'$
  \item $Select(f)$, for each feature $f$ in the feature pool.
 \end{itemize}
 
+
 %\subsubsection{Auxiliary Variables}
 %\begin{itemize}
 % \item We'll use $GV(s, s', d)$ to denote that $Good(s, s')$ and $V(s') \leq d$. This is enforced with the constraint
@@ -168,15 +178,9 @@ We denote by $(s, a, s') \in T$ tuples of state, action, and possible state $s'$
 \subsubsection{Hard Constraints}
 
 \smallpar{C1}
-The policy has to be complete with respect to all possible actions applicable in s:
-\begin{align}
-\bigvee_{a \in A} Good(s, a),&\;\; \text{for $s$ alive.}
-\end{align}
-
-\smallpar{C1}
 The policy has to be complete with respect to all alive states:
 \begin{align}
-\bigvee_{s' \text{ s.t. } (s, s') \in T \setminus \badtx} Good(s, s'),&\;\; \text{for $s$ alive.}
+\bigvee_{a \in A} Good(s, a),&\;\; \text{for $s$ alive.}
 \end{align}
 
 \smallpar{C2} $V$ is always descending along Good actions. For each $(s, a, s')$ in the set of non-deterministic transitions
@@ -184,7 +188,6 @@ such that both $s$ and $s'$ are alive, post:
 \begin{align}
  Good(s, a) \land V(s, k) \rightarrow \bigvee_{1 \leq k' \leq k} V(s', k'),&\;\; \text{for } k \in [1, D].
 \end{align}
-
 
 %\smallpar{C3} All descending transitions must be considered Good:
 %\begin{align}
@@ -204,6 +207,7 @@ such that both $s$ and $s'$ are alive, post:
 % \neg V(s) \leq 0,&\;\; \text{for $s$ not a goal.}
 %\end{align}
 
+
 \smallpar{C3-4}
 Variables $V(s, d)$ define a function that is total over the set of alive states,
 and such that $V(s)$ is within lower bound $V^*(s)$ and upper bound $\delta \cdot V^*(s)$:
@@ -212,32 +216,71 @@ and such that $V(s)$ is within lower bound $V^*(s)$ and upper bound $\delta \cdo
  \neg V(s, d) \lor \neg V(s, d')&\;\; \text{for $s$ alive, $1 \leq d < d' \leq D$.}
 \end{align}
 
+
 \smallpar{C5-6}
-Good transitions $(s, a, s')$ can be distinguished from bad pairs $(s, a, s')$.
+Good transitions $(s, a, s')$ can be distinguished from bad transitions $(s, a, s')$.
 %Let $(s, s')$ and $(t, t')$ be \emph{representative} transitions
 %of two different equivalence classes such that $(s, s') \not\in \badtx$
 %(which implies that $s'$ is solvable). Then,
+Let $(s, a, s')$ and $(t, b, t')$ be \emph{representative} transitions
+of two different equivalence classes such that $(s, a, s') \not\in \badtx$
+(which implies that $s'$ is solvable). Where $a, b \in A$. Then,
 \begin{align}
- Good(s, a) \rightarrow Good(t, a) \lor
- D1(s, t),&\;\; \text{for $s, t$ alive, $(t, a) \not\in \badtx$.} \\
- Good(s, a) \rightarrow D1(s, t),&\;\; \text{for $s, t$ alive, $(t, a) \in \badtx$.}
+ Good(s, a, s') \rightarrow Good(t, b, t') \lor
+ Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \not\in \badtx$.} \\
+ Good(s, a, s') \rightarrow
+ Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \in \badtx$.}
 \end{align}
 
 \noindent where $Dist(s, s', t, t')$ is shorthand for $\bigvee_{f \in D1\&2(s, s', t, t')} Select(f)$.
 
-
 \smallpar{C7 (Optional)}
+The transitions $(s, a, s')$ and $(s, a, t')$ will be treated as equivalent. In $C5-6$ if $a=b$ and $s=t$ we don't require this transitions to be distinguished.
+
+\smallpar{C8}
+Good pairs $(s, a)$ implies at least one transition $(s, a, s')$ labeled as good.
+\begin{align}
+\bigvee_{s' \text{ s.t. } (s, a, s') \in T \setminus \badtx} Good(s, a, s'),&\;\; \text{for $(s, a)$ where $s$ alive.}
+\end{align}
+
+\smallpar{C9 (Optional)}
 Goals are distinguishable from non-goals.
 \begin{align}
 \bigvee_{f \in D1(s, s')} Select(f),&\;\; \text{for $s$ goal, $s$ not a goal}
 \end{align}
 
+\smallpar{C10 (Optional)}
+All selected features need to have some Good transition that takes them to $0$:
+\begin{align}
+ Selected(f) \rightarrow \bigvee_{(s, a, s') \in Z(f)} Good(s, s'),&\;\; \text{for $f$ in pool}
+\end{align}
 
+\noindent where $Z(f)$ is the set transitions starting in an alive state that change the denotation of $f$ from something
+larger than 0 to 0.
 
 \subsubsection{Soft Constraints}
+\smallpar{C11}
 We simply post a constraint $\neg Select(f)$ for each feature $f$ in the pool, with weight equal to its complexity $\mathcal{K}(f)$.
 
+\smallpar{C12 (Optional)}
+If no action is good in state $s$ alternatively we can set the state as $Bad(s)$. Then  post a constraint $\neg Bad(s)$, with weight equal to one. Then the constraint $C1$ changes,
+\begin{align}
+Bad(s) ~ or~ \bigvee_{a \in A} Good(s, a),&\;\; \text{for $s$ alive.}
+\end{align}
 
+\noindent Notice that now the policy is complete in domains where an state can not be solved or has not any $Good(s, a)$.
+
+\section{Empirical Results}
+
+\subsection{Chase}
+
+\subsection{Shoot}
+
+\subsection{Space Invaders}
+
+\subsection{Delivery}
+
+\subsection{Wumpus world}
 
 
 \bibliographystyle{plain}

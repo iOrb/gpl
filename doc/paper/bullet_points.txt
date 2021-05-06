@@ -1,0 +1,6 @@
+- Lerning generalized policies in FOND domains unsupervised from small examples.
+- fond encoding with guarantees, introducing the features Good(s, a) to deal with the non determinism. Where the a \in A, and A can be fixed or not.
+- being complete in domains where not every state has a good action, with the optional constraint Bad(s). 
+- Empirical results with five domains: Chase, Shoot, Space Invaders, Delivery, Wumpus world.
+- Incremental learning of policy, for deal with scalability problem. First taking a random sample of the whole graph and itreatively refining the polizy and increasing the size of the sample. The sampling strategy can be goal directed or random.
+
