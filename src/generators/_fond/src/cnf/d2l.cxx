@@ -276,10 +276,8 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
         for (const auto& a:sample_.s_as(s)) {
             cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
             for (const auto& sp:sample_.successors({s, a})) {
-//                cnfvar_t good_s_a_sp_var = variables.goods_s_a_sp.at({s, a, sp});
                 if (is_necessarily_bad(get_transition_id(s, sp))) {
                     wr.cl({Wr::lit(good_s_a_var, false)});
-//                    wr.cl({Wr::lit(good_s_a_sp_var, false)});
                 } // includes alive-to-dead transitions
                 if (!sample_.in_sample(sp)) continue;
 
@@ -287,7 +285,6 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                     // (3') Border condition: if s' is a goal, then (s, s') must be good
                     if (sample_.is_goal(sp)) {
                         wr.cl({Wr::lit(good_s_a_var, true)});
-//                        wr.cl({Wr::lit(good_s_a_sp_var, true)});
                         ++n_descending_clauses;
                     }
                 }
@@ -300,16 +297,11 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                     cnfclause_t clause_s_a{Wr::lit(good_s_a_var, false),
                                        Wr::lit(vs.at({sp, k}), false)};
 
-//                    cnfclause_t clause_s_a_sp{Wr::lit(good_s_a_sp_var, false),
-//                                       Wr::lit(vs.at({sp, k}), false)};
-
                     for (unsigned kp = k; kp <= max_d; ++kp) {
                         clause_s_a.push_back(Wr::lit(vs.at({s, kp}),true));
-//                        clause_s_a_sp.push_back(Wr::lit(vs.at({s, kp}),true));
                     }
 
                     wr.cl(clause_s_a);
-//                    wr.cl(clause_s_a_sp);
                     ++n_descending_clauses;
                 }
             }
@@ -350,7 +342,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
                         for (const auto& tp:sample_.successors({t, b})) {
                             cnfvar_t good_t_b_tp_var = variables.goods_s_a_sp.at({t, b, tp});
                             cnfclause_t clause_s_a_sp{Wr::lit(good_s_a_sp_var, false)};
-                            if (a == b and s == t) continue;
+//                            if (a == b and s == t) continue;
                             // Compute first the Selected(f) terms
                             for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
                                 clause_s_a_sp.push_back(Wr::lit(variables.selecteds.at(f), true));

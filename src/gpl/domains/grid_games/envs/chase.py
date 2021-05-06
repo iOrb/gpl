@@ -32,15 +32,14 @@ PIECE_VALID_ACTIONS = {
 
 # Actions IDs
 
-UP = 0 # 'up'
-DOWN = 1 # 'down'
-RIGHT = 2 # 'right'
-LEFT = 3 # 'left'
-LEFTUP = 4 # 'left'
-RIGHTUP = 5 # 'left'
-RIGHTDOWN = 6 # 'left'
-LEFTDOWN = 7 # 'left'
-# STAY = 4 # 'left'
+UP = 0
+DOWN = 1
+RIGHT = 2
+LEFT = 3
+LEFTUP = 4
+RIGHTUP = 5
+RIGHTDOWN = 6
+LEFTDOWN = 7
 
 
 ACTION_SPACE = {
@@ -52,7 +51,6 @@ ACTION_SPACE = {
     RIGHTUP,
     RIGHTDOWN,
     LEFTDOWN,
-    # STAY,
 }
 
 ACTION_MOVE_DIRECTION = {
