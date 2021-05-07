@@ -52,12 +52,12 @@ def run(config, data, rng):
         return ExitCode.Success, dict(d2l_policy=None) # keep trying
 
     # Parse the DNF transition-classifier and transform it into a policy
-    policy = parse_dnf_policy(config)
-    # policy = parse_dnfa_policy(config)
+    # policy = parse_dnf_policy(config)
+    policy = parse_dnfa_policy(config)
 
     policy.minimize()
-    # print("Policy:")
-    # policy.print()
+    print("Policy:")
+    policy.print()
     print("\nFINAL POLICY:")
     policy.print_aaai20()
 
@@ -115,11 +115,11 @@ def parse_dnfa_policy(config):
 
         clause = []
         line.split()
-        lits, do_a = line.split(':')
-        a = int(do_a[4:-1])
+        do_a, lits = line.split(' if ')
+        a = int(do_a[3:-1])
         for lit in lits.split(', '):
             f, val = lit.split(' ')
             fid = int(f[2:-1])
             clause.append(DNFAtom(fmap[fid], fval_map[val]))
-        policy.add_clause(frozenset(clause), a)
+        policy.add_clause(frozenset(clause), [a])
     return policy

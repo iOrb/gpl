@@ -17,9 +17,10 @@ std::vector<unsigned> randomize_int_sequence(std::mt19937& rng, unsigned n) {
 }
 
 
-bool evaluate_dnf(unsigned s, unsigned sprime, const DNFPolicy &dnf, const sltp::FeatureMatrix& matrix) {
-    for (const auto& term:dnf.terms) {
+bool evaluate_dnf(unsigned s, unsigned a, unsigned sprime, const DNFPolicy &dnf, const sltp::FeatureMatrix& matrix) {
+    for (const auto& [term, a_]:dnf.terms) {
         bool term_satisfied = true;
+        if (a != a_) continue;
 
         for (const auto& [f, fval]:term) {
             const auto& fs = matrix.entry(s, f);
@@ -38,8 +39,10 @@ bool evaluate_dnf(unsigned s, unsigned sprime, const DNFPolicy &dnf, const sltp:
 
 int select_action(unsigned s, const DNFPolicy& dnf, const TrainingSet& trset) {
     for (unsigned sprime:trset.transitions().successors(s)) {
-        if (evaluate_dnf(s, sprime, dnf, trset.matrix())) {
-            return (int) sprime;
+        for (unsigned a:trset.transitions().s_as(s)) {
+            if (evaluate_dnf(s, a, sprime, dnf, trset.matrix())) {
+                return (int) sprime;
+            }
         }
     }
     return -1;
@@ -53,9 +56,11 @@ void detect_cycles(const DNFPolicy& dnf, const TrainingSet& trset, unsigned batc
 
     // Build graph
     for (unsigned s:alive) {
-        for (unsigned sprime:trset.transitions().successors(s)) {
-            if (trset.transitions().is_alive(sprime) && evaluate_dnf(s, sprime, dnf, trset.matrix())) {
-                boost::add_edge(s, sprime, graph);
+        for (unsigned a:trset.transitions().s_as(s)) {
+            for (unsigned sprime:trset.transitions().successors({s, a})) {
+                if (trset.transitions().is_alive(sprime) && evaluate_dnf(s, a, sprime, dnf, trset.matrix())) {
+                    boost::add_edge(s, sprime, graph);
+                }
             }
         }
     }
@@ -122,11 +127,13 @@ std::vector<unsigned> StateSampler::sample_flaws(const DNFPolicy& dnf, unsigned 
         }
 
         // Check (2)
-        for (unsigned sprime:trset.transitions().successors(s)) {
-            bool is_good = evaluate_dnf(s, sprime, dnf, trset.matrix());
-            if (is_good && trset.transitions().is_unsolvable(sprime)) {
-                flaws.push_back(s);
-                break;
+        for (unsigned a:trset.transitions().s_as(s)) {
+            for (unsigned sprime:trset.transitions().successors({s, a})) {
+                bool is_good = evaluate_dnf(s, a, sprime, dnf, trset.matrix());
+                if (is_good && trset.transitions().is_unsolvable(sprime)) {
+                    flaws.push_back(s);
+                    break;
+                }
             }
         }
 
@@ -205,9 +212,9 @@ void print_classifier(const sltp::FeatureMatrix& matrix, const DNFPolicy& dnf, c
     }
     os << std::endl;
 
-    for (const auto& term:dnf.terms) {
-        os << print_term(matrix, term, false) << std::endl;
-        ostxt << print_term(matrix, term, true) << std::endl;
+    for (const auto& [term, a]:dnf.terms) {
+        os << "do(" << a << ") if " << print_term(matrix, term, false) << std::endl;
+        ostxt << "do(" << a << ") if " << print_term(matrix, term, true) << std::endl;
     }
 
     os.close();

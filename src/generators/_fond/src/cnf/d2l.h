@@ -109,7 +109,7 @@ public:
     DNFPolicy generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const;
 
 //    DNFPolicy generate_dnf(const std::vector<unsigned>& goods, const std::vector<unsigned>& selecteds) const;
-    DNFPolicy generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const;
+    DNFPolicy generate_dnf(const std::vector<std::tuple<unsigned, unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const;
 
     int get_num_features(){ return feature_ids.size(); }
     int get_num_tx(){ return transition_ids_.size(); }

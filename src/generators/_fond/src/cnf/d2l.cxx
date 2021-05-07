@@ -426,20 +426,20 @@ std::vector<transition_pair> D2LEncoding::distinguish_all_transitions() const {
 }
 
 
-DNFPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsigned>>& goods, const std::vector<unsigned>& selecteds) const {
+DNFPolicy D2LEncoding::generate_dnf(const std::vector<tx_triple>& goods, const std::vector<unsigned>& selecteds) const {
     DNFPolicy dnf(selecteds);
-    for (const auto& [s, sprime]:goods) {
+    for (const auto& tx:goods) {
         DNFPolicy::term_t clause;
 
         for (const auto& f:selecteds) {
-            const auto& fs = sample_.matrix().entry(s, f);
-            const auto& fsprime = sample_.matrix().entry(sprime, f);
+            const auto& fs = sample_.matrix().entry(get_s(tx), f);
+            const auto& fsprime = sample_.matrix().entry(get_sp(tx), f);
 
             clause.emplace_back(f, DNFPolicy::compute_state_value(fs));
             clause.emplace_back(f, DNFPolicy::compute_transition_value(fs, fsprime));
         }
 
-        dnf.terms.insert(clause);
+        dnf.terms.insert({clause, get_a(tx)});
     }
     return dnf;
 }
@@ -448,7 +448,7 @@ DNFPolicy D2LEncoding::generate_dnf(const std::vector<std::pair<unsigned, unsign
 DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variables, const SatSolution& solution) const {
     // Let's parse the relevant bits of the CNF solution:
     std::vector<unsigned> selecteds;
-    std::set<std::pair<unsigned, unsigned>> goods;
+    std::vector<std::tuple<unsigned, unsigned, unsigned>> goods;
     for (unsigned f=0; f < variables.selecteds.size(); ++f) {
         auto varid = variables.selecteds[f];
         if (varid>0 && solution.assignment.at(varid)) selecteds.push_back(f);
@@ -462,17 +462,15 @@ DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variabl
                 }
                 std::cout << "Good(" << get_s(s_a_sp) << ", " << get_a(s_a_sp) << ", " << get_sp(s_a_sp) << ") ";
             }
-            goods.insert({get_s(s_a_sp), get_sp(s_a_sp)});
+            goods.push_back(s_a_sp);
             ++n_good_s_a_sp;
         }
     }
-
     if (options.verbosity) {
         std::cout << std::endl << "Num Good(s, a, sp) selected: " << n_good_s_a_sp << std::endl;
         std::cout << "Num selected features: " << selecteds.size() << std::endl;
     }
-    std::vector<std::pair<unsigned, unsigned>> goods_{goods.begin(), goods.end()};
-    return generate_dnf(goods_, selecteds);
+    return generate_dnf(goods, selecteds);
 }
 
 bool D2LEncoding::are_transitions_d1d2_distinguishable(

@@ -173,7 +173,7 @@ def run_test(config, search_policy, task, instance_name, rng):
 
 def create_action_selection_function_from_transition_policy(config, model_factory, static_atoms, policy):
     # assert isinstance(policy, StateActionClassificationPolicy)
-    assert isinstance(policy, TransitionClassificationPolicy)
+    # assert isinstance(policy, TransitionClassificationPolicy)
 
     def _policy(task, state, successors):
         m0 = generate_model_from_state(task, model_factory, state, static_atoms)
@@ -181,7 +181,7 @@ def create_action_selection_function_from_transition_policy(config, model_factor
         for op, sp in successors:
             m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
             # if policy.transition_is_good(m0, op):
-            if policy.transition_is_good(m0, m1):
+            if policy.transition_is_good(m0, op, m1):
                 # return ExitCode.Success, op, sp
                 good_succs.append((op, sp))
         if not good_succs:
@@ -213,9 +213,9 @@ def run(config, data, rng):
         logging.info("No test instances were specified")
         return ExitCode.NotTestInstancesSpecified, dict()
 
-    if not isinstance(data.d2l_policy, TransitionClassificationPolicy):
-    # if not isinstance(data.d2l_policy, StateActionClassificationPolicy):
-        return ExitCode.NotPolicySpecified, dict()
+    # if not isinstance(data.d2l_policy, TransitionClassificationPolicy):
+    #   if not isinstance(data.d2l_policy, StateActionClassificationPolicy):
+    #     return ExitCode.NotPolicySpecified, dict()
 
     def get_policy(model_factory, static_atoms, data):
         policy = create_action_selection_function_from_transition_policy(config, model_factory, static_atoms,

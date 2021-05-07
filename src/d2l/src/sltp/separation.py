@@ -166,8 +166,8 @@ def minimize_dnfa_policy(dnf):
 
 
 def attempt_dnfa_merge(dnf):
-    for p1, p2 in itertools.combinations(dnf, 2):
-        diff = p1[0].symmetric_difference(p2[0])
+    for (p1, a1), (p2, a2) in itertools.combinations(dnf, 2):
+        diff = p1.symmetric_difference(p2)
         diffl = list(diff)
 
         if len(diffl) != 2:  # More than one feature with diff value
@@ -179,8 +179,9 @@ def attempt_dnfa_merge(dnf):
 
         if {atom1.value, atom2.value} == {True, False}:
             # The two conjunctions differ in that one has one literal L and the other its negation, the rest being equal
-            p_merged = p1.difference(diff)
-            return p1, p2, p_merged  # Meaning p1 and p2 should be merged into p_merged
+            p_merged_ = p1.difference(diff)
+            p_merged = (p_merged_, [a1, a2]) if a1 != a2 else (p_merged_, [a1])
+            return (p1, a1), (p2, a2), p_merged  # Meaning p1 and p2 should be merged into p_merged
 
     return None, None, None
 
@@ -342,7 +343,7 @@ class TransitionActionClassificationPolicy:
 
     def transition_is_good(self, m0, ma, m1):
         # If the given transition satisfies any of the clauses in the DNF, we consider it "good"
-        return any(self.does_transition_satisfy_clause(clause, a, m0, ma, m1) for clause, a in self.dnf)
+        return any(self.does_transition_satisfy_clause(clause, actions, m0, ma, m1) for clause, actions in self.dnf)
 
     def explain_why_transition_is_bad(self, m0, ma, m1):
         for clause, a in self.dnf:
@@ -350,7 +351,7 @@ class TransitionActionClassificationPolicy:
             self.does_transition_satisfy_clause(clause, a, m0, ma, m1, explain=True)
 
     @staticmethod
-    def does_transition_satisfy_clause(clause, a, m0, ma, m1, explain=False):
+    def does_transition_satisfy_clause(clause, actions, m0, ma, m1, explain=False):
         for atom in clause:
             feat = atom.feature
 
@@ -366,10 +367,10 @@ class TransitionActionClassificationPolicy:
                     if explain:
                         print(f'\t\t{atom} not satisfied by transition values ({feat.denotation(m0)}, {feat.denotation(m1)})')
                     return False
-        # if (ma != a):
-        #     if explain:
-        #         print(f'Action {ma} is not ({a})')
-        #     return False
+        if (ma not in actions):
+            if explain:
+                print(f'Action {ma} is not ({a})')
+            return False
         return True
 
     def print(self):

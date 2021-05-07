@@ -48,7 +48,8 @@ public:
     {}
 
     std::vector<unsigned> features;
-    std::unordered_set<term_t, sltp::utils::container_hash<term_t>> terms;
+//    std::unordered_set<term_t, sltp::utils::container_hash<term_t>> terms;
+    std::unordered_set<std::pair<term_t, unsigned>, boost::hash<std::pair<term_t, unsigned>>> terms;
 
 };
 
