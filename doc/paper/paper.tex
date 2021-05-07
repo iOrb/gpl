@@ -238,9 +238,10 @@ of two different equivalence classes such that $(s, a, s') \not\in \badtx$
 The transitions $(s, a, s')$ and $(s, a, t')$ will be treated as equivalent. In $C5-6$ if $a=b$ and $s=t$ we don't require this transitions to be distinguished.
 
 \smallpar{C8}
-Good pairs $(s, a)$ implies at least one transition $(s, a, s')$ labeled as good.
+If $(s, a)$ is good, then the resulting transitions must be good too:
+%(s, a, s') \in T \setminus \badtx
 \begin{align}
-\bigvee_{s' \text{ s.t. } (s, a, s') \in T \setminus \badtx} Good(s, a, s'),&\;\; \text{for $(s, a)$ where $s$ alive.}
+Good(s, a) \rightarrow Good(s, a, s'),\;\; \text{for $(s, a, s') \in T$ where $s$ alive.}
 \end{align}
 
 \smallpar{C9 (Optional)}
