@@ -166,7 +166,9 @@ def minimize_dnfa_policy(dnf):
 
 
 def attempt_dnfa_merge(dnf):
-    for (p1, a1), (p2, a2) in itertools.combinations(dnf, 2):
+    for p1_, p2_ in itertools.combinations(dnf, 2):
+        p1, a1 = p1_
+        p2, a2 = p2_
         diff = p1.symmetric_difference(p2)
         diffl = list(diff)
 
@@ -180,7 +182,7 @@ def attempt_dnfa_merge(dnf):
         if {atom1.value, atom2.value} == {True, False}:
             # The two conjunctions differ in that one has one literal L and the other its negation, the rest being equal
             p_merged_ = p1.difference(diff)
-            p_merged = (p_merged_, [a1, a2]) if a1 != a2 else (p_merged_, [a1])
+            p_merged = (p_merged_, tuple(a1 + a2)) if a1 != a2 else (p_merged_, tuple(a1))
             return (p1, a1), (p2, a2), p_merged  # Meaning p1 and p2 should be merged into p_merged
 
     return None, None, None
@@ -448,7 +450,121 @@ class TransitionActionClassificationPolicy:
 
         return policy
 
-class StateActionClassificationPolicy:
+
+class StateActionClassificationPolicy_old:
+    def __init__(self, features):
+        self.features = features
+        self.dnf = set()
+
+    def add_clause(self, clause, a):
+        self.dnf.add((clause, a))
+
+    def minimize(self):
+        self.dnf = minimize_dnfa_policy(self.dnf)
+
+    def transition_is_good(self, m0, ma):
+        # If the given transition satisfies any of the clauses in the DNF, we consider it "good"
+        return any(self.does_transition_satisfy_clause(clause, actions, m0, ma) for clause, actions in self.dnf)
+
+    def explain_why_transition_is_bad(self, m0, ma):
+        for clause, a in self.dnf:
+            print(f'\tClause: {self.print_clause(clause, a)}')
+            self.does_transition_satisfy_clause(clause, a, m0, ma, explain=True)
+
+    @staticmethod
+    def does_transition_satisfy_clause(clause, actions, m0, ma, explain=False):
+        for atom in clause:
+            feat = atom.feature
+
+            if atom.is_state_feature():
+                state_val = feat.denotation(m0) != 0
+                if state_val != atom.value:
+                    if explain:
+                        print(f'\t\t{atom} not satisfied by state values ({feat.denotation(m0)})')
+                    return False
+        if ma not in actions:
+            if explain:
+                print(f'Action {ma} is not {actions}')
+            return False
+        return True
+
+    def print(self):
+        self.print_header()
+        print("Policy:")
+        for i, (clause, a) in enumerate(self.dnf, start=1):
+            print(f"  {i}. " + f"do({a}): " + self.print_clause(clause))
+
+    def print_aaai20(self):
+        self.print_header()
+        # Group by state features
+        grouped = defaultdict(list)
+        for clause, a in self.dnf:
+            key = frozenset(atom for atom in clause if atom.value in {True, False})
+            value = frozenset(atom for atom in clause if atom.value not in {True, False})
+            grouped[key].append(value)
+
+        distinct_values = defaultdict(set)
+        for key in grouped.keys():
+            for atom in key:
+                distinct_values[atom.feature].add(atom.value)
+
+        invariant_value_features = {f: next(iter(vals)) for f, vals in distinct_values.items() if len(vals) == 1}
+        print("Invariants: " + ','.join(f"{f}{'>0' if v is True else '=0'}" for f, v in invariant_value_features.items()))
+        print("Policy:")
+        for i, (statef, transitionf) in enumerate(grouped.items(), start=1):
+            state_conds = ' AND '.join(sorted(map(str, statef)))
+            feature_conds = ', '.join(self.print_effect_list(e) for e in transitionf)
+            print(f"  {i}. {state_conds} -> {feature_conds}")
+
+    @staticmethod
+    def print_effect_list(effect):
+        return '{' + ', '.join(sorted(map(str, effect))) + '}'
+
+    def print_header(self):
+        max_k = max(f.feature.complexity() for f in self.features)
+        total_k = sum(f.feature.complexity() for f in self.features)
+        print(f"Features (#: {len(self.features)}; total k: {total_k}; max k = {max_k}):")
+        for f in self.features:
+            print(f"  {f} [k={f.feature.complexity()}]")
+
+    @staticmethod
+    def print_clause(clause):
+        return ' AND '.join(sorted(map(str, clause)))
+
+    @staticmethod
+    def parse(rules, language, feature_namer):
+        """ Create a classification policy from a set of strings representing the clauses """
+        policy = TransitionClassificationPolicy(features=[])
+
+        allfeatures = dict()
+
+        for clause in rules:
+            atoms = []
+            for feature_str, value in clause:
+                f = allfeatures.get(feature_str)
+                if f is None:
+                    f = unserialize_feature(language, feature_str)
+                    allfeatures[feature_str] = f = IdentifiedFeature(f, len(allfeatures), feature_namer(str(f)))
+
+                # Convert the value to an object
+                value = {
+                    "=0": False,
+                    ">0": True,
+                    "INC": FeatureValueChange.INC,
+                    "NIL": FeatureValueChange.NIL,
+                    "DEC": FeatureValueChange.DEC,
+                    "ADD": FeatureValueChange.ADD,
+                    "DEL": FeatureValueChange.DEL,
+                }[value]
+
+                atoms.append(DNFAtom(f, value))
+
+            policy.add_clause(frozenset(atoms))
+
+        return policy
+
+
+class StateActionClassificationPolicy_old:
     def __init__(self, features):
         self.features = features
         self.dnfa = set()

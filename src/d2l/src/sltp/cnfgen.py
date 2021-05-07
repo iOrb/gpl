@@ -121,5 +121,5 @@ def parse_dnfa_policy(config):
             f, val = lit.split(' ')
             fid = int(f[2:-1])
             clause.append(DNFAtom(fmap[fid], fval_map[val]))
-        policy.add_clause(frozenset(clause), [a])
+        policy.add_clause(frozenset(clause), (a,))
     return policy
