@@ -26,11 +26,6 @@ COLOR_TO_PIECES = {
 
 opposite_color = lambda c: BLACK if c == WHITE else WHITE
 
-PIECE_VALID_MOVES = {
-    WHITE_KING: lambda pos, layout: king_valid_moves(pos, layout, WHITE),
-    BLACK_KING: lambda pos, layout: king_valid_moves(pos, layout, BLACK),
-}
-
 PIECE_VALID_ACTIONS = {
     WHITE_KING: lambda pos, layout: king_valid_actions(pos, layout, WHITE),
     BLACK_KING: lambda pos, layout: king_valid_actions(pos, layout, BLACK),
@@ -38,18 +33,23 @@ PIECE_VALID_ACTIONS = {
 
 # Actions IDs
 
-UP = 4
-DOWN = 5
-RIGHT = 6
-LEFT = 7
-# SHOOT = 8
+UP = 1
+DOWN = 2
+RIGHT = 3
+LEFT = 4
 
-ACTION_SPACE = {
+AGENT_ACTION_SPACE = {
     UP,
     DOWN,
     RIGHT,
     LEFT,
-    # SHOOT,
+}
+
+ENV_ACTION_SPACE = {
+    UP,
+    DOWN,
+    RIGHT,
+    LEFT,
 }
 
 ACTION_MOVE_DIRECTION = {
@@ -135,7 +135,7 @@ class Env(object):
 
     @staticmethod
     def get_action_space():
-        return ACTION_SPACE
+        return AGENT_ACTION_SPACE
 
     @staticmethod
     def get_simplified_objects():
@@ -147,32 +147,21 @@ def runnable_position(rep):
     if player == WHITE:
         return np.argwhere(layout == WHITE_KING)[0]
     elif player == BLACK:
-        return np.argwhere(layout == BLACK_KING)[0]
-
-
-def king_valid_moves(pos, layout, color):
-    attacking_spaces = []
-    # for direction in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
-    for direction in [(-1, 0), (0, -1), (0, 1), (1, 0)]:
-        running_pos = np.add(pos, direction)
-        if np.any(running_pos < 0):
-            continue
         try:
-            next_cell = layout[running_pos[0], running_pos[1]]
-        except IndexError:
-            continue
-        if next_cell in COLOR_TO_PIECES[color]:
-            continue
-        if next_cell in COLOR_TO_PIECES[opposite_color(color)]:
-            pass
-        attacking_spaces.append(running_pos)
-    return attacking_spaces
+            return np.argwhere(layout == BLACK_KING)[0]
+        except:
+            raise
 
 
 def king_valid_actions(pos, layout, color):
     valid_action = []
-    # for direction in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
-    for direction in [(-1, 0), (0, -1), (0, 1), (1, 0)]:
+    if color == WHITE:
+        action_space = AGENT_ACTION_SPACE
+    else:
+        action_space = ENV_ACTION_SPACE
+    for action_id, direction in ACTION_MOVE_DIRECTION.items():
+        if not action_id in action_space:
+            continue
         running_pos = np.add(pos, direction)
         if np.any(running_pos < 0):
             continue
@@ -183,12 +172,14 @@ def king_valid_actions(pos, layout, color):
         if next_cell in COLOR_TO_PIECES[color]:
             continue
         if next_cell in COLOR_TO_PIECES[opposite_color(color)]:
-            pass
+            continue
         valid_action.append(get_action_from_move(direction, color))
     return valid_action
 
+
 def get_action_from_move(move, color):
     return MOVE_ACTION[move][color]
+
 
 def get_attaking_mask(rep):
     layout, color, _ = rep
@@ -197,7 +188,10 @@ def get_attaking_mask(rep):
 
     pos = runnable_position(rep)
     # for direction in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
-    for direction in [(-1, 0), (0, -1), (0, 1), (1, 0)]:
+    # for direction in [(-1, 0), (0, -1), (0, 1), (1, 0)]:
+    for action_id, direction in ACTION_MOVE_DIRECTION.items():
+        if not action_id in AGENT_ACTION_SPACE:
+            continue
         running_pos = np.array(pos)
         while True:
             running_pos += direction

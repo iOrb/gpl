@@ -47,6 +47,8 @@ public:
             class_representatives_(),
             from_transition_to_eq_class_(),
             necessarily_bad_transitions_(),
+            necessarily_bad_sa_(),
+            necessarily_good_sa_(),
             feature_ids()
     {
         if (!options.validate_features.empty()) {
@@ -80,6 +82,12 @@ public:
 
     inline bool is_necessarily_bad(unsigned tx) const {
         return necessarily_bad_transitions_.find(tx) != necessarily_bad_transitions_.end();
+    }
+    inline bool is_necessarily_bad_sa(sa_pair sa) const {
+        return necessarily_bad_sa_.find(sa) != necessarily_bad_sa_.end();
+    }
+    inline bool is_necessarily_good_sa(sa_pair sa) const {
+        return necessarily_good_sa_.find(sa) != necessarily_good_sa_.end();
     }
 
     inline int get_vstar(unsigned s) const {
@@ -139,6 +147,8 @@ public:
     std::vector<unsigned> from_transition_to_eq_class_;
 
     std::unordered_set<unsigned> necessarily_bad_transitions_;
+    std::set<sa_pair> necessarily_bad_sa_;
+    std::set<sa_pair> necessarily_good_sa_;
 
     //! The only feature IDs that we will consider for the encoding
     std::vector<unsigned> feature_ids;
@@ -149,6 +159,8 @@ public:
     void report_eq_classes() const;
 
     std::vector<transition_pair> distinguish_all_transitions() const;
+
+    void post_variables_selected(const VariableMapping &mapping, const SatSolution &solution) const;
 };
 
 } // namespaces

@@ -7,6 +7,8 @@ from .grammar.grammar import Grammar
 
 from .grammar.objects import get_domain_objects
 
+from collections import defaultdict
+
 # State: (representation, info, state_encoded)
 
 class Task(ITask):
@@ -78,24 +80,21 @@ class Task(ITask):
             goal, deadend = self.infer_info(r1)
             return self.colapse_state(r1, goal, deadend)
         r0 = state0[0]
-        succs_sp = []
+        succs_sp = defaultdict(list)
         ava_actions = self.env.available_actions(r0)
         for op0 in ava_actions:
             state1 = __transition_player(state0, op0)
             if state1[1]['goal'] or state1[1]['deadend'] or state1[0][1] == self.objects.player1:
                 if state1[2] == state0[2]:
                     continue
-                succs_sp.append((op0, state1))
+                succs_sp[op0].append(state1)
             else:
-                succs_spp = []
                 ava_actions1 = self.env.available_actions(state1[0])
                 for op1 in ava_actions1:
                     state2 = __transition_player(state1, op1)
                     if state2[2] == state1[2]:
                         continue
-                    succs_spp.append((op0, state2))
-                if succs_spp:
-                    succs_sp += succs_spp
+                    succs_sp[op0].append(state1)
         return succs_sp
 
     def get_representative_instance_name(self):

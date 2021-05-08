@@ -19,7 +19,7 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=[0, 1, 2],
+        instances=[0,],
         # instances=[0, 1, 2, 3],
         test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8],
         max_concept_size=5,
@@ -34,12 +34,12 @@ def experiments():
         verbosity=1,
         initial_sample_size=10,
         refinement_batch_size=50,
-        maxsat_iter=10,
+        maxsat_iter=3,
 
         allow_bad_states=False,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
-        use_action_ids=True,
+        use_action_ids=False,
         use_weighted_tx=False,
         use_state_novelty=True,
 

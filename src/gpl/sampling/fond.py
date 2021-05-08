@@ -157,15 +157,16 @@ class TransitionSampleFOND:
 
     def process_successors(self, s, succs, task):
         alive, goals, deadends = list(), list(), list()
-        for op0, sp in succs:
-            s_r, goal, deadend, s_encoded, info = unpack_state(sp)
-            self.add_transition((s, op0, sp), task)
-            if goal:
-                goals.append((op0, sp))
-            elif deadend:
-                deadends.append((op0, sp))
-            else:
-                alive.append((op0, sp))
+        for op, sps in succs.items():
+            for sp in sps:
+                s_r, goal, deadend, s_encoded, info = unpack_state(sp)
+                self.add_transition((s, op, sp), task)
+                if goal:
+                    goals.append((op, sp))
+                elif deadend:
+                    deadends.append((op, sp))
+                else:
+                    alive.append((op, sp))
         return alive, goals, deadends
 
 def process_sample(config, sample, rng):

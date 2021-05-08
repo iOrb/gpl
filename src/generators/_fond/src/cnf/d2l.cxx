@@ -25,46 +25,60 @@ void D2LEncoding::compute_equivalence_relations() {
     std::unordered_map<transition_trace, unsigned> from_trace_to_class_repr;
 
     for (const auto& s:sample_.expanded_states()) {
-        for (const auto& sp:sample_.successors(s)) {
-            auto tx = std::make_pair((state_id_t) s, (state_id_t) sp);
-            auto id = (unsigned) transition_ids_inv_.size(); // Assign a sequential ID to the transition
+        for (const auto& a:sample_.s_as(s)) {
+            bool all_sp_solvable = true;
+            bool just_transitions_to_goal = true;
+            for (const auto& sp:sample_.successors({s, a})) {
+                auto tx = std::make_pair((state_id_t) s, (state_id_t) sp);
+                auto id = (unsigned) transition_ids_inv_.size();
 
-            transition_ids_inv_.push_back(tx);
-            auto it1 = transition_ids_.emplace(tx, id);
-            assert(it1.second);
+                transition_ids_inv_.push_back(tx);
+                auto it1 = transition_ids_.emplace(tx, id);
+                assert(it1.second);
 
-            if (!sample_.is_solvable(sp)) { // An alive-to-dead transition cannot be Good
-                if( !sample_.is_unknown(sp) )
-                    necessarily_bad_transitions_.emplace(id);
+                if (!sample_.is_solvable(sp)) { // An alive-to-dead transition cannot be Good
+                    if (!sample_.is_unknown(sp))
+                        necessarily_bad_transitions_.emplace(id);
+                    all_sp_solvable = false;
+                }
+                if (!sample_.is_goal(sp)) { // An alive-to-dead transition cannot be Good
+                    if (!sample_.is_unknown(sp))
+                        necessarily_bad_transitions_.emplace(id);
+                    just_transitions_to_goal = false;
+                }
+
+                if (!options.use_equivalence_classes) {
+                    // If we don't want to use equivalence classes, we simply create one fictitious equivalence class
+                    // for each transition, and proceed as usual
+                    from_transition_to_eq_class_.push_back(id);
+                    class_representatives_.push_back(id);
+                    continue;
+                }
+
+                // Compute the trace of the transition for all features
+                transition_trace trace;
+                for (auto f:feature_ids) {
+                    trace.denotations.emplace_back(
+                            compute_transition_denotation(sample_.value(s, f), sample_.value(sp, f)));
+                }
+
+                // Check whether some previous transition has the same transition trace
+                auto it = from_trace_to_class_repr.find(trace);
+                if (it == from_trace_to_class_repr.end()) {
+                    // We have a new equivalence class, to which we assign the ID of the representative transition
+                    from_transition_to_eq_class_.push_back(id);
+                    from_trace_to_class_repr.emplace(trace, id);
+                    class_representatives_.push_back(id);
+                } else {
+                    // We already have other transitions undistinguishable from this one
+                    assert(it->second < id);
+                    from_transition_to_eq_class_.push_back(it->second);
+                }
             }
-
-            if (!options.use_equivalence_classes) {
-                // If we don't want to use equivalence classes, we simply create one fictitious equivalence class
-                // for each transition, and proceed as usual
-                from_transition_to_eq_class_.push_back(id);
-                class_representatives_.push_back(id);
-                continue;
-            }
-
-            // Compute the trace of the transition for all features
-            transition_trace trace;
-            for (auto f:feature_ids) {
-                trace.denotations.emplace_back(
-                        compute_transition_denotation(sample_.value(s, f), sample_.value(sp, f)));
-            }
-
-            // Check whether some previous transition has the same transition trace
-            auto it = from_trace_to_class_repr.find(trace);
-            if (it == from_trace_to_class_repr.end()) {
-                // We have a new equivalence class, to which we assign the ID of the representative transition
-                from_transition_to_eq_class_.push_back(id);
-                from_trace_to_class_repr.emplace(trace, id);
-                class_representatives_.push_back(id);
-            } else {
-                // We already have other transitions undistinguishable from this one
-                assert(it->second < id);
-                from_transition_to_eq_class_.push_back(it->second);
-            }
+            if (!all_sp_solvable)
+                necessarily_bad_sa_.insert({s, a});
+            if (!just_transitions_to_goal)
+                necessarily_good_sa_.insert({s, a});
         }
     }
 
@@ -258,11 +272,13 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
         }
 
         for (const auto& a:sample_.transitions_.s_as(s)) {
-            bool all_solvable_sp = true;
-            for (const auto& sp:sample_.successors({s, a})) {
-                if (is_necessarily_bad(get_transition_id(s, sp))) all_solvable_sp = false;
+            cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
+            if (is_necessarily_bad_sa({s, a})) {
+                wr.cl({Wr::lit(good_s_a_var, false)});
+                continue;
             }
-            if (!all_solvable_sp) continue;
+//            if (is_necessarily_good_sa({s, a}))
+//                wr.cl({Wr::lit(variables.goods_s_a.at({s, a}), true)},1);
             clause.push_back(Wr::lit(variables.goods_s_a.at({s, a}), true));
         }
 
@@ -275,30 +291,21 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     for (const auto& s:sample_.expanded_states()) {
         for (const auto& a:sample_.s_as(s)) {
             cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
+            if (is_necessarily_bad_sa({s, a})) continue; // includes alive-to-dead transitions
             for (const auto& sp:sample_.successors({s, a})) {
-                if (is_necessarily_bad(get_transition_id(s, sp))) {
-                    wr.cl({Wr::lit(good_s_a_var, false)});
-                } // includes alive-to-dead transitions
                 if (!sample_.in_sample(sp)) continue;
-
-                if (options.decreasing_transitions_must_be_good) {
-                    // (3') Border condition: if s' is a goal, then (s, s') must be good
-                    if (sample_.is_goal(sp)) {
-                        wr.cl({Wr::lit(good_s_a_var, true)});
-                        ++n_descending_clauses;
-                    }
-                }
-
                 if (!sample_.is_alive(sp)) continue;
+//                if (is_necessarily_good_sa({s, a}))
+//                    wr.cl({Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true)},1);
 
                 for (unsigned k=1; k < max_d; ++k) {
 
                     // Minimize Good(s, a) and V(s', d') -> V(s) < d'
                     cnfclause_t clause_s_a{Wr::lit(good_s_a_var, false),
-                                       Wr::lit(vs.at({sp, k}), false)};
+                                       Wr::lit(vs.at({s, k}), false)};
 
                     for (unsigned kp = k; kp <= max_d; ++kp) {
-                        clause_s_a.push_back(Wr::lit(vs.at({s, kp}),true));
+                        clause_s_a.push_back(Wr::lit(vs.at({sp, kp}),true));
                     }
 
                     wr.cl(clause_s_a);
@@ -308,22 +315,30 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
         }
     }
 
-    // At least one Good(s, a, s') for each Good(s, a)
+    // C8 Good(s, a) -> AND_{s' child of (s, a)} Good(s, a, s')
     for (const auto& s:sample_.expanded_states()) {
         for (const auto& a:sample_.transitions_.s_as(s)) {
+            if (is_necessarily_bad_sa({s, a})) continue;
 //            Good(s, a) -> Good(s, a, s')
-            cnfclause_t clause{Wr::lit(variables.goods_s_a.at({s, a}), false)};
-
             for (const auto& sp:sample_.successors({s, a})) {
-                if (options.use_weighted_tx) {
-                    if (sample_.is_goal(sp)) {
-                        wr.cl({Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true)}, 1);
-                    }
-                }
+                cnfclause_t clause{Wr::lit(variables.goods_s_a.at({s, a}), false)};
                 clause.push_back(Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true));
+                wr.cl(clause);
+                ++n_good_tx_clauses;
             }
-            wr.cl(clause);
-            ++n_good_tx_clauses;
+        }
+    }
+
+    // C8' -Good(s, a, s') -> -Good(s, a)
+    for (const auto& s:sample_.expanded_states()) {
+        for (const auto& a:sample_.s_as(s)) {
+            if (is_necessarily_bad_sa({s, a})) continue;
+            for (const auto& sp:sample_.successors({s, a})) {
+                cnfclause_t clause{Wr::lit(variables.goods_s_a_sp.at({s, a, sp}), true)};
+                clause.push_back(Wr::lit(variables.goods_s_a.at({s, a}), false));
+                wr.cl(clause);
+                ++n_good_tx_clauses;
+            }
         }
     }
 
@@ -333,23 +348,28 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
     }
     for (const auto& s:sample_.expanded_states()) {
         for (const auto& a:sample_.s_as(s)) {
+            if (is_necessarily_bad_sa({s, a})) continue;
             for (const auto& sp:sample_.successors({s, a})) {
                 cnfvar_t good_s_a_sp_var = variables.goods_s_a_sp.at({s, a, sp});
-                if (is_necessarily_bad(get_representative_id(get_transition_id(s, sp)))) continue;
-
+                cnfvar_t good_s_a_var = variables.goods_s_a.at({s, a});
                 for (const auto& t:sample_.expanded_states()) {
                     for (const auto& b:sample_.s_as(t)) {
+//                        if (options.use_action_ids and a!=b) continue;
+                        cnfvar_t good_t_b_var = variables.goods_s_a.at({s, a});
                         for (const auto& tp:sample_.successors({t, b})) {
                             cnfvar_t good_t_b_tp_var = variables.goods_s_a_sp.at({t, b, tp});
                             cnfclause_t clause_s_a_sp{Wr::lit(good_s_a_sp_var, false)};
-//                            if (a == b and s == t) continue;
+                            cnfclause_t clause_s_a{Wr::lit(good_s_a_var, false)};
                             // Compute first the Selected(f) terms
                             for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
                                 clause_s_a_sp.push_back(Wr::lit(variables.selecteds.at(f), true));
+                                clause_s_a.push_back(Wr::lit(variables.selecteds.at(f), true));
                             }
-                            if (!is_necessarily_bad(get_representative_id(get_transition_id(t, tp)))) {
+                            if (!is_necessarily_bad_sa({t, b})) {
                                 clause_s_a_sp.push_back(Wr::lit(good_t_b_tp_var, true));
+                                clause_s_a.push_back(Wr::lit(good_t_b_var, true));
                             }
+                            wr.cl(clause_s_a);
                             wr.cl(clause_s_a_sp);
                             n_separation_clauses += 1;
                         }
@@ -384,7 +404,7 @@ std::pair<cnf::CNFGenerationOutput, VariableMapping> D2LEncoding::generate(CNFWr
         // plus we don't really need any soft constraints.
 //        std::cout << "Enforcing " << feature_ids.size() << " feature selections and ignoring soft constraints" << std::endl;
         for (unsigned f:feature_ids) {
-            wr.cl({Wr::lit(variables.selecteds[f], true)});
+            wr.cl({Wr::lit(variables.selecteds[f], false)});
         }
     } else {
 //        std::cout << "Posting (weighted) soft constraints for " << variables.selecteds.size() << " features" << std::endl;
@@ -467,10 +487,65 @@ DNFPolicy D2LEncoding::generate_dnf_from_solution(const VariableMapping& variabl
         }
     }
     if (options.verbosity) {
-        std::cout << std::endl << "Num Good(s, a, sp) selected: " << n_good_s_a_sp << std::endl;
-        std::cout << "Num selected features: " << selecteds.size() << std::endl;
+        post_variables_selected(variables, solution);
     }
     return generate_dnf(goods, selecteds);
+}
+
+void D2LEncoding::post_variables_selected(const VariableMapping &variables, const SatSolution &solution) const {
+    std::vector<unsigned> selecteds;
+    unsigned n_selecteds=0;
+    std::vector<std::tuple<unsigned, unsigned, unsigned>> goods;
+    for (unsigned f=0; f < variables.selecteds.size(); ++f) {
+        auto varid = variables.selecteds[f];
+        if (varid>0 && solution.assignment.at(varid)) ++n_selecteds;
+    }
+    unsigned n_good_s_a_sp=0;
+    for (const auto& [s_a_sp, varid]:variables.goods_s_a_sp) {
+        if (varid>0 && solution.assignment.at(varid)) {
+            if (options.verbosity>1) {
+                if (n_good_s_a_sp % 10 == 0) {
+                    std::cout << std::endl;
+                }
+                std::cout << "Good(" << get_s(s_a_sp) << ", " << get_a(s_a_sp) << ", " << get_sp(s_a_sp) << ") ";
+            }
+            ++n_good_s_a_sp;
+        }
+    }
+    unsigned n_good_s_a=0;
+    for (const auto& [sa, varid]:variables.goods_s_a) {
+        if (varid>0 && solution.assignment.at(varid)) {
+            if (options.verbosity>1) {
+                if (n_good_s_a_sp % 10 == 0) {
+                    std::cout << std::endl;
+                }
+                std::cout << "Good(" << sa.first << ", " << sa.second << ") ";
+            }
+            ++n_good_s_a;
+        }
+    }
+    unsigned n_bad_s=0;
+    for (const auto& [s, varid]:variables.bad_s) {
+        if (varid>0 && solution.assignment.at(varid)) {
+            if (options.verbosity>1) {
+                if (n_good_s_a_sp % 10 == 0) {
+                    std::cout << std::endl;
+                }
+                std::cout << "Bad(" << s << ") ";
+            }
+            ++n_bad_s;
+        }
+    }
+    double psa, psasp, pbs, psel;
+
+    psa = (variables.goods_s_a.size() == 0) ? 0 : ((double) n_good_s_a / (double) variables.goods_s_a.size() * 100);
+    psasp = (variables.goods_s_a_sp.size() == 0) ? 0 : ((double) n_good_s_a_sp / (double) variables.goods_s_a_sp.size() * 100);
+    pbs = (variables.bad_s.size() == 0) ? 0 : ((double) n_bad_s / (double) variables.bad_s.size() * 100);
+    psel = (variables.selecteds.size() == 0) ? 0 : ((double) n_selecteds / (double) variables.selecteds.size() * 100);
+    std::cout << std::endl << "Num Good(s, a) selected: " << n_good_s_a << " (" << psa << "%)" << std::endl;
+    std::cout << "Num Good(s, a, s') selected: " << n_good_s_a_sp << " ("  <<  psasp << "%)" << std::endl;
+    std::cout << "Num Bad(s) selected: " << n_bad_s << " (" << pbs << "%)" << std::endl;
+    std::cout << "Num selected features: " << selecteds.size() << " (" << psel << "%)" << std::endl;
 }
 
 bool D2LEncoding::are_transitions_d1d2_distinguishable(

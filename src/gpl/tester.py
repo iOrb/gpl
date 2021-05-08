@@ -7,7 +7,7 @@ from pathlib import Path
 from sltp.features import InstanceInformation
 from sltp.models import FeatureModel, DLModelFactory
 from sltp.returncodes import ExitCode
-from sltp.separation import generate_user_provided_policy, TransitionClassificationPolicy, StateActionClassificationPolicy
+from sltp.separation import generate_user_provided_policy, TransitionClassificationPolicy, TransitionActionClassificationPolicy, StateActionClassificationPolicy
 from sltp.tester import PolicySearchException
 from sltp.util.misc import compute_universe_from_pddl_model, state_as_atoms, types_as_atoms
 from tarski.dl import compute_dl_vocabulary
@@ -109,7 +109,7 @@ def run_test(config, search_policy, task, instance_name, rng):
     s = task.initial_state
     expanded = 0
     visited_sa = defaultdict(lambda: 0)
-    visited_sp = defaultdict(lambda: 0)
+    # visited_sp = defaultdict(lambda: 0)
     solution = list()
     path = list()
     path.append(s[0])
@@ -118,34 +118,29 @@ def run_test(config, search_policy, task, instance_name, rng):
         expanded += 1
         if expanded % 1000 == 0:
             logging.debug(f"Number of expanded states so far in policy-based search: {expanded}")
-
         successors = task.get_successor_states(s)
 
         if not successors:
             raise PolicySearchException(ExitCode.NotSuccessorsFound)
 
-        exitcode, good_succs = run_policy_based_search(config, search_policy, task, s, successors)
+        exitcode, goods = run_policy_based_search(config, search_policy, task, s, successors)
         if exitcode == ExitCode.AbstractPolicyNotCompleteOnTestInstances:
             exitcode = ExitCode.AbstractPolicyNotCompleteOnTestInstances
             break
 
-        not_novelty_sp = dict()
-        for op, sp_ in good_succs:
-            r = s[0][0]
-            rp = sp_[0][0]
+        not_novelty_sa = dict()
+        for op in goods:
             sa_pair_enc = task.encode_sa_pair((s, op))
             if config.use_state_novelty:
-                times_seen = visited_sp[sp_[2]]
+                times_seen = visited_sa[sa_pair_enc]
                 if times_seen > 0:
-                    not_novelty_sp[(op, sp_[2])] = times_seen
+                    not_novelty_sa[op] = times_seen
                     continue
                 else:
                     break
-            elif sa_pair_enc in visited_sa:
-                continue
             break
         else:
-            op, _ = min(not_novelty_sp, key=not_novelty_sp.get)
+            op = min(not_novelty_sa, key=not_novelty_sa.get)
             if config.verbosity>2:
                 print("WARNING: not novel transition for state:\n{}".format(task.get_printable_rep(s[0])))
             # exitcode = ExitCode.AbstractPolicyNonTerminatingOnTestInstances
@@ -153,6 +148,7 @@ def run_test(config, search_policy, task, instance_name, rng):
 
         # Execute the selected action
         sa_pair_enc = task.encode_sa_pair((s, op))
+        visited_sa[sa_pair_enc] += 1
         sp = task.transition(s, op)
         path.append(sp[0])
 
@@ -164,30 +160,30 @@ def run_test(config, search_policy, task, instance_name, rng):
             break
 
         solution.append(encode_operator(s, op, task))
-        visited_sa[sa_pair_enc] += 1
-        visited_sp[sp[2]] += 1
         s = sp
 
     return exitcode, solution, path, expanded
 
 
 def create_action_selection_function_from_transition_policy(config, model_factory, static_atoms, policy):
-    # assert isinstance(policy, StateActionClassificationPolicy)
-    # assert isinstance(policy, TransitionClassificationPolicy)
 
     def _policy(task, state, successors):
         m0 = generate_model_from_state(task, model_factory, state, static_atoms)
-        good_succs = list()
-        for op, sp in successors:
-            m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
-            # if policy.transition_is_good(m0, op):
-            if policy.transition_is_good(m0, op, m1):
-                # return ExitCode.Success, op, sp
-                good_succs.append((op, sp))
-        if not good_succs:
+        goods = list()
+        for op, sps in successors.items():
+            all_sps_good= True
+            for sp in sps:
+                m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
+                # if policy.transition_is_good(m0, op):
+                tx = (m0, m1, op) if config.use_action_ids else (m0, m1)
+                if not policy.transition_is_good(*tx):
+                    all_sps_good = False
+            if all_sps_good:
+                goods.append(op)
+        if not goods:
             return ExitCode.AbstractPolicyNotCompleteOnTestInstances, None
         else:
-            return ExitCode.Success, good_succs
+            return ExitCode.Success, goods
 
     return _policy
 
@@ -213,9 +209,8 @@ def run(config, data, rng):
         logging.info("No test instances were specified")
         return ExitCode.NotTestInstancesSpecified, dict()
 
-    # if not isinstance(data.d2l_policy, TransitionClassificationPolicy):
-    #   if not isinstance(data.d2l_policy, StateActionClassificationPolicy):
-    #     return ExitCode.NotPolicySpecified, dict()
+    if data.d2l_policy is None:
+        return ExitCode.NotPolicySpecified, dict()
 
     def get_policy(model_factory, static_atoms, data):
         policy = create_action_selection_function_from_transition_policy(config, model_factory, static_atoms,

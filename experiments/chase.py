@@ -24,7 +24,7 @@ def experiments():
     exps["1"] = update_dict(
         base,
         # instances=[3],
-        instances=[0,],
+        instances=[0],
         test_instances=[0, 1, 2, 3, 4, 5, 6, 7],
         max_concept_size=5,
         distance_feature_max_complexity=4,
@@ -36,16 +36,16 @@ def experiments():
         print_hstar_in_feature_matrix=False,
 
         verbosity=1,
-        initial_sample_size=10,
-        refinement_batch_size=20,
-        maxsat_iter=5,
+        initial_sample_size=20,
+        refinement_batch_size=50,
+        maxsat_iter=10,
 
         allow_bad_states=False,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
-        use_action_ids=True,
-        use_weighted_tx=True,
-        distinguish_goals=True,
+        use_action_ids=False,
+        use_weighted_tx=False,
+        distinguish_goals=False,
 
         sampling_strategy="goal",
 

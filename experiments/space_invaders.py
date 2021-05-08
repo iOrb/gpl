@@ -43,7 +43,7 @@ def experiments():
         allow_bad_states=True,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
-        use_action_ids=True,
+        use_action_ids=False,
         use_weighted_tx=False,
         use_state_novelty=True,
         distinguish_goals=True,

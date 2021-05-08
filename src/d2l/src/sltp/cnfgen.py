@@ -55,7 +55,7 @@ def run(config, data, rng):
     # policy = parse_dnf_policy(config)
     policy = parse_dnfa_policy(config)
 
-    policy.minimize()
+    # policy.minimize()
     print("Policy:")
     policy.print()
     print("\nFINAL POLICY:")
