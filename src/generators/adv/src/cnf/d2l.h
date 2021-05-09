@@ -21,7 +21,6 @@ struct VariableMapping {
 
     //! A map from transition IDs to SAT variable IDs:
     std::unordered_map<unsigned, cnfvar_t> goods;
-    std::unordered_map<sa_pair, cnfvar_t, boost::hash<sa_pair>> goods_s_a;
     std::unordered_map<tx_triple, cnfvar_t, boost::hash<tx_triple>> goods_s_a_sp;
     std::unordered_map<state_id_t, cnfvar_t, boost::hash<state_id_t>> bad_s; // bad(s)
 
@@ -83,11 +82,11 @@ public:
     inline bool is_necessarily_bad(unsigned tx) const {
         return necessarily_bad_transitions_.find(tx) != necessarily_bad_transitions_.end();
     }
-    inline bool is_necessarily_bad_sa(sa_pair sa) const {
-        return necessarily_bad_sa_.find(sa) != necessarily_bad_sa_.end();
+    inline bool is_necessarily_bad_tx(tx_triple tx) const {
+        return necessarily_bad_sa_.find(tx) != necessarily_bad_sa_.end();
     }
-    inline bool is_necessarily_good_sa(sa_pair sa) const {
-        return necessarily_good_sa_.find(sa) != necessarily_good_sa_.end();
+    inline bool is_necessarily_good_tx(tx_triple tx) const {
+        return necessarily_good_sa_.find(tx) != necessarily_good_sa_.end();
     }
 
     inline int get_vstar(unsigned s) const {
@@ -147,8 +146,8 @@ public:
     std::vector<unsigned> from_transition_to_eq_class_;
 
     std::unordered_set<unsigned> necessarily_bad_transitions_;
-    std::set<sa_pair> necessarily_bad_sa_;
-    std::set<sa_pair> necessarily_good_sa_;
+    std::set<tx_triple> necessarily_bad_sa_;
+    std::set<tx_triple> necessarily_good_sa_;
 
     //! The only feature IDs that we will consider for the encoding
     std::vector<unsigned> feature_ids;

@@ -12,22 +12,23 @@ from sltp.util.command import read_file
 from sltp.util.naming import filename_core
 
 
-class TransitionSampleFOND:
+class TransitionSampleADV:
     """ """
     def __init__(self):
         self.states = OrderedDict()
         self.states_encoded = dict()
         self.operators = dict()
         self.transitions = defaultdict(lambda: defaultdict(set))
+        self.adv_transitions = defaultdict(set)
         self.parents = defaultdict(set)
         self.goals = set()
         self.alive_states = set()
         self.optimal_transitions = defaultdict(set)
         self.roots = set()  # The set of all roots
         self.instance_roots = dict()  # The root of each instance
-        self.deadends = set()
         self.instance = dict()  # A mapping between states and the problem instances they came from
         self.representative_instances = dict()  # A mappint between repr_instance_name and the first seen representative_instace
+        self.deadends = set()
         self.instance_ids = dict()
         self.remapping = dict()
         self.vstar = {}
@@ -37,10 +38,10 @@ class TransitionSampleFOND:
         self.given_action_space = False
 
     def add_transition(self, tx, task):
-        s, op0, sp = tx # for now ignore op1
-        assert None not in [s, op0, sp]
+        s, op0, sp, spp = tx
+        assert None not in [s, op0, sp, spp]
         new_instance_, instance_id = self.check_instance_name(task)
-        sids = [self.check_state(s, task, instance_id) for s in [s, sp]]
+        sids = [self.check_state(s, task, instance_id) for s in [s, sp, spp]]
         oid = op0 if self.given_action_space else self.check_operator(s, op0, task, instance_id)
         self.update_transitions(self.get_tx(sids, oid))
         if new_instance_:
@@ -49,14 +50,16 @@ class TransitionSampleFOND:
 
     def update_transitions(self, tx):
         """ main method """
-        s, op, sp = tx # IDs
+        s, op, sp, spp = tx # IDs
         # s: {(op0, s'): {s'', ...}}
         self.transitions[s][op].add(sp)
-        # for simplicity we just take into account the adversary transitions as deterministic
+        self.adv_transitions[sp].add(spp)
+        # parents transitions
         self.parents[sp].add(s)
+        self.parents[spp].add(sp)
 
     def get_tx(self, sids, oid):
-        return (sids[0], oid, sids[1])
+        return (sids[0], oid, sids[1], sids[2])
 
     def check_state(self, state, task, instance_id):
         s_r, goal, deadend, s_enc_raw, info = unpack_state(state)
@@ -97,7 +100,6 @@ class TransitionSampleFOND:
 
     def check_instance_name(self, task):
         repr_instance_name = task.get_representative_instance_name()
-
         if repr_instance_name not in self.instance_ids:
             self.instance_ids[repr_instance_name] = self.instance_id_count
             self.representative_instances[repr_instance_name] = task.get_instance_name()
@@ -149,37 +151,50 @@ class TransitionSampleFOND:
     def get_sorted_state_ids(self):
         return sorted(self.states.keys())
 
-    def get_sorted_state_s_spp_ids(self):
-        return sorted(self.states_s_spp)
-
     def get_sorted_op_ids(self):
         return sorted(self.operators.values())
 
     def process_successors(self, s, succs, task):
         alive, goals, deadends = list(), list(), list()
-        for op, sps in succs.items():
-            for sp in sps:
-                s_r, goal, deadend, s_encoded, info = unpack_state(sp)
-                self.add_transition((s, op, sp), task)
-                if goal:
-                    goals.append((op, sp))
-                elif deadend:
-                    deadends.append((op, sp))
-                else:
-                    alive.append((op, sp))
+        for op, sp, spp in succs:
+            sp_r, sp_goal, sp_deadend, sp_encoded, sp_info = unpack_state(sp)
+            spp_r, spp_goal, spp_deadend, spp_encoded, spp_info = unpack_state(spp)
+            self.add_transition((s, op, sp, spp), task)
+            if spp_goal:
+                goals.append((op, sp, spp))
+            elif spp_deadend:
+                deadends.append((op, sp, spp))
+            else:
+                alive.append((op, sp, spp))
         return alive, goals, deadends
 
-def process_sample(config, sample, rng):
 
+def process_sample(config, sample, rng):
     num_tx_entries = sum(len(tx) for tx in sample.transitions.values())
     num_tx = sum(len(t) for tx in sample.transitions.values() for t in tx.values())
     logging.info('%s: #states=%d, #transition-entries=%d, #transitions=%d' %
                  ('sample', len(sample.states), num_tx_entries, num_tx))
-
-    mark_optimal_transitions(config, sample) # check if this sample is being updated
+    reorder_states_not_reachable_by_agent(config, sample)
+    mark_optimal_transitions(config, sample)
     logging.info(f"Entire sample: {sample.info()}")
-
     return sample
+
+
+def reorder_states_not_reachable_by_agent(config, sample):
+    not_reachable_states = set()
+    for s in sample.get_sorted_state_ids():
+        if s not in sample.adv_transitions or s in sample.transitions:
+            continue
+        s_reachable = False
+        for s_, edge in sample.transitions.items():
+            for op, sps in edge.items():
+                if s in sps:
+                    s_reachable = True
+        if not s_reachable:
+            not_reachable_states.add(s)
+    for s in not_reachable_states:
+        logging.warning("State {} is no reachable by the agent".format(s))
+
 
 
 def mark_optimal_transitions(config, sample):
@@ -246,20 +261,23 @@ def run_backwards_brfs(g, parents, mincosts, minactions, sample):
 def print_transition_matrix(sample, transitions_filename):
     state_ids = sample.get_sorted_state_ids()
     transitions = sample.transitions
+    adv_transitions = sample.adv_transitions
     num_nondet_transitions = sum(len(t) for tx in transitions.values() for t in tx.values())
+    num_adv_transitions = sum(len(tx) for tx in adv_transitions.values())
     operator_ids = sample.get_sorted_op_ids()
     num_s_with_outgoind_edge = len(transitions.keys()) - len(sample.goals) - len(sample.deadends)
     logging.info(f"Printing SAT transition matrix with {len(state_ids)} states,"
                  f" {num_s_with_outgoind_edge} states with some outgoing transition,"
                  f" {len(operator_ids)} operators,"
-                 f" and {num_nondet_transitions} (non-det) transitions,")
+                 f" {num_nondet_transitions} (non-det) transitions,"
+                 f" and {num_adv_transitions} (adv) transitions,")
 
     # State Ids should start at 0 and be contiguous
     # assert state_ids == list(range(0, len(state_ids)))
 
     with open(transitions_filename, 'w') as f:
         # first line: <#states> <#transitions(non-det)>
-        print(f"{len(state_ids)} {num_nondet_transitions}", file=f)
+        print(f"{len(state_ids)} {num_nondet_transitions} {num_adv_transitions}", file=f)
 
         # Print one line for each source state, representing all non-det transitions that start in that state,
         # with format:
@@ -274,6 +292,13 @@ def print_transition_matrix(sample, transitions_filename):
             # Next: A space-separated list of V^*(s) values, one per each state s, where -1 denotes infinity
             vstar = sample.vstar.get(s, -1)
             print(f"{s} {vstar} {num_ops} {len(o_edges)} {nondet_successors}", file=f)
+        # Print dversary transitions for each state
+        # with format:
+        #   s, num_succs, s1, s2, ...
+        for s in state_ids:
+            succs = adv_transitions.get(s, {})
+            adv_successors = ' '.join(f'{sp}' for sp in succs)
+            print(f"{s} {len(succs)} {adv_successors}", file=f)
 
 
 def print_states(sample, states_filename):

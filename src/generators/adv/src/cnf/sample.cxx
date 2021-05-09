@@ -20,8 +20,7 @@ std::vector<unsigned> randomize_int_sequence(std::mt19937& rng, unsigned n) {
 bool evaluate_dnf(unsigned s, unsigned a, unsigned sprime, const DNFPolicy &dnf, const sltp::FeatureMatrix& matrix) {
     for (const auto& [term, a_]:dnf.terms) {
         bool term_satisfied = true;
-        if (a != a_) continue;
-
+//        if (a != a_) continue; // TODO:: is this necessary?
         for (const auto& [f, fval]:term) {
             const auto& fs = matrix.entry(s, f);
             const auto& fsprime = matrix.entry(sprime, f);
@@ -38,11 +37,9 @@ bool evaluate_dnf(unsigned s, unsigned a, unsigned sprime, const DNFPolicy &dnf,
 }
 
 int select_action(unsigned s, const DNFPolicy& dnf, const TrainingSet& trset) {
-    for (unsigned sprime:trset.transitions().successors(s)) {
-        for (unsigned a:trset.transitions().s_as(s)) {
-            if (evaluate_dnf(s, a, sprime, dnf, trset.matrix())) {
-                return (int) sprime;
-            }
+    for (auto const& [a, sp]:trset.transitions().successors_a_sp(s)) {
+        if (evaluate_dnf(s, a, sp, dnf, trset.matrix())) {
+            return (int) a;
         }
     }
     return -1;
@@ -55,12 +52,11 @@ void detect_cycles(const DNFPolicy& dnf, const TrainingSet& trset, unsigned batc
     graph_t graph(N);
 
     // Build graph
+    // TODO: we don't need to do anything about the adversary here, right??
     for (unsigned s:alive) {
-        for (unsigned a:trset.transitions().s_as(s)) {
-            for (unsigned sprime:trset.transitions().successors({s, a})) {
-                if (trset.transitions().is_alive(sprime) && evaluate_dnf(s, a, sprime, dnf, trset.matrix())) {
-                    boost::add_edge(s, sprime, graph);
-                }
+        for (auto const&[a, sp]:trset.transitions().successors_a_sp(s)) {
+            if (trset.transitions().is_alive(sp) && evaluate_dnf(s, a, sp, dnf, trset.matrix())) {
+                boost::add_edge(s, sp, graph);
             }
         }
     }
@@ -127,13 +123,11 @@ std::vector<unsigned> StateSampler::sample_flaws(const DNFPolicy& dnf, unsigned 
         }
 
         // Check (2)
-        for (unsigned a:trset.transitions().s_as(s)) {
-            for (unsigned sprime:trset.transitions().successors({s, a})) {
-                bool is_good = evaluate_dnf(s, a, sprime, dnf, trset.matrix());
-                if (is_good && trset.transitions().is_unsolvable(sprime)) {
-                    flaws.push_back(s);
-                    break;
-                }
+        for (auto const& [a, sp]:trset.transitions().successors_a_sp(s)) {
+            bool is_good = evaluate_dnf(s, a, sp, dnf, trset.matrix());
+            if (is_good && trset.transitions().is_unsolvable(sp)) {
+                flaws.push_back(s);
+                break;
             }
         }
 
@@ -152,14 +146,12 @@ std::vector<unsigned> StateSampler::sample_flaws(const DNFPolicy& dnf, unsigned 
     // Remove any excedent of flaws to conform to the required amount
     flaws.resize(std::min(flaws.size(), (std::size_t) batch_size));
 
-
     if (verbosity>1) {
         std::cout << "Flaw list (loops): " << std::endl; for (auto f:flaws) std::cout << f << ", "; std::cout << std::endl;
     }
 
     return flaws;
 }
-
 
 std::vector<unsigned> GoalDistanceSampler::randomize_and_sort_alive_states(unsigned n) {
     auto sample = randomize_all_alive_states();
@@ -178,14 +170,10 @@ GoalDistanceSampler::compute_goal_distance_histogram(const std::vector<unsigned>
     return count;
 }
 
-
 std::vector<unsigned> GoalDistanceSampler::sample_flaws(const DNFPolicy& dnf, unsigned batch_size) {
     // We look for samples in order of increasing distance to goal.
     return sample_flaws(dnf, batch_size, randomize_and_sort_alive_states());
 }
-
-
-
 
 std::string print_term(const sltp::FeatureMatrix& matrix, const DNFPolicy::term_t& term, bool txt) {
     std::string res;

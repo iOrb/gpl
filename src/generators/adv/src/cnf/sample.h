@@ -130,8 +130,16 @@ public:
         return transitions_.successors(s);
     }
 
+    const std::vector<std::pair<unsigned, unsigned>>& successors_a_sp(unsigned s) const {
+        return transitions_.successors_a_sp(s);
+    }
+
     const std::set<unsigned>& successors(std::pair<unsigned,unsigned> sa) const {
         return transitions_.successors(sa);
+    }
+
+    const std::vector<unsigned>& adv(unsigned s) const {
+        return transitions_.adv(s);
     }
 
     const TransitionSample& full_training_set() const {

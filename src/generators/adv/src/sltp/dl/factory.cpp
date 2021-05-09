@@ -225,14 +225,14 @@ bool Factory::check_some_transition_pair_distinguished(const feature_sample_deno
 // one
     int prev_instance_id = -1;
     bool feature_can_distinguish_some_transition = false;
-    int last_sf = -1, last_sfprime = -1;
+    int last_sf = -1, last_sfprime = -1, last_a = -1;
     for (auto s:transitions.all_alive()) {
         const State &state = sample.state(s);
 
         int sf = fsd[s];
 
-        for (unsigned sprime:transitions.successors(s)) {
-            int sfprime = fsd[sprime];
+        for (unsigned sp:transitions.successors(s)) {
+            int sfprime = fsd[sp];
 
             if (last_sfprime > 0 && are_transitions_d1d2_distinguished(last_sf, last_sfprime, sf, sfprime)) {
                 feature_can_distinguish_some_transition = true;

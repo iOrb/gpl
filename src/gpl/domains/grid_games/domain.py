@@ -14,7 +14,7 @@ class Domain(IDomain):
         self.params = params
         self.env = importlib.import_module(f'.envs.{params.domain_name}', ANCHOR).Env
         self.action_space = self.env.get_action_space()
-        self.type = 'fond'
+        self.type = 'adv'
         self.set_objects()
 
     def set_objects(self):
@@ -55,7 +55,7 @@ def load_general_lang(lang, statics, params):
                 statics.add(f'{d}_{sort}')
 
     if params.use_player_as_feature:
-        _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player.w, OBJECTS.player.b}]
+        _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player1, OBJECTS.player2}]
 
     return lang, statics
 
@@ -64,7 +64,7 @@ def load_general_problem(problem, lang, rep, params):
     brd = copy.deepcopy(rep)
     nrows, ncols = rep.shape
     if params.use_player_as_feature:
-        problem.init.add(lang.get('player-{}'.format(OBJECTS.player.w)),)
+        problem.init.add(lang.get('player-{}'.format(OBJECTS.player1)),)
 
     map_sorts = dict()
     for r in range(-1, nrows + 1):

@@ -17,7 +17,6 @@ class Task(ITask):
     """
     def __init__(self, domain_name, instance_name, env, params):
         super().__init__(domain_name, instance_name)
-
         self.params = params
         self.env = env
         self.objects = get_domain_objects(domain_name)
@@ -29,7 +28,7 @@ class Task(ITask):
         num_actions_executed = 0
         r = (brd, self.objects.player1, num_actions_executed)
         info = {'goal': 0, 'deadend': 0}
-        self.grammar = Grammar(self.get_domain_name(),)
+        self.grammar = Grammar(self.get_domain_name(), self.params)
         encoded_s = self.grammar.encode_state(r, info)
         self.initial_state = (r, info, encoded_s)
 
@@ -37,7 +36,7 @@ class Task(ITask):
         return self.grammar.encode_state(rep, info)
 
     def state_to_atoms(self, state):
-        return self.grammar.state_to_atoms(state, self.params)
+        return self.grammar.state_to_atoms(state)
 
     def state_to_atoms_string(self, state,):
         return self.grammar.atom_tuples_to_string(self.state_to_atom_tuples(state,))
@@ -71,7 +70,7 @@ class Task(ITask):
         state1 = (rep1, info, s_encoded)
         return state1
 
-    def get_successor_states(self, state0):
+    def get_successor_states(self, s0, just_sp=False):
         def __transition_player(state, op):  # s -> a -> s'
             r = state[0]
             goal, deadend = self.infer_info(r)
@@ -79,26 +78,40 @@ class Task(ITask):
             r1 = self.env.act(r, op)  # player move
             goal, deadend = self.infer_info(r1)
             return self.colapse_state(r1, goal, deadend)
-        r0 = state0[0]
-        succs_sp = defaultdict(list)
-        ava_actions = self.env.available_actions(r0)
-        for op0 in ava_actions:
-            state1 = __transition_player(state0, op0)
-            if state1[1]['goal'] or state1[1]['deadend'] or state1[0][1] == self.objects.player1:
-                if state1[2] == state0[2]:
+        r0 = s0[0]
+        succs_sp = list()
+        succs = list()
+        succs_reps = list()
+        assert r0[1] == self.objects.player1
+        for op0 in self.env.available_actions(r0):
+            s1 = __transition_player(s0, op0)
+            succs_sp.append((op0, s1))
+            if s1[1]['goal'] or s1[1]['deadend'] or s1[0][1] == self.objects.player1:
+                if s1[2] == s0[2]:
                     continue
-                succs_sp[op0].append(state1)
+                succs.append((op0, s1, s1))
             else:
-                ava_actions1 = self.env.available_actions(state1[0])
-                for op1 in ava_actions1:
-                    state2 = __transition_player(state1, op1)
-                    if state2[2] == state1[2]:
+                assert s1[0][1] == self.objects.player2
+                for op1 in self.env.available_actions(s1[0]):
+                    s2 = __transition_player(s1, op1)
+                    if s2[2] == s1[2]:
                         continue
-                    succs_sp[op0].append(state1)
-        return succs_sp
+                    assert s2[0][1] == self.objects.player1
+                    succs.append((op0, s1, s2))
+
+        # succs_reps.append(r0)
+        # for _, s in succs_sp:
+        #     succs_reps.append(s[0])
+        # self.print_path(succs_reps)
+
+        if just_sp:
+            return succs_sp
+        else:
+            return succs
 
     def get_representative_instance_name(self):
-        return self.__representative_instance_name
+        return self.get_instance_name()
+        # return self.__representative_instance_name
 
     def encode_sa_pair(self, sa):
         s, op = sa
@@ -134,3 +147,6 @@ class Task(ITask):
                 tmp_row += simplified_objects[o]
             total_rep += "#{}#\n".format(tmp_row)
         return total_rep
+
+    def encode_op(self, s, op):
+        return self.env.encode_op(s[0], op)

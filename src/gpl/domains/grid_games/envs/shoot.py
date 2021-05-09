@@ -185,10 +185,7 @@ def get_attaking_mask(rep):
     layout, color, _ = rep
     attaking_mask = []
     assert color==WHITE
-
     pos = runnable_position(rep)
-    # for direction in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
-    # for direction in [(-1, 0), (0, -1), (0, 1), (1, 0)]:
     for action_id, direction in ACTION_MOVE_DIRECTION.items():
         if not action_id in AGENT_ACTION_SPACE:
             continue
@@ -201,11 +198,9 @@ def get_attaking_mask(rep):
                 next_cell = layout[running_pos[0], running_pos[1]]
             except IndexError:
                 break
-
             if next_cell in COLOR_TO_PIECES[color]:
                 break
             attaking_mask.append(running_pos.copy())
-
     return attaking_mask
 
 

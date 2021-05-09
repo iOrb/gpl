@@ -42,15 +42,26 @@ RIGHTDOWN = 6
 LEFTDOWN = 7
 
 
-ACTION_SPACE = {
-    UP,
-    DOWN,
-    RIGHT,
-    LEFT,
+AGENT_ACTION_SPACE = {
+    # UP,
+    # DOWN,
+    # RIGHT,
+    # LEFT,
     LEFTUP,
     RIGHTUP,
     RIGHTDOWN,
     LEFTDOWN,
+}
+
+ENV_ACTION_SPACE = {
+    UP,
+    DOWN,
+    RIGHT,
+    LEFT,
+    # LEFTUP,
+    # RIGHTUP,
+    # RIGHTDOWN,
+    # LEFTDOWN,
 }
 
 ACTION_MOVE_DIRECTION = {
@@ -65,19 +76,19 @@ ACTION_MOVE_DIRECTION = {
 }
 
 MAX_ACTIONS_BY_TURN = {
-    WHITE:3,
+    WHITE:1,
     BLACK:1,
 }
 
 MOVE_ACTION = {
-    ACTION_MOVE_DIRECTION[UP]: {WHITE: UP, BLACK: UP},
-    ACTION_MOVE_DIRECTION[DOWN]: {WHITE: DOWN, BLACK: DOWN},
-    ACTION_MOVE_DIRECTION[RIGHT]: {WHITE: RIGHT, BLACK: RIGHT},
-    ACTION_MOVE_DIRECTION[LEFT]: {WHITE: LEFT, BLACK: LEFT},
-    ACTION_MOVE_DIRECTION[LEFTUP]: {WHITE: LEFTUP, BLACK: LEFTUP},
-    ACTION_MOVE_DIRECTION[RIGHTUP]: {WHITE: RIGHTUP, BLACK: RIGHTUP},
-    ACTION_MOVE_DIRECTION[RIGHTDOWN]: {WHITE: RIGHTDOWN, BLACK: RIGHTDOWN},
-    ACTION_MOVE_DIRECTION[LEFTDOWN]: {WHITE: LEFTDOWN, BLACK: LEFTDOWN},
+    ACTION_MOVE_DIRECTION[UP]: UP,
+    ACTION_MOVE_DIRECTION[DOWN]: DOWN,
+    ACTION_MOVE_DIRECTION[RIGHT]: RIGHT,
+    ACTION_MOVE_DIRECTION[LEFT]: LEFT,
+    ACTION_MOVE_DIRECTION[LEFTUP]: LEFTUP,
+    ACTION_MOVE_DIRECTION[RIGHTUP]: RIGHTUP,
+    ACTION_MOVE_DIRECTION[RIGHTDOWN]: RIGHTDOWN,
+    ACTION_MOVE_DIRECTION[LEFTDOWN]: LEFTDOWN,
 }
 
 # Begin Chase =================================
@@ -134,15 +145,28 @@ class Env(object):
     def player2_policy(rep):
         assert (BLACK_KING in rep[0])
         assert (rep[1] == BLACK)
-        bk = np.argwhere(rep[0] == BLACK_KING)[0]
-        wk = np.argwhere(rep[0] == WHITE_KING)[0]
+        wk_r, wk_c = np.argwhere(rep[0] == WHITE_KING)[0]
+        bk_r, bk_c = np.argwhere(rep[0] == BLACK_KING)[0]
         valid_actions = Env.available_actions(rep)
         assert valid_actions
-        return valid_actions[0]
+        if wk_r < bk_r:
+            if DOWN in valid_actions:
+                return DOWN
+        else:
+            if UP in valid_actions:
+                return UP
+        if wk_c < bk_c:
+            if RIGHT in valid_actions:
+                return RIGHT
+        else:
+            if LEFT in valid_actions:
+                return LEFT
+
+        return np.random.choice(valid_actions)
 
     @staticmethod
     def get_action_space():
-        return ACTION_SPACE
+        return AGENT_ACTION_SPACE
 
     @staticmethod
     def get_grid(key):
@@ -159,9 +183,6 @@ def terminated(rep):
         return 1
     else:
         return 0
-
-def get_action_from_move(move, color):
-    return MOVE_ACTION[move][color]
 
 def runnable_position(rep):
     layout, player, nact = rep
@@ -180,8 +201,13 @@ def catched(rep):
 
 def king_valid_actions(pos, layout, color):
     valid_action = []
-    # for direction in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
-    for direction in ACTION_MOVE_DIRECTION.values():
+    if color == WHITE:
+        action_space = AGENT_ACTION_SPACE
+    else:
+        action_space = ENV_ACTION_SPACE
+    for action_id, direction in ACTION_MOVE_DIRECTION.items():
+        if not action_id in action_space:
+            continue
         running_pos = np.add(pos, direction)
         if np.any(running_pos < 0):
             continue
@@ -192,8 +218,8 @@ def king_valid_actions(pos, layout, color):
         if next_cell in COLOR_TO_PIECES[color]:
             continue
         if next_cell in COLOR_TO_PIECES[opposite_color(color)]:
-            pass
-        valid_action.append(get_action_from_move(direction, color))
+            continue
+        valid_action.append(action_id)
     return valid_action
 
 
@@ -204,7 +230,6 @@ def get_attaking_mask(rep):
 
     pos = runnable_position(rep)
     for direction in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
-    # for direction in [(-1, 0), (0, -1), (0, 1), (1, 0)]:
         running_pos = np.array(pos)
         running_pos += direction
         if np.any(running_pos < 0):
@@ -244,6 +269,7 @@ LAYOUTS = {
     7: (11, 4, (3, 3), (0, 0)),
     8: (8, 9, (3, 3), (0, 0)),
     9: (4, 4, (3, 3), (0, 0)),
-    10: (4, 4, (0, 0), (3, 3)),
-    11: (4, 4, (0, 1), (3, 3)),
+    10: (20, 21, (0, 0), (3, 3)),
+    11: (20, 20, (0, 1), (3, 3)),
+    12: (40, 40, (0, 1), (30, 30)),
 }

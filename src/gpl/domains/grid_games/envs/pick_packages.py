@@ -135,7 +135,7 @@ def agent_valid_actions(pos, layout):
         if next_cell in [PACKAGE]:
             pass
         if next_cell in [PIT]:
-            pass
+            continue
         valid_action.append(action_id)
     return valid_action
 
@@ -165,28 +165,46 @@ def layout_after_agent_action(layout, action_id):
 rng = np.random.default_rng(0)
 
 def generate_gird(key):
-    height, width, cell_agent, num_packages = LAYOUTS[key]
+    height, width, cell_agent, package_cell = LAYOUTS[key]
     grid = np.full((height, width), EMPTY, dtype=object)
     grid.flat[rng.choice(height*width, 4, replace=False)] = PIT
-    grid.flat[rng.choice(height*width, num_packages, replace=False)] = PACKAGE
-    grid[cell_agent] = AGENT
+    grid.flat[package_cell] = PACKAGE
+    grid.flat[cell_agent] = AGENT
     return grid
 
+# LAYOUTS = {
+#     0: (4, 4, (1, 0), 3),
+#     1: (4, 4, (2, 2), 3),
+#     2: (4, 4, (3, 2), 3),
+#     3: (4, 5, (1, 2), 3),
+#     4: (10, 4, (2, 2), 5),
+#     5: (10, 10, (5, 5), 10),
+#     6: (5, 5, (0, 0), 3),
+#     7: (5, 5, (0, 0), 3),
+#     8: (6, 6, (3, 3), 2),
+#     8: (6, 6, (3, 3), 3),
+#     9: (6, 6, (3, 2), 4),
+#     10: (6, 6, (1, 3), 5),
+#     11: (6, 6, (3, 4), 8),
+#     12: (6, 6, (2, 3), 10),
+# }
+
+
 LAYOUTS = {
-    0: (4, 4, (1, 0), 3),
-    1: (4, 4, (2, 2), 3),
-    2: (4, 4, (3, 2), 3),
-    3: (4, 4, (1, 2), 3),
-    4: (10, 4, (2, 2), 5),
-    5: (10, 10, (5, 5), 10),
-    6: (5, 5, (0, 0), 4),
-    7: (5, 5, (0, 0), 3),
-    8: (6, 6, (3, 3), 2),
-    8: (6, 6, (3, 3), 3),
-    9: (6, 6, (3, 2), 4),
-    10: (6, 6, (1, 3), 5),
-    11: (6, 6, (3, 4), 8),
-    12: (6, 6, (2, 3), 10),
+    0: (4, 4, 0, 12),
+    1: (4, 4, 1, 10),
+    2: (4, 4, 3, 12),
+    3: (4, 5, 16, 1),
+    4: (10, 4, 29, 12),
+    5: (10, 10, 80, 8),
+    6: (5, 5, 23, 4),
+    7: (5, 5, 4, 20),
+    8: (6, 6, 32, 1),
+    8: (6, 6, 1, 13),
+    9: (6, 6, 28, 14),
+    10: (6, 6, 12, 33),
+    11: (6, 6, 14, 21),
+    12: (6, 6, 16, 12),
 }
 
 

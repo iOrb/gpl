@@ -46,6 +46,7 @@ def load_local_object(filename):
     picklefile.close()
     return local_object
 
+
 def encode_operator(s, op, task):
     if callable(getattr(task, "encode_op", None)):
         o = task.encode_op(s, op)
@@ -54,9 +55,10 @@ def encode_operator(s, op, task):
     return o
 
 def get_sampling_class(config):
-    from .sampling.fond import TransitionSampleFOND
+    from .sampling.adv import TransitionSampleADV
     sampling_class = {
-        'fond': TransitionSampleFOND(),
+        'adv': TransitionSampleADV(),
     }[config.domain.type]
-    sampling_class.set_operators(config.domain.action_space)
+    if config.use_action_ids:
+        sampling_class.set_operators(config.domain.action_space)
     return sampling_class

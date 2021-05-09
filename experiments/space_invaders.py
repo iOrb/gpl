@@ -1,10 +1,18 @@
 import math
-
+from gpl.utils import Bunch
+from gpl.domains.grid_games.grammar.language import CELL_S, COL_S, ROW_S
 from sltp.util.misc import update_dict
 
 from gpl.domains.grid_games.domain import Domain
 
-from domain_params import space_invaders_params
+space_invaders_params = Bunch({
+    'domain_name': 'space_invaders',
+    'use_player_as_feature': False,
+    'map_cells': False,
+    'use_diagonals_for_map_cells': False,
+    'use_adjacency': True,
+    'sorts_to_use': {COL_S, ROW_S, CELL_S},
+})
 
 def experiments():
     base = dict(
@@ -23,9 +31,9 @@ def experiments():
     exps["1"] = update_dict(
         base,
         # instances=[0],
-        instances=[0, 2, 3, 4],
+        instances=[0, 4, 8],
         # instances=[0, 3, 4, 8],
-        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8],
+        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
@@ -37,18 +45,18 @@ def experiments():
 
         verbosity=1,
         initial_sample_size=100,
-        refinement_batch_size=20,
+        refinement_batch_size=200,
         maxsat_iter=20,
 
         allow_bad_states=True,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
-        use_action_ids=False,
+        use_action_ids=True,
         use_weighted_tx=False,
         use_state_novelty=True,
         distinguish_goals=True,
 
-        sampling_strategy="random",
+        sampling_strategy="full",
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],

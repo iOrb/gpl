@@ -13,13 +13,14 @@ class Grammar:
     Wrapper of some grammar utils
     """
 
-    def __init__(self, domain_name,):
+    def __init__(self, domain_name, params):
 
         self.domain_name = domain_name
+        self.params = params
         self.object_bytes = self.objects_to_bytes()
 
-    def state_to_atoms(self, state, p):
-        return state_to_atoms(self.domain_name, state, p)
+    def state_to_atoms(self, state):
+        return state_to_atoms(self.domain_name, state, self.params)
 
     def state_to_atoms_string(self, state,):
         return atom_tuples_to_string(self.state_to_atoms(state,))
@@ -32,7 +33,8 @@ class Grammar:
         """
         try:
             b = list(self.object_bytes[obj] for obj in r[0].flatten())
-            b = b + [self.object_bytes[r[1]]]
+            if self.params.use_player_as_feature:
+                b = b + [self.object_bytes[r[1]]]
             # b = b + [self.object_bytes['true']] if info['reward'] else b + [self.object_bytes['false']]
             # b = b + [self.object_bytes['true']] if info['goal'] else b + [self.object_bytes['false']]
             # b = b + [self.object_bytes['true']] if info['deadend'] else b + [self.object_bytes['false']]
@@ -44,7 +46,6 @@ class Grammar:
             sys.exit(1)
 
     def objects_to_bytes(self):
-
         OBJECTS = get_domain_objects(self.domain_name)
 
         object_bytes = dict()

@@ -5,7 +5,17 @@ from sltp.util.misc import update_dict
 
 from gpl.domains.grid_games.domain import Domain
 
-from domain_params import deliver_params
+from gpl.utils import Bunch
+from gpl.domains.grid_games.grammar.language import CELL_S, COL_S, ROW_S
+
+deliver_params = Bunch({
+    'domain_name': 'deliver',
+    'use_player_as_feature': False,
+    'map_cells': True,
+    'use_diagonals_for_map_cells': True,
+    'use_adjacency': True,
+    'sorts_to_use': {CELL_S, COL_S, ROW_S},
+})
 
 def experiments():
     base = dict(
@@ -23,6 +33,7 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
+        # instances=[5,],
         instances=[0, 2, 3, 4, 5,],
         test_instances=[0, 2, 3, 4, 5, 6],
         max_concept_size=5,
@@ -30,7 +41,7 @@ def experiments():
         concept_generation_timeout=15000,
         cond_feature_max_complexity=0,
         comparison_features=False,
-        generate_goal_concepts=False,
+        generate_goal_concepts=True,
         print_denotations=True,
         print_hstar_in_feature_matrix=False,
 
@@ -39,14 +50,13 @@ def experiments():
         refinement_batch_size=20,
         maxsat_iter=10,
 
-        allow_bad_states=True,
+        allow_bad_states=False,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
-        use_action_ids=False,
+        use_action_ids=True,
         use_weighted_tx=False,
         use_state_novelty=True,
         distinguish_goals=True,
-
         sampling_strategy="full",
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!

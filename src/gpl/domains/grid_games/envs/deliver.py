@@ -137,6 +137,8 @@ def agent_valid_actions(pos, layout):
             next_cell = layout[running_pos[0], running_pos[1]]
         except IndexError:
             continue
+        if next_cell in [DESTINY] and AGENT in layout:
+            continue
         if next_cell in [PACKAGE]:
             pass
         valid_action.append(action_id)

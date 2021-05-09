@@ -18,10 +18,11 @@ namespace sltp {
     protected:
         const std::size_t num_states_;
         const std::size_t num_transitions_;
+        const std::size_t num_adv_transitions_;
 
         //! nondet_transitions_ represents the entire non-deterministic transition function by storing a vector of
         //! possible tuples (s, a, S').
-//        std::set<std::tuple<unsigned, unsigned, unsigned>> nondet_transitions_;
+        std::set<std::tuple<unsigned, unsigned, unsigned>> nondet_transitions_;
 
         // Operations
         std::map<unsigned, std::unordered_set<unsigned>> s_as_; // {s: {a1, a2, ...}}
@@ -29,6 +30,8 @@ namespace sltp {
 
         //! trdata_[s] contains the IDs of all neighbors of s in the state space
         std::vector<std::vector<unsigned>> trdata_;
+        std::vector<std::vector<std::pair<unsigned, unsigned>>> trdata_a_sp_;
+        std::vector<std::vector<unsigned>> trdata_adv_;
         std::map<std::pair<unsigned, unsigned>, std::set<unsigned>> trdata_s_a_;
 
         std::vector<unsigned> alive_states_;
@@ -39,10 +42,13 @@ namespace sltp {
         std::vector<int> vstar_;
 
     public:
-        TransitionSample(std::size_t num_states, std::size_t num_transitions)
+        TransitionSample(std::size_t num_states, std::size_t num_transitions, std::size_t num_adv_transitions)
                 : num_states_(num_states),
                   num_transitions_(num_transitions),
+                  num_adv_transitions_(num_adv_transitions),
                   trdata_(num_states),
+                  trdata_a_sp_(num_states),
+                  trdata_adv_(num_states),
                   alive_states_(),
                   goal_states_(),
                   unsolvable_states_(),
@@ -64,6 +70,7 @@ namespace sltp {
 
         std::size_t num_states() const { return num_states_; }
         std::size_t num_transitions() const { return num_transitions_; }
+        std::size_t num_adv_transitions() const { return num_adv_transitions_; }
 
         int vstar(unsigned sid) const {
             auto vstar = vstar_.at(sid);
@@ -74,9 +81,16 @@ namespace sltp {
         const std::vector<unsigned>& successors(unsigned s) const {
             return trdata_.at(s);
         }
+        const std::vector<std::pair<unsigned, unsigned>>& successors_a_sp(unsigned s) const {
+            return trdata_a_sp_.at(s);
+        }
 
         const std::set<unsigned>& successors(std::pair<unsigned, unsigned> sa) const {
             return trdata_s_a_.at(sa);
+        }
+
+        const std::vector<unsigned>& adv(unsigned s) const {
+            return trdata_adv_.at(s);
         }
 
         const std::unordered_set<unsigned>& s_as(unsigned s) const {
@@ -109,6 +123,10 @@ namespace sltp {
             return goal_states_;
         }
 
+        const std::vector<unsigned>& all_unknowns() const {
+            return unknown_states_;
+        }
+
         //! Print a representation of the object to the given stream.
         friend std::ostream& operator<<(std::ostream &os, const TransitionSample& o) { return o.print(os); }
         std::ostream& print(std::ostream &os) const {
@@ -119,10 +137,7 @@ namespace sltp {
 
         // readers
         void read(std::istream &is) {
-            std::set<unsigned> alives;
-            std::set<unsigned> goals;
-            std::set<unsigned> unsolvables;
-            std::set<unsigned> unknowns;
+            std::set<unsigned> alives, goals, unsolvables, unknowns;
             for (unsigned i = 0; i < num_states_; ++i) {
                 unsigned s = 0, n_a = 0, n_sp = 0, a = 0, sp = 0;
                 int vstar = 0;
@@ -146,15 +161,20 @@ namespace sltp {
 
                 if (n_sp > 0) {
                     std::set<unsigned> tmp_sps;
+                    std::set<std::pair<unsigned,unsigned>> tmp_a_sps;
                     for (unsigned j = 0; j < n_sp; ++j) {
                         is >> a >> sp;
                         s_as_[s].insert(a);
                         action_ids_.insert(a);
                         trdata_s_a_[{s, a}].insert(sp);
+                        nondet_transitions_.insert({s, a, sp});
                         tmp_sps.insert(sp);
+                        tmp_a_sps.insert({a, sp});
                     }
                     std::vector<unsigned> all_sps{tmp_sps.begin(), tmp_sps.end()};
+                    std::vector<std::pair<unsigned, unsigned>> all_a_sps{tmp_a_sps.begin(), tmp_a_sps.end()};
                     trdata_[s] = all_sps;
+                    trdata_a_sp_[s] = all_a_sps;
 
                     assert(trdata_[s].empty());
                 }
@@ -163,17 +183,29 @@ namespace sltp {
             std::copy(goals.begin(), goals.end(), std::back_inserter(goal_states_));
             std::copy(unsolvables.begin(), unsolvables.end(), std::back_inserter(unsolvable_states_));
             std::copy(unknowns.begin(), unknowns.end(), std::back_inserter(unsolvable_states_));
+
+            // Read adv(s) set, the possible movements from the adversary
+            for (unsigned i = 0; i < num_states_; ++i) {
+                unsigned s =0, n_sp = 0, sp = 0;
+                is >> s >> n_sp;
+                assert(n_sp>0);
+                for (unsigned j=0; j<n_sp; ++j) {
+                    is >> sp;
+                    trdata_adv_[s].push_back(sp);
+                }
+            }
         }
 
 
         static TransitionSample read_dump(std::istream &is, bool verbose) {
-            unsigned num_states = 0, num_transitions = 0;
-            is >> num_states >> num_transitions;
-            TransitionSample transitions(num_states, num_transitions);
+            unsigned num_states = 0, num_transitions = 0, num_adv_transitions = 0;
+            is >> num_states >> num_transitions >> num_adv_transitions;
+            TransitionSample transitions(num_states, num_transitions, num_adv_transitions);
             transitions.read(is);
             if( verbose ) {
                 std::cout << "TransitionSample::read_dump: #states=" << transitions.num_states()
                           << ", #transitions=" << transitions.num_transitions()
+                          << ", #transitions (adv)=" << transitions.num_adv_transitions()
                           << std::endl;
             }
             return transitions;

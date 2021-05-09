@@ -64,8 +64,6 @@ class TransitionSamplingStep:
     def get_step_runner(self, config):
         if config.domain.type == 'adv':
             from .sampling.adv import run
-        elif config.domain.type == 'fond':
-            from .sampling.fond import run
         else:
             raise RuntimeError("Wrong mode provided: {}".format(config.mode))
         return run

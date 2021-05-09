@@ -118,7 +118,8 @@ def run_test(config, search_policy, task, instance_name, rng):
         expanded += 1
         if expanded % 1000 == 0:
             logging.debug(f"Number of expanded states so far in policy-based search: {expanded}")
-        successors = task.get_successor_states(s)
+
+        successors = task.get_successor_states(s, just_sp=True)
 
         if not successors:
             raise PolicySearchException(ExitCode.NotSuccessorsFound)
@@ -134,7 +135,7 @@ def run_test(config, search_policy, task, instance_name, rng):
             if config.use_state_novelty:
                 times_seen = visited_sa[sa_pair_enc]
                 if times_seen > 0:
-                    not_novelty_sa[op] = times_seen
+                    not_novelty_sa[sa_pair_enc] = times_seen
                     continue
                 else:
                     break
@@ -170,15 +171,11 @@ def create_action_selection_function_from_transition_policy(config, model_factor
     def _policy(task, state, successors):
         m0 = generate_model_from_state(task, model_factory, state, static_atoms)
         goods = list()
-        for op, sps in successors.items():
-            all_sps_good= True
-            for sp in sps:
-                m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
-                # if policy.transition_is_good(m0, op):
-                tx = (m0, m1, op) if config.use_action_ids else (m0, m1)
-                if not policy.transition_is_good(*tx):
-                    all_sps_good = False
-            if all_sps_good:
+        for op, sp in successors:
+            m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
+            # if policy.transition_is_good(m0, op):
+            tx = (m0, m1, op) if config.use_action_ids else (m0, m1)
+            if policy.transition_is_good(*tx):
                 goods.append(op)
         if not goods:
             return ExitCode.AbstractPolicyNotCompleteOnTestInstances, None

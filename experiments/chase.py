@@ -5,7 +5,17 @@ from sltp.util.misc import update_dict
 
 from gpl.domains.grid_games.domain import Domain
 
-from domain_params import chase_params
+from gpl.utils import Bunch
+from gpl.domains.grid_games.grammar.language import CELL_S, COL_S, ROW_S
+
+chase_params = Bunch({
+    'domain_name': 'chase',
+    'use_player_as_feature': False,
+    'map_cells': True,
+    'use_diagonals_for_map_cells': True,
+    'use_adjacency': True,
+    'sorts_to_use': {COL_S, ROW_S},
+})
 
 def experiments():
     base = dict(
@@ -25,7 +35,7 @@ def experiments():
         base,
         # instances=[3],
         instances=[0],
-        test_instances=[0, 1, 2, 3, 4, 5, 6, 7],
+        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
@@ -40,14 +50,14 @@ def experiments():
         refinement_batch_size=50,
         maxsat_iter=10,
 
-        allow_bad_states=False,
+        allow_bad_states=True,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=False,
         use_weighted_tx=False,
-        distinguish_goals=False,
+        distinguish_goals=True,
 
-        sampling_strategy="goal",
+        sampling_strategy="full",
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],

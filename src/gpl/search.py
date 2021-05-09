@@ -143,10 +143,10 @@ def bfs(config, data, search_policy, task, instance_name, rng):
         sr, _, _, s_encoded, info = unpack_state(s)
         succcessors = task.get_successor_states(s)
         alive, _, _ = data.sample.process_successors(s, succcessors, task)
-        for op, succ in alive:
-            if succ[2] not in visited:
-                visited.add(succ[2])
-                queue.append(succ)
+        for op, sp, spp in alive:
+            if spp[2] not in visited:
+                visited.add(spp[2])
+                queue.append(spp)
         if data.sample.num_states() > config.max_states_expanded:
             break
 

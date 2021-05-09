@@ -48,6 +48,7 @@ public:
             << " (from alive state: " << num_alive << ")"
             << ", unsolvable: " << transitions_.num_unsolvable()
             << ", goals: " << transitions_.all_goals().size()
+            << ", unknowns: " << transitions_.all_unknowns().size()
             << ", features: " << matrix_.num_features()
             << ", est. size: " << std::setprecision(2) << std::fixed << est_size << " MB.]";
         return os;

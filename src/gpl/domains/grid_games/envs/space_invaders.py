@@ -34,7 +34,7 @@ RIGHT = 2
 DOWN = 3
 
 AGENT_ACTION_SPACE = {
-    SHOOT,
+    # SHOOT,
     RIGHT,
     LEFT,
 }
@@ -42,7 +42,7 @@ AGENT_ACTION_SPACE = {
 MARTIANS_ACTION_SPACE = {
     RIGHT,
     LEFT,
-    DOWN,
+    # DOWN,
 }
 
 ACTION_MOVE_DIRECTION = {
@@ -52,7 +52,7 @@ ACTION_MOVE_DIRECTION = {
 }
 
 MAX_ACTIONS_BY_TURN = {
-    WHITE:3,
+    WHITE:5,
     BLACK:1,
 }
 
@@ -108,7 +108,10 @@ class Env(object):
     @staticmethod
     def player2_policy(rep):
         valid_actions = Env.available_actions(rep)
-        assert valid_actions
+        try:
+            assert valid_actions
+        except:
+            raise
         return random.choice(valid_actions)
 
     @staticmethod
@@ -233,19 +236,6 @@ def generate_gird(key):
         grid[martian_rows, c] = BLACK_KING
     return grid
 
-LAYOUTS_ = {
-    0: (6, 4, 2, [0], [0]),
-    1: (10, 4, 1, [0], [3]),
-    2: (10, 10, 1, [0],[9]),
-    3: (7, 5, 2, [0], [4]),
-    4: (9, 5, 4, [0], [2]),
-    5: (20, 8, 6, [0], [1]),
-    6: (20, 10, 0, [0], [8]),
-    7: (20, 20, 15, [0], [0]),
-    8: (9, 6, 0, [0], [5]),
-}
-
-
 LAYOUTS = {
     0: (6, 4, 2, [0], [0, 2, 3]),
     1: (10, 4, 1, [0], [0, 2, 3]),
@@ -256,4 +246,5 @@ LAYOUTS = {
     6: (20, 10, 0, [0], [0, 2, 3]),
     7: (20, 20, 4, [0], [0, 19]),
     8: (9, 6, 4, [0, 1], [0, 2, 4]),
+    9: (6, 10, 5, [0], [5]),
 }
