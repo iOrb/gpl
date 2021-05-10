@@ -1,6 +1,8 @@
 import sys
 
 import numpy as np
+from gpl.utils import Bunch
+import copy
 
 WHITE = 1
 BLACK = 2
@@ -94,15 +96,18 @@ MOVE_ACTION = {
 # Begin Chase =================================
 
 class Env(object):
-    @staticmethod
-    def act(rep, action):
-        layout, color, nact = rep
-        assert nact < MAX_ACTIONS_BY_TURN[color]
+    def __init__(self, params):
+        self.params = params
+
+    def act(self, rep, action):
+        layout = rep.grid
+        assert rep.nact < MAX_ACTIONS_BY_TURN[rep.player]
         assert not terminated(rep)
         valid_actions = Env.available_actions(rep)
         assert action in valid_actions
-        l = layout.copy()
-        pos = runnable_position(rep)
+        new_rep = copy.deepcopy(rep)
+        l = new_rep.grid
+        pos = runnable_position(rep.grid, rep.player)
         running_pos = np.add(pos, ACTION_MOVE_DIRECTION[action])
         assert not np.any(running_pos < 0)
         try:
@@ -117,10 +122,21 @@ class Env(object):
         #     l[new_r, new_c] = piece
         l[new_r, new_c] = piece
         l[old_r, old_c] = EMPTY
-        if nact + 1 < MAX_ACTIONS_BY_TURN[color]:
-            return (l, color, nact + 1)
+        if rep.nact + 1 < MAX_ACTIONS_BY_TURN[rep.player]:
+            new_rep.grid = l
+            new_rep.nact += 1
+            return self.__update_rep(new_rep)
         else:
-            return (l, opposite_color(color), 0)
+            new_rep.grid = l
+            new_rep.nact = 0
+            new_rep.player = opposite_color(rep.player)
+            return self.__update_rep(new_rep)
+
+    def __update_rep(self, rep):
+        updated_rep = rep.to_dict()
+        if Env.check_game_status(rep) == 1:
+            updated_rep['goal'] = True
+        return Bunch(updated_rep)
 
     @staticmethod
     def check_game_status(rep):
@@ -131,22 +147,22 @@ class Env(object):
 
     @staticmethod
     def available_actions(rep):
-        layout, player, nact = rep
+        layout = rep.grid
         actions = []
-        if player == WHITE:
+        if rep.player == WHITE:
             c0 = np.argwhere(layout == WHITE_KING)[0]
             actions += PIECE_VALID_ACTIONS[WHITE_KING](c0, layout)
-        elif player == BLACK:
+        elif rep.player == BLACK:
             c0 = np.argwhere(layout == BLACK_KING)[0]
             actions += PIECE_VALID_ACTIONS[BLACK_KING](c0, layout)
         return actions
 
     @staticmethod
     def player2_policy(rep):
-        assert (BLACK_KING in rep[0])
-        assert (rep[1] == BLACK)
-        wk_r, wk_c = np.argwhere(rep[0] == WHITE_KING)[0]
-        bk_r, bk_c = np.argwhere(rep[0] == BLACK_KING)[0]
+        assert (BLACK_KING in rep.grid)
+        assert (rep.player == BLACK)
+        wk_r, wk_c = np.argwhere(rep.grid == WHITE_KING)[0]
+        bk_r, bk_c = np.argwhere(rep.grid == BLACK_KING)[0]
         valid_actions = Env.available_actions(rep)
         assert valid_actions
         if wk_r < bk_r:
@@ -161,7 +177,6 @@ class Env(object):
         else:
             if LEFT in valid_actions:
                 return LEFT
-
         return np.random.choice(valid_actions)
 
     @staticmethod
@@ -169,12 +184,21 @@ class Env(object):
         return AGENT_ACTION_SPACE
 
     @staticmethod
-    def get_grid(key):
-        return generate_gird(key)
-
-    @staticmethod
     def get_simplified_objects():
         return SIMPLIFIED_OBJECT
+
+    @staticmethod
+    def encode_op(rep, op):
+        return op
+
+    def init_instance(self, key):
+        rep = {u: False for u in self.params.unary_predicates}
+        rep['grid'] = generate_gird(key)
+        rep['nact'] = 0
+        rep['player'] = WHITE
+        rep['goal'] = False
+        rep['deadend'] = False
+        return Bunch(rep)
 
 # Helper mehtods =================================
 
@@ -184,17 +208,16 @@ def terminated(rep):
     else:
         return 0
 
-def runnable_position(rep):
-    layout, player, nact = rep
+def runnable_position(layout, player):
     if player == WHITE:
         return np.argwhere(layout == WHITE_KING)[0]
     elif player == BLACK:
         return np.argwhere(layout == BLACK_KING)[0]
 
 def catched(rep):
-    attakig_mask = get_attaking_mask((rep[0], WHITE, 0))
-    opposite_pos = runnable_position((rep[0], BLACK, 0))
-    if any((opposite_pos == att).all() for att in attakig_mask):
+    attakig_mask = get_white_king_attaking_mask(rep)
+    bk_pos = runnable_position(rep.grid, BLACK)
+    if attakig_mask[bk_pos[0], bk_pos[1]]:
         return True
     else:
         return False
@@ -223,12 +246,10 @@ def king_valid_actions(pos, layout, color):
     return valid_action
 
 
-def get_attaking_mask(rep):
-    layout, color, _ = rep
-    attaking_mask = []
-    assert color==WHITE
-
-    pos = runnable_position(rep)
+def get_white_king_attaking_mask(rep):
+    layout = rep.grid
+    attaking_mask = attaking_mask = np.full(rep.grid.shape, False, dtype=bool)
+    pos = runnable_position(rep.grid, WHITE)
     for direction in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
         running_pos = np.array(pos)
         running_pos += direction
@@ -238,16 +259,14 @@ def get_attaking_mask(rep):
             next_cell = layout[running_pos[0], running_pos[1]]
         except IndexError:
             continue
-
-        if next_cell in COLOR_TO_PIECES[color]:
+        if next_cell in COLOR_TO_PIECES[WHITE]:
             continue
         elif next_cell == EMPTY or 'king' in next_cell:
-            attaking_mask.append(running_pos.copy())
+            attaking_mask[running_pos[0],running_pos[1]] = True
         else:
-            assert next_cell in COLOR_TO_PIECES[opposite_color(color)]
-            attaking_mask.append(running_pos.copy())
+            assert next_cell in COLOR_TO_PIECES[opposite_color(rep.player)]
+            attaking_mask[running_pos[0],running_pos[1]] = True
             continue
-
     return attaking_mask
 
 ### Instances
@@ -272,4 +291,5 @@ LAYOUTS = {
     10: (20, 21, (0, 0), (3, 3)),
     11: (20, 20, (0, 1), (3, 3)),
     12: (40, 40, (0, 1), (30, 30)),
+    13: (40, 40, (30, 30), (0, 1)),
 }

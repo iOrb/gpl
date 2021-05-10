@@ -1,4 +1,5 @@
 import sys
+from gpl.utils import Bunch
 
 import numpy as np
 import copy
@@ -63,18 +64,24 @@ DIRECTIONS = {
     BLACK_KING: ALL_DIRECTIONS,
 }
 
+# Unary predicates
+CHECKMATE = 'checkmate'
+STALEMATE = 'stalemate'
 
 # Begin Chase =================================
 
 class Env(object):
-    @staticmethod
-    def act(rep, action):
-        layout, color, nact = rep
-        assert nact < MAX_ACTIONS_BY_TURN[color]
+    def __init__(self, params):
+        self.params = params
+
+    def act(self, rep, action):
+        layout = rep.grid
+        assert rep.nact < MAX_ACTIONS_BY_TURN[rep.player]
         # assert not terminated(rep)
         # valid_actions = Env.available_actions(rep)
         # assert action in valid_actions
-        l = layout.copy()
+        new_rep = copy.deepcopy(rep)
+        l = new_rep.grid
         pos = action[0]
         running_pos = action[1]
         try:
@@ -83,14 +90,31 @@ class Env(object):
             print("Index error")
             sys.exit(1)
         assert 'king' not in next_cell
-        assert next_cell not in COLOR_TO_PIECES[color]
+        assert next_cell not in COLOR_TO_PIECES[rep.player]
         piece = l[pos[0], pos[1]]
         l[running_pos[0], running_pos[1]] = piece
         l[pos[0], pos[1]] = EMPTY
-        if nact + 1 < MAX_ACTIONS_BY_TURN[color]:
-            return (l, color, nact + 1)
+        if rep.nact + 1 < MAX_ACTIONS_BY_TURN[rep.player]:
+            new_rep.grid = l
+            new_rep.nact += 1
+            return self.__update_rep(new_rep)
         else:
-            return (l, opposite_color(color), 0)
+            new_rep.grid = l
+            new_rep.nact = 0
+            new_rep.player = opposite_color(rep.player)
+            return self.__update_rep(new_rep)
+
+    def __update_rep(self, rep):
+        updated_rep = rep.to_dict()
+        if CHECKMATE in self.params.unary_predicates:
+            updated_rep[CHECKMATE] = checkmate(rep)
+        if STALEMATE in self.params.unary_predicates:
+            updated_rep[STALEMATE] = stale_mate(rep)
+        if Env.check_game_status(rep) == 1:
+            updated_rep['goal'] = True
+        elif Env.check_game_status(rep) == -1:
+            updated_rep['deadend'] = True
+        return Bunch(updated_rep)
 
     @staticmethod
     def check_game_status(rep):
@@ -103,9 +127,9 @@ class Env(object):
 
     @staticmethod
     def available_actions(rep):
-        layout, player, nact = rep
+        layout = rep.grid
         actions = []
-        if player == WHITE:
+        if rep.player == WHITE:
             if WHITE_QUEEN in layout:
                 c0 = np.argwhere(layout == WHITE_QUEEN)[0]
                 actions += [(c0, c1) for c1 in PIECE_VALID_MOVES[WHITE_QUEEN](c0, layout)]
@@ -115,20 +139,20 @@ class Env(object):
             if WHITE_KING in layout:
                 c0 = np.argwhere(layout == WHITE_KING)[0]
                 actions += [(c0, c1) for c1 in PIECE_VALID_MOVES[WHITE_KING](c0, layout)]
-        elif player == BLACK:
+        elif rep.player == BLACK:
             c0 = np.argwhere(layout == BLACK_KING)[0]
             actions += [(c0, c1) for c1 in PIECE_VALID_MOVES[BLACK_KING](c0, layout)]
         return actions
 
     @staticmethod
     def player2_policy(rep):
-        layout, color, _ = rep
-        king_pos = np.argwhere(rep[0] == BLACK_KING)[0]
+        layout = rep.grid
+        king_pos = np.argwhere(layout == BLACK_KING)[0]
         valid_actions = Env.available_actions(rep)
         if WHITE_QUEEN in layout:
-            no_king_piece_pos = np.argwhere(rep[0] == WHITE_QUEEN)[0]
+            no_king_piece_pos = np.argwhere(layout == WHITE_QUEEN)[0]
         elif WHITE_TOWER in layout:
-            no_king_piece_pos = np.argwhere(rep[0] == WHITE_TOWER)[0]
+            no_king_piece_pos = np.argwhere(layout == WHITE_TOWER)[0]
         if abs(no_king_piece_pos[0] - king_pos[0]) == 1 and abs(no_king_piece_pos[1] - king_pos[1]) == 1:
             king_valid_moves = PIECE_VALID_MOVES[BLACK_KING](king_pos, rep[0])
             if any((no_king_piece_pos == pos).all() for pos in king_valid_moves):
@@ -140,20 +164,24 @@ class Env(object):
         return None
 
     @staticmethod
-    def get_grid(key):
-        return generate_gird(key)
-
-    @staticmethod
     def get_simplified_objects():
         return SIMPLIFIED_OBJECT
 
     @staticmethod
     def encode_op(rep, op):
-        layout, player, nact = rep
-        piece = layout[op[0][0], op[0][1]]
+        piece = rep.grid[op[0][0], op[0][1]]
         assert piece not in EMPTY
         o = copy.deepcopy(op)
         return "{}_{}.{}_{}.{}".format(piece, o[0][0], o[0][1], o[1][0], o[1][1])
+
+    def init_instance(self, key):
+        rep = {u: False for u in self.params.unary_predicates}
+        rep['grid'] = generate_gird(key)
+        rep['nact'] = 0
+        rep['player'] = WHITE
+        rep['goal'] = False
+        rep['deadend'] = False
+        return Bunch(rep)
 
 
 # Helper mehtods =================================
@@ -165,13 +193,13 @@ def terminated(rep):
         return False
 
 def checkmate(rep):
-    layout, player, _ = rep
+    layout = rep.grid
     assert BLACK_KING in layout
-    if player == BLACK:
+    if rep.player == BLACK:
         king_pos = np.argwhere(layout == BLACK_KING)[0]
         valid_moves = PIECE_VALID_MOVES[BLACK_KING](king_pos, layout)
         if len(valid_moves) == 0:
-            attacking_mask = get_attacking_mask(layout, opposite_color(player))
+            attacking_mask = get_attacking_mask(layout, opposite_color(rep.player))
             if attacking_mask[king_pos[0], king_pos[1]]:
                 return True
         return False
@@ -179,11 +207,12 @@ def checkmate(rep):
 
 
 def stale_mate(rep):
-    layout, player, _ = rep
-    # assert not checkmate(rep)
+    layout = rep.grid
+    if checkmate(rep):
+        return False
     assert BLACK_KING in layout
-    if player == BLACK:
-        bk_valid_moves = PIECE_VALID_MOVES[BLACK_KING](np.argwhere(rep[0] == BLACK_KING)[0], layout)
+    if rep.player == BLACK:
+        bk_valid_moves = PIECE_VALID_MOVES[BLACK_KING](np.argwhere(layout == BLACK_KING)[0], layout)
         if not bk_valid_moves:
             return True
     elif not WHITE_QUEEN in layout and not WHITE_TOWER in layout:
@@ -273,7 +302,7 @@ def cool_piece_valid_moves(pos, layout, color, piece):
 ### Instances
 def generate_gird(key):
     height, width, cell_white_king, cell_black_king, cell_white_queen, cell_white_tower = \
-        LAYOUTS_TOWER[key]
+        LAYOUTS_QUEEN[key]
     grid = np.full((height, width), EMPTY, dtype=object)
     grid[cell_white_king] = WHITE_KING
     grid[cell_black_king] = BLACK_KING
@@ -285,14 +314,15 @@ def generate_gird(key):
 
 
 LAYOUTS_QUEEN = {
-    0: (4, 4, (1, 1), (1, 3), (3, 2), None),
+    0: (4, 4, (1, 1), (1, 3), (1, 0), None),
     1: (4, 3, (1, 1), (3, 1), (1, 2), None),
     2: (3, 3, (0, 0), (1, 2), (2, 0), None),
+    3: (3, 2, (0, 1), (2, 1), (0, 0), None),
 }
 
 LAYOUTS_TOWER = {
     0: (4, 4, (1, 1), (1, 3), None, (3, 2)),
     1: (4, 3, (2, 0), (0, 0), None, (3, 2)),
-    2: (3, 3, (0, 0), (2, 0), (0, 1), (1, 2)),
+    2: (3, 3, (0, 0), (2, 0), None, (1, 2)),
     3: (5, 5, (4, 0), (0, 4), None, (4, 2)),
 }

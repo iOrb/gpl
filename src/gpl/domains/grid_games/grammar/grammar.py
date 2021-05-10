@@ -25,16 +25,16 @@ class Grammar:
     def state_to_atoms_string(self, state,):
         return atom_tuples_to_string(self.state_to_atoms(state,))
 
-    def encode_state(self, r, info):
+    def encode_state(self, r):
         """ Return a Python bytes object with a byte corresponding to each object type.
         This should have roughly as many bytes as positions in the layout, which will typically be much
         more compact than a numpy array of `object` types for encoding single characters, that uses several bytes per
         position.
         """
         try:
-            b = list(self.object_bytes[obj] for obj in r[0].flatten())
+            b = list(self.object_bytes[obj] for obj in r.grid.flatten())
             if self.params.use_player_as_feature:
-                b = b + [self.object_bytes[r[1]]]
+                b = b + [self.object_bytes[r.player]]
             # b = b + [self.object_bytes['true']] if info['reward'] else b + [self.object_bytes['false']]
             # b = b + [self.object_bytes['true']] if info['goal'] else b + [self.object_bytes['false']]
             # b = b + [self.object_bytes['true']] if info['deadend'] else b + [self.object_bytes['false']]

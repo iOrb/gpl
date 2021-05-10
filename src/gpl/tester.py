@@ -114,7 +114,7 @@ def run_test(config, search_policy, task, instance_name, rng):
     path = list()
     path.append(s[0])
 
-    while not s[1]['goal']:
+    while not s[0].goal:
         expanded += 1
         if expanded % 1000 == 0:
             logging.debug(f"Number of expanded states so far in policy-based search: {expanded}")
@@ -153,7 +153,7 @@ def run_test(config, search_policy, task, instance_name, rng):
         sp = task.transition(s, op)
         path.append(sp[0])
 
-        if sp[1]['deadend']:
+        if sp[0].deadend:
             exitcode = ExitCode.DeadEndReached
             break
         if visited_sa[sa_pair_enc] > 3:

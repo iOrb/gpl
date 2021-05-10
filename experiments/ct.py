@@ -7,6 +7,7 @@ from gpl.domains.grid_games.domain import Domain
 
 from gpl.utils import Bunch
 from gpl.domains.grid_games.grammar.language import CELL_S, COL_S, ROW_S
+from gpl.domains.grid_games.envs.checkmate_tactic import CHECKMATE, STALEMATE
 
 ct_params = Bunch({
     'domain_name': 'checkmate_tactic',
@@ -15,6 +16,7 @@ ct_params = Bunch({
     'use_diagonals_for_map_cells': True,
     'use_adjacency': False,
     'sorts_to_use': {CELL_S, COL_S, ROW_S},
+    'unary_predicates': {STALEMATE, CHECKMATE}
 })
 
 def experiments():
@@ -33,9 +35,8 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        # instances=[3],
-        instances=[2],
-        test_instances=[0, 1, 2],
+        instances=[0],
+        test_instances=[0, 1, 2, 3],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
@@ -56,7 +57,7 @@ def experiments():
         use_action_ids=False,
         use_weighted_tx=False,
         distinguish_goals=True,
-        sampling_strategy="full",
+        sampling_strategy="goal",
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],

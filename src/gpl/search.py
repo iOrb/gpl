@@ -11,7 +11,7 @@ from sltp.tester import PolicySearchException
 from sltp.util.misc import compute_universe_from_pddl_model, state_as_atoms, types_as_atoms
 from tarski.dl import compute_dl_vocabulary
 
-from .utils import Bunch, unpack_state
+from .utils import Bunch
 
 """
 rollout:
@@ -140,12 +140,12 @@ def bfs(config, data, search_policy, task, instance_name, rng):
 
     while queue:
         s = queue.pop(0)
-        sr, _, _, s_encoded, info = unpack_state(s)
+        sr, s_encoded = s
         succcessors = task.get_successor_states(s)
         alive, _, _ = data.sample.process_successors(s, succcessors, task)
         for op, sp, spp in alive:
-            if spp[2] not in visited:
-                visited.add(spp[2])
+            if spp[1] not in visited:
+                visited.add(spp[1])
                 queue.append(spp)
         if data.sample.num_states() > config.max_states_expanded:
             break

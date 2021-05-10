@@ -12,7 +12,7 @@ class Domain(IDomain):
     def __init__(self, params):
         super().__init__(params.domain_name)
         self.params = params
-        self.env = importlib.import_module(f'.envs.{params.domain_name}', ANCHOR).Env
+        self.env = importlib.import_module(f'.envs.{params.domain_name}', ANCHOR).Env(params)
         self.action_space = self.env.get_action_space()
         self.type = 'adv'
         self.set_objects()
@@ -24,26 +24,25 @@ class Domain(IDomain):
     # Generate Language
     def generate_language(self):
         """ Generate the Tarski language corresponding to the given domain. """
-        return generate_lang(self._domain_name, self.params)
+        return generate_lang(self._domain_name, self.env)
 
     # Generate Problem
     def generate_problem(self, lang, instance_name):
         """ Generate the Tarski problem corresponding to the given domain and particular layout. """
-        return generate_problem(self._domain_name, lang, self.env, instance_name, self.params)
+        return generate_problem(self._domain_name, lang, self.env, instance_name)
 
     # Generate Task
     def generate_task(self, instance_name):
         """ Generate a Task object, according to the Interface ITask """
-        return Task(self._domain_name, instance_name, self.env, self.params)
+        return Task(self._domain_name, instance_name, self.env)
 
 
-def load_general_lang(lang, statics, params):
+def load_general_lang(lang, statics, env):
     """ Return the FOL language corresponding to the Reach for the Star domain,
      plus a set with the names of those predicates / functions that are static. """
-
+    params = env.params
     for sort in params.sorts_to_use:
         lang.sort(sort)
-        # for o in OBJECTS.general | {OBJECTS.none}:
         for o in OBJECTS.general:
             lang.predicate(f'{sort}-hv-{o}', sort)
         if CELL_S == sort and params.use_adjacency:
@@ -54,36 +53,43 @@ def load_general_lang(lang, statics, params):
                 lang.predicate(f'{d}_{sort}', sort, sort)
                 statics.add(f'{d}_{sort}')
 
+    for u in params.unary_predicates:
+        lang.predicate(f'{u}',)
+
     if params.use_player_as_feature:
         _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player1, OBJECTS.player2}]
 
     return lang, statics
 
 
-def load_general_problem(problem, lang, rep, params):
-    brd = copy.deepcopy(rep)
-    nrows, ncols = rep.shape
+def load_general_problem(problem, lang, rep, env):
+    brd = copy.deepcopy(rep.grid)
+    nrows, ncols = brd.shape
+    params = env.params
     if params.use_player_as_feature:
-        problem.init.add(lang.get('player-{}'.format(OBJECTS.player1)),)
+        problem.init.add(lang.get('player-{}'.format(rep.player)),)
+    for u in params.unary_predicates:
+        if getattr(rep, u):
+            problem.init.add(lang.get(u,))
 
     map_sorts = dict()
     for r in range(-1, nrows + 1):
         for c in range(-1, ncols + 1):
             for sort in params.sorts_to_use:
+                o = brd[r, c] if (nrows > r >= 0 and ncols > c >= 0) else OBJECTS.none
+                if o == OBJECTS.none:
+                    continue
                 try:
                     map_sorts[(r, c, sort)] = lang.constant(CONST[sort](r, c), lang.get(sort))
                 except:
                     pass
-                if nrows > r >= 0 and ncols > c >= 0:
-                    o = brd[r, c]
-                else:
-                    # Add value for cells outside the grid
-                    o = OBJECTS.none
                 if o not in {OBJECTS.empty, OBJECTS.none}:
                     problem.init.add(lang.get(f'{sort}-hv-{o}'), lang.get(CONST[sort](r, c)))
 
     def __add_direction_predicate(problem, lang, direction, sort, const, new_r, new_c):
-        if CELL_S == sort and params.use_adjacency:
+        if new_r<0 or new_c<0 or ncols==new_c or nrows==new_r:
+            pass
+        elif CELL_S == sort and params.use_adjacency:
             problem.init.add(lang.get(f'{ADJACENT}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
         else:
             problem.init.add(lang.get(f'{direction}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
@@ -124,27 +130,27 @@ def load_general_problem(problem, lang, rep, params):
     return problem
 
 
-def generate_lang(domain_name, params):
-    lang, statics = generate_base_lang(domain_name)
-    load_general_lang(lang, statics, params)
-    return lang, statics
-
-
 def generate_base_lang(domain_name):
     from tarski.theories import Theory
     lang = fstrips.language(domain_name, theories=[Theory.EQUALITY])
     return lang, set()
 
 
-def generate_problem(domain_name, lang, env, instance_name, params):
-    problem = generate_base_problem(domain_name, lang, instance_name)
-    rep = env.get_grid(instance_name)
-    load_general_problem(problem, lang, rep, params)
-    return problem
+def generate_lang(domain_name, env):
+    lang, statics = generate_base_lang(domain_name)
+    load_general_lang(lang, statics, env)
+    return lang, statics
 
 
 def generate_base_problem(domain_name, lang, instance_name):
     problem = create_fstrips_problem(lang, domain_name=domain_name, problem_name=instance_name)
     # problem = tarski.model.create(lang)
     # problem.evaluator = tarski.evaluators.get_entry_point('simple')
+    return problem
+
+
+def generate_problem(domain_name, lang, env, instance_name):
+    problem = generate_base_problem(domain_name, lang, instance_name)
+    rep = env.init_instance(instance_name)
+    load_general_problem(problem, lang, rep, env)
     return problem

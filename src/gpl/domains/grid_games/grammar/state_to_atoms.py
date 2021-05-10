@@ -5,7 +5,8 @@ from .objects import OBJECTS
 
 # General State to atoms
 def state_to_atoms(domain_name, state, p):
-    brd = copy.deepcopy(state[0][0])
+    rep, _ = state
+    brd = rep.grid
     nrows, ncols = brd.shape
 
     # These are the general atoms for all the domains
@@ -14,13 +15,15 @@ def state_to_atoms(domain_name, state, p):
     for r in range(-1, nrows + 1):
         for c in range(-1, ncols + 1):
             for sort in p.sorts_to_use:
-                if nrows > r >= 0 and ncols > c >= 0:
-                    o = brd[r, c]
-                else:
-                    # Add value for cells outside the grid
-                    o = OBJECTS.none
+                o = brd[r, c] if (nrows > r >= 0 and ncols > c >= 0) else OBJECTS.none
+                if o == OBJECTS.none:
+                    continue
                 if o not in {OBJECTS.empty, OBJECTS.none}:
                     atoms.append((f'{sort}-hv-{o}', CONST[sort](r, c)))
+
+    for u in p.unary_predicates:
+        if getattr(rep, u):
+            atoms.append((u,))
 
     if p.use_player_as_feature:
         atoms.append(('player-{}'.format(state[0][1]),))

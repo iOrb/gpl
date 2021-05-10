@@ -5,7 +5,7 @@ import math
 import sys
 from collections import defaultdict, OrderedDict, deque
 
-from ..utils import unpack_state, encode_operator
+from ..utils import encode_operator
 
 from sltp.returncodes import ExitCode
 from sltp.util.command import read_file
@@ -62,17 +62,19 @@ class TransitionSampleADV:
         return (sids[0], oid, sids[1], sids[2])
 
     def check_state(self, state, task, instance_id):
-        s_r, goal, deadend, s_enc_raw, info = unpack_state(state)
+        sr, s_enc_raw = state
         s_encoded = self.encode_state(instance_id, s_enc_raw)
         if s_encoded not in self.states_encoded:
             self.states_encoded[s_encoded] = self.sid_count
             self.states[self.get_state_id(s_encoded)] = task.state_to_atoms(
                 state)  # this should be the representation as atoms
+            # print("{}. {}".format(self.sid_count, sr.goal))
+            # print(task.get_printable_rep(sr))
             self.sid_count += 1
         id = self.get_state_id(s_encoded)
-        if goal:
+        if sr.goal:
             self.goals.add(id)
-        elif deadend:
+        elif sr.deadend:
             self.deadends.add(id)
         return id
 
@@ -157,12 +159,12 @@ class TransitionSampleADV:
     def process_successors(self, s, succs, task):
         alive, goals, deadends = list(), list(), list()
         for op, sp, spp in succs:
-            sp_r, sp_goal, sp_deadend, sp_encoded, sp_info = unpack_state(sp)
-            spp_r, spp_goal, spp_deadend, spp_encoded, spp_info = unpack_state(spp)
+            sp_r, sp_encoded = sp
+            spp_r, spp_encoded = spp
             self.add_transition((s, op, sp, spp), task)
-            if spp_goal:
+            if spp_r.goal:
                 goals.append((op, sp, spp))
-            elif spp_deadend:
+            elif spp_r.deadend:
                 deadends.append((op, sp, spp))
             else:
                 alive.append((op, sp, spp))

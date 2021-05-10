@@ -15,6 +15,7 @@ chase_params = Bunch({
     'use_diagonals_for_map_cells': True,
     'use_adjacency': True,
     'sorts_to_use': {COL_S, ROW_S},
+    'unary_predicates': {}
 })
 
 def experiments():
@@ -35,7 +36,7 @@ def experiments():
         base,
         # instances=[3],
         instances=[0],
-        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,

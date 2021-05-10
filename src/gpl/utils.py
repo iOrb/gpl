@@ -25,15 +25,6 @@ def print_important_message(msg):
     print('------------------------------------------------')
 
 
-def unpack_state(state):
-    s_rep = state[0]
-    info = state[1]
-    goal = state[1]['goal']
-    deadend = state[1]['deadend']
-    s_encode = state[2]
-    return s_rep, goal, deadend, s_encode, info
-
-
 def save_local_object(local_object, filename):
     with open(filename, 'wb') as f:
         dill.dump(local_object, f)

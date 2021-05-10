@@ -108,17 +108,6 @@ class Env(object):
         return generate_gird(key)
 
     @staticmethod
-    def print_rep(rep):
-        layout, player, nact = rep
-        nrows, ncols = layout.shape
-        for r in range(0, nrows):
-            tmp_str = ""
-            for c in range(0, ncols):
-                tmp_str += SIMPLIFIED_OBJECT[layout[r, c]]
-            print(tmp_str)
-        print("#"*ncols)
-
-    @staticmethod
     def get_simplified_objects():
         return SIMPLIFIED_OBJECT
 
