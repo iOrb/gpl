@@ -45,7 +45,7 @@ def load_general_lang(lang, statics, env):
         lang.sort(sort)
         for o in OBJECTS.general:
             lang.predicate(f'{sort}-hv-{o}', sort)
-        if CELL_S == sort and params.use_adjacency:
+        if sort in params.use_adjacency:
             lang.predicate(f'{ADJACENT}_{sort}', sort, sort)
             statics.add(f'{ADJACENT}_{sort}')
         else:
@@ -89,7 +89,7 @@ def load_general_problem(problem, lang, rep, env):
     def __add_direction_predicate(problem, lang, direction, sort, const, new_r, new_c):
         if new_r<0 or new_c<0 or ncols==new_c or nrows==new_r:
             pass
-        elif CELL_S == sort and params.use_adjacency:
+        elif sort in params.use_adjacency:
             problem.init.add(lang.get(f'{ADJACENT}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
         else:
             problem.init.add(lang.get(f'{direction}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
@@ -99,32 +99,30 @@ def load_general_problem(problem, lang, rep, env):
             continue
         if not ROW_S in sort:
             # Right
-            if col < ncols:
+            if col < ncols - 1:
                 __add_direction_predicate(problem, lang, RIGHT, sort, const, row, col + 1)
             # Left
-            if col > -1:
-                __add_direction_predicate(problem, lang, RIGHT, sort, const, row, col - 1)
-                # __add_direction_predicate(problem, lang, LEFT, sort, const, row, col - 1)
+            if col > 0:
+                __add_direction_predicate(problem, lang, LEFT, sort, const, row, col - 1)
         if not COL_S in sort:
             # Down
-            if row < nrows:
-                __add_direction_predicate(problem, lang, UP, sort, const, row + 1, col)
-                # __add_direction_predicate(problem, lang, DOWN, sort, const, row + 1, col)
+            if row < nrows - 1:
+                __add_direction_predicate(problem, lang, DOWN, sort, const, row + 1, col)
             # Up
-            if row > -1:
+            if row > 0:
                 __add_direction_predicate(problem, lang, UP, sort, const, row - 1, col)
         if CELL_S in sort:
             # Right-Down
             if col < ncols and row < nrows:
                 __add_direction_predicate(problem, lang, RIGHTDOWN, sort, const, row + 1, col + 1)
             # Right-Up
-            if col < ncols and row > -1:
+            if col < ncols and row > 0:
                 __add_direction_predicate(problem, lang, RIGHTUP, sort, const, row - 1, col + 1)
             # Left-Down
-            if col > -1 and row < nrows:
+            if col > 0 and row < nrows - 1:
                 __add_direction_predicate(problem, lang, LEFTDOWN, sort, const, row + 1, col - 1)
             # Left-Up
-            if col > -1 and row > -1:
+            if col > 0 and row > 0:
                 __add_direction_predicate(problem, lang, LEFTUP, sort, const, row - 1, col - 1)
 
     return problem

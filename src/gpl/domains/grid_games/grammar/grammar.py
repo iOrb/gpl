@@ -40,10 +40,9 @@ class Grammar:
             # b = b + [self.object_bytes['true']] if info['deadend'] else b + [self.object_bytes['false']]
             return bytes(b)
         except:
-            for o in r[0].flatten():
+            for o in r.grid.flatten():
                 if o not in self.object_bytes:
-                    print('EXCEPTION: Unknown object: {}\n'.format(o))
-            sys.exit(1)
+                    print('EXCEPTION: Unknown object: {}'.format(o))
 
     def objects_to_bytes(self):
         OBJECTS = get_domain_objects(self.domain_name)

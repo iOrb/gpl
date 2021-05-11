@@ -11,7 +11,7 @@ space_invaders_params = Bunch({
     'use_player_as_feature': False,
     'map_cells': False,
     'use_diagonals_for_map_cells': False,
-    'use_adjacency': True,
+    'use_adjacency': {COL_S, ROW_S},
     'sorts_to_use': {CELL_S, COL_S, ROW_S},
     'unary_predicates': {},
 })
@@ -33,8 +33,8 @@ def experiments():
     exps["1"] = update_dict(
         base,
         # instances=[0, 10],
-        instances=[0, 4, 8, 10],
-        # instances=[4],
+        # instances=[0, 4, 8, 10],
+        instances=[4],
         # instances=[10,],
         # instances=[10],
         # instances=[0, 3, 4, 8, 10],

@@ -13,7 +13,7 @@ chase_params = Bunch({
     'use_player_as_feature': False,
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
-    'use_adjacency': True,
+    'use_adjacency': {COL_S, ROW_S},
     'sorts_to_use': {COL_S, ROW_S},
     'unary_predicates': {},
     'can_build_walls': False,
@@ -56,7 +56,7 @@ def experiments():
         allow_bad_states=False,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
-        use_action_ids=True,
+        use_action_ids=False,
         use_weighted_tx=False,
         distinguish_goals=True,
 

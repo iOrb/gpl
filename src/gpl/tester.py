@@ -126,23 +126,29 @@ def run_test(config, search_policy, task, instance_name, rng):
 
         exitcode, goods = run_policy_based_search(config, search_policy, task, s, successors)
         if exitcode == ExitCode.AbstractPolicyNotCompleteOnTestInstances:
-            exitcode = ExitCode.AbstractPolicyNotCompleteOnTestInstances
-            break
+            if config.allow_bad_states:
+                # we know we are not complete
+                # TODO: take bad states into account
+                goods = successors
+            else:
+                exitcode = ExitCode.AbstractPolicyNotCompleteOnTestInstances
+                break
 
         not_novelty_sp = dict()
         for op, sp in goods:
             if config.use_state_novelty:
                 times_seen = visited_sp[sp[1]]
                 if times_seen > 0:
-                    not_novelty_sp[sp[1]] = times_seen
+                    not_novelty_sp[(op, sp[1])] = times_seen
                     continue
                 else:
                     break
             break
         else:
-            op = min(not_novelty_sp, key=not_novelty_sp.get)
+            op, _ = min(not_novelty_sp, key=not_novelty_sp.get)
             if config.verbosity>2:
-                print("WARNING: not novel transition for state:\n{}".format(task.get_printable_rep(s[0])))
+                print("WARNING: not novel transition found")
+                # print("WARNING: not novel transition for state:\n{}".format(task.get_printable_rep(s[0])))
             # exitcode = ExitCode.AbstractPolicyNonTerminatingOnTestInstances
             # break
 

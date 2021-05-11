@@ -4,13 +4,10 @@ import numpy as np
 from gpl.utils import Bunch
 import copy
 
+from ..grammar.objects import WHITE_KING, WALL, EMPTY, BLACK_KING
+
 WHITE = 1
 BLACK = 2
-
-EMPTY = 'empty'
-BLACK_KING = 'black_king'
-WHITE_KING = 'white_king'
-WALL = 'wall'
 
 SIMPLIFIED_OBJECT = {
     EMPTY:'.',
@@ -106,7 +103,10 @@ class Env(object):
         assert rep.nact < MAX_ACTIONS_BY_TURN[rep.player]
         assert not terminated(rep)
         valid_actions = self.available_actions(rep)
-        assert action in valid_actions
+        try:
+            assert action in valid_actions
+        except:
+            pass
         if not isinstance(action, tuple):
             return self.__rep_after_move(rep, action)
         else:
@@ -297,7 +297,7 @@ def get_white_king_attaking_mask(rep):
             continue
         if next_cell in WALL:
             continue
-        elif next_cell == EMPTY or 'king' in next_cell:
+        elif next_cell == EMPTY or BLACK_KING in next_cell or WHITE_KING in next_cell:
             attaking_mask[running_pos[0],running_pos[1]] = True
         else:
             assert next_cell in COLOR_TO_PIECES[opposite_color(rep.player)]

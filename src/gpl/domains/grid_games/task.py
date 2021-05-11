@@ -85,8 +85,6 @@ class Task(ITask):
                     assert s2[0].player == self.objects.player1
                     succs.append((op0, s1, s2))
 
-
-
         # succs_reps.append(r0)
         # for _, _, s in succs:
         #     succs_reps.append(s[0])

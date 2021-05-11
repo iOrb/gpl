@@ -1,16 +1,14 @@
 import random
 import sys
 
+from ..grammar.objects import EMPTY, WHITE_KING, BLACK_KING
+
 import numpy as np
 from gpl.utils import Bunch
 import copy
 
 WHITE = 1 # player 1
 BLACK = 2 # player 2
-
-EMPTY = 'empty'
-BLACK_KING = 'black_king'
-WHITE_KING = 'white_king'
 
 SIMPLIFIED_OBJECT = {
     EMPTY:'.',
@@ -173,7 +171,7 @@ class Env(object):
             if UP in valid_actions:
                 return UP
         if c_wk - c_bk == 2:
-            if LEF in valid_actions:
+            if LEFT in valid_actions:
                 return LEFT
         if c_wk - c_bk == -2:
             if RIGHT in valid_actions:

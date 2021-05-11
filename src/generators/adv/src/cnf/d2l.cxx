@@ -37,7 +37,7 @@ namespace sltp::cnf {
                 bool all_possible_adv_states_are_solvable = true;
                 bool all_possible_adv_states_are_goal = true;
                 for (const auto &spp:sample_.adv(sp)) {
-                    if (!sample_.is_unknown(spp)) continue;
+//                    if (!sample_.is_unknown(spp)) continue;
                     if (!sample_.is_solvable(spp)) { // An alive-to-dead transition cannot be Good
                         all_possible_adv_states_are_solvable = false;
                     }
@@ -45,6 +45,15 @@ namespace sltp::cnf {
                         all_possible_adv_states_are_goal = false;
                     }
                 }
+
+                if (!sample_.is_solvable(sp)) { // An alive-to-dead transition cannot be Good
+                    necessarily_bad_transitions_.insert(id);
+                }
+
+                if (!all_possible_adv_states_are_solvable)
+                    necessarily_bad_sa_.insert({s, a, sp});
+                if (all_possible_adv_states_are_goal)
+                    necessarily_good_sa_.insert({s, a, sp});
 
                 if (!options.use_equivalence_classes) {
                     // If we don't want to use equivalence classes, we simply create one fictitious equivalence class
@@ -73,10 +82,6 @@ namespace sltp::cnf {
                     assert(it->second < id);
                     from_transition_to_eq_class_.push_back(it->second);
                 }
-                if (!all_possible_adv_states_are_solvable)
-                    necessarily_bad_sa_.insert({s, a, sp});
-                if (all_possible_adv_states_are_goal)
-                    necessarily_good_sa_.insert({s, a, sp});
             }
         }
 
@@ -255,10 +260,10 @@ namespace sltp::cnf {
                     continue;
                 }
                 // TODO: take adv resposes into account, special cases like: all_goals or some_dead
-//                if (is_necessarily_bad_tx(tx)) {
-//                    wr.cl({Wr::lit(good_s_a_sp_var, false)});
-//                    continue;
-//                }
+                if (is_necessarily_bad_tx(tx)) {
+                    wr.cl({Wr::lit(good_s_a_sp_var, false)});
+                    continue;
+                }
 //                if (is_necessarily_good_tx(tx))
 //                    wr.cl({Wr::lit(good_s_a_sp_var, true)});
                 clause.push_back(Wr::lit(good_s_a_sp_var, true));
@@ -271,7 +276,7 @@ namespace sltp::cnf {
         // Good(s, a) and V(s)=k implies OR_{0<=k'<k}  V(s')=k'      \equiv
         // -Good(s, a) or -V(s, k) or OR_{0<=k'<k} V(s', k')
         for (const auto &s:sample_.expanded_states()) {
-            for (const auto&[a, sp]:sample_.successors_a_sp(s)) {
+            for (const auto &[a, sp]:sample_.successors_a_sp(s)) {
                 tx_triple tx = std::make_tuple(s, a, sp);
                 cnfvar_t good_var = variables.goods_s_a_sp.at(tx);
                 if (!sample_.in_sample(sp)) continue; // maybe we do not car about this?
@@ -293,7 +298,6 @@ namespace sltp::cnf {
                             if (!options.allow_cycles and k == kpp) continue;
                             clause_s_a.push_back(Wr::lit(vs.at({spp, kpp}), true));
                         }
-
                         wr.cl(clause_s_a);
                         ++n_descending_clauses;
                     }
@@ -309,7 +313,7 @@ namespace sltp::cnf {
             for (const auto &[a, sp]:sample_.successors_a_sp(s)) {
                 tx_triple tx = std::make_tuple(s, a, sp);
                 if (is_necessarily_bad(get_class_representative(s, sp))) continue;
-//                if (is_necessarily_bad_tx(tx)) continue;
+                if (is_necessarily_bad_tx(tx)) continue;
                 cnfvar_t good_var = variables.goods_s_a_sp.at(tx);
                 for (const auto &t:sample_.expanded_states()) {
                     for (const auto &[b, tp]:sample_.successors_a_sp(t)) {
@@ -323,6 +327,7 @@ namespace sltp::cnf {
                             clause.push_back(Wr::lit(variables.selecteds.at(f), true));
                         }
                         if (!is_necessarily_bad(get_class_representative(t, tp))) {
+//                        if (!is_necessarily_bad_tx(txp)) {
                             clause.push_back(Wr::lit(good_var_p, true));
                         }
                         wr.cl(clause);
@@ -332,13 +337,56 @@ namespace sltp::cnf {
             }
         }
 
+        // good(s, a, s') -> -bad(s')
+        if (options.allow_bad_states) {
+            for (const auto &s:sample_.expanded_states()) {
+                for (const auto &[a, sp]:sample_.successors_a_sp(s)) {
+                    tx_triple tx = std::make_tuple(s, a, sp);
+                    if (is_necessarily_bad(get_class_representative(s, sp))) continue;
+                    if (is_necessarily_bad_tx(tx)) continue;
+                    auto it = variables.bad_s.find(sp);
+                    if (it == variables.bad_s.end()) continue;
+
+                    cnfclause_t clause{Wr::lit(variables.bad_s.at(sp), true),
+                                       Wr::lit(variables.goods_s_a_sp.at(tx), false)};
+
+                    wr.cl(clause);
+                    n_separation_clauses += 1;
+                }
+            }
+        }
+
+        // Distinguish Bad(s) from -Bad(s)
+        // Clauses C5-6: Good actions must be distinguishable from bad actions.
+//        if (options.allow_bad_states) {
+//            if (options.verbosity > 0) {
+//                std::cout << "Posting distinguishability constraints" << std::endl;
+//            }
+//            for (unsigned s:sample_.expanded_states()) {
+//                cnfvar_t bad_s_var = variables.bad_s.at(s);
+//                for (unsigned t:sample_.expanded_states()) {
+//                    cnfvar_t bad_t_var = variables.bad_s.at(t);
+//                    cnfclause_t clause{Wr::lit(bad_s_var, false),
+//                                       Wr::lit(bad_t_var, true)};
+//
+//                    for (feature_t f:compute_d1_distinguishing_features(sample_, s, t)) {
+//                        clause.push_back(Wr::lit(variables.selecteds.at(f), true));
+//                    }
+//
+//                    wr.cl(clause);
+//                    n_separation_clauses += 1;
+//                }
+//            }
+//        }
+
+
         // (8): Force D1(s1, s2) to be true if exactly one of the two states is a goal state
         if (options.distinguish_goals) {
             for (const auto &s:sample_.full_training_set().all_alive()) {
                 for (const auto &t: sample_.full_training_set().all_goals()) {
                     const auto d1feats = compute_d1_distinguishing_features(sample_, s, t);
                     if (d1feats.empty())
-                        undist_goal_warning(s, t );
+                        undist_goal_warning(s, t);
                     cnfclause_t clause;
                     for (unsigned f:d1feats) {
                         clause.push_back(Wr::lit(variables.selecteds.at(f), true));
@@ -368,12 +416,12 @@ namespace sltp::cnf {
                 size();
 
         if (options.verbosity > 0) {
-        // Print a breakdown of the clauses
+            // Print a breakdown of the clauses
             std::cout << "A total of " << wr.nclauses() << " clauses were created" << std::endl;
             std::cout << "\tPolicy completeness [1]: " << n_good_tx_clauses << std::endl;
             std::cout << "\tTransition separation [5,6]: " << n_separation_clauses << std::endl;
             std::cout << "\tV descending along good transitions [X]: " << n_descending_clauses << std::endl;
-            std::cout << "\tV is total function within bounds [X]: " << n_v_function_clauses <<std::endl;
+            std::cout << "\tV is total function within bounds [X]: " << n_v_function_clauses << std::endl;
             std::cout << "\tGoal separation [X]: " << n_goal_clauses << std::endl;
             std::cout << "\t(Weighted) Select(f): " << n_selected_clauses << std::endl;
             assert(wr.nclauses() == n_selected_clauses + n_good_tx_clauses + n_descending_clauses
@@ -480,10 +528,13 @@ namespace sltp::cnf {
         }
         double psasp, pbs, psel;
 
-        psasp = (variables.goods_s_a_sp.size() == 0) ? 0 : ((double) n_good_s_a_sp / (double) variables.goods_s_a_sp.size() * 100);
+        psasp = (variables.goods_s_a_sp.size() == 0) ? 0 : ((double) n_good_s_a_sp /
+                                                            (double) variables.goods_s_a_sp.size() * 100);
         pbs = (variables.bad_s.size() == 0) ? 0 : ((double) n_bad_s / (double) variables.bad_s.size() * 100);
-        psel = (variables.selecteds.size() == 0) ? 0 : ((double) n_selecteds / (double) variables.selecteds.size() * 100);
-        std::cout << std::endl << "Num Good(s, a, s') selected: " << n_good_s_a_sp << " (" << psasp << "%)" << std::endl;
+        psel = (variables.selecteds.size() == 0) ? 0 : ((double) n_selecteds / (double) variables.selecteds.size() *
+                                                        100);
+        std::cout << std::endl << "Num Good(s, a, s') selected: " << n_good_s_a_sp << " (" << psasp << "%)"
+                  << std::endl;
         std::cout << "Num Bad(s) selected: " << n_bad_s << " (" << pbs << "%)" << std::endl;
         std::cout << "Num selected features: " << n_selecteds << " (" << psel << "%)" << std::endl;
     }

@@ -371,11 +371,11 @@ class TransitionActionClassificationPolicy:
                     if explain:
                         print(f'\t\t{atom} not satisfied by transition values ({feat.denotation(m0)}, {feat.denotation(m1)})')
                     return False
-        # if ma: # meaninf that we want to exploid a set of actions A (grounded, common, and fixed)
-        #     if (ma not in actions):
-        #         if explain:
-        #             print(f'Action {ma} is not ({a})')
-        #         return False
+        if ma: # meaninf that we want to exploid a set of actions A (grounded, common, and fixed)
+            if (ma not in actions):
+                if explain:
+                    print(f'Action {ma} is not ({a})')
+                return False
         return True
 
     def print(self):
@@ -406,7 +406,7 @@ class TransitionActionClassificationPolicy:
         for i, (statef, transitionf) in enumerate(grouped.items(), start=1):
             state_conds_tmp = list()
             feature_conds_tmp = list()
-            for f in reversed(sorted(map(str, statef))):
+            for f in sorted(map(str, statef)):
                 f_s, val_s = str(f)[:-2], str(f)[-2:]
                 sc = "{}{}".format(self.get_feature_key(f_s),val_s)
                 if sc not in state_conds_tmp:

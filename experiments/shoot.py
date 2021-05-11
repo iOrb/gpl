@@ -13,7 +13,7 @@ shoot_params = Bunch({
     'use_player_as_feature': False,
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
-    'use_adjacency': True,
+    'use_adjacency': {COL_S, ROW_S},
     'sorts_to_use': {COL_S, ROW_S, CELL_S},
     'adv_can_shoot': False,
     'unary_predicates': {}
@@ -36,9 +36,9 @@ def experiments():
     exps["1"] = update_dict(
         base,
         # instances=[0, 1, 2, 3, 4, 5, 6],
-        instances=[0, 6, 7],
+        instances=[0],
         test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8],
-        max_concept_size=3,
+        max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
         cond_feature_max_complexity=0,
@@ -47,7 +47,7 @@ def experiments():
         print_denotations=True,
         print_hstar_in_feature_matrix=False,
 
-        verbosity=2,
+        verbosity=3,
         initial_sample_size=50,
         refinement_batch_size=10,
         maxsat_iter=3,
@@ -60,7 +60,7 @@ def experiments():
         use_action_ids=False,
         use_weighted_tx=False,
         use_state_novelty=True,
-        distinguish_goals=False,
+        distinguish_goals=True,
 
         # skip_train_steps=[0, 1, 2],  # do not generate features twice!
         skip_train_steps=[],
