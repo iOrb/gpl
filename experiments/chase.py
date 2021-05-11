@@ -15,7 +15,8 @@ chase_params = Bunch({
     'use_diagonals_for_map_cells': True,
     'use_adjacency': True,
     'sorts_to_use': {COL_S, ROW_S},
-    'unary_predicates': {}
+    'unary_predicates': {},
+    'can_build_walls': False,
 })
 
 def experiments():
@@ -34,9 +35,10 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        # instances=[3],
-        instances=[0],
-        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+        instances=[0, 15],
+        # instances=[14],
+        # test_instances=[14],
+        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
@@ -51,10 +53,10 @@ def experiments():
         refinement_batch_size=50,
         maxsat_iter=10,
 
-        allow_bad_states=True,
+        allow_bad_states=False,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
-        use_action_ids=False,
+        use_action_ids=True,
         use_weighted_tx=False,
         distinguish_goals=True,
 

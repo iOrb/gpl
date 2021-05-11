@@ -10,14 +10,16 @@ BLACK = 2
 EMPTY = 'empty'
 BLACK_KING = 'black_king'
 WHITE_KING = 'white_king'
+WALL = 'wall'
 
 SIMPLIFIED_OBJECT = {
     EMPTY:'.',
     BLACK_KING:'T',
     WHITE_KING:'A',
+    WALL:'W',
 }
 
-ALL_TOKENS = [EMPTY, BLACK_KING, WHITE_KING]
+ALL_TOKENS = [EMPTY, BLACK_KING, WHITE_KING, WALL]
 
 COLOR_TO_PIECES = {
     WHITE: [WHITE_KING,],
@@ -28,8 +30,8 @@ opposite_color = lambda c: BLACK if c == WHITE else WHITE
 
 
 PIECE_VALID_ACTIONS = {
-    WHITE_KING: lambda pos, layout: king_valid_actions(pos, layout, WHITE),
-    BLACK_KING: lambda pos, layout: king_valid_actions(pos, layout, BLACK),
+    WHITE_KING: lambda pos, layout, params: king_valid_actions(pos, layout, WHITE, params),
+    BLACK_KING: lambda pos, layout, params: king_valid_actions(pos, layout, BLACK, params),
 }
 
 # Actions IDs
@@ -103,8 +105,27 @@ class Env(object):
         layout = rep.grid
         assert rep.nact < MAX_ACTIONS_BY_TURN[rep.player]
         assert not terminated(rep)
-        valid_actions = Env.available_actions(rep)
+        valid_actions = self.available_actions(rep)
         assert action in valid_actions
+        if not isinstance(action, tuple):
+            return self.__rep_after_move(rep, action)
+        else:
+            # the agent is putting a WALL
+            new_rep = copy.deepcopy(rep)
+            l = new_rep.grid
+            assert l[action] == EMPTY
+            l[action] = WALL
+            if rep.nact + 1 < MAX_ACTIONS_BY_TURN[rep.player]:
+                new_rep.grid = l
+                new_rep.nact += 1
+                return self.__update_rep(new_rep)
+            else:
+                new_rep.grid = l
+                new_rep.nact = 0
+                new_rep.player = opposite_color(rep.player)
+                return self.__update_rep(new_rep)
+
+    def __rep_after_move(self, rep, action):
         new_rep = copy.deepcopy(rep)
         l = new_rep.grid
         pos = runnable_position(rep.grid, rep.player)
@@ -136,7 +157,13 @@ class Env(object):
         updated_rep = rep.to_dict()
         if Env.check_game_status(rep) == 1:
             updated_rep['goal'] = True
+        if self.params.can_build_walls and WALL in rep.grid:
+            updated_rep['wall_one'] = False
         return Bunch(updated_rep)
+
+    @staticmethod
+    def get_simplified_objects():
+        return SIMPLIFIED_OBJECT
 
     @staticmethod
     def check_game_status(rep):
@@ -145,25 +172,23 @@ class Env(object):
         else:
             return 0
 
-    @staticmethod
-    def available_actions(rep):
+    def available_actions(self, rep):
         layout = rep.grid
         actions = []
         if rep.player == WHITE:
             c0 = np.argwhere(layout == WHITE_KING)[0]
-            actions += PIECE_VALID_ACTIONS[WHITE_KING](c0, layout)
+            actions += PIECE_VALID_ACTIONS[WHITE_KING](c0, layout, self.params)
         elif rep.player == BLACK:
             c0 = np.argwhere(layout == BLACK_KING)[0]
-            actions += PIECE_VALID_ACTIONS[BLACK_KING](c0, layout)
+            actions += PIECE_VALID_ACTIONS[BLACK_KING](c0, layout, self.params)
         return actions
 
-    @staticmethod
-    def player2_policy(rep):
+    def player2_policy(self, rep):
         assert (BLACK_KING in rep.grid)
         assert (rep.player == BLACK)
         wk_r, wk_c = np.argwhere(rep.grid == WHITE_KING)[0]
         bk_r, bk_c = np.argwhere(rep.grid == BLACK_KING)[0]
-        valid_actions = Env.available_actions(rep)
+        valid_actions = self.available_actions(rep)
         assert valid_actions
         if wk_r < bk_r:
             if DOWN in valid_actions:
@@ -179,17 +204,18 @@ class Env(object):
                 return LEFT
         return np.random.choice(valid_actions)
 
-    @staticmethod
-    def get_action_space():
-        return AGENT_ACTION_SPACE
-
-    @staticmethod
-    def get_simplified_objects():
-        return SIMPLIFIED_OBJECT
+    def get_action_space(self):
+        if not self.params.can_build_walls:
+            return AGENT_ACTION_SPACE
+        else:
+            return None
 
     @staticmethod
     def encode_op(rep, op):
-        return op
+        if not isinstance(op, tuple):
+            return op
+        else:
+            return "{}_{}.{}".format(WALL, op[0], op[1])
 
     def init_instance(self, key):
         rep = {u: False for u in self.params.unary_predicates}
@@ -199,6 +225,7 @@ class Env(object):
         rep['goal'] = False
         rep['deadend'] = False
         return Bunch(rep)
+
 
 # Helper mehtods =================================
 
@@ -222,7 +249,7 @@ def catched(rep):
     else:
         return False
 
-def king_valid_actions(pos, layout, color):
+def king_valid_actions(pos, layout, color, params):
     valid_action = []
     if color == WHITE:
         action_space = AGENT_ACTION_SPACE
@@ -238,13 +265,20 @@ def king_valid_actions(pos, layout, color):
             next_cell = layout[running_pos[0], running_pos[1]]
         except IndexError:
             continue
+        if next_cell in WALL:
+            continue
         if next_cell in COLOR_TO_PIECES[color]:
             continue
         if next_cell in COLOR_TO_PIECES[opposite_color(color)]:
             continue
         valid_action.append(action_id)
+    if params.can_build_walls:
+        # if color == WHITE:
+        if color == WHITE and not WALL in layout:
+            emptys = np.argwhere(layout == EMPTY)
+            for r, c in emptys:
+                valid_action.append((r, c))
     return valid_action
-
 
 def get_white_king_attaking_mask(rep):
     layout = rep.grid
@@ -260,6 +294,8 @@ def get_white_king_attaking_mask(rep):
         except IndexError:
             continue
         if next_cell in COLOR_TO_PIECES[WHITE]:
+            continue
+        if next_cell in WALL:
             continue
         elif next_cell == EMPTY or 'king' in next_cell:
             attaking_mask[running_pos[0],running_pos[1]] = True
@@ -292,4 +328,7 @@ LAYOUTS = {
     11: (20, 20, (0, 1), (3, 3)),
     12: (40, 40, (0, 1), (30, 30)),
     13: (40, 40, (30, 30), (0, 1)),
+    14: (3, 3, (0, 0), (2, 2)),
+    15: (4, 6, (3, 5), (1, 1)),
+    16: (7, 7, (6, 3), (3, 4)),
 }

@@ -108,7 +108,7 @@ def run_test(config, search_policy, task, instance_name, rng):
 
     s = task.initial_state
     expanded = 0
-    visited_sa = defaultdict(lambda: 0)
+    visited_sp = defaultdict(lambda: 0)
     # visited_sp = defaultdict(lambda: 0)
     solution = list()
     path = list()
@@ -129,39 +129,39 @@ def run_test(config, search_policy, task, instance_name, rng):
             exitcode = ExitCode.AbstractPolicyNotCompleteOnTestInstances
             break
 
-        not_novelty_sa = dict()
-        for op in goods:
-            sa_pair_enc = task.encode_sa_pair((s, op))
+        not_novelty_sp = dict()
+        for op, sp in goods:
             if config.use_state_novelty:
-                times_seen = visited_sa[sa_pair_enc]
+                times_seen = visited_sp[sp[1]]
                 if times_seen > 0:
-                    not_novelty_sa[sa_pair_enc] = times_seen
+                    not_novelty_sp[sp[1]] = times_seen
                     continue
                 else:
                     break
             break
         else:
-            op = min(not_novelty_sa, key=not_novelty_sa.get)
+            op = min(not_novelty_sp, key=not_novelty_sp.get)
             if config.verbosity>2:
                 print("WARNING: not novel transition for state:\n{}".format(task.get_printable_rep(s[0])))
             # exitcode = ExitCode.AbstractPolicyNonTerminatingOnTestInstances
             # break
 
         # Execute the selected action
-        sa_pair_enc = task.encode_sa_pair((s, op))
-        visited_sa[sa_pair_enc] += 1
-        sp = task.transition(s, op)
+        # sa_pair_enc = task.encode_sa_pair((s, op))
+        visited_sp[sp[1]] += 1
         path.append(sp[0])
+        spp = task.transition(s, op)
+        path.append(spp[0])
 
-        if sp[0].deadend:
+        if spp[0].deadend:
             exitcode = ExitCode.DeadEndReached
             break
-        if visited_sa[sa_pair_enc] > 3:
+        if visited_sp[sp[1]] > 3:
             exitcode = ExitCode.AbstractPolicyNonTerminatingOnTestInstances
             break
 
         solution.append(encode_operator(s, op, task))
-        s = sp
+        s = spp
 
     return exitcode, solution, path, expanded
 
@@ -176,7 +176,7 @@ def create_action_selection_function_from_transition_policy(config, model_factor
             # if policy.transition_is_good(m0, op):
             tx = (m0, m1, op) if config.use_action_ids else (m0, m1)
             if policy.transition_is_good(*tx):
-                goods.append(op)
+                goods.append((op, sp))
         if not goods:
             return ExitCode.AbstractPolicyNotCompleteOnTestInstances, None
         else:

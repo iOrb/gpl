@@ -62,14 +62,10 @@ class Task(ITask):
         succs = list()
         succs_reps = list()
         assert r0.player == self.objects.player1
+
         for op0 in self.env.available_actions(r0):
-            # global i
-            # i +=1
             s1 = __transition_player(s0, op0)
             succs_sp.append((op0, s1))
-            # if s1[0].deadend:
-            #     print("{}. deadend: {}, turn: {}".format(i, s1[0].deadend, s1[0].player))
-            #     print(self.get_printable_rep(s1[0]))
             if s1[0].goal or s1[0].deadend or s1[0].player == self.objects.player1:
                 if s1[1] == s0[1]:
                     continue
@@ -77,14 +73,22 @@ class Task(ITask):
             else:
                 assert s1[0].player == self.objects.player2
                 for op1 in self.env.available_actions(s1[0]):
+                    # global i
+                    # i += 1
+                    # if i == 76:
+                    #     print('H')
                     s2 = __transition_player(s1, op1)
+                    # print("{}. deadend: {}, turn: {}".format(i, s2[0].deadend, s2[0].player))
+                    # print(self.get_printable_rep(s2[0]))
                     if s2[1] == s1[1]:
                         continue
                     assert s2[0].player == self.objects.player1
                     succs.append((op0, s1, s2))
 
+
+
         # succs_reps.append(r0)
-        # for _, s in succs_sp:
+        # for _, _, s in succs:
         #     succs_reps.append(s[0])
         # self.print_path(succs_reps)
 

@@ -249,19 +249,19 @@ namespace sltp::cnf {
 
             for (const auto&[a, sp]:sample_.successors_a_sp(s)) {
                 tx_triple tx = std::make_tuple(s, a, sp);
-                cnfvar_t good_s_a_sp_spvar = variables.goods_s_a_sp.at(tx);
+                cnfvar_t good_s_a_sp_var = variables.goods_s_a_sp.at(tx);
                 if (is_necessarily_bad(get_class_representative(s, sp))) {
-                    wr.cl({Wr::lit(good_s_a_sp_spvar, false)});
+                    wr.cl({Wr::lit(good_s_a_sp_var, false)});
                     continue;
                 }
                 // TODO: take adv resposes into account, special cases like: all_goals or some_dead
-                if (is_necessarily_bad_tx(tx)) {
-                    wr.cl({Wr::lit(good_s_a_sp_spvar, false)});
-                    continue;
-                }
-                if (is_necessarily_good_tx(tx))
-                    wr.cl({Wr::lit(good_s_a_sp_spvar, true)});
-                clause.push_back(Wr::lit(good_s_a_sp_spvar, true));
+//                if (is_necessarily_bad_tx(tx)) {
+//                    wr.cl({Wr::lit(good_s_a_sp_var, false)});
+//                    continue;
+//                }
+//                if (is_necessarily_good_tx(tx))
+//                    wr.cl({Wr::lit(good_s_a_sp_var, true)});
+                clause.push_back(Wr::lit(good_s_a_sp_var, true));
             }
 
             wr.cl(clause);
@@ -284,13 +284,11 @@ namespace sltp::cnf {
                     if (!sample_.is_alive(spp)) continue;
                     // TODO: take adv resposes into account, special cases like: all_goals or some_dead.
                     //  if possibly usolvable skip?
-
                     // TODO: check if this formula is doing what we want, that is Good(s, a, s') -> V(s'') < V(s)
                     for (unsigned k = 1; k < max_d; ++k) {
                         // Minimize Good(s, a) and V(s', d') -> V(s) < d'
                         cnfclause_t clause_s_a{Wr::lit(good_var, false),
                                                Wr::lit(vs.at({s, k}), false)};
-
                         for (unsigned kpp = 1; kpp <= k; ++kpp) {
                             if (!options.allow_cycles and k == kpp) continue;
                             clause_s_a.push_back(Wr::lit(vs.at({spp, kpp}), true));
@@ -370,7 +368,7 @@ namespace sltp::cnf {
                 size();
 
         if (options.verbosity > 0) {
-// Print a breakdown of the clauses
+        // Print a breakdown of the clauses
             std::cout << "A total of " << wr.nclauses() << " clauses were created" << std::endl;
             std::cout << "\tPolicy completeness [1]: " << n_good_tx_clauses << std::endl;
             std::cout << "\tTransition separation [5,6]: " << n_separation_clauses << std::endl;

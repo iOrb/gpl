@@ -5,13 +5,15 @@ from sltp.util.misc import update_dict
 
 from gpl.domains.grid_games.domain import Domain
 
+
 space_invaders_params = Bunch({
     'domain_name': 'space_invaders',
     'use_player_as_feature': False,
     'map_cells': False,
     'use_diagonals_for_map_cells': False,
     'use_adjacency': True,
-    'sorts_to_use': {COL_S, ROW_S, CELL_S},
+    'sorts_to_use': {CELL_S, COL_S, ROW_S},
+    'unary_predicates': {},
 })
 
 def experiments():
@@ -30,10 +32,13 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        # instances=[0],
-        instances=[0, 4, 8],
-        # instances=[0, 3, 4, 8],
-        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        # instances=[0, 10],
+        instances=[0, 4, 8, 10],
+        # instances=[4],
+        # instances=[10,],
+        # instances=[10],
+        # instances=[0, 3, 4, 8, 10],
+        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         max_concept_size=5,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
@@ -51,7 +56,7 @@ def experiments():
         allow_bad_states=True,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
-        use_action_ids=True,
+        use_action_ids=False,
         use_weighted_tx=False,
         use_state_novelty=True,
         distinguish_goals=True,

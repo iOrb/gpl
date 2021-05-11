@@ -30,6 +30,7 @@
 %\usepackage{tikz}
 \usepackage{natbib}
 \usepackage{fancyvrb}
+\usepackage{color}
 
 
 
@@ -50,6 +51,7 @@
 \newcommand{\tuple}[1]{\tup{#1}}  % Just an alias
 \newcommand{\set}[1]{\ensuremath{\left\{#1 \right\}}}
 \newcommand{\setst}[2]{\ensuremath{\left\{#1 \mid #2 \right\}}}
+\newcommand{\newcontent}{\textbf{\color{red}NEW}}
 
 \newtheorem{definition}{Definition}
 \newtheorem{definitionandtheorem}[definition]{Definition and Theorem}
@@ -76,7 +78,7 @@
 /Author ()
 } %Leave this
 
-\title{Representation Learning for Generalized Planning - SAT Encodings}
+\title{Self-Supervised Learning of Generalized Policies in adversarial domains}
 %Your title must be in mixed case, not sentence case.
 % That means all verbs (including short verbs like be, is, using,and go),
 % nouns, adverbs, adjectives should be capitalized, including both words in hyphenated terms, while
@@ -88,20 +90,162 @@
 
 \maketitle
 
-\section{Learning of Generalized Features \& Policy in FOND domains unsipervised}
 
-Encoding is parametrized by
+\subsection{SAT Encoding}
+
+Our encoding is parametrized by
 \begin{itemize}
  \item Pool $F$ of description logic features $f$, each with given feature complexity $\mathcal{K}(f)$.
- \item Training set consisting of a sample of transitions from a number of instances of the same domain.
-       At the moment we're assuming the sample is complete, and we have full information on whether each state
-       in the sample is a goal state, an unsolvable state, or otherwise (see below for definitions). We also have access
-       to the minimum distance to a goal $V^*(s)$ for each state $s$.
+ \item \newcontent{} A (training) set $T$ of transitions $(s, a, s') \in T$ from a number of instances of the same domain.
+       We assume $T$ is \emph{closed}: if $s$ appears in the first position of a transition, then all possible
+       transitions starting in $s$ in that instance appear in $T$ too.
+ \item \newcontent{} A set $adv(s)$ of all possible moves by the adversary on state $s$.
+
+ \item For each state $s$ appearing in some transition, full information on whether $s$
+       is a goal, unsolvable, or alive.
+       Also access to the minimum distance-to-goal $V^*(s)$ for each state $s$.
  \item A parameter $\delta$ which is a ``slack'' value to determine the maximum deviation from the optimal $V^*(s)$
  what we will allow in our policy. This will be made clearer in the encoding below.
+
+ \item \newcontent{} A Boolean parameter \texttt{allow\_bad\_states} with intended meaning ``allow the policy
+        to remain undefined for some of the states in the training set''.
+ \item \newcontent{} A parameter \texttt{action\_labels} with possible values:
+ \begin{itemize}
+   \item \texttt{ignore}: Don't exploit the info on what action induced what transition. This is necessary
+  when the set of actions changes over different instances of the domain.
+   \item \texttt{use$_1$}: Use info on action labels, reasoning only about whether taking an action in a certain
+   (abstract) state is good or not. This assumes that the action set is fixed over the entire domain.
+   \item \texttt{use$_2$}: As above, but reason too about the feature change. E.g. your policy can have rules as
+  ``When $f>0$, take action $a$ \emph{only if $f'$ increases}.
+ \end{itemize}
 \end{itemize}
 
-\subsection{Terminology}
+
+\subsubsection{Main Variables}
+
+\begin{itemize}
+ \item $Good(s, a, s')$, for $(s, a, s') \in T$ with $s$ being alive.
+
+ \item $Bad(s)$ for $s$ an alive state appearing in $T$.
+
+ %\item $Good(s, s')$ for $s$ alive, $s'$ solvable and $(s, s') \not\in \badtx$.
+
+ \item $V(s, d)$ for $s$ alive, and $d \in [0, D]$, where $D = \max_{s} \delta \cdot V^*(s)$,
+ with intended denotation $V(s)=d$.
+ Note that for states $s$ that are a goal, we know $V(s)=0$,
+ and for states $s$ that are unsolvable, we know that $V(s) \neq d$ for all $d$.
+ Thus, we can restrict SAT variables $V(s, d)$ to those states $s$ that are alive.
+
+ \item $Select(f)$, for each feature $f$ in the feature pool.
+\end{itemize}
+
+
+
+\subsubsection{Hard Constraints}
+
+\smallpar{C1 (if $\neg$\texttt{allow\_bad\_states})}
+Policy is defined in all alive states:
+\begin{align*}
+\bigvee_{(s, a, s') \in T \text{ s.t. } s=t} Good(s, a, s'), \;\; \text{for $t$ alive in $T$.}
+\end{align*}
+
+\smallpar{C1 (if \texttt{allow\_bad\_states})}
+Policy is defined in all alive states:
+\begin{align*}
+Bad(t) \lor \bigvee_{(s, a, s') \in T \text{ s.t. } s=t} Good(s, a, s'), \;\; \text{for $t$ alive in $T$.}
+\end{align*}
+
+\smallpar{C2} $V$ is always descending along Good actions, \textbf{taking into account all possible adversary responses}.
+For each $(s, a, s')$ in the set of non-deterministic transitions
+such that both $s$ and $s'$ are alive, post:
+%Good(s, a) \land V(s, k) \rightarrow \bigvee_{1 \leq k' \leq k} V(s', k'),&\;\; \text{for } k \in [1, D].
+\begin{align*}
+Good(s, a, s') \rightarrow V(s'') < V(s)  \;\; \text{for } (s, a, s') \in T,  s'' \in adv(s').
+\end{align*}
+
+%\smallpar{C3} All descending transitions must be considered Good:
+%\begin{align*}
+% V(s, d) \land V(s'', d') \rightarrow Good(s, a),&\;\; \text{for $s$ alive, $(s, a, s'') \in T$, $1 \leq d' < d \leq D$,} \\
+% Good(s, a),&\;\; \text{for $s$ alive, $s'$ goal.} \tag{\theequation${}^\prime$}
+%\end{align*}
+
+%\smallpar{C4-5} Any upper bound on $V(s)$ (for $s$ not a goal) needs to be justified:
+%\begin{align*}
+% V(s) \leq d+1 \rightarrow \bigvee_{\substack{
+% s' \text{ goal child of } s\\
+% (s, s') \not\in \badtx}} Good(s, s') \lor
+% \bigvee_{\substack{
+% s' \text{ alive child of } s\\
+% (s, s') \not\in \badtx}} GV(s, s', d),&
+% \;\; \text{for $s$ alive, $d \in [0, D)$.} \\
+% \neg V(s) \leq 0,&\;\; \text{for $s$ not a goal.}
+%\end{align*}
+
+
+\smallpar{C3}
+Variables $V(s, d)$ define a function that is total over the set of alive states,
+and such that $V(s)$ is within lower bound $V^*(s)$ and upper bound $\delta \cdot V^*(s)$:
+\begin{align*}
+ \bigvee_{V^*(s) \leq d \leq \delta \cdot V^*(s)} V(s,d),&\;\; \text{for $s$ alive.} \\
+ \neg V(s, d) \lor \neg V(s, d')&\;\; \text{for $s$ alive, $1 \leq d < d' \leq D$.}
+\end{align*}
+
+
+\smallpar{C4}
+Good transitions can be distinguished from bad transitions.
+%Let $(s, s')$ and $(t, t')$ be \emph{representative} transitions
+%of two different equivalence classes such that $(s, s') \not\in \badtx$
+%(which implies that $s'$ is solvable). Then,
+Let $(s, a, s')$ and $(t, b, t')$ be \emph{representative} transitions
+of two different equivalence classes such with $s$, $t$ alive. Then,
+\begin{align*}
+ Good(s, a, s') \land \neg Good(t, b, t') \rightarrow
+ D2(s, s', t, t'),&\;\; \text{  }
+% Good(s, a, s') \rightarrow
+% D2(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \in \badtx$.}
+\end{align*}
+
+\noindent where $D2(s, s', t, t')$ is shorthand for $\bigvee_{} Select(f)$, with $f$ ranging over:
+\begin{itemize}
+ \item[(a)] all features that distinguish state $s$ from $t$, if \texttt{action\_labels = use$_1$}.
+ \item[(b)] all features that distinguish $s$ from $t$ \textbf{plus} all features that
+ change differently along $(s, s')$ than along $(t, t')$.
+\end{itemize}
+
+Additionally, if \texttt{action\_labels = use$_1$} or \texttt{action\_labels = use$_2$}, then
+\textbf{the above constraint is only posted for transitions such that $a=b$}.
+
+
+\smallpar{C5 (Optional)}
+Goals are distinguishable from non-goals.
+\begin{align*}
+\bigvee_{f \in D1(s, s')} Select(f),&\;\; \text{for $s$ goal, $s$ not a goal}
+\end{align*}
+
+
+% GFM: I'm commenting this out, I don't think this is needed at all, actually I don't even know where this is coming from,
+% maybe some old draft???
+%\smallpar{C10 (Optional)}
+%All selected features need to have some Good transition that takes them to $0$:
+%\begin{align*}
+% Selected(f) \rightarrow \bigvee_{(s, a, s') \in Z(f)} Good(s, s'),&\;\; \text{for $f$ in pool}
+%\end{align*}
+%
+%\noindent where $Z(f)$ is the set transitions starting in an alive state that change the denotation of $f$ from something
+%larger than 0 to 0.
+
+\subsubsection{Soft Constraints}
+\smallpar{C6}
+A constraint $\neg Select(f)$ for each feature $f$ in the pool, with weight equal to its complexity $\mathcal{K}(f)$.
+
+\smallpar{C7 (if \texttt{allow\_bad\_states})}
+A constraint $\neg Bad(s)$ for each alive state $s$, with weight equal to one.
+
+\pagebreak
+
+
+
+\section{Terminology}
 A state is called \emph{reachable} if there is a path to it from $s_0$, and
 it is called \emph{solvable} if there is a path from it to a goal
 state.
@@ -109,7 +253,7 @@ A state is \emph{alive} if it is solvable, reachable and not a
 goal state~\cite{frances-et-al-ijcai2019}.
 We use $T$ to denote the set of all transitions $(s, s')$ in the training sample such that $s$ is alive.
 
-\subsection{Improvements}
+\subsection{Optimizations}
 
 \paragraph{Non-distinguishability of transitions as an equivalence relation.}
 Any fixed, given pool of features $F$ implicitly defines an equivalence relation where to transitions are
@@ -127,161 +271,109 @@ We use \badtx{} to denote the set of transitions that have been determined at pr
 At the moment, this set contains all transitions that go from an alive to an unsolvable state and, if using
 equivalence relations, all those other transitions in whose equivalence class there is some other ``bad'' transition.
 
+
+\newpage
+
+\section{Empirical Results}
+
+\subsection{Space Invaders - v0}
+\subsubsection{Description}
+
+
+\subsubsection{Features}
+\begin{Verbatim}[fontsize=\footnotesize]
+    (A) Num[col-hv-Agent] [k=1]
+    (B) Dist[col-hv-white_king;right_col;col-hv-black_king] [k=4]
+\end{Verbatim}
+
+\subsubsection{Policy}
+\begin{Verbatim}[fontsize=\footnotesize]
+  1. B=0 AND A>0 -> {B INCs, A DECs}, {B NILs, A NILs}, {B INCs, A NILs}
+  2. B>0 AND A>0 -> {B DECs, A NILs}, {B NILs, A NILs}, {B INCs, A DECs}, {B NILs, A DECs}
+\end{Verbatim}
+
+\subsubsection{Example of Game}
+\begin{Verbatim}[fontsize=\footnotesize]
+
+\end{Verbatim}
+
+
+\subsection{Chase}
+\subsubsection{Description}
+In this domain an agent has to chase an adversary, he has a set of fixed actions $A$, that is~\{$up$, $rightup$, $right$, $rightdown$, $down$, $leftdown$, $left$, $leftup\}$. The agent can move only diagonally and the adversary can move in perpendicular directions.
+
+\subsubsection{Features}
+\begin{Verbatim}[fontsize=\footnotesize]
+  (A) Bool[And(col_has_Agent,Exists(right_col,col_has_Target))] [k=5]
+  (B) Bool[And(row_has_Target,Exists(up_row,row_has_Agent))] [k=5]
+  (C) Dist[row_has_Target;up_row;row_has_Agent] [k=4]
+  (D) Dist[col_has_Agent;right_col;col_has_Target] [k=4]
+\end{Verbatim}
+
+\subsubsection{Policy}
+\begin{Verbatim}[fontsize=\footnotesize]
+  1. A=0 AND B=0 AND D>0 AND C>0 -> {A NILs, B NILs, C DECs, D DECs}, {A INCs, B INCs, C DECs, D DECs},
+                                    {A INCs, B NILs, C DECs, D DECs}, {A NILs, B INCs, C DECs, D DECs}
+  2. A>0 AND B=0 AND D>0 AND C>0 -> {A DECs, B INCs, C DECs, D DECs}, {A DECs, B NILs, C DECs, D DECs}
+  3. A=0 AND B=0 AND D>0 AND C=0 -> {A NILs, B INCs, C INCs, D DECs}, {A INCs, B INCs, C INCs, D DECs}
+  4. A=0 AND B=0 AND D=0 AND C>0 -> {A INCs, B INCs, C DECs, D INCs}, {A INCs, B NILs, C DECs, D INCs}
+  5. A=0 AND B>0 AND D>0 AND C>0 -> {A NILs, B DECs, C DECs, D DECs}, {A INCs, B DECs, C DECs, D DECs}
+\end{Verbatim}
+
+\subsubsection{Example of Game}
+\begin{Verbatim}[fontsize=\footnotesize]
+....... # ....... # ....... # ....T.. # ...T... # ...T... #
+....... # ....... # ....T.. # ....... # ....... # ...A... #
+....... # ....T.. # ....... # ....... # ....A.. # ....... #
+....T.. # ....... # ....... # ...A... # ....... # ....... #
+....... # ....... # ..A.... # ....... # ....... # ....... #
+....... # .A..... # ....... # ....... # ....... # ....... #
+A...... # ....... # ....... # ....... # ....... # ....... #
+\end{Verbatim}
+
+\subsection{Shoot}
+\subsubsection{Description}
+In this domain an agent has to shoot an adversary, he has a set of fixed actions $A$, that is~\{$up$, $right$, $down$, $left\}$. This game would be the equivalent of a check with the rook. Only that both the rook and the opponent can only move one orthogonal square at a time.
+
+\subsubsection{Features}
+\begin{Verbatim}[fontsize=\footnotesize]
+  (A) Bool[And(col-has-Adversary,col-has-Agent)] [k=3]
+  (B) Dist[row-has-Agent;up_row;row-has-Adversary] [k=4]
+  (C) Dist[cell-has-Agent;adjacent_cell;cell-has-Adversary] [k=4]
+\end{Verbatim}
+
+\subsubsection{Policy}
+\begin{Verbatim}[fontsize=\footnotesize]
+  1. A=0 AND C>0 AND B>0 -> {A INCs, B NILs, C NILs}, {A NILs, B DECs, C NILs}
+\end{Verbatim}
+
+\subsubsection{Example of Game}
+\begin{Verbatim}[fontsize=\footnotesize]
+  A...... # ....... # ....... # ....... # ....... # ....... #
+  ....... # A...... # ....... # ....... # ....... # ....... #
+  ....... # ....... # A...... # ....... # ....... # ....... #
+  ....... # ....... # ....... # A...... # ....... # ....... #
+  ....... # .....T. # ....... # ....... # A...... # ....... #
+  .....T. # ....... # .....T. # ....... # ....... # A.....T #
+  ....... # ....... # ....... # .....T. # ......T # ....... #
+\end{Verbatim}
+
+
+
+
+
 \newpage
 
 \paragraph{Bullet points}
 \begin{itemize}
 \item Learning generalized policies in unsupervised FOND domains from small examples.
-\item FOND encoding, introducing Good(s, a) features to deal with non-determinism. Where $a \in A$, and $A$ is not required to be fixed. However, if $A$ is fixed we show a way to exploit it reducing the number of transitions to distinguish.
+\item FOND encoding, introducing Good(s, a) features to deal with non-determinism. Where $a \in A$, and $A$ is not required to be fixed. However, if $A$ is fixed we show a way to exploit it reducing the number of transitions to distinguish.
 \item Being complete in domains where not all states have a good transition, with the optional constraint Bad(s).
 \item Empirical results with five domains: Chase, Shoot, Space Invaders, Delivery, Wumpus world.
 \item Incremental policy learning, to address the scalability problem. First a random sample is taken from the whole graph and the policy is then refined incrementally by iteratively increasing the sample size. The strategy for increasing the size of the sample can be goal-directed or random.
 %\item Introducing the sort of novelty to choose between the different successors classified as good by our policy
 \item Use of a uniform grammar for the different grid domains.
 \end{itemize}
-
-\newpage
-
-\subsection{Encoding for FOND domains}
-
-We here assume that all instances $P$ of the generalized problem have a set of actions $A$. We do not need $A$ begin fixed.
-We denote by $(s, a, s') \in T$ tuples of state, action, and possible state $s'$ resulting from executing $a$ in $s$.
-
-\subsubsection{Main Variables}
-
-\begin{itemize}
- \item $Good(s, a)$ for $s$ alive, solvable, and $a \in A$.
- \item $Good(s, a, s')$ for $s$ alive, $s'$ solvable, and $(s, a, s') \not\in \badtx$.
-
- \item $Bad(s)$ for $s$ alive.
-
- %\item $Good(s, s')$ for $s$ alive, $s'$ solvable and $(s, s') \not\in \badtx$.
-
- \item $V(s, d)$ for $s$ alive, and $d \in [0, D]$, where $D = \max_{s} \delta \cdot V^*(s)$,
- with intended denotation $V(s)=d$.
- Note that for states $s$ that are a goal, we know $V(s)=0$,
- and for states $s$ that are unsolvable, we know that $V(s) \neq d$ for all $d$.
- Thus, we can restrict SAT variables $V(s, d)$ to those states $s$ that are alive.
-
- \item $Select(f)$, for each feature $f$ in the feature pool.
-\end{itemize}
-
-
-%\subsubsection{Auxiliary Variables}
-%\begin{itemize}
-% \item We'll use $GV(s, s', d)$ to denote that $Good(s, s')$ and $V(s') \leq d$. This is enforced with the constraint
-% $GV(s, s', d) \rightarrow Good(s, s') \land V(s') \leq d$ for $s, s'$ alive, $(s, s') \not\in \badtx$, $d \in [0, D)$.
-% The other direction of the implication is not necessary.
-%\end{itemize}
-
-
-\subsubsection{Hard Constraints}
-
-\smallpar{C1}
-The policy has to be complete with respect to all alive states:
-\begin{align}
-\bigvee_{a \in A} Good(s, a),&\;\; \text{for $s$ alive.}
-\end{align}
-
-\smallpar{C2} $V$ is always descending along Good actions. For each $(s, a, s')$ in the set of non-deterministic transitions
-such that both $s$ and $s'$ are alive, post:
-\begin{align}
- Good(s, a) \land V(s, k) \rightarrow \bigvee_{1 \leq k' \leq k} V(s', k'),&\;\; \text{for } k \in [1, D].
-\end{align}
-
-%\smallpar{C3} All descending transitions must be considered Good:
-%\begin{align}
-% V(s, d) \land V(s'', d') \rightarrow Good(s, a),&\;\; \text{for $s$ alive, $(s, a, s'') \in T$, $1 \leq d' < d \leq D$,} \\
-% Good(s, a),&\;\; \text{for $s$ alive, $s'$ goal.} \tag{\theequation${}^\prime$}
-%\end{align}
-
-%\smallpar{C4-5} Any upper bound on $V(s)$ (for $s$ not a goal) needs to be justified:
-%\begin{align}
-% V(s) \leq d+1 \rightarrow \bigvee_{\substack{
-% s' \text{ goal child of } s\\
-% (s, s') \not\in \badtx}} Good(s, s') \lor
-% \bigvee_{\substack{
-% s' \text{ alive child of } s\\
-% (s, s') \not\in \badtx}} GV(s, s', d),&
-% \;\; \text{for $s$ alive, $d \in [0, D)$.} \\
-% \neg V(s) \leq 0,&\;\; \text{for $s$ not a goal.}
-%\end{align}
-
-
-\smallpar{C3-4}
-Variables $V(s, d)$ define a function that is total over the set of alive states,
-and such that $V(s)$ is within lower bound $V^*(s)$ and upper bound $\delta \cdot V^*(s)$:
-\begin{align}
- \bigvee_{V^*(s) \leq d \leq \delta \cdot V^*(s)} V(s,d),&\;\; \text{for $s$ alive.} \\
- \neg V(s, d) \lor \neg V(s, d')&\;\; \text{for $s$ alive, $1 \leq d < d' \leq D$.}
-\end{align}
-
-
-\smallpar{C5-6}
-Good transitions $(s, a, s')$ can be distinguished from bad transitions $(s, a, s')$.
-%Let $(s, s')$ and $(t, t')$ be \emph{representative} transitions
-%of two different equivalence classes such that $(s, s') \not\in \badtx$
-%(which implies that $s'$ is solvable). Then,
-Let $(s, a, s')$ and $(t, b, t')$ be \emph{representative} transitions
-of two different equivalence classes such that $(s, a, s') \not\in \badtx$
-(which implies that $s'$ is solvable). Where $a, b \in A$. Then,
-\begin{align}
- Good(s, a, s') \rightarrow Good(t, b, t') \lor
- Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \not\in \badtx$.} \\
- Good(s, a, s') \rightarrow
- Dist(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \in \badtx$.}
-\end{align}
-
-\noindent where $Dist(s, s', t, t')$ is shorthand for $\bigvee_{f \in D1\&2(s, s', t, t')} Select(f)$.
-
-\smallpar{C7 (Optional)}
-The transitions $(s, a, s')$ and $(s, a, t')$ will be treated as equivalent. In $C5-6$ if $a=b$ and $s=t$ we don't require this transitions to be distinguished.
-
-\smallpar{C8}
-If $(s, a)$ is good, then the resulting transitions must be good too:
-%(s, a, s') \in T \setminus \badtx
-\begin{align}
-Good(s, a) \rightarrow Good(s, a, s'),\;\; \text{for $(s, a, s') \in T$ where $s$ alive.}
-\end{align}
-
-\smallpar{C9 (Optional)}
-Goals are distinguishable from non-goals.
-\begin{align}
-\bigvee_{f \in D1(s, s')} Select(f),&\;\; \text{for $s$ goal, $s$ not a goal}
-\end{align}
-
-\smallpar{C10 (Optional)}
-All selected features need to have some Good transition that takes them to $0$:
-\begin{align}
- Selected(f) \rightarrow \bigvee_{(s, a, s') \in Z(f)} Good(s, s'),&\;\; \text{for $f$ in pool}
-\end{align}
-
-\noindent where $Z(f)$ is the set transitions starting in an alive state that change the denotation of $f$ from something
-larger than 0 to 0.
-
-\subsubsection{Soft Constraints}
-\smallpar{C11}
-We simply post a constraint $\neg Select(f)$ for each feature $f$ in the pool, with weight equal to its complexity $\mathcal{K}(f)$.
-
-\smallpar{C12 (Optional)}
-If no action is good in state $s$ alternatively we can set the state as $Bad(s)$. Then  post a constraint $\neg Bad(s)$, with weight equal to one. Then the constraint $C1$ changes,
-\begin{align}
-Bad(s) ~ or~ \bigvee_{a \in A} Good(s, a),&\;\; \text{for $s$ alive.}
-\end{align}
-
-\noindent Notice that now the policy is complete in domains where an state can not be solved or has not any $Good(s, a)$.
-
-\section{Empirical Results}
-
-\subsection{Chase}
-
-\subsection{Shoot}
-
-\subsection{Space Invaders}
-
-\subsection{Delivery}
-
-\subsection{Wumpus world}
 
 
 \bibliographystyle{plain}

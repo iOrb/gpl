@@ -3,6 +3,7 @@ import random
 import sys
 
 import numpy as np
+from gpl.utils import Bunch
 
 WHITE = 1
 BLACK = 2
@@ -42,7 +43,7 @@ AGENT_ACTION_SPACE = {
 MARTIANS_ACTION_SPACE = {
     RIGHT,
     LEFT,
-    # DOWN,
+    DOWN,
 }
 
 ACTION_MOVE_DIRECTION = {
@@ -67,25 +68,41 @@ PIECE_VALID_ACTIONS = {
 }
 
 class Env(object):
-    @staticmethod
-    def act(rep, action_id):
-        layout, color, nact = rep
-        assert nact < MAX_ACTIONS_BY_TURN[color]
+    def __init__(self, params):
+        self.params = params
+
+    def act(self, rep, action_id):
+        layout = rep.grid
+        assert rep.nact < MAX_ACTIONS_BY_TURN[rep.player]
         assert not terminated(rep)
-        valid_actions = Env.available_actions(rep)
+        valid_actions = self.available_actions(rep)
         assert action_id in valid_actions
-        if color == WHITE:
+        if rep.player == WHITE:
             l = layout_after_agent_action(layout, action_id)
-        elif color == BLACK:
+        elif rep.player == BLACK:
             l = layout_after_env_action(layout, action_id)
-        if nact + 1 < MAX_ACTIONS_BY_TURN[color]:
-            return (l, color, nact + 1)
+        new_rep = copy.deepcopy(rep)
+        if rep.nact + 1 < MAX_ACTIONS_BY_TURN[rep.player]:
+            new_rep.grid = l
+            new_rep.nact += 1
+            return self.__update_rep(new_rep)
         else:
-            return (l, opposite_color(color), 0)
+            new_rep.grid = l
+            new_rep.nact = 0
+            new_rep.player = opposite_color(rep.player)
+            return self.__update_rep(new_rep)
+
+    def __update_rep(self, rep):
+        updated_rep = rep.to_dict()
+        if Env.check_game_status(rep) == 1:
+            updated_rep['goal'] = True
+        if Env.check_game_status(rep) == -1:
+            updated_rep['deadend'] = True
+        return Bunch(updated_rep)
 
     @staticmethod
     def check_game_status(rep):
-        layout, player, nact = rep
+        layout = rep.grid
         assert WHITE_KING in layout or BLACK_KING in layout
         if not BLACK_KING in layout:
             return 1
@@ -94,25 +111,21 @@ class Env(object):
         else:
             return 0
 
-    @staticmethod
-    def available_actions(rep):
-        layout, player, nact = rep
+    def available_actions(self, rep):
+        layout = rep.grid
         actions = []
-        if player == WHITE:
+        if rep.player == WHITE:
             pos = np.argwhere(layout == WHITE_KING)[0]
             actions += PIECE_VALID_ACTIONS[WHITE_KING](pos, layout)
-        elif player == BLACK:
+        elif rep.player == BLACK:
             actions += PIECE_VALID_ACTIONS[BLACK_KING](layout)
         return actions
 
-    @staticmethod
-    def player2_policy(rep):
-        valid_actions = Env.available_actions(rep)
-        try:
-            assert valid_actions
-        except:
-            raise
-        return random.choice(valid_actions)
+    def player2_policy(self, rep):
+        valid_actions = self.available_actions(rep)
+        assert valid_actions
+        # return random.choice(valid_actions)
+        return DOWN
 
     @staticmethod
     def get_action_space():
@@ -126,10 +139,23 @@ class Env(object):
     def get_simplified_objects():
         return SIMPLIFIED_OBJECT
 
+    @staticmethod
+    def encode_op(rep, op):
+        return op
+
+    def init_instance(self, key):
+        rep = {u: False for u in self.params.unary_predicates}
+        rep['grid'] = generate_gird(key)
+        rep['nact'] = 0
+        rep['player'] = WHITE
+        rep['goal'] = False
+        rep['deadend'] = False
+        return Bunch(rep)
+
 # Helper mehtods =================================
 
 def terminated(rep):
-    layout, player, nact = rep
+    layout = rep.grid
     assert WHITE_KING in layout or BLACK_KING in layout
     if WHITE_KING not in layout or BLACK_KING not in layout:
         return True
@@ -181,7 +207,7 @@ def agent_valid_actions(pos, layout):
             next_cell = layout[running_pos[0], running_pos[1]]
         except IndexError:
             continue
-        if next_cell in [BLACK_KING]:
+        if next_cell in BLACK_KING:
             continue
         valid_action.append(action_id)
     if SHOOT in AGENT_ACTION_SPACE:
@@ -247,4 +273,7 @@ LAYOUTS = {
     7: (20, 20, 4, [0], [0, 19]),
     8: (9, 6, 4, [0, 1], [0, 2, 4]),
     9: (6, 10, 5, [0], [5]),
+    10: (6, 10, 5, [0], [1, 9]),
+    11: (6, 10, 5, [0], [1]),
+    12: (6, 10, 5, [0], [9]),
 }

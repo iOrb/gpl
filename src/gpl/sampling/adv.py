@@ -93,9 +93,12 @@ class TransitionSampleADV:
         return self.operators[o]
 
     def set_operators(self, ops):
+        try:
+            for o in ops:
+                self.operators[o] = o
+        except:
+            return
         self.given_action_space = True
-        for o in ops:
-            self.operators[o] = o
 
     def update_instance(self, sid, intance_id):
         self.instance[sid] = intance_id # {state_id: instance_id}
@@ -139,7 +142,8 @@ class TransitionSampleADV:
     def info(self):
         return f"roots: {len(self.roots)}, states: {len(self.states)}, " \
                f"transitions: {self.num_transitions()} ({self.num_optimal_transitions()} optimal)," \
-               f" goals: {len(self.goals)}, alive: {len(self.alive_states)}"
+               f" goals: {len(self.goals)}, alive: {len(self.alive_states)}," \
+               f" deadends: {len(self.deadends)}"
 
     def num_optimal_transitions(self):
         count = 0

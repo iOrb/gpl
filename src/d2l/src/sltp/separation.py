@@ -335,6 +335,8 @@ class TransitionClassificationPolicy:
 class TransitionActionClassificationPolicy:
     def __init__(self, features):
         self.features = features
+        self.simplified_features = dict()
+        self.__assign_keys_to_featuers()
         self.dnf = set()
 
     def add_clause(self, clause, a):
@@ -369,11 +371,11 @@ class TransitionActionClassificationPolicy:
                     if explain:
                         print(f'\t\t{atom} not satisfied by transition values ({feat.denotation(m0)}, {feat.denotation(m1)})')
                     return False
-        if ma: # meaninf that we want to exploid a set of actions A (grounded, common, and fixed)
-            if (ma not in actions):
-                if explain:
-                    print(f'Action {ma} is not ({a})')
-                return False
+        # if ma: # meaninf that we want to exploid a set of actions A (grounded, common, and fixed)
+        #     if (ma not in actions):
+        #         if explain:
+        #             print(f'Action {ma} is not ({a})')
+        #         return False
         return True
 
     def print(self):
@@ -382,7 +384,7 @@ class TransitionActionClassificationPolicy:
         for i, (clause, a) in enumerate(self.dnf, start=1):
             print(f"  {i}. " + f"do({a}): " + self.print_clause(clause))
 
-    def print_aaai20(self):
+    def print_aaai20(self, simplified=False):
         self.print_header()
         # Group by state features
         grouped = defaultdict(list)
@@ -394,15 +396,36 @@ class TransitionActionClassificationPolicy:
         distinct_values = defaultdict(set)
         for key in grouped.keys():
             for atom in key:
-                distinct_values[atom.feature].add(atom.value)
+                distinct_values[self.get_feature_key(str(atom.feature))].add(atom.value)
+                # distinct_values[atom.feature].add(atom.value)
 
         invariant_value_features = {f: next(iter(vals)) for f, vals in distinct_values.items() if len(vals) == 1}
         print("Invariants: " + ','.join(f"{f}{'>0' if v is True else '=0'}" for f, v in invariant_value_features.items()))
         print("Policy:")
+        # TODO: Improve this print
         for i, (statef, transitionf) in enumerate(grouped.items(), start=1):
-            state_conds = ' AND '.join(sorted(map(str, statef)))
-            feature_conds = ', '.join(self.print_effect_list(e) for e in transitionf)
+            state_conds_tmp = list()
+            feature_conds_tmp = list()
+            for f in reversed(sorted(map(str, statef))):
+                f_s, val_s = str(f)[:-2], str(f)[-2:]
+                sc = "{}{}".format(self.get_feature_key(f_s),val_s)
+                if sc not in state_conds_tmp:
+                    state_conds_tmp.append(sc)
+            for effect in transitionf:
+                effect_tmp = list()
+                for e in effect:
+                    f_s, e_s = str(e).split(' ')
+                    effect_tmp.append("{} {}".format(self.get_feature_key(f_s), e_s))
+                fc = '{' + ', '.join(sorted(effect_tmp)) + '}'
+                if fc not in feature_conds_tmp:
+                    feature_conds_tmp.append(fc)
+            state_conds = ' AND '.join(state_conds_tmp)
+            feature_conds = ', '.join(feature_conds_tmp)
             print(f"  {i}. {state_conds} -> {feature_conds}")
+        # for i, (statef, transitionf) in enumerate(grouped.items(), start=1):
+        #     state_conds = ' AND '.join(sorted(map(str, statef)))
+        #     feature_conds = ', '.join(self.print_effect_list(e) for e in transitionf)
+        #     print(f"  {i}. {state_conds} -> {feature_conds}")
 
     @staticmethod
     def print_effect_list(effect):
@@ -413,7 +436,18 @@ class TransitionActionClassificationPolicy:
         total_k = sum(f.feature.complexity() for f in self.features)
         print(f"Features (#: {len(self.features)}; total k: {total_k}; max k = {max_k}):")
         for f in self.features:
-            print(f"  {f} [k={f.feature.complexity()}]")
+            key = self.get_feature_key(str(f))
+            print(f"  ({key}) {f} [k={f.feature.complexity()}]")
+
+    def __assign_keys_to_featuers(self):
+        import string
+        ASCII = string.printable[36:62]
+        for f in self.features:
+            ASCII, b = ASCII[1:], ASCII[0]
+            self.simplified_features[str(f)] = b
+
+    def get_feature_key(self, feature):
+        return self.simplified_features[feature]
 
     @staticmethod
     def print_clause(clause):
