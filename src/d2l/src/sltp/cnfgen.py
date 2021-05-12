@@ -55,12 +55,12 @@ def run(config, data, rng):
     # policy = parse_dnf_policy(config)
     policy = parse_dnfa_policy(config)
 
-    policy.minimize()
-    if config.use_action_ids:
-        print("Policy (with actions):")
-        policy.print()
-    print("\nPOLICY:")
-    policy.print_aaai20()
+    # policy.minimize()
+    # if config.use_action_ids:
+    #     print("Policy (with actions):")
+    #     policy.print()
+    # print("\nPOLICY:")
+    # policy.print_aaai20()
 
     return exitcode, dict(d2l_policy=policy)
 

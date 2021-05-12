@@ -44,14 +44,14 @@ LEFTDOWN = 7
 
 
 AGENT_ACTION_SPACE = {
-    # UP,
-    # DOWN,
-    # RIGHT,
-    # LEFT,
-    LEFTUP,
-    RIGHTUP,
-    RIGHTDOWN,
-    LEFTDOWN,
+    UP,
+    DOWN,
+    RIGHT,
+    LEFT,
+    # LEFTUP,
+    # RIGHTUP,
+    # RIGHTDOWN,
+    # LEFTDOWN,
 }
 
 ENV_ACTION_SPACE = {

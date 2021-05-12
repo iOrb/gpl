@@ -4,13 +4,11 @@ import sys
 
 import numpy as np
 from gpl.utils import Bunch
+from ..grammar.objects import WHITE_KING, BLACK_KING, EMPTY
 
 WHITE = 1
 BLACK = 2
 
-EMPTY = 'empty'
-BLACK_KING = 'black_king'
-WHITE_KING = 'white_king'
 
 SIMPLIFIED_OBJECT = {
     EMPTY:'.',
@@ -35,7 +33,7 @@ RIGHT = 2
 DOWN = 3
 
 AGENT_ACTION_SPACE = {
-    # SHOOT,
+    SHOOT,
     RIGHT,
     LEFT,
 }
@@ -53,7 +51,7 @@ ACTION_MOVE_DIRECTION = {
 }
 
 MAX_ACTIONS_BY_TURN = {
-    WHITE:5,
+    WHITE:1,
     BLACK:1,
 }
 
@@ -63,7 +61,7 @@ MOVE_ACTION = {
 }
 
 PIECE_VALID_ACTIONS = {
-    WHITE_KING: lambda pos, layout: agent_valid_actions(pos, layout),
+    WHITE_KING: lambda pos, layout, params: agent_valid_actions(pos, layout, params),
     BLACK_KING: lambda layout: martians_valid_actions(layout),
 }
 
@@ -78,7 +76,7 @@ class Env(object):
         valid_actions = self.available_actions(rep)
         assert action_id in valid_actions
         if rep.player == WHITE:
-            l = layout_after_agent_action(layout, action_id)
+            l = layout_after_agent_action(layout, action_id, self.params)
         elif rep.player == BLACK:
             l = layout_after_env_action(layout, action_id)
         new_rep = copy.deepcopy(rep)
@@ -116,7 +114,7 @@ class Env(object):
         actions = []
         if rep.player == WHITE:
             pos = np.argwhere(layout == WHITE_KING)[0]
-            actions += PIECE_VALID_ACTIONS[WHITE_KING](pos, layout)
+            actions += PIECE_VALID_ACTIONS[WHITE_KING](pos, layout, self.params)
         elif rep.player == BLACK:
             actions += PIECE_VALID_ACTIONS[BLACK_KING](layout)
         return actions
@@ -195,7 +193,7 @@ def layout_after_env_action(layout, action_id):
     return l
 
 
-def agent_valid_actions(pos, layout):
+def agent_valid_actions(pos, layout, params):
     valid_action = []
     for action_id, direction in ACTION_MOVE_DIRECTION.items():
         if not action_id in AGENT_ACTION_SPACE:
@@ -210,12 +208,13 @@ def agent_valid_actions(pos, layout):
         if next_cell in BLACK_KING:
             continue
         valid_action.append(action_id)
-    if SHOOT in AGENT_ACTION_SPACE:
-        valid_action.append(SHOOT)
+    if params.agent_has_to_shoot:
+        if SHOOT in AGENT_ACTION_SPACE:
+            valid_action.append(SHOOT)
     return valid_action
 
 
-def layout_after_agent_action(layout, action_id):
+def layout_after_agent_action(layout, action_id, params):
     assert action_id in AGENT_ACTION_SPACE
     if action_id == SHOOT:
         pos = np.argwhere(layout == WHITE_KING)[0]
@@ -231,8 +230,10 @@ def layout_after_agent_action(layout, action_id):
         if layout[new_r, new_c] != BLACK_KING:  # not running into martians!
             l[new_r, new_c] = piece
         l[old_r, old_c] = EMPTY
-        return layout_after_agent_shoot(running_pos, l)
-        # return l
+        if not params.agent_has_to_shoot:
+            return layout_after_agent_shoot(running_pos, l)
+        else:
+            return l
 
 
 def layout_after_agent_shoot(pos, layout):

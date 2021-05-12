@@ -372,7 +372,7 @@ class TransitionActionClassificationPolicy:
                         print(f'\t\t{atom} not satisfied by transition values ({feat.denotation(m0)}, {feat.denotation(m1)})')
                     return False
         if ma: # meaninf that we want to exploid a set of actions A (grounded, common, and fixed)
-            if (ma not in actions):
+            if ma not in actions:
                 if explain:
                     print(f'Action {ma} is not ({a})')
                 return False
@@ -382,7 +382,7 @@ class TransitionActionClassificationPolicy:
         self.print_header()
         print("Policy:")
         for i, (clause, a) in enumerate(self.dnf, start=1):
-            print(f"  {i}. " + f"do({a}): " + self.print_clause(clause))
+            print(f"  {i}. " + f"do({a}): " + self.print_clause(clause, True))
 
     def print_aaai20(self, simplified=False):
         self.print_header()
@@ -415,7 +415,7 @@ class TransitionActionClassificationPolicy:
                 effect_tmp = list()
                 for e in effect:
                     f_s, e_s = str(e).split(' ')
-                    effect_tmp.append("{} {}".format(self.get_feature_key(f_s), e_s))
+                    effect_tmp.append("{} {}".format(self.get_feature_key(f_s), self.get_simplified_val(e_s)))
                 fc = '{' + ', '.join(sorted(effect_tmp)) + '}'
                 if fc not in feature_conds_tmp:
                     feature_conds_tmp.append(fc)
@@ -426,6 +426,15 @@ class TransitionActionClassificationPolicy:
         #     state_conds = ' AND '.join(sorted(map(str, statef)))
         #     feature_conds = ', '.join(self.print_effect_list(e) for e in transitionf)
         #     print(f"  {i}. {state_conds} -> {feature_conds}")
+
+    def get_simplified_val(self, val):
+        return {
+            "=0": "=0",
+            ">0": ">0",
+            "INCs": u"\u2191",
+            "NILs": "·",
+            "DECs": u"\u2193",
+        }[val]
 
     @staticmethod
     def print_effect_list(effect):
@@ -441,7 +450,7 @@ class TransitionActionClassificationPolicy:
 
     def __assign_keys_to_featuers(self):
         import string
-        ASCII = string.printable[36:62]
+        ASCII = string.printable[36:62] # A..Z
         for f in self.features:
             ASCII, b = ASCII[1:], ASCII[0]
             self.simplified_features[str(f)] = b
@@ -449,9 +458,22 @@ class TransitionActionClassificationPolicy:
     def get_feature_key(self, feature):
         return self.simplified_features[feature]
 
-    @staticmethod
-    def print_clause(clause):
-        return ' AND '.join(sorted(map(str, clause)))
+    def print_clause(self, clause, simplified=False):
+        clause_tmp = list()
+        for f in reversed(sorted(map(str, clause))):
+            try:
+                f_s, e_s = str(f).split(' ')
+                f_s = self.get_feature_key(f_s) if simplified else f_s
+                e_s = self.get_simplified_val(e_s) if simplified else e_s
+                sc = u"{} {}".format(f_s, e_s)
+            except:
+                f_s, e_s = str(f)[:-2], str(f)[-2:]
+                f_s = self.get_feature_key(f_s) if simplified else f_s
+                e_s = self.get_simplified_val(e_s) if simplified else e_s
+                sc = u"{}{}".format(f_s, e_s)
+            if sc not in clause_tmp:
+                clause_tmp.append(sc)
+        return "{" + ', '.join(clause_tmp) + "}"
 
     @staticmethod
     def parse(rules, language, feature_namer):

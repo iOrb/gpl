@@ -152,30 +152,56 @@ class Env(object):
         valid_actions = self.available_actions(rep)
         r_wk, c_wk = runnable_position(rep.grid, WHITE)
         r_bk, c_bk = runnable_position(rep.grid, BLACK)
-        if r_wk - r_bk == -1:
-            if UP in valid_actions:
-                return UP
-        if r_wk - r_bk == 1:
-            if DOWN in valid_actions:
-                return DOWN
-        if c_wk - c_bk == 1:
-            if RIGHT in valid_actions:
-                return RIGHT
-        if c_wk - c_bk == -1:
-            if LEFT in valid_actions:
-                return LEFT
-        if r_wk - r_bk == -2:
-            if DOWN in valid_actions:
-                return DOWN
-        if r_wk - r_bk == 2:
-            if UP in valid_actions:
-                return UP
-        if c_wk - c_bk == 2:
-            if LEFT in valid_actions:
-                return LEFT
-        if c_wk - c_bk == -2:
-            if RIGHT in valid_actions:
-                return RIGHT
+        if self.params.adv_can_shoot:
+            if r_wk - r_bk == -1:
+                if UP in valid_actions:
+                    return UP
+            if r_wk - r_bk == 1:
+                if DOWN in valid_actions:
+                    return DOWN
+            if c_wk - c_bk == 1:
+                if RIGHT in valid_actions:
+                    return RIGHT
+            if c_wk - c_bk == -1:
+                if LEFT in valid_actions:
+                    return LEFT
+            if r_wk - r_bk == -2:
+                if DOWN in valid_actions:
+                    return DOWN
+            if r_wk - r_bk == 2:
+                if UP in valid_actions:
+                    return UP
+            if c_wk - c_bk == 2:
+                if LEFT in valid_actions:
+                    return LEFT
+            if c_wk - c_bk == -2:
+                if RIGHT in valid_actions:
+                    return RIGHT
+        else:
+            if r_wk - r_bk == 1:
+                if UP in valid_actions:
+                    return UP
+            if r_wk - r_bk == -1:
+                if DOWN in valid_actions:
+                    return DOWN
+            if c_wk - c_bk == -1:
+                if RIGHT in valid_actions:
+                    return RIGHT
+            if c_wk - c_bk == 1:
+                if LEFT in valid_actions:
+                    return LEFT
+            if r_wk - r_bk == 2:
+                if DOWN in valid_actions:
+                    return DOWN
+            if r_wk - r_bk == -2:
+                if UP in valid_actions:
+                    return UP
+            if c_wk - c_bk == -2:
+                if LEFT in valid_actions:
+                    return LEFT
+            if c_wk - c_bk == 2:
+                if RIGHT in valid_actions:
+                    return RIGHT
         return random.choice(valid_actions)
 
     @staticmethod

@@ -130,6 +130,8 @@ def run_test(config, search_policy, task, instance_name, rng):
                 # we know we are not complete
                 # TODO: take bad states into account
                 goods = successors
+                if (config.verbosity>2):
+                    logging.info("WARNING: Not complete in state")
             else:
                 exitcode = ExitCode.AbstractPolicyNotCompleteOnTestInstances
                 break
@@ -214,6 +216,15 @@ def run(config, data, rng):
 
     if data.d2l_policy is None:
         return ExitCode.NotPolicySpecified, dict()
+    else:
+        data.d2l_policy.minimize()
+        if config.use_action_ids:
+            print("Policy (with actions):")
+            data.d2l_policy.print()
+        else:
+            print("\nPOLICY:")
+            data.d2l_policy.print_aaai20()
+        print('')
 
     def get_policy(model_factory, static_atoms, data):
         policy = create_action_selection_function_from_transition_policy(config, model_factory, static_atoms,

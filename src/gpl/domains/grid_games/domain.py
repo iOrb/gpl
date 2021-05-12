@@ -48,7 +48,7 @@ def load_general_lang(lang, statics, env):
         if sort in params.use_adjacency:
             lang.predicate(f'{ADJACENT}_{sort}', sort, sort)
             statics.add(f'{ADJACENT}_{sort}')
-        else:
+        if sort in params.use_bidirectional:
             for d in GRID_DIRECTIONS[sort]:
                 lang.predicate(f'{d}_{sort}', sort, sort)
                 statics.add(f'{d}_{sort}')
@@ -91,7 +91,7 @@ def load_general_problem(problem, lang, rep, env):
             pass
         elif sort in params.use_adjacency:
             problem.init.add(lang.get(f'{ADJACENT}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
-        else:
+        if sort in params.use_bidirectional:
             problem.init.add(lang.get(f'{direction}_{sort}'), const, lang.get(CONST[sort](new_r, new_c)))
 
     for (row, col, sort), const in map_sorts.items():

@@ -45,7 +45,13 @@ def train(config, data, rng, train_steps=[], show_steps_only=False):
 
     data = post_process_data(config, data)
 
-    return exitcode, data.to_dict()
+    try:
+        return exitcode, data.to_dict()
+    except:
+        return ExitCode.Success, dict()
+
+
+
 
 
 def run_step(step, config, data, rng):

@@ -337,8 +337,37 @@ namespace sltp::cnf {
             }
         }
 
+        if (options.use_action_ids) {
+            for (const auto &s:sample_.expanded_states()) {
+                for (const auto &[a, sp]:sample_.successors_a_sp(s)) {
+                    tx_triple tx = std::make_tuple(s, a, sp);
+                    if (is_necessarily_bad(get_class_representative(s, sp))) continue;
+                    if (is_necessarily_bad_tx(tx)) continue;
+                    cnfvar_t good_var = variables.goods_s_a_sp.at(tx);
+                    for (const auto &t:sample_.expanded_states()) {
+                        for (const auto &[b, tp]:sample_.successors_a_sp(t)) {
+                            if (t != s or a == b) continue;
+                            tx_triple txp = std::make_tuple(t, b, tp);
+                            cnfvar_t good_var_p = variables.goods_s_a_sp.at(txp);
+                            cnfclause_t clause{Wr::lit(good_var, false)};
+                            // Compute first the Selected(f) terms
+                            for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
+                                clause.push_back(Wr::lit(variables.selecteds.at(f), true));
+                            }
+                            if (!is_necessarily_bad(get_class_representative(t, tp))) {
+//                        if (!is_necessarily_bad_tx(txp)) {
+                                clause.push_back(Wr::lit(good_var_p, true));
+                            }
+                            wr.cl(clause);
+                            n_separation_clauses += 1;
+                        }
+                    }
+                }
+            }
+        }
+
         // good(s, a, s') -> -bad(s')
-        if (options.allow_bad_states) {
+        if (options.allow_bad_states and options.use_weighted_tx) {
             for (const auto &s:sample_.expanded_states()) {
                 for (const auto &[a, sp]:sample_.successors_a_sp(s)) {
                     tx_triple tx = std::make_tuple(s, a, sp);

@@ -14,8 +14,9 @@ shoot_params = Bunch({
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
     'use_adjacency': {COL_S, ROW_S},
-    'sorts_to_use': {COL_S, ROW_S, CELL_S},
-    'adv_can_shoot': False,
+    'use_bidirectional': {COL_S, ROW_S},
+    'sorts_to_use': {COL_S, ROW_S},
+    'adv_can_shoot': True,
     'unary_predicates': {}
 })
 
@@ -28,7 +29,6 @@ def experiments():
         parameter_generator=None,
         v_slack=2,
         acyclicity='topological',
-        discrete_action_space=False,
         use_incremental_refinement=False,
     )
 
@@ -36,9 +36,9 @@ def experiments():
     exps["1"] = update_dict(
         base,
         # instances=[0, 1, 2, 3, 4, 5, 6],
-        instances=[0],
+        instances=[0, 1],
         test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8],
-        max_concept_size=5,
+        max_concept_size=8,
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
         cond_feature_max_complexity=0,
@@ -54,11 +54,11 @@ def experiments():
 
         sampling_strategy='full',
 
-        allow_bad_states=False,
+        allow_bad_states=True,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
-        use_action_ids=False,
-        use_weighted_tx=False,
+        use_action_ids=True,
+        use_weighted_tx=True,
         use_state_novelty=True,
         distinguish_goals=True,
 

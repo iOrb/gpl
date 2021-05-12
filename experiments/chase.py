@@ -14,6 +14,7 @@ chase_params = Bunch({
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
     'use_adjacency': {COL_S, ROW_S},
+    'use_bidirectional': {},
     'sorts_to_use': {COL_S, ROW_S},
     'unary_predicates': {},
     'can_build_walls': False,
@@ -48,16 +49,16 @@ def experiments():
         print_denotations=True,
         print_hstar_in_feature_matrix=False,
 
-        verbosity=1,
+        verbosity=0,
         initial_sample_size=20,
         refinement_batch_size=50,
         maxsat_iter=10,
 
-        allow_bad_states=False,
+        allow_bad_states=True,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=False,
-        use_weighted_tx=False,
+        use_weighted_tx=True,
         distinguish_goals=True,
 
         sampling_strategy="full",

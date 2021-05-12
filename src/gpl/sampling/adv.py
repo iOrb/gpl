@@ -304,7 +304,8 @@ def print_transition_matrix(sample, transitions_filename):
         for s in state_ids:
             succs = adv_transitions.get(s, set())
             if not succs:
-                succs.add(s)
+                if s in sample.deadends:
+                    succs.add(s)
             adv_successors = ' '.join(f'{sp}' for sp in sorted(succs))
             print(f"{s} {len(succs)} {adv_successors}", file=f)
 

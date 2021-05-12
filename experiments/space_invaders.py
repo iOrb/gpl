@@ -11,9 +11,11 @@ space_invaders_params = Bunch({
     'use_player_as_feature': False,
     'map_cells': False,
     'use_diagonals_for_map_cells': False,
-    'use_adjacency': {COL_S, ROW_S},
-    'sorts_to_use': {CELL_S, COL_S, ROW_S},
+    'use_adjacency': {COL_S},
+    'use_bidirectional': {COL_S},
+    'sorts_to_use': {CELL_S, COL_S},
     'unary_predicates': {},
+    'agent_has_to_shoot': False,
 })
 
 def experiments():
@@ -34,7 +36,7 @@ def experiments():
         base,
         # instances=[0, 10],
         # instances=[0, 4, 8, 10],
-        instances=[4],
+        instances=[0, 4],
         # instances=[10,],
         # instances=[10],
         # instances=[0, 3, 4, 8, 10],
@@ -48,7 +50,7 @@ def experiments():
         print_denotations=True,
         print_hstar_in_feature_matrix=False,
 
-        verbosity=1,
+        verbosity=0,
         initial_sample_size=100,
         refinement_batch_size=200,
         maxsat_iter=20,
@@ -56,15 +58,15 @@ def experiments():
         allow_bad_states=True,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
-        use_action_ids=False,
+        use_action_ids=True,
         use_weighted_tx=False,
         use_state_novelty=True,
         distinguish_goals=True,
 
         sampling_strategy="full",
 
-        # skip_train_steps=[0, 1, 2],  # do not generate features twice!
-        skip_train_steps=[],
+        skip_train_steps=[0, 1, 2, 3],
+        # skip_train_steps=[],
         # rollouts
         # num_episodes=1,
         # num_rollouts=1,
