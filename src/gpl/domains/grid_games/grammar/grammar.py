@@ -5,7 +5,8 @@ from .state_to_atoms import state_to_atoms, atom_tuples_to_string
 from .objects import get_domain_objects
 
 ASCII = string.printable
-# ASCII = ''.join(chr(x) for x in range(50, 1000))
+# MAX_NUM = 1000
+# ASCII = ''.join(chr(x) for x in range(50, 50 + MAX_NUM))
 
 
 class Grammar:
@@ -35,6 +36,9 @@ class Grammar:
             b = list(self.object_bytes[obj] for obj in r.grid.flatten())
             if self.params.use_player_as_feature:
                 b = b + [self.object_bytes[r.player]]
+            for u in self.params.unary_predicates:
+                b = b + [self.object_bytes['true']] if getattr(r, u) else b + [self.object_bytes['false']]
+            # b = b + [self.object_bytes[r.nmoves]]
             # b = b + [self.object_bytes['true']] if info['reward'] else b + [self.object_bytes['false']]
             # b = b + [self.object_bytes['true']] if info['goal'] else b + [self.object_bytes['false']]
             # b = b + [self.object_bytes['true']] if info['deadend'] else b + [self.object_bytes['false']]
@@ -49,6 +53,7 @@ class Grammar:
 
         object_bytes = dict()
         possible_chars = ASCII
+        # numbers = list(range(MAX_NUM))
 
         for obj in OBJECTS.general | {OBJECTS.empty}:
             possible_chars, b = possible_chars[1:], possible_chars[0]
@@ -61,6 +66,10 @@ class Grammar:
         for i in ['true', 'false']:
             possible_chars, b = possible_chars[1:], possible_chars[0]
             object_bytes[i] = ord(b)
+
+        # for i in numbers:
+        #     possible_chars, b = possible_chars[1:], possible_chars[0]
+        #     object_bytes[i] = ord(b)
 
         return object_bytes
 

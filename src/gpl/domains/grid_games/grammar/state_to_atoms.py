@@ -19,14 +19,14 @@ def state_to_atoms(domain_name, state, p):
                 if o == OBJECTS.none:
                     continue
                 if o not in {OBJECTS.empty, OBJECTS.none}:
-                    atoms.append((f'{sort}-hv-{o}', CONST[sort](r, c)))
+                    atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
 
     for u in p.unary_predicates:
         if getattr(rep, u):
             atoms.append((u,))
 
     if p.use_player_as_feature:
-        atoms.append(('player-{}'.format(state[0][1]),))
+        atoms.append(('player-{}'.format(rep.player),))
 
     return atoms
 

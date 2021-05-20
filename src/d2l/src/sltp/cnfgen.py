@@ -55,7 +55,7 @@ def run(config, data, rng):
     # policy = parse_dnf_policy(config)
     policy = parse_dnfa_policy(config)
 
-    # policy.minimize()
+    policy.minimize()
     # if config.use_action_ids:
     #     print("Policy (with actions):")
     #     policy.print()

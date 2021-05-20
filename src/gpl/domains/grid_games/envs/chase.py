@@ -77,7 +77,7 @@ ACTION_MOVE_DIRECTION = {
 }
 
 MAX_ACTIONS_BY_TURN = {
-    WHITE:1,
+    WHITE:2,
     BLACK:1,
 }
 

@@ -17,6 +17,7 @@ class TransitionSampleADV:
     def __init__(self):
         self.states = OrderedDict()
         self.states_encoded = dict()
+        self.states_printable = dict()
         self.operators = dict()
         self.transitions = defaultdict(lambda: defaultdict(set))
         self.adv_transitions = defaultdict(set)
@@ -68,6 +69,7 @@ class TransitionSampleADV:
             self.states_encoded[s_encoded] = self.sid_count
             self.states[self.get_state_id(s_encoded)] = task.state_to_atoms(
                 state)  # this should be the representation as atoms
+            self.states_printable[self.get_state_id(s_encoded)] = task.get_printable_rep(sr) # this should be a string representation
             # print("{}. {}".format(self.sid_count, sr.goal))
             # print(task.get_printable_rep(sr))
             self.sid_count += 1
@@ -315,11 +317,12 @@ def print_states(sample, states_filename):
     with open(states_filename, 'w') as f:
         for id in state_ids:
             if id in sample.goals:
-                print("{}^ {}".format(id, sample.states[id]), file=f)
+                print("{}^\n{}".format(id, sample.states_printable[id]), file=f)
             elif id in sample.deadends:
-                print("{}* {}".format(id, sample.states[id]), file=f)
+                print("{}*\n{}".format(id, sample.states_printable[id]), file=f)
             else:
-                print("{}º {}".format(id, sample.states[id]), file=f)
+                print("{}º\n{}".format(id, sample.states_printable[id]), file=f)
+            print("{}\n".format(sample.states[id]), file=f)
 
 
 def run(config, data, rng):

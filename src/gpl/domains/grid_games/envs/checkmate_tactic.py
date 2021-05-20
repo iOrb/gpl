@@ -1,5 +1,6 @@
 import sys
 from gpl.utils import Bunch
+from ..grammar.objects import  WHITE_KING, WHITE_QUEEN, BLACK_KING, EMPTY, WHITE_TOWER, OBJECTS_CHECK
 
 import numpy as np
 import copy
@@ -7,11 +8,7 @@ import copy
 WHITE = 1
 BLACK = 2
 
-EMPTY = 'empty'
-BLACK_KING = 'black_king'
-WHITE_KING = 'white_king'
-WHITE_QUEEN = 'white_queen'
-WHITE_TOWER = 'white_tower'
+N_MOVE = 'n_move'
 
 SIMPLIFIED_OBJECT = {
     EMPTY:' . ',
@@ -48,11 +45,6 @@ RIGHTUP = 5
 RIGHTDOWN = 6
 LEFTDOWN = 7
 
-MAX_ACTIONS_BY_TURN = {
-    WHITE:1,
-    BLACK:1,
-}
-
 ALL_DIRECTIONS = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 PERPENDICULAR_DIRECTIONS = [(-1, 0), (0, -1), (0, 1), (1, 0)]
 DIAGONAL_DIRECTIONS = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
@@ -76,7 +68,6 @@ class Env(object):
 
     def act(self, rep, action):
         layout = rep.grid
-        assert rep.nact < MAX_ACTIONS_BY_TURN[rep.player]
         # assert not terminated(rep)
         # valid_actions = Env.available_actions(rep)
         # assert action in valid_actions
@@ -94,15 +85,11 @@ class Env(object):
         piece = l[pos[0], pos[1]]
         l[running_pos[0], running_pos[1]] = piece
         l[pos[0], pos[1]] = EMPTY
-        if rep.nact + 1 < MAX_ACTIONS_BY_TURN[rep.player]:
-            new_rep.grid = l
-            new_rep.nact += 1
-            return self.__update_rep(new_rep)
-        else:
-            new_rep.grid = l
-            new_rep.nact = 0
-            new_rep.player = opposite_color(rep.player)
-            return self.__update_rep(new_rep)
+        new_rep.grid = l
+        if rep.player == WHITE:
+            new_rep.nmoves += 1
+        new_rep.player = opposite_color(rep.player)
+        return self.__update_rep(new_rep)
 
     def __update_rep(self, rep):
         updated_rep = rep.to_dict()
@@ -110,9 +97,13 @@ class Env(object):
             updated_rep[CHECKMATE] = checkmate(rep)
         if STALEMATE in self.params.unary_predicates:
             updated_rep[STALEMATE] = stale_mate(rep)
-        if Env.check_game_status(rep) == 1:
+        updated_rep[f"{N_MOVE}_{rep.nmoves}"] = True
+        gstatus = Env.check_game_status(rep)
+        if gstatus == 1:
             updated_rep['goal'] = True
-        elif Env.check_game_status(rep) == -1:
+        elif gstatus == -1:
+            updated_rep['deadend'] = True
+        if rep.nmoves >= self.params.n_moves and gstatus != 1:
             updated_rep['deadend'] = True
         return Bunch(updated_rep)
 
@@ -176,8 +167,9 @@ class Env(object):
 
     def init_instance(self, key):
         rep = {u: False for u in self.params.unary_predicates}
+        rep['nmoves'] = 0
+        rep[f"{N_MOVE}_0"] = True
         rep['grid'] = generate_gird(key)
-        rep['nact'] = 0
         rep['player'] = WHITE
         rep['goal'] = False
         rep['deadend'] = False
@@ -261,8 +253,9 @@ def get_attacking_mask(layout, color):
     return attacking_mask
 
 
-def get_king_attacking_spaces(pos, layout):
+def get_king_attacking_spaces(pos, layout, get_mask=False):
     attacking_spaces = list()
+    attacking_mask = np.zeros(layout.shape, dtype=bool)
     for direction in ALL_DIRECTIONS:
         running_pos = np.array(pos)
         running_pos += direction
@@ -273,7 +266,8 @@ def get_king_attacking_spaces(pos, layout):
         except IndexError:
             continue
         attacking_spaces.append(running_pos)
-    return attacking_spaces
+        attacking_mask[running_pos[0], running_pos[1]] = True
+    return attacking_mask if get_mask else attacking_spaces
 
 
 def cool_piece_valid_moves(pos, layout, color, piece):
@@ -300,17 +294,61 @@ def cool_piece_valid_moves(pos, layout, color, piece):
 
 
 ### Instances
+
+# def generate_gird(key):
+#     height, width, cell_white_king, cell_black_king, cell_white_queen, cell_white_tower = \
+#         LAYOUTS_QUEEN[key]
+#     grid = np.full((height, width), EMPTY, dtype=object)
+#     grid[cell_white_king] = WHITE_KING
+#     grid[cell_black_king] = BLACK_KING
+#     if cell_white_queen:
+#         grid[cell_white_queen] = WHITE_QUEEN
+#     if cell_white_tower:
+#         grid[cell_white_tower] = WHITE_TOWER
+#     return grid
+
 def generate_gird(key):
-    height, width, cell_white_king, cell_black_king, cell_white_queen, cell_white_tower = \
-        LAYOUTS_QUEEN[key]
-    grid = np.full((height, width), EMPTY, dtype=object)
-    grid[cell_white_king] = WHITE_KING
-    grid[cell_black_king] = BLACK_KING
-    if cell_white_queen:
-        grid[cell_white_queen] = WHITE_QUEEN
-    if cell_white_tower:
-        grid[cell_white_tower] = WHITE_TOWER
-    return grid
+    return LAYOUTS_CHECK_IN_ONE[key]
+
+def generate_check_in_one(shapes, piece):
+    grids = list()
+
+    for height, width in shapes:
+        grids_tmp = list()
+        grid_blank = np.full((height, width), EMPTY, dtype=object)
+
+        # checkmate in one grids
+        for i in range(width + 1):
+            grid_tmp = grid_blank.copy()
+            if i == width:
+                bk_pos = (0, i - 1)
+                wk_pos = (2, i - 2)
+            else:
+                bk_pos = (0, i)
+                wk_pos = (2, i)
+            grid_tmp[wk_pos[0], wk_pos[1]] = WHITE_KING
+            grid_tmp[bk_pos[0], bk_pos[1]] = BLACK_KING
+            # king_attaking_mask = get_king_attacking_spaces(bk_pos, grid_tmp, get_mask=True)
+            checkmate_positions = [(0, j) for j in range(width) if 0 < j < width and abs(i - j) > 1] + [(1, i)]
+            for pos in checkmate_positions:
+                checkmate_positions_from = cool_piece_valid_moves(pos, grid_tmp, WHITE, piece)
+                for r, c in checkmate_positions_from:
+                    grid = grid_tmp.copy()
+                    cell_value = grid[r, c]
+                    if cell_value != EMPTY:
+                        continue
+                    grid[r, c] = piece
+                    if get_attacking_mask(grid, WHITE)[bk_pos[0], bk_pos[1]]:
+                        continue
+                    grids_tmp.append(grid)
+                    grids.append(grid)
+
+        for grid_tmp in grids_tmp:
+            grids.append(np.rot90(grid_tmp, 1))
+            grids.append(np.rot90(grid_tmp, 2))
+            grids.append(np.rot90(grid_tmp, 3))
+
+    return {i: g for i, g in enumerate(grids)}
 
 
 LAYOUTS_QUEEN = {
@@ -320,9 +358,12 @@ LAYOUTS_QUEEN = {
     3: (3, 2, (0, 1), (2, 1), (0, 0), None),
 }
 
+
 LAYOUTS_TOWER = {
     0: (4, 4, (1, 1), (1, 3), None, (3, 2)),
     1: (4, 3, (2, 0), (0, 0), None, (3, 2)),
     2: (3, 3, (0, 0), (2, 0), None, (1, 2)),
     3: (5, 5, (4, 0), (0, 4), None, (4, 2)),
 }
+
+LAYOUTS_CHECK_IN_ONE = generate_check_in_one([(3, 3), (4, 4), (5, 5), (7, 7), (8, 8)], WHITE_QUEEN)

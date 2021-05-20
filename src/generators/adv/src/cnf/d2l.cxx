@@ -240,13 +240,13 @@ namespace sltp::cnf {
 
         /////// CNF constraints ///////
 
-        // C1. For each alive state s, at least one Good(s, a) must be true,
+        // C1. For each alive state s, at least one Good(s, a, s') must be true,
         // or (optionally) the state must be marked as bad
         for (const auto &s:sample_.expanded_states()) {
             cnfclause_t clause;
 
             if (options.allow_bad_states) {
-                // Bad(s) or OR_{a in A} Good(s, a):
+                // Bad(s) or OR_{a in A} Good(s, a, s'):
                 clause.push_back(Wr::lit(variables.bad_s.at(s), true));
                 // Soft clauses Bad(s). Minimize the number of Bad(s) atoms that are true.
                 wr.cl({Wr::lit(variables.bad_s.at(s), false)}, 1);
@@ -272,17 +272,19 @@ namespace sltp::cnf {
             wr.cl(clause);
         }
 
-        // C2. Good(s, a) implies V(s') < V(s), for s' in res(s, a)  \equiv
-        // Good(s, a) and V(s)=k implies OR_{0<=k'<k}  V(s')=k'      \equiv
-        // -Good(s, a) or -V(s, k) or OR_{0<=k'<k} V(s', k')
+        // C2. Good(s, a, s') implies V(s') < V(s), for s' in res(s, a)  \equiv
+        // Good(s, a, s') and V(s)=k implies OR_{0<=k'<k}  V(s')=k'      \equiv
+        // -Good(s, a, s') or -V(s, k) or OR_{0<=k'<k} V(s', k')
         for (const auto &s:sample_.expanded_states()) {
             for (const auto &[a, sp]:sample_.successors_a_sp(s)) {
                 tx_triple tx = std::make_tuple(s, a, sp);
                 cnfvar_t good_var = variables.goods_s_a_sp.at(tx);
                 if (!sample_.in_sample(sp)) continue; // maybe we do not car about this?
+                if (options.use_weighted_tx and sample_.is_goal(sp))
+                    wr.cl({Wr::lit(good_var, true)}, 1);
                 if (!sample_.is_alive(sp)) continue;
                 if (is_necessarily_bad(get_class_representative(s, sp))) continue;
-//                if (is_necessarily_bad_tx(tx)) continue;
+                if (is_necessarily_bad_tx(tx)) continue;
 //                    if (sample_.is_unknown(sp)) continue; // (?)
                 for (const auto &spp:sample_.adv(sp)) {
                     if (!sample_.in_sample(spp)) continue; // maybe we do not car about this?
@@ -291,7 +293,7 @@ namespace sltp::cnf {
                     //  if possibly usolvable skip?
                     // TODO: check if this formula is doing what we want, that is Good(s, a, s') -> V(s'') < V(s)
                     for (unsigned k = 1; k < max_d; ++k) {
-                        // Minimize Good(s, a) and V(s', d') -> V(s) < d'
+                        // Minimize Good(s, a, s') and V(s', d') -> V(s) < d'
                         cnfclause_t clause_s_a{Wr::lit(good_var, false),
                                                Wr::lit(vs.at({s, k}), false)};
                         for (unsigned kpp = 1; kpp <= k; ++kpp) {
@@ -332,35 +334,6 @@ namespace sltp::cnf {
                         }
                         wr.cl(clause);
                         n_separation_clauses += 1;
-                    }
-                }
-            }
-        }
-
-        if (options.use_action_ids) {
-            for (const auto &s:sample_.expanded_states()) {
-                for (const auto &[a, sp]:sample_.successors_a_sp(s)) {
-                    tx_triple tx = std::make_tuple(s, a, sp);
-                    if (is_necessarily_bad(get_class_representative(s, sp))) continue;
-                    if (is_necessarily_bad_tx(tx)) continue;
-                    cnfvar_t good_var = variables.goods_s_a_sp.at(tx);
-                    for (const auto &t:sample_.expanded_states()) {
-                        for (const auto &[b, tp]:sample_.successors_a_sp(t)) {
-                            if (t != s or a == b) continue;
-                            tx_triple txp = std::make_tuple(t, b, tp);
-                            cnfvar_t good_var_p = variables.goods_s_a_sp.at(txp);
-                            cnfclause_t clause{Wr::lit(good_var, false)};
-                            // Compute first the Selected(f) terms
-                            for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
-                                clause.push_back(Wr::lit(variables.selecteds.at(f), true));
-                            }
-                            if (!is_necessarily_bad(get_class_representative(t, tp))) {
-//                        if (!is_necessarily_bad_tx(txp)) {
-                                clause.push_back(Wr::lit(good_var_p, true));
-                            }
-                            wr.cl(clause);
-                            n_separation_clauses += 1;
-                        }
                     }
                 }
             }
@@ -407,7 +380,6 @@ namespace sltp::cnf {
 //                }
 //            }
 //        }
-
 
         // (8): Force D1(s1, s2) to be true if exactly one of the two states is a goal state
         if (options.distinguish_goals) {

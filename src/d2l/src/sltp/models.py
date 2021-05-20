@@ -143,7 +143,10 @@ class DLModelFactory:
         """ Process an atom represented in format e.g. ("on", "a", "b") and add the corresponding modifications
         to the `denotations` dictionary.
         """
-        assert len(atom) <= 3, "Cannot deal with arity>2 predicates or arity>1 functions yet"
+        try:
+            assert len(atom) <= 3, "Cannot deal with arity>2 predicates or arity>1 functions yet"
+        except:
+            raise
         symbol = self.vocabulary[atom[0]]
         assert isinstance(symbol, (Predicate, Function, Sort))
         arity = 1 if isinstance(symbol, Sort) else symbol.uniform_arity()

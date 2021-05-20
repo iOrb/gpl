@@ -62,8 +62,8 @@ class Task(ITask):
         succs = list()
         succs_reps = list()
         assert r0.player == self.objects.player1
-
-        for op0 in self.env.available_actions(r0):
+        avaactions = self.env.available_actions(r0)
+        for op0 in avaactions:
             s1 = __transition_player(s0, op0)
             succs_sp.append((op0, s1))
             if s1[0].goal or s1[0].deadend or s1[0].player == self.objects.player1:
@@ -80,14 +80,15 @@ class Task(ITask):
                     s2 = __transition_player(s1, op1)
                     # print("{}. deadend: {}, turn: {}".format(i, s2[0].deadend, s2[0].player))
                     # print(self.get_printable_rep(s2[0]))
-                    if s2[1] == s1[1]:
-                        continue
+                    # if s2[1] == s1[1]:
+                    #     continue
                     assert s2[0].player == self.objects.player1
                     succs.append((op0, s1, s2))
 
         # succs_reps.append(r0)
-        # for _, _, s in succs:
-        #     succs_reps.append(s[0])
+        # for _, sp, spp in succs:
+        #     succs_reps.append(sp[0])
+        #     succs_reps.append(spp[0])
         # self.print_path(succs_reps)
 
         if just_sp:
@@ -127,6 +128,19 @@ class Task(ITask):
                     tmp_row += simplified_objects[o]
                 tmp_full_row += "{} # ".format(tmp_row)
             total_path_rep += "{}\n".format(tmp_full_row)
+
+        single_rep_row = ""
+        for o in layout[0, :]:
+            single_rep_row += simplified_objects[o]
+        size_single_row = len("{} # ".format(single_rep_row))
+
+        info_to_print = ["player", "nmoves"]
+        for info in info_to_print:
+            tmp_full_row = ""
+            for rep in reps:
+                tmp_full_row += "{} ({})".format(getattr(rep, info), info[0]).ljust(size_single_row)
+            total_path_rep += "{}\n".format(tmp_full_row)
+
         print(total_path_rep)
 
     def get_printable_rep(self, rep):

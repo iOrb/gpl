@@ -36,9 +36,8 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=[0, 15],
-        # instances=[14],
-        # test_instances=[14],
+        instances=[0],
+        # instances=[0, 15],
         test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
         max_concept_size=5,
         distance_feature_max_complexity=4,
@@ -54,7 +53,7 @@ def experiments():
         refinement_batch_size=50,
         maxsat_iter=10,
 
-        allow_bad_states=True,
+        allow_bad_states=False,
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=False,

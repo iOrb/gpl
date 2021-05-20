@@ -54,7 +54,10 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
             # We clone the language so that objects from different instances don't get registered all in the same language;
             # if that happened, we'd be unable to properly compute the universe of each instance.
             pl = copy.deepcopy(lang)
-            problem = config.domain.generate_problem(pl, instance_name)
+            try:
+                problem = config.domain.generate_problem(pl, instance_name)
+            except:
+                break
 
             # Compute the universe of each instance: a set with all objects in the universe
             universe = compute_universe_from_pddl_model(problem.language)
@@ -131,7 +134,7 @@ def run_test(config, search_policy, task, instance_name, rng):
                 # TODO: take bad states into account
                 goods = successors
                 if (config.verbosity>2):
-                    logging.info("WARNING: Not complete in state")
+                    logging.info("WARNING: Policy not complete in state:\n{}".format(task.get_printable_rep(s[0])))
             else:
                 exitcode = ExitCode.AbstractPolicyNotCompleteOnTestInstances
                 break
@@ -217,7 +220,7 @@ def run(config, data, rng):
     if data.d2l_policy is None:
         return ExitCode.NotPolicySpecified, dict()
     else:
-        data.d2l_policy.minimize()
+        # data.d2l_policy.minimize()
         if config.use_action_ids:
             print("Policy (with actions):")
             data.d2l_policy.print()
