@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import os.path
 import sys
 
 from gpl.defaults import generate_experiment
@@ -29,7 +29,7 @@ def do(expid, steps=None, workspace=None, show_steps_only=False):
     if workspace is not None:
         parameters["workspace"] = workspace
 
-    experiment = generate_experiment(expid, **parameters)
+    experiment, _ = generate_experiment(expid, **parameters)
 
     if show_steps_only:
         console.print_hello()
@@ -38,7 +38,6 @@ def do(expid, steps=None, workspace=None, show_steps_only=False):
         return
 
     experiment.run(steps)
-
 
 if __name__ == "__main__":
     args = setup_argparser().parse_args(sys.argv[1:])

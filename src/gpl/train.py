@@ -20,9 +20,12 @@ def train(config, data, rng, train_steps=[], show_steps_only=False):
 
     data = pre_process_data(config, data, rng)
 
+    if config.verbosity > 0:
+        print_important_message(" DOMAIN PARAMETERS: ")
+        print_important_message(config.domain.get_printable_params())
+
     for episode in range(config.num_episodes):
         # TODO: check some policy convergence parameter
-
         print_important_message('(START Episode {})'.format(episode))
 
         for i, step in enumerate(TRAIN_STEPS):
@@ -49,9 +52,6 @@ def train(config, data, rng, train_steps=[], show_steps_only=False):
         return exitcode, data.to_dict()
     except:
         return ExitCode.Success, dict()
-
-
-
 
 
 def run_step(step, config, data, rng):

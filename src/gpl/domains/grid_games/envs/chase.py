@@ -76,11 +76,6 @@ ACTION_MOVE_DIRECTION = {
     LEFTDOWN: (1, -1),
 }
 
-MAX_ACTIONS_BY_TURN = {
-    WHITE:2,
-    BLACK:1,
-}
-
 MOVE_ACTION = {
     ACTION_MOVE_DIRECTION[UP]: UP,
     ACTION_MOVE_DIRECTION[DOWN]: DOWN,
@@ -100,7 +95,7 @@ class Env(object):
 
     def act(self, rep, action):
         layout = rep.grid
-        assert rep.nact < MAX_ACTIONS_BY_TURN[rep.player]
+        assert rep.nact < self.params.max_actions[rep.player] + 1
         assert not terminated(rep)
         valid_actions = self.available_actions(rep)
         try:
@@ -115,15 +110,13 @@ class Env(object):
             l = new_rep.grid
             assert l[action] == EMPTY
             l[action] = WALL
-            if rep.nact + 1 < MAX_ACTIONS_BY_TURN[rep.player]:
-                new_rep.grid = l
+            new_rep.grid = l
+            if rep.nact < self.params.max_actions[rep.player]:
                 new_rep.nact += 1
-                return self.__update_rep(new_rep)
             else:
-                new_rep.grid = l
-                new_rep.nact = 0
+                new_rep.nact = 1
                 new_rep.player = opposite_color(rep.player)
-                return self.__update_rep(new_rep)
+            return self.__update_rep(new_rep)
 
     def __rep_after_move(self, rep, action):
         new_rep = copy.deepcopy(rep)
@@ -143,15 +136,14 @@ class Env(object):
         #     l[new_r, new_c] = piece
         l[new_r, new_c] = piece
         l[old_r, old_c] = EMPTY
-        if rep.nact + 1 < MAX_ACTIONS_BY_TURN[rep.player]:
-            new_rep.grid = l
+        new_rep = copy.deepcopy(rep)
+        new_rep.grid = l
+        if rep.nact + 1 < self.params.max_actions[rep.player]:
             new_rep.nact += 1
-            return self.__update_rep(new_rep)
         else:
-            new_rep.grid = l
             new_rep.nact = 0
             new_rep.player = opposite_color(rep.player)
-            return self.__update_rep(new_rep)
+        return self.__update_rep(new_rep)
 
     def __update_rep(self, rep):
         updated_rep = rep.to_dict()
@@ -159,6 +151,7 @@ class Env(object):
             updated_rep['goal'] = True
         if self.params.can_build_walls and WALL in rep.grid:
             updated_rep['wall_one'] = False
+        updated_rep['nmoves'] += 1
         return Bunch(updated_rep)
 
     @staticmethod
@@ -206,7 +199,7 @@ class Env(object):
 
     def get_action_space(self):
         if not self.params.can_build_walls:
-            return AGENT_ACTION_SPACE
+            return self.params.ava_actions[WHITE]
         else:
             return None
 
@@ -220,9 +213,10 @@ class Env(object):
     def init_instance(self, key):
         rep = {u: False for u in self.params.unary_predicates}
         rep['grid'] = generate_gird(key)
-        rep['nact'] = 0
+        rep['nact'] = 1
         rep['player'] = WHITE
         rep['goal'] = False
+        rep['nmoves'] = 0
         rep['deadend'] = False
         return Bunch(rep)
 
@@ -251,10 +245,7 @@ def catched(rep):
 
 def king_valid_actions(pos, layout, color, params):
     valid_action = []
-    if color == WHITE:
-        action_space = AGENT_ACTION_SPACE
-    else:
-        action_space = ENV_ACTION_SPACE
+    action_space = params.ava_actions[color]
     for action_id, direction in ACTION_MOVE_DIRECTION.items():
         if not action_id in action_space:
             continue

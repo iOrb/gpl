@@ -161,8 +161,9 @@ def run_test(config, search_policy, task, instance_name, rng):
         # sa_pair_enc = task.encode_sa_pair((s, op))
         visited_sp[sp[1]] += 1
         path.append(sp[0])
-        spp = task.transition(s, op)
-        path.append(spp[0])
+        spp = task.transition_env(sp)
+        if spp[1] != sp[1]:
+            path.append(spp[0])
 
         if spp[0].deadend:
             exitcode = ExitCode.DeadEndReached

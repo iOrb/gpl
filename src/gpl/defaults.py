@@ -8,12 +8,6 @@ from sltp.util.command import create_experiment_workspace
 from sltp.util.defaults import get_experiment_class
 from sltp.util.misc import extend_namer_to_all_features
 
-# from generalization_grid_games.envs import two_pile_nim as tpn
-# from generalization_grid_games.envs import stop_the_fall as stf
-# from generalization_grid_games.envs import chase as ec
-# from generalization_grid_games.envs import checkmate_tactic as ct
-# from generalization_grid_games.envs import reach_for_the_star as rfts
-
 BASEDIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 BENCHMARK_DIR = os.path.join(BASEDIR, 'benchmarks')
 
@@ -156,7 +150,7 @@ def generate_experiment(expid, **kwargs):
         verbosity=0,
         # acyclicity='reachability',
         # acyclicity='topological',
-        encodings_dir='~/Desktop/encodings_d2l',
+        encodings_dir='',
         sampling_strategy='random',
         optimal_steps=3,
         consistency_bound=2,
@@ -178,9 +172,7 @@ def generate_experiment(expid, **kwargs):
     steps = generate_pipeline(**parameters)
     exp = parameters["experiment_class"](steps, parameters)
 
-    # train_steps = generate_train(**parameters)
-    # exp = generate_train(**parameters)
-    return exp
+    return exp, parameters
 
 
 def default_feature_namer(s):

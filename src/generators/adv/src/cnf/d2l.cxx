@@ -412,9 +412,7 @@ namespace sltp::cnf {
             }
         }
 
-        n_selected_clauses += feature_ids.
-
-                size();
+        n_selected_clauses += feature_ids.size();
 
         if (options.verbosity > 0) {
             // Print a breakdown of the clauses

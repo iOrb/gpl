@@ -24,8 +24,7 @@ class Task(ITask):
     def __init_task(self, instance_name):
         rep = self.env.init_instance(instance_name)
         self.grammar = Grammar(self.get_domain_name(), self.params)
-        encoded_s = self.grammar.encode_state(rep)
-        self.initial_state = (rep, encoded_s)
+        self.initial_state = (rep, self.encode_state(rep))
 
     def encode_state(self, rep):
         return self.grammar.encode_state(rep)

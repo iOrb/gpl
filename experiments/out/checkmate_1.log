@@ -1,0 +1,527 @@
+================================================================================
+SLTP v.0.2.0
+================================================================================
+================================================================================
+(pid: 11651) STARTING STEP #1: Train: Explore the state space of the training instances
+================================================================================
+------------------------------------------------
+ DOMAIN PARAMETERS: 
+------------------------------------------------
+------------------------------------------------
+domain_name: checkmate_tactic
+use_player_as_feature: True
+map_cells: True
+use_diagonals_for_map_cells: True
+use_adjacency: {'col', 'cell', 'row'}
+use_bidirectional: {'col', 'row'}
+sorts_to_use: {'col', 'cell', 'row'}
+n_moves: 2
+unary_predicates: {}
+game_version: 0
+------------------------------------------------
+------------------------------------------------
+(START Episode 0)
+------------------------------------------------
+------------------------------------------------
+(0) Exploration of the training sample:
+------------------------------------------------
+2021-05-21 09:54:01 INFO     Expanding train instance: checkmate_tactic - 0
+# k  .  .  . #
+# .  .  Q  . #
+# K  .  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:01 INFO     Expanding train instance: checkmate_tactic - 1
+# k  .  .  . #
+# .  .  .  . #
+# K  .  .  . #
+# .  .  Q  . #
+
+2021-05-21 09:54:01 INFO     Expanding train instance: checkmate_tactic - 2
+# k  .  .  . #
+# .  .  .  Q #
+# K  .  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:01 INFO     Expanding train instance: checkmate_tactic - 3
+# k  .  .  . #
+# .  .  Q  . #
+# K  .  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:01 INFO     Expanding train instance: checkmate_tactic - 4
+# k  .  .  . #
+# .  .  .  . #
+# K  Q  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:01 INFO     Expanding train instance: checkmate_tactic - 5
+# k  .  .  . #
+# .  .  .  . #
+# K  .  .  . #
+# Q  .  .  . #
+
+2021-05-21 09:54:01 INFO     Expanding train instance: checkmate_tactic - 6
+# k  .  .  . #
+# .  .  .  Q #
+# K  .  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:01 INFO     Expanding train instance: checkmate_tactic - 7
+# k  .  .  . #
+# .  .  .  . #
+# K  .  .  Q #
+# .  .  .  . #
+
+2021-05-21 09:54:01 INFO     Expanding train instance: checkmate_tactic - 8
+# k  .  .  . #
+# .  .  Q  . #
+# K  .  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:01 INFO     Expanding train instance: checkmate_tactic - 9
+# k  .  .  . #
+# .  .  .  Q #
+# K  .  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:01 INFO     Expanding train instance: checkmate_tactic - 10
+# k  .  .  . #
+# .  .  .  . #
+# K  Q  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:02 INFO     Expanding train instance: checkmate_tactic - 11
+# k  .  .  . #
+# .  .  .  . #
+# K  .  .  . #
+# .  .  Q  . #
+
+2021-05-21 09:54:02 INFO     Expanding train instance: checkmate_tactic - 12
+# .  k  .  . #
+# .  .  .  Q #
+# .  K  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:02 INFO     Expanding train instance: checkmate_tactic - 13
+# .  k  .  . #
+# .  .  .  . #
+# .  K  .  . #
+# .  .  .  Q #
+
+2021-05-21 09:54:02 INFO     Expanding train instance: checkmate_tactic - 14
+# .  k  .  . #
+# .  .  .  Q #
+# .  K  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:02 INFO     Expanding train instance: checkmate_tactic - 15
+# .  k  .  . #
+# .  .  .  . #
+# Q  K  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:02 INFO     Expanding train instance: checkmate_tactic - 16
+# .  k  .  . #
+# .  .  .  . #
+# .  K  Q  . #
+# .  .  .  . #
+
+2021-05-21 09:54:03 INFO     Expanding train instance: checkmate_tactic - 17
+# .  k  .  . #
+# .  .  .  . #
+# .  K  .  . #
+# .  .  .  Q #
+
+2021-05-21 09:54:03 INFO     Expanding train instance: checkmate_tactic - 18
+# .  .  k  . #
+# Q  .  .  . #
+# .  .  K  . #
+# .  .  .  . #
+
+2021-05-21 09:54:03 INFO     Expanding train instance: checkmate_tactic - 19
+# .  .  k  . #
+# .  .  .  . #
+# .  Q  K  . #
+# .  .  .  . #
+
+2021-05-21 09:54:03 INFO     Expanding train instance: checkmate_tactic - 20
+# .  .  k  . #
+# .  .  .  . #
+# .  .  K  . #
+# Q  .  .  . #
+
+2021-05-21 09:54:04 INFO     Expanding train instance: checkmate_tactic - 21
+# .  .  k  . #
+# .  .  .  . #
+# .  .  K  Q #
+# .  .  .  . #
+
+2021-05-21 09:54:04 INFO     Expanding train instance: checkmate_tactic - 22
+# .  .  .  k #
+# Q  .  .  . #
+# .  .  .  K #
+# .  .  .  . #
+
+2021-05-21 09:54:04 INFO     Expanding train instance: checkmate_tactic - 23
+# .  .  .  k #
+# .  Q  .  . #
+# .  .  .  K #
+# .  .  .  . #
+
+2021-05-21 09:54:04 INFO     Expanding train instance: checkmate_tactic - 24
+# .  .  .  k #
+# .  .  .  . #
+# .  .  .  K #
+# .  Q  .  . #
+
+2021-05-21 09:54:04 INFO     Expanding train instance: checkmate_tactic - 25
+# .  .  .  k #
+# .  Q  .  . #
+# .  .  .  K #
+# .  .  .  . #
+
+2021-05-21 09:54:04 INFO     Expanding train instance: checkmate_tactic - 26
+# .  .  .  k #
+# Q  .  .  . #
+# .  .  .  K #
+# .  .  .  . #
+
+2021-05-21 09:54:04 INFO     Expanding train instance: checkmate_tactic - 27
+# .  .  .  k #
+# .  .  .  . #
+# .  .  Q  K #
+# .  .  .  . #
+
+2021-05-21 09:54:04 INFO     Expanding train instance: checkmate_tactic - 28
+# .  .  .  k #
+# .  .  .  . #
+# .  .  .  K #
+# .  Q  .  . #
+
+2021-05-21 09:54:04 INFO     Expanding train instance: checkmate_tactic - 29
+# .  .  .  k #
+# Q  .  .  . #
+# .  .  K  . #
+# .  .  .  . #
+
+2021-05-21 09:54:05 INFO     Expanding train instance: checkmate_tactic - 30
+# .  .  .  k #
+# .  Q  .  . #
+# .  .  K  . #
+# .  .  .  . #
+
+2021-05-21 09:54:05 INFO     Expanding train instance: checkmate_tactic - 31
+# .  .  .  k #
+# .  .  .  . #
+# .  .  K  . #
+# .  Q  .  . #
+
+2021-05-21 09:54:05 INFO     Expanding train instance: checkmate_tactic - 32
+# .  .  .  k #
+# .  Q  .  . #
+# .  .  K  . #
+# .  .  .  . #
+
+2021-05-21 09:54:05 INFO     Expanding train instance: checkmate_tactic - 33
+# .  .  .  k #
+# .  .  .  . #
+# Q  .  K  . #
+# .  .  .  . #
+
+2021-05-21 09:54:05 INFO     Expanding train instance: checkmate_tactic - 34
+# .  .  .  k #
+# .  Q  .  . #
+# .  .  K  . #
+# .  .  .  . #
+
+2021-05-21 09:54:05 INFO     Expanding train instance: checkmate_tactic - 35
+# .  .  .  k #
+# Q  .  .  . #
+# .  .  K  . #
+# .  .  .  . #
+
+2021-05-21 09:54:05 INFO     Expanding train instance: checkmate_tactic - 36
+# .  .  .  k #
+# .  .  .  . #
+# .  .  K  . #
+# .  .  Q  . #
+
+2021-05-21 09:54:06 INFO     Expanding train instance: checkmate_tactic - 37
+# .  .  .  . #
+# .  Q  .  . #
+# .  .  .  . #
+# k  .  K  . #
+
+2021-05-21 09:54:06 INFO     Expanding train instance: checkmate_tactic - 38
+# .  .  .  . #
+# .  .  .  K #
+# .  Q  .  . #
+# .  .  .  k #
+
+2021-05-21 09:54:06 INFO     Expanding train instance: checkmate_tactic - 39
+# .  K  .  k #
+# .  .  .  . #
+# .  .  Q  . #
+# .  .  .  . #
+
+2021-05-21 09:54:06 INFO     Expanding train instance: checkmate_tactic - 40
+# .  .  .  . #
+# .  .  .  Q #
+# .  .  .  . #
+# k  .  K  . #
+
+2021-05-21 09:54:06 INFO     Expanding train instance: checkmate_tactic - 41
+# .  Q  .  . #
+# .  .  .  K #
+# .  .  .  . #
+# .  .  .  k #
+
+2021-05-21 09:54:06 INFO     Expanding train instance: checkmate_tactic - 42
+# .  K  .  k #
+# .  .  .  . #
+# Q  .  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:06 INFO     Expanding train instance: checkmate_tactic - 43
+# .  Q  .  . #
+# .  .  .  . #
+# .  .  .  . #
+# k  .  K  . #
+
+2021-05-21 09:54:06 INFO     Expanding train instance: checkmate_tactic - 44
+# .  .  .  . #
+# .  .  .  K #
+# Q  .  .  . #
+# .  .  .  k #
+
+2021-05-21 09:54:06 INFO     Expanding train instance: checkmate_tactic - 45
+# .  K  .  k #
+# .  .  .  . #
+# .  .  .  . #
+# .  .  Q  . #
+
+2021-05-21 09:54:06 INFO     Expanding train instance: checkmate_tactic - 46
+# .  .  .  . #
+# .  Q  .  . #
+# .  .  .  . #
+# k  .  K  . #
+
+2021-05-21 09:54:07 INFO     Expanding train instance: checkmate_tactic - 47
+# .  .  .  . #
+# .  .  .  K #
+# .  Q  .  . #
+# .  .  .  k #
+
+2021-05-21 09:54:07 INFO     Expanding train instance: checkmate_tactic - 48
+# .  K  .  k #
+# .  .  .  . #
+# .  .  Q  . #
+# .  .  .  . #
+
+2021-05-21 09:54:07 INFO     Expanding train instance: checkmate_tactic - 49
+# .  .  .  . #
+# .  .  .  . #
+# .  .  Q  . #
+# k  .  K  . #
+
+2021-05-21 09:54:07 INFO     Expanding train instance: checkmate_tactic - 74
+# .  .  .  . #
+# .  .  K  . #
+# Q  .  .  . #
+# .  .  k  . #
+
+2021-05-21 09:54:07 INFO     Expanding train instance: checkmate_tactic - 76
+# .  .  .  Q #
+# .  .  .  . #
+# k  .  K  . #
+# .  .  .  . #
+
+2021-05-21 09:54:07 INFO     Expanding train instance: checkmate_tactic - 77
+# Q  .  .  . #
+# .  .  K  . #
+# .  .  .  . #
+# .  .  k  . #
+
+2021-05-21 09:54:08 INFO     Expanding train instance: checkmate_tactic - 79
+# .  Q  .  . #
+# .  .  .  . #
+# k  .  K  . #
+# .  .  .  . #
+
+2021-05-21 09:54:08 INFO     Expanding train instance: checkmate_tactic - 86
+# .  .  .  . #
+# .  Q  K  . #
+# .  .  .  . #
+# .  .  k  . #
+
+2021-05-21 09:54:08 INFO     Expanding train instance: checkmate_tactic - 50
+# .  .  .  . #
+# .  .  Q  K #
+# .  .  .  . #
+# .  .  .  k #
+
+2021-05-21 09:54:08 INFO     Expanding train instance: checkmate_tactic - 52
+# .  .  .  . #
+# .  .  .  . #
+# .  .  .  . #
+# k  .  K  Q #
+
+2021-05-21 09:54:08 INFO     Expanding train instance: checkmate_tactic - 118
+# k  .  K  . #
+# .  .  Q  . #
+# .  .  .  . #
+# .  .  .  . #
+
+2021-05-21 09:54:08 INFO     Expanding train instance: checkmate_tactic - 142
+# k  .  .  . #
+# .  .  K  . #
+# .  .  .  . #
+# .  Q  .  . #
+
+2021-05-21 09:54:08 INFO     Expanding train instance: checkmate_tactic - 147
+# .  .  .  . #
+# .  .  .  . #
+# Q  K  .  . #
+# .  .  .  k #
+
+2021-05-21 09:54:09 INFO     Expanding train instance: checkmate_tactic - 159
+# k  .  .  .  . #
+# .  .  .  .  Q #
+# K  .  .  .  . #
+# .  .  .  .  . #
+# .  .  .  .  . #
+
+2021-05-21 09:54:09 INFO     Expanding train instance: checkmate_tactic - 169
+# k  .  .  .  . #
+# .  .  .  .  . #
+# K  Q  .  .  . #
+# .  .  .  .  . #
+# .  .  .  .  . #
+
+2021-05-21 09:54:09 INFO     Expanding train instance: checkmate_tactic - 187
+# .  k  .  .  . #
+# .  .  .  .  . #
+# .  K  .  .  . #
+# .  .  .  Q  . #
+# .  .  .  .  . #
+
+2021-05-21 09:54:09 INFO     Expanding train instance: checkmate_tactic - 200
+# .  .  .  k  . #
+# .  .  .  .  . #
+# .  .  .  K  . #
+# .  Q  .  .  . #
+# .  .  .  .  . #
+
+2021-05-21 09:54:10 INFO     Expanding train instance: checkmate_tactic - 201
+# .  .  .  k  . #
+# .  .  .  .  . #
+# .  .  .  K  . #
+# .  .  .  .  . #
+# .  Q  .  .  . #
+
+2021-05-21 09:54:11 INFO     Expanding train instance: checkmate_tactic - 202
+# .  .  .  k  . #
+# .  Q  .  .  . #
+# .  .  .  K  . #
+# .  .  .  .  . #
+# .  .  .  .  . #
+
+2021-05-21 09:54:11 INFO     Expanding train instance: checkmate_tactic - 206
+# .  .  .  k  . #
+# .  .  .  .  . #
+# .  .  .  K  . #
+# .  .  .  .  . #
+# Q  .  .  .  . #
+
+2021-05-21 09:54:12 INFO     Expanding train instance: checkmate_tactic - 208
+# .  .  .  .  k #
+# Q  .  .  .  . #
+# .  .  .  .  K #
+# .  .  .  .  . #
+# .  .  .  .  . #
+
+2021-05-21 09:54:12 INFO     Expanding train instance: checkmate_tactic - 221
+# .  .  .  .  k #
+# .  Q  .  .  . #
+# .  .  .  .  K #
+# .  .  .  .  . #
+# .  .  .  .  . #
+
+2021-05-21 09:54:12 INFO     Expanding train instance: checkmate_tactic - 223
+# .  .  .  .  k #
+# .  .  .  .  . #
+# .  .  .  Q  K #
+# .  .  .  .  . #
+# .  .  .  .  . #
+
+2021-05-21 09:54:12 INFO     Expanding train instance: checkmate_tactic - 233
+# .  .  .  .  k #
+# .  .  Q  .  . #
+# .  .  .  K  . #
+# .  .  .  .  . #
+# .  .  .  .  . #
+
+2021-05-21 09:54:12 INFO     Expanding train instance: checkmate_tactic - 235
+# .  .  .  .  k #
+# .  .  .  .  . #
+# .  .  .  K  . #
+# .  .  .  .  . #
+# .  .  Q  .  . #
+
+2021-05-21 09:54:13 INFO     Expanding train instance: checkmate_tactic - 242
+# .  .  .  .  k #
+# .  .  .  .  . #
+# .  .  .  K  . #
+# .  .  .  Q  . #
+# .  .  .  .  . #
+
+2021-05-21 09:54:13 INFO     Expanding train instance: checkmate_tactic - 244
+# .  .  .  .  . #
+# .  .  .  .  . #
+# .  Q  .  .  . #
+# .  .  .  .  . #
+# k  .  K  .  . #
+
+------------------------------------------------
+(0) Generation of the training sample:
+------------------------------------------------
+2021-05-21 09:54:13 INFO     sample: #states=7596, #transition-entries=9902, #transitions=9902
+2021-05-21 09:54:16 INFO     Entire sample: roots: 74, states: 7596, transitions: 9902 (980 optimal), goals: 493, alive: 634, deadends: 5789
+2021-05-21 09:54:16 INFO     Printing SAT transition matrix with 7596 states, -5532 states with some outgoing transition, 4886 operators, 9902 (non-det) transitions, and 6958 (adv) transitions,
+------------------------------------------------
+(0) Generate the pool of candidate features:
+------------------------------------------------
+2021-05-21 09:54:16 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 74, states: 7596, transitions: 9902 (980 optimal), goals: 493, alive: 634, deadends: 5789
+2021-05-21 09:54:18 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/ct_2/sample.io'
+2021-05-21 09:54:19 INFO     Invoking C++ feature generation module
+2021-05-21 09:54:19 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 5 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/ct_2" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+reading '/home/orbital/ws/research/gpl/code/gpl/workspace/ct_2/transitions-info.io
+BASIS: #concepts=17, #roles=7
+ROLES: #roles=14
+Generating concepts for k=1. Total concepts: 14 (2, 12, 0, 0, 0, 0)... 0 concepts generated, 3 pruned.
+Generating concepts for k=2. Total concepts: 14 (2, 12, 0, 0, 0, 0)... 20 concepts generated, 68 pruned.
+Generating concepts for k=3. Total concepts: 34 (2, 12, 20, 0, 0, 0)... 45 concepts generated, 297 pruned.
+Generating concepts for k=4. Total concepts: 79 (2, 12, 20, 45, 0, 0)... 125 concepts generated, 988 pruned.
+Traceback (most recent call last):
+  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 44, in <module>
+    do(args.exp_id, args.steps, args.workspace, args.show)
+  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 40, in do
+    experiment.run(steps)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 204, in run
+    run_and_check_output(step, stepnum, SubprocessStepRunner)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 213, in run_and_check_output
+    exitcode = runner.run(config=Bunch(step.config))
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 136, in run
+    exitcode = self._run(config)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 179, in _run
+    exitcode = result.get()
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 765, in get
+    self.wait(timeout)
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 762, in wait
+    self._event.wait(timeout)
+  File "/usr/lib/python3.8/threading.py", line 558, in wait
+    signaled = self._cond.wait(timeout)
+  File "/usr/lib/python3.8/threading.py", line 302, in wait
+    waiter.acquire()
+KeyboardInterrupt

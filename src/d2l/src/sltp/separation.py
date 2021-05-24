@@ -441,12 +441,25 @@ class TransitionActionClassificationPolicy:
         return '{' + ', '.join(sorted(map(str, effect))) + '}'
 
     def print_header(self):
-        max_k = max(f.feature.complexity() for f in self.features)
-        total_k = sum(f.feature.complexity() for f in self.features)
+        max_k = 0
+        total_k = 0
+        for f in self.features:
+            try:
+                c = f.feature.complexity()
+            except:
+                c = 0
+            max_k =max({c, max_k})
+            total_k += c
+        # max_k = max(f.feature.complexity() for f in self.features)
+        # total_k = sum(f.feature.complexity() for f in self.features)
         print(f"Features (#: {len(self.features)}; total k: {total_k}; max k = {max_k}):")
         for f in self.features:
             key = self.get_feature_key(str(f))
-            print(f"  ({key}) {f} [k={f.feature.complexity()}]")
+            try:
+                c = f.feature.complexity()
+            except:
+                c = 0
+            print(f"  ({key}) {f} [k={c}]")
 
     def __assign_keys_to_featuers(self):
         import string

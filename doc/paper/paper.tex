@@ -277,26 +277,29 @@ equivalence relations, all those other transitions in whose equivalence class th
 \section{Empirical Results}
 
 
-%\subsection{Space Invaders - v0}
-%\subsubsection{Description}
+\subsection{Space Invaders - v0}
+\subsubsection{Description}
+In this domain the agent can shoot, move to the right or to the left. To win the agent has to kill all the opponents, for this he must shoot each of them. The agent kills an opponent if he shoots while being in the same column, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents.
 
+\subsubsection{Features}
+\begin{Verbatim}[fontsize=\footnotesize]
+  0: Num[cell-has-martian] [k=1]
+	1: Num[cell-has-target_martian] [k=1]
+	2: Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]]
+\end{Verbatim}
 
-%\subsubsection{Features}
-%\begin{Verbatim}[fontsize=\footnotesize]
-    %(A) Num[col-hv-Agent] [k=1]
-    %(B) Dist[col-hv-white_king;right_col;col-hv-black_king] [k=4]
-%\end{Verbatim}
+\subsubsection{Policy}
+\begin{Verbatim}[fontsize=\footnotesize]
+  1. C=0 AND A>0 AND B>0 -> {A ↓, B ↑, C ↑}, {A ·, B ↓, C ·}, {A ↓, B ·, C ↑}
+  2. C=0 AND A=0 AND B>0 -> {A ·, B ↓, C ↑}
+  3. C>0 AND B>0 -> {A ·, B ·, C ↓}
+  4. C>0 AND A=0 AND B>0 -> {A ·, B ·, C ↓}
+\end{Verbatim}
 
-%\subsubsection{Policy}
-%\begin{Verbatim}[fontsize=\footnotesize]
-%  1. B=0 AND A>0 -> {B INCs, A DECs}, {B NILs, A NILs}, {B INCs, A NILs}
-%  2. B>0 AND A>0 -> {B DECs, A NILs}, {B NILs, A NILs}, {B INCs, A DECs}, {B NILs, A DECs}
-%\end{Verbatim}
+\subsubsection{Example of Game}
+\begin{Verbatim}[fontsize=\footnotesize]
 
-%\subsubsection{Example of Game}
-%\begin{Verbatim}[fontsize=\footnotesize]
-
-%\end{Verbatim}
+\end{Verbatim}
 
 
 \subsection{Chase - v0}

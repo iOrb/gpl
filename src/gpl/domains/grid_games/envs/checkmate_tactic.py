@@ -57,6 +57,7 @@ DIRECTIONS = {
 }
 
 # Unary predicates
+CHECK = 'check'
 CHECKMATE = 'checkmate'
 STALEMATE = 'stalemate'
 
@@ -169,7 +170,7 @@ class Env(object):
         rep = {u: False for u in self.params.unary_predicates}
         rep['nmoves'] = 0
         rep[f"{N_MOVE}_0"] = True
-        rep['grid'] = generate_gird(key)
+        rep['grid'] = generate_gird(key, self.params)
         rep['player'] = WHITE
         rep['goal'] = False
         rep['deadend'] = False
@@ -197,6 +198,18 @@ def checkmate(rep):
         return False
     return False
 
+def check(rep):
+    layout = rep.grid
+    assert BLACK_KING in layout
+    if rep.player == BLACK:
+        king_pos = np.argwhere(layout == BLACK_KING)[0]
+        valid_moves = PIECE_VALID_MOVES[BLACK_KING](king_pos, layout)
+        if len(valid_moves) == 0:
+            attacking_mask = get_attacking_mask(layout, opposite_color(rep.player))
+            if attacking_mask[king_pos[0], king_pos[1]]:
+                return True
+        return False
+    return False
 
 def stale_mate(rep):
     layout = rep.grid
@@ -307,8 +320,8 @@ def cool_piece_valid_moves(pos, layout, color, piece):
 #         grid[cell_white_tower] = WHITE_TOWER
 #     return grid
 
-def generate_gird(key):
-    return LAYOUTS_CHECK_IN_ONE[key]
+def generate_gird(key, params):
+    return LAYOUTS[params.game_version][key]
 
 def generate_check_in_one(shapes, piece):
     grids = list()
@@ -321,15 +334,19 @@ def generate_check_in_one(shapes, piece):
         for i in range(width + 1):
             grid_tmp = grid_blank.copy()
             if i == width:
+                if piece == WHITE_TOWER:
+                    continue
                 bk_pos = (0, i - 1)
-                wk_pos = (2, i - 2)
+                wk_pos = (2, i - 3)
             else:
                 bk_pos = (0, i)
                 wk_pos = (2, i)
             grid_tmp[wk_pos[0], wk_pos[1]] = WHITE_KING
             grid_tmp[bk_pos[0], bk_pos[1]] = BLACK_KING
-            # king_attaking_mask = get_king_attacking_spaces(bk_pos, grid_tmp, get_mask=True)
-            checkmate_positions = [(0, j) for j in range(width) if 0 < j < width and abs(i - j) > 1] + [(1, i)]
+            if piece == WHITE_TOWER:
+                checkmate_positions = [(0, j) for j in range(width) if 0 < j < width and abs(i - j) > 1]
+            elif piece == WHITE_QUEEN:
+                checkmate_positions = [(0, j) for j in range(width) if 0 < j < width and abs(i - j) > 1] + [(1, i)] if i != width else [(1, i - 2)]
             for pos in checkmate_positions:
                 checkmate_positions_from = cool_piece_valid_moves(pos, grid_tmp, WHITE, piece)
                 for r, c in checkmate_positions_from:
@@ -358,7 +375,6 @@ LAYOUTS_QUEEN = {
     3: (3, 2, (0, 1), (2, 1), (0, 0), None),
 }
 
-
 LAYOUTS_TOWER = {
     0: (4, 4, (1, 1), (1, 3), None, (3, 2)),
     1: (4, 3, (2, 0), (0, 0), None, (3, 2)),
@@ -366,4 +382,10 @@ LAYOUTS_TOWER = {
     3: (5, 5, (4, 0), (0, 4), None, (4, 2)),
 }
 
-LAYOUTS_CHECK_IN_ONE = generate_check_in_one([(3, 3), (4, 4), (5, 5), (7, 7), (8, 8)], WHITE_QUEEN)
+LAYOUTS_CHECK_IN_ONE_QUEEN = generate_check_in_one([(4, 4), (5, 5), (6, 6)], WHITE_QUEEN)
+LAYOUTS_CHECK_IN_ONE_TOWER = generate_check_in_one([(4, 4), (5, 5), (6, 6)], WHITE_TOWER)
+
+LAYOUTS = {
+    0: LAYOUTS_CHECK_IN_ONE_QUEEN,
+    1: LAYOUTS_CHECK_IN_ONE_TOWER,
+}

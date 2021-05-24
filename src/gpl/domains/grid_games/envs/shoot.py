@@ -1,7 +1,7 @@
 import random
 import sys
 
-from ..grammar.objects import EMPTY, WHITE_KING, BLACK_KING
+from ..grammar.objects import EMPTY, WHITE_KING, BLACK_KING, PLAYER1, PLAYER2
 from ..grammar.language import D1_S, D2_S, COL_S, ROW_S
 
 import numpy as np
@@ -43,30 +43,6 @@ RIGHTUP = 5
 RIGHTDOWN = 6
 LEFTDOWN = 7
 SHOOT = 8
-
-AGENT_ACTION_SPACE = {
-    UP,
-    DOWN,
-    RIGHT,
-    LEFT,
-    # LEFTUP,
-    # RIGHTUP,
-    # RIGHTDOWN,
-    # LEFTDOWN,
-    SHOOT
-}
-
-ENV_ACTION_SPACE = {
-    UP,
-    DOWN,
-    RIGHT,
-    LEFT,
-    # LEFTUP,
-    # RIGHTUP,
-    # RIGHTDOWN,
-    # LEFTDOWN,
-    SHOOT
-}
 
 ACTION_MOVE_DIRECTION = {
     UP: (-1, 0),
@@ -227,9 +203,8 @@ class Env(object):
     def get_grid(key):
         return generate_gird(key)
 
-    @staticmethod
-    def get_action_space():
-        return AGENT_ACTION_SPACE
+    def get_action_space(self):
+        return self.params.ava_actions[PLAYER1]
 
     @staticmethod
     def get_simplified_objects():
@@ -270,10 +245,7 @@ def layout_after_shoot(layout, player_shooting, params):
 
 def king_valid_actions(pos, layout, player, params):
     valid_action = []
-    if player == WHITE:
-        action_space = AGENT_ACTION_SPACE
-    else:
-        action_space = ENV_ACTION_SPACE
+    action_space = params.ava_actions[player]
     for action_id, direction in ACTION_MOVE_DIRECTION.items():
         if not action_id in action_space:
             continue
@@ -342,7 +314,7 @@ def generate_gird(key):
 
 LAYOUTS = {
     0: (4, 8, (0, 0), (3, 5)),
-    1: (8, 4, (5, 1), (0, 0)),
+    1: (8, 6, (7, 5), (2, 1)),
     2: (7, 7, (0, 0), (5, 5)),
     3: (10, 10, (3, 2), (0, 0)),
     4: (11, 4, (4, 3), (0, 0)),

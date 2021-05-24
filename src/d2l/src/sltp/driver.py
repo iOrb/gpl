@@ -190,6 +190,7 @@ class SubprocessStepRunner(StepRunner):
 class Experiment:
     def __init__(self, all_steps, parameters):
         self.all_steps = all_steps
+        self.parameters = parameters
 
     def print_description(self):
         return "\t" + "\n\t".join("{}. {}".format(i, s.description()) for i, s in enumerate(self.all_steps, 1))
@@ -198,7 +199,6 @@ class Experiment:
         console.print_hello()
         # If no steps were given on the commandline, run all exp steps.
         selected = self.all_steps if not steps else [get_step(self.all_steps, step_id) for step_id in steps]
-
         for stepnum, step in enumerate(selected, start=1):
             try:
                 run_and_check_output(step, stepnum, SubprocessStepRunner)
