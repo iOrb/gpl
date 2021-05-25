@@ -12,8 +12,8 @@ BLACK = 2
 
 SIMPLIFIED_OBJECT = {
     EMPTY:'.',
-    MARTIAN:'M',
-    TARGET_MARTIAN:'T',
+    MARTIAN:'m',
+    TARGET_MARTIAN:'M',
     AGENT:'A',
 }
 
@@ -54,11 +54,6 @@ ACTION_MOVE_DIRECTION = {
     UP: (-1, 0),
 }
 
-MAX_ACTIONS_BY_TURN = {
-    WHITE:2,
-    BLACK:1,
-}
-
 MOVE_ACTION = {
     ACTION_MOVE_DIRECTION[RIGHT]: RIGHT,
     ACTION_MOVE_DIRECTION[LEFT]: LEFT,
@@ -75,22 +70,20 @@ class Env(object):
 
     def act(self, rep, action_id):
         layout = rep.grid
-        assert rep.nact < MAX_ACTIONS_BY_TURN[rep.player]
+        assert rep.nact < self.params.max_actions[rep.player] + 1
         assert not terminated(rep)
         if rep.player == WHITE:
             l = layout_after_agent_action(layout, action_id, self.params)
         elif rep.player == BLACK:
             l = layout_after_env_action(layout, action_id) if action_id else layout
         new_rep = copy.deepcopy(rep)
-        if rep.nact + 1 < MAX_ACTIONS_BY_TURN[rep.player]:
-            new_rep.grid = l
+        new_rep.grid = l
+        if rep.nact < self.params.max_actions[rep.player]:
             new_rep.nact += 1
-            return self.__update_rep(new_rep)
         else:
-            new_rep.grid = l
-            new_rep.nact = 0
+            new_rep.nact = 1
             new_rep.player = opposite_color(rep.player)
-            return self.__update_rep(new_rep)
+        return self.__update_rep(new_rep)
 
     def __update_rep(self, rep):
         updated_rep = rep.to_dict()
@@ -149,7 +142,7 @@ class Env(object):
     def init_instance(self, key):
         rep = {u: False for u in self.params.unary_predicates}
         rep['grid'] = generate_gird(key)
-        rep['nact'] = 0
+        rep['nact'] = 1
         rep['player'] = WHITE
         rep['goal'] = False
         rep['deadend'] = False
@@ -301,8 +294,8 @@ def set_one_random_target_martian(layout):
             running_pos += direction
         if last_martian_seen is not None:
             valid_martians.append(last_martian_seen)
-    selected_martian_pos = valid_martians[0]
-    # selected_martian_pos = random.choice(valid_martians)
+    # selected_martian_pos = valid_martians[0]
+    selected_martian_pos = random.choice(valid_martians)
     l = layout.copy()
     l[selected_martian_pos[0], selected_martian_pos[1]] = TARGET_MARTIAN
     return l

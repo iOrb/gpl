@@ -61,7 +61,7 @@ def experiments():
         use_action_ids=False,
         use_weighted_tx=False,
         use_state_novelty=True,
-        distinguish_goals=True,
+        distinguish_goals=False,
 
         sampling_strategy="full",
 
@@ -99,7 +99,7 @@ def experiments():
     space_invaders_params_v2.unary_predicates = {}
     space_invaders_params_v2.use_player_as_feature = True
     space_invaders_params_v2.use_bidirectional = {}
-    space_invaders_params_v2.max_actions = {PLAYER1: 1, PLAYER2: 1}
+    space_invaders_params_v2.max_actions = {PLAYER1: 2, PLAYER2: 1}
     space_invaders_params_v2.target_columns = False
     space_invaders_params_v2.agent_has_to_shoot = False
     exps["2"] = update_dict(

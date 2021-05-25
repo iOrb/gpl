@@ -91,6 +91,11 @@ class Task(ITask):
         #         succs_reps.append(spp[0])
         # self.print_path(succs_reps)
 
+        # succs_reps.append(r0)
+        # for _, sp in succs_sp:
+        #     succs_reps.append(sp[0])
+        # self.print_path(succs_reps)
+
         if just_sp:
             return succs_sp
         else:
@@ -134,12 +139,12 @@ class Task(ITask):
             single_rep_row += simplified_objects[o]
         size_single_row = len("{} # ".format(single_rep_row))
 
-        info_to_print = ["player", "nmoves", "last_turn"]
+        info_to_print = ["player", "nmoves", "last_turn", "next_player"]
         for info in info_to_print:
             try:
                 tmp_full_row = ""
                 for rep in reps:
-                    tmp_full_row += "{} ({})".format(getattr(rep, info), info[0]).ljust(size_single_row)
+                    tmp_full_row += "{} ({})".format(getattr(rep, info), info[:2]).ljust(size_single_row)
                 total_path_rep += "{}\n".format(tmp_full_row)
             except:
                 pass

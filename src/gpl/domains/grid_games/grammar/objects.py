@@ -10,20 +10,20 @@ BLACK_KING = 'TARGET'
 # BLACK_KING = 'black_king'
 WHITE_QUEEN = 'white_queen'
 WHITE_TOWER = 'white_tower'
-
 MARTIAN = 'martian'
 TARGET_MARTIAN = 'target_martian'
-
 PACKAGE = 'package'
 DESTINY = 'destiny'
 PIT = 'pit'
 AGENT = 'agent'
 EMPTY = 'empty'
 WALL = 'wall'
-
 TOKEN = 'token'
 TOP_TOKEN = 'top_token'
 BOTTOM_TOKEN = 'bottom_token'
+WUMPUS = 'wumpus'
+GOLD = 'gold'
+TARGET_GOLD = 'target_gold'
 
 
 OBJECTS = Bunch({
@@ -50,6 +50,18 @@ OBJECTS_CHECK = Bunch({
                 WHITE_KING,
                 WHITE_QUEEN,
                 WHITE_TOWER,},
+    'empty': EMPTY,
+    'player1': PLAYER1,
+    'player2': PLAYER2,
+    'none': NONE,
+})
+
+OBJECTS_WUMPUS = Bunch({
+    'general': {AGENT,
+                WUMPUS,
+                GOLD,
+                TARGET_GOLD,
+                PIT},
     'empty': EMPTY,
     'player1': PLAYER1,
     'player2': PLAYER2,
@@ -105,4 +117,5 @@ def get_domain_objects(domain_name):
         'shoot': OBJECTS,
         'space_invaders': OBJECTS_SPACE,
         'checkmate_tactic': OBJECTS_CHECK,
+        'wumpus': OBJECTS_WUMPUS,
     }[domain_name]

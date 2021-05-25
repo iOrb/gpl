@@ -28,6 +28,9 @@ def state_to_atoms(domain_name, state, p):
     if p.use_player_as_feature:
         atoms.append(('player-{}'.format(rep.player),))
 
+    if p.use_next_player_as_feature:
+        atoms.append(('next_player-{}'.format(rep.next_player),))
+
     return atoms
 
 def atom_tuples_to_string(atom_tuples):

@@ -36,6 +36,8 @@ class Grammar:
             b = list(self.object_bytes[obj] for obj in r.grid.flatten())
             if self.params.use_player_as_feature:
                 b = b + [self.object_bytes[r.player]]
+            if self.params.use_next_player_as_feature:
+                b = b + [self.object_bytes[r.next_player]]
             for u in self.params.unary_predicates:
                 b = b + [self.object_bytes['true']] if getattr(r, u) else b + [self.object_bytes['false']]
             # b = b + [self.object_bytes[r.nmoves]]

@@ -65,6 +65,9 @@ def load_general_lang(lang, statics, env):
     if params.use_player_as_feature:
         _ = [lang.predicate('player-{}'.format(p),) for p in {OBJECTS.player1, OBJECTS.player2}]
 
+    if params.use_next_player_as_feature:
+        _ = [lang.predicate('next_player-{}'.format(p),) for p in {OBJECTS.player1, OBJECTS.player2}]
+
     return lang, statics
 
 
@@ -74,6 +77,9 @@ def load_general_problem(problem, lang, rep, env):
     params = env.params
     if params.use_player_as_feature:
         problem.init.add(lang.get('player-{}'.format(rep.player),))
+    if params.use_next_player_as_feature:
+        problem.init.add(lang.get('next_player-{}'.format(rep.next_player),))
+
     for u in params.unary_predicates:
         if getattr(rep, u):
             problem.init.add(lang.get(u,))

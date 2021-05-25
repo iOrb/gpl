@@ -1,4 +1,4 @@
-from .grammar.objects import OBJECTS, BLACK_KING, WHITE_KING
+from .grammar.objects import PLAYER1, PLAYER2
 import numpy as np
 import json
 import os.path
@@ -20,3 +20,11 @@ def identify_margin(r, c, nrows, ncols):
         return OBJECTS.margin['m6']
     if r == nrows and c < 0:
         return OBJECTS.margin['m7']
+
+
+def identify_next_player(rep, params):
+    opposite_player = lambda c: PLAYER2 if c == PLAYER1 else PLAYER1
+    if rep.nact < params.max_actions[rep.player]:
+        return rep.player
+    else:
+        return opposite_player(rep.player)

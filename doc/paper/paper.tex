@@ -281,11 +281,19 @@ equivalence relations, all those other transitions in whose equivalence class th
 \subsubsection{Description}
 In this domain the agent can shoot, move to the right or to the left. The agent has two actions per turn and the adversary one. To win the agent has to kill all the opponents, for this he must shoot each of them. The agent kills an opponent if he shoots while being in the same column, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents.
 
+\subsubsection{Training instances:}
+\begin{Verbatim}[fontsize=\footnotesize]
+  #m...m#
+  #m...M#
+  #.....#
+  #...A.#
+\end{Verbatim}
+
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  0: Num[cell-has-martian] [k=1]
-	1: Num[cell-has-target_martian] [k=1]
-	2: Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]]
+(A) Num[cell-has-martian] [k=1]
+(B) Bool[cell-has-target_martian] [k=1]
+(C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]
 \end{Verbatim}
 
 \subsubsection{Policy}
@@ -297,40 +305,51 @@ In this domain the agent can shoot, move to the right or to the left. The agent 
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
-  M..M # M..M # M..M # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... #
-  T..M # T..M # T..M # M..M # T..M # ...M # ..M. # ..M. # ..M. # ...M # ...M # ...T # ..T. # ..T. # .... #
-  .... # .... # .... # T..M # ...M # ...T # ..T. # ..T. # ..T. # ...T # ...T # .... # .... # .... # .... #
+  m..m # m..m # m..m # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... #
+  M..m # M..m # M..m # m..m # M..m # ...m # ..m. # ..m. # ..m. # ...m # ...m # ...M # ..M. # ..M. # .... #
+  .... # .... # .... # M..m # ...m # ...M # ..M. # ..M. # ..M. # ...M # ...M # .... # .... # .... # .... #
   .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... #
   ..A. # .A.. # A... # A... # A... # A... # A... # .A.. # ..A. # ..A. # ...A # ...A # ...A # ..A. # ..A. #
 \end{Verbatim}
 
 \subsection{Space Invaders - v1}
 \subsubsection{Description}
-In this domain the agent can move to the right or to the left. The agent and the opponents have one action per turn. To win the agent has to kill all the opponents, for this he must shoot each of them. The agent kills an opponent if he moves into the column of the adversary, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents.
+In this domain the agent can move to the right or to the left. TThe agent has two actions per turn and the adversary one. To win the agent has to kill all the opponents, for this he must shoot each of them. The agent kills an opponent if he moves into the column of the adversary, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents.
+
+\subsubsection{Training instances:}
+\begin{Verbatim}[fontsize=\footnotesize]
+  #m...m#
+  #m...M#
+  #.....#
+  #...A.#
+\end{Verbatim}
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  0: Num[cell-has-martian] [k=1]
-	1: Num[cell-has-target_martian] [k=1]
-	2: Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]]
+  (A) Num[cell-has-martian] [k=1]
+  (B) Bool[cell-has-target_martian] [k=1]
+  (C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]
 \end{Verbatim}
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. B>0 AND C>0 AND A=0 -> {A ·, B ↓, C ↑}
-  2. B>0 AND C>0 -> {A ·, B ·, C ↓}
-  3. B>0 AND C>0 AND A>0 -> {A ↓, B ·, C ↓}, {A ↓, B ·, C ↑}, {A ↓, B ·, C ·}, {A ·, B ·, C ↓}
-  4. B>0 AND C=0 -> {A ·, B ·, C ↑}
+  1. B>0 AND C>0 AND A>0 -> {A ↓, B ·, C ↑},
+                            {A ↓, B ·, C ↓},
+                            {A ↓, B ·, C ·}
+  2. B>0 AND C>0 AND A=0 -> {A ·, B ↓, C ↑}
+  3. B>0 AND C=0 -> {A ·, B ·, C ↑}
+  4. B>0 AND C>0 -> {A ·, B ·, C ↓}
   5. B>0 AND C=0 AND A=0 -> {A ·, B ·, C ↑}
 \end{Verbatim}
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
-  M..M # M..M # T..M # .... # .... # .... # .... # .... # .... # .... # .... #
-  T..M # T..M # ...M # T..M # T..M # ...M # ..M. # ..M. # ..T. # .T.. # .... #
-  .... # .... # .... # ...M # ...M # ...T # ..T. # ..T. # .... # .... # .... #
-  .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... #
-  ..A. # .A.. # A... # A... # .A.. # A... # A... # .A.. # ..A. # ..A. # .A.. #
+  m..m # m..M # m..M # .... # .... # .... # .... # .... # .... # .... # .... # .... #
+  m..M # m... # m... # m..M # m... # m... # .m.. # .M.. # .M.. # M... # M... # .... #
+  .... # .... # .... # m... # M... # M... # .M.. # .... # .... # .... # .... # .... #
+  .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... #
+  ..A. # ...A # ..A. # ..A. # ...A # ..A. # ..A. # .A.. # ..A. # ..A. # .A.. # A... #
+  1 (p)  1 (p)  2 (p)  1 (p)  1 (p)  2 (p)  1 (p)  1 (p)  2 (p)  1 (p)  1 (p)  2 (p)
 \end{Verbatim}
 
 \subsection{Chase - v0}
@@ -472,7 +491,9 @@ The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $l
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. A=0 AND B=0 AND C>0 AND D>0 -> {A ·, B ↑, C ↑, D ↓}, {A ↑, B ·, C ↓, D ↑}, {A ↑, B ·, C ↓, D ↓}, {A ·, B ·, C ↓, D ↓}, {A ·, B ↑, C ↓, D ↓}
+  1. A=0 AND B=0 AND C>0 AND D>0 -> {A ·, B ↑, C ↑, D ↓}, {A ↑, B ·, C ↓, D ↑},
+                                    {A ↑, B ·, C ↓, D ↓}, {A ·, B ·, C ↓, D ↓},
+                                    {A ·, B ↑, C ↓, D ↓}
 
 \end{Verbatim}
 

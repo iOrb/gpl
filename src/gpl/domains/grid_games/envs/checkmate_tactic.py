@@ -320,16 +320,16 @@ def cool_piece_valid_moves(pos, layout, color, piece):
 #         grid[cell_white_tower] = WHITE_TOWER
 #     return grid
 
+
 def generate_gird(key, params):
     return LAYOUTS[params.game_version][key]
 
+
 def generate_check_in_one(shapes, piece):
     grids = list()
-
     for height, width in shapes:
         grids_tmp = list()
         grid_blank = np.full((height, width), EMPTY, dtype=object)
-
         # checkmate in one grids
         for i in range(width + 1):
             grid_tmp = grid_blank.copy()
