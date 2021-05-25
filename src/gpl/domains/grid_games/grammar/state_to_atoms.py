@@ -25,10 +25,6 @@ def state_to_atoms(domain_name, state, p):
         if getattr(rep, u):
             atoms.append((u,))
 
-    for predicate, _ in p.predicates_arity_1:
-        o = getattr(rep, predicate)[0]
-        atoms.append((u, o))
-
     if p.use_player_as_feature:
         atoms.append(('player-{}'.format(rep.player),))
 

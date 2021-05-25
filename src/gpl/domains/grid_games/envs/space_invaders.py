@@ -11,10 +11,10 @@ BLACK = 2
 
 
 SIMPLIFIED_OBJECT = {
-    EMPTY:' . ',
-    MARTIAN:' M ',
-    TARGET_MARTIAN:' T ',
-    AGENT:' A ',
+    EMPTY:'.',
+    MARTIAN:'M',
+    TARGET_MARTIAN:'T',
+    AGENT:'A',
 }
 
 ALL_TOKENS = [EMPTY, MARTIAN, TARGET_MARTIAN, AGENT]

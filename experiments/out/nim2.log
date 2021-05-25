@@ -1,0 +1,542 @@
+================================================================================
+SLTP v.0.2.0
+================================================================================
+================================================================================
+(pid: 12152) STARTING STEP #1: Train: Explore the state space of the training instances
+================================================================================
+------------------------------------------------
+ DOMAIN PARAMETERS: 
+------------------------------------------------
+------------------------------------------------
+domain_name: nim
+use_player_as_feature: True
+map_cells: True
+use_diagonals_for_map_cells: True
+use_adjacency: {'cell'}
+use_bidirectional: {'cell'}
+sorts_to_use: {'cell'}
+last_player_win: True
+unary_predicates: {}
+predicates_arity_1: {}
+mark_top_token: True
+mark_bottom_token: True
+game_version: 1
+------------------------------------------------
+------------------------------------------------
+(START Episode 0)
+------------------------------------------------
+------------------------------------------------
+(0) Exploration of the training sample:
+------------------------------------------------
+2021-05-25 10:26:39 INFO     Expanding train instance: nim - 0
+# .  .  T #
+# T  T  t #
+# B  B  B #
+
+------------------------------------------------
+(0) Generation of the training sample:
+------------------------------------------------
+2021-05-25 10:26:39 INFO     sample: #states=64, #transition-entries=104, #transitions=104
+2021-05-25 10:26:39 INFO     Entire sample: roots: 1, states: 64, transitions: 104 (140 optimal), goals: 1, alive: 55, deadends: 1
+2021-05-25 10:26:39 INFO     Printing SAT transition matrix with 64 states, 29 states with some outgoing transition, 7 operators, 104 (non-det) transitions, and 105 (adv) transitions,
+------------------------------------------------
+(0) Generate the pool of candidate features:
+------------------------------------------------
+2021-05-25 10:26:39 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 64, transitions: 104 (140 optimal), goals: 1, alive: 55, deadends: 1
+2021-05-25 10:26:39 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/sample.io'
+2021-05-25 10:26:39 INFO     Invoking C++ feature generation module
+2021-05-25 10:26:39 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 8 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --comparison-features --generate-goal-concepts --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+reading '/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/transitions-info.io
+BASIS: #concepts=15, #roles=9
+ROLES: #roles=18
+Generating concepts for k=1. Total concepts: 5 (2, 3, 0, 0, 0, 0, 0, 0, 0)... 0 concepts generated, 3 pruned.
+Generating concepts for k=2. Total concepts: 5 (2, 3, 0, 0, 0, 0, 0, 0, 0)... 19 concepts generated, 32 pruned.
+Generating concepts for k=3. Total concepts: 24 (2, 3, 19, 0, 0, 0, 0, 0, 0)... 39 concepts generated, 130 pruned.
+Generating concepts for k=4. Total concepts: 63 (2, 3, 19, 39, 0, 0, 0, 0, 0)... 121 concepts generated, 576 pruned.
+Generating concepts for k=5. Total concepts: 184 (2, 3, 19, 39, 121, 0, 0, 0, 0)... 448 concepts generated, 1439 pruned.
+Generating concepts for k=6. Total concepts: 632 (2, 3, 19, 39, 121, 448, 0, 0, 0)... 949 concepts generated, 6197 pruned.
+Generating concepts for k=7. Total concepts: 1581 (2, 3, 19, 39, 121, 448, 949, 0, 0)... 3551 concepts generated, 18425 pruned.
+Generating concepts for k=8. Total concepts: 5132 (2, 3, 19, 39, 121, 448, 949, 3551, 0)... 8524 concepts generated, 56328 pruned.
+Total concepts: 13656 (2, 3, 19, 39, 121, 448, 949, 3551, 8524)... 
+A total of 83130 concepts were pruned
+A total of 0 features were marked as goal-identifying
+Generating cardinality features...
+Generating comparison features...
+warning: Feature 5.LessThan{Num[cell-has-bottom_token]}{Num[Exists(adjacent_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 7.Bool[And(cell-has-bottom_token,Not(Exists(Star(left_cell),cell-has-bottom_token)))]
+warning: Feature 6.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Star(adjacent_cell),cell-has-bottom_token)]} has been pruned in favor of more complex 7.Bool[And(cell-has-bottom_token,Not(Exists(Star(left_cell),cell-has-bottom_token)))]
+warning: Feature 6.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Star(adjacent_cell),cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 6.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Star(down_cell),cell-has-bottom_token)]} has been pruned in favor of more complex 7.Bool[And(cell-has-bottom_token,Not(Exists(Star(left_cell),cell-has-bottom_token)))]
+warning: Feature 6.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Star(left_cell),cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(rightdown_cell,cell-has-bottom_token))))]
+warning: Feature 6.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Star(left_cell),cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Forall(right_cell,cell-has-bottom_token))))]
+warning: Feature 6.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Star(leftdown_cell),cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(right_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[cell-has-bottom_token]}{Num[Not(Exists(Star(adjacent_cell),cell-has-bottom_token))]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftdown_cell,Exists(adjacent_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[cell-has-bottom_token]}{Num[Not(Exists(Star(adjacent_cell),cell-has-top_token))]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftup_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[cell-has-bottom_token]}{Num[Forall(adjacent_cell,Exists(adjacent_cell,cell-has-bottom_token))]} has been pruned in favor of more complex 8.Bool[And(Not(cell-has-bottom_token),Forall(adjacent_cell,Exists(adjacent_cell,cell-has-bottom_token)))]
+warning: Feature 7.LessThan{Num[cell-has-bottom_token]}{Num[Forall(adjacent_cell,Forall(leftdown_cell,cell-has-bottom_token))]} has been pruned in favor of more complex 8.Bool[And(Not(cell-has-bottom_token),Forall(adjacent_cell,Forall(leftdown_cell,cell-has-bottom_token)))]
+warning: Feature 7.LessThan{Num[cell-has-bottom_token]}{Num[Forall(adjacent_cell,Forall(rightdown_cell,cell-has-bottom_token))]} has been pruned in favor of more complex 8.Bool[And(Not(cell-has-bottom_token),Forall(adjacent_cell,Forall(rightdown_cell,cell-has-bottom_token)))]
+warning: Feature 7.LessThan{Num[cell-has-bottom_token]}{Num[Exists(leftdown_cell,Exists(adjacent_cell,cell-has-token))]} has been pruned in favor of more complex 8.Bool[And(cell-has-token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Inverse(Star(left_cell)),cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(leftdown_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Inverse(Star(leftdown_cell)),cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Inverse(Star(leftup_cell)),cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))))]
+warning: Feature 5.LessThan{Num[cell-has-top_token]}{Num[Exists(adjacent_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 7.Bool[And(cell-has-bottom_token,Not(Exists(Star(left_cell),cell-has-bottom_token)))]
+warning: Feature 5.LessThan{Num[cell-has-top_token]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 6.LessThan{Num[cell-has-top_token]}{Num[Exists(Star(adjacent_cell),cell-has-bottom_token)]} has been pruned in favor of more complex 7.Bool[And(cell-has-bottom_token,Not(Exists(Star(left_cell),cell-has-bottom_token)))]
+warning: Feature 6.LessThan{Num[cell-has-top_token]}{Num[Exists(Star(adjacent_cell),cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 6.LessThan{Num[cell-has-top_token]}{Num[Exists(Star(down_cell),cell-has-bottom_token)]} has been pruned in favor of more complex 7.Bool[And(cell-has-bottom_token,Not(Exists(Star(left_cell),cell-has-bottom_token)))]
+warning: Feature 6.LessThan{Num[cell-has-top_token]}{Num[Exists(Star(left_cell),cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Exists(rightup_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Not(Exists(Star(adjacent_cell),cell-has-bottom_token))]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftdown_cell,Exists(adjacent_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Not(Exists(Star(adjacent_cell),cell-has-top_token))]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftup_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Forall(adjacent_cell,Exists(adjacent_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,And(Exists(leftup_cell,<universe>),Exists(adjacent_cell,cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Exists(adjacent_cell,Exists(down_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Exists(up_cell,<universe>)))]}
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Exists(adjacent_cell,Exists(up_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Exists(down_cell,Exists(adjacent_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Exists(left_cell,Exists(adjacent_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Exists(leftdown_cell,Exists(adjacent_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Exists(up_cell,<universe>)))]}
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Exists(leftup_cell,Exists(adjacent_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Exists(right_cell,Exists(adjacent_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Exists(rightdown_cell,Exists(adjacent_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Exists(rightup_cell,Exists(adjacent_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Exists(up_cell,Exists(adjacent_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[cell-has-top_token]}{Num[Exists(Inverse(Star(left_cell)),cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Exists(leftdown_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(Exists(down_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-top_token]}{Num[Not(And(Not(cell-has-bottom_token),Not(cell-has-token)))]}
+warning: Feature 7.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Exists(Star(adjacent_cell),cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Not(cell-has-token)]}{Num[Not(Exists(left_cell,cell-has-bottom_token))]} has been pruned in favor of more complex 8.Bool[And(cell-has-token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))))]
+warning: Feature 5.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(cell-has-token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Exists(up_cell,<universe>)))]}
+warning: Feature 6.LessThan{Num[Not(cell-has-top_token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,And(Exists(rightdown_cell,<universe>),Exists(adjacent_cell,cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(Exists(rightdown_cell,cell-has-top_token))]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-top_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Forall(leftup_cell,<empty>)))]}
+warning: Feature 7.LessThan{Num[Not(cell-has-top_token)]}{Num[Exists(Star(adjacent_cell),cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Not(cell-has-top_token)]}{Num[Exists(Star(adjacent_cell),cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-bottom_token)]}{Num[Forall(down_cell,cell-has-token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[And(Forall(down_cell,<empty>),Forall(rightup_cell,cell-has-token))]}
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-bottom_token)]}{Num[Forall(left_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[And(Forall(left_cell,<empty>),Forall(down_cell,cell-has-top_token))]}
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-bottom_token)]}{Num[Forall(leftdown_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(down_cell,Forall(Star(left_cell),cell-has-bottom_token))]}
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-bottom_token)]}{Num[Forall(right_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[And(Forall(right_cell,<empty>),Forall(up_cell,cell-has-top_token))]}
+warning: Feature 5.LessThan{Num[Exists(adjacent_cell,cell-has-token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 7.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(Exists(adjacent_cell,cell-has-token))]}
+warning: Feature 5.LessThan{Num[Exists(adjacent_cell,cell-has-token)]}{Num[cell-has-top_token]} has been pruned in favor of more complex 7.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(Exists(adjacent_cell,cell-has-token))]}
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Exists(up_cell,<universe>)))]}
+warning: Feature 5.LessThan{Num[Exists(adjacent_cell,cell-has-top_token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 7.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(Exists(adjacent_cell,cell-has-top_token))]}
+warning: Feature 6.LessThan{Num[Exists(adjacent_cell,cell-has-top_token)]}{Num[Not(cell-has-token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Not(Forall(adjacent_cell,Exists(adjacent_cell,cell-has-top_token)))]}
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-top_token)]}{Num[Forall(down_cell,cell-has-token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftdown_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-top_token)]}{Num[Forall(down_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftup_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-top_token)]}{Num[Forall(left_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftup_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-top_token)]}{Num[Forall(leftdown_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-top_token]}{Num[Not(Forall(right_cell,Exists(adjacent_cell,cell-has-top_token)))]}
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-top_token)]}{Num[Forall(right_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftdown_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-top_token)]}{Num[Forall(right_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftdown_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-top_token)]}{Num[Forall(rightdown_cell,cell-has-token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftdown_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,cell-has-top_token)]}{Num[Forall(up_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftdown_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Forall(down_cell,cell-has-bottom_token)]}{Num[Exists(adjacent_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[And(Forall(down_cell,<empty>),Exists(adjacent_cell,cell-has-bottom_token))]}
+warning: Feature 7.LessThan{Num[Forall(down_cell,cell-has-bottom_token)]}{Num[Exists(adjacent_cell,cell-has-token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Forall(down_cell,cell-has-token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Exists(up_cell,<universe>)))]}
+warning: Feature 7.LessThan{Num[Forall(down_cell,cell-has-token)]}{Num[Forall(up_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Exists(up_cell,<universe>)))]}
+warning: Feature 5.LessThan{Num[Exists(down_cell,cell-has-top_token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-top_token]}{Num[Not(And(Not(cell-has-bottom_token),Not(cell-has-token)))]}
+warning: Feature 7.LessThan{Num[Exists(down_cell,cell-has-top_token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Exists(down_cell,cell-has-top_token)]}{Num[Exists(right_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Forall(down_cell,cell-has-top_token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Exists(up_cell,<universe>)))]}
+warning: Feature 7.LessThan{Num[Forall(down_cell,cell-has-top_token)]}{Num[Forall(down_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-top_token]}{Num[Not(And(Not(cell-has-bottom_token),Not(cell-has-token)))]}
+warning: Feature 7.LessThan{Num[Forall(down_cell,cell-has-top_token)]}{Num[Forall(right_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Forall(down_cell,cell-has-top_token)]}{Num[Forall(rightdown_cell,cell-has-token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-top_token]}{Num[Exists(Star(down_cell),Forall(rightup_cell,cell-has-token))]}
+warning: Feature 5.LessThan{Num[Exists(left_cell,cell-has-bottom_token)]}{Num[cell-has-top_token]} has been pruned in favor of more complex 7.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(Exists(left_cell,cell-has-bottom_token))]}
+warning: Feature 7.LessThan{Num[Exists(left_cell,cell-has-bottom_token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Exists(left_cell,cell-has-bottom_token)]}{Num[Exists(right_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Exists(left_cell,cell-has-bottom_token)]}{Num[Exists(right_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(Exists(Star(leftdown_cell),cell-has-bottom_token))]}
+warning: Feature 7.LessThan{Num[Forall(left_cell,cell-has-bottom_token)]}{Num[Forall(down_cell,cell-has-token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Forall(left_cell,cell-has-bottom_token)]}{Num[Forall(right_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Forall(left_cell,cell-has-bottom_token)]}{Num[Forall(right_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(Exists(Star(leftdown_cell),cell-has-bottom_token))]}
+warning: Feature 5.LessThan{Num[Exists(left_cell,cell-has-top_token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 7.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(Exists(left_cell,cell-has-top_token))]}
+warning: Feature 7.LessThan{Num[Exists(left_cell,cell-has-top_token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Exists(left_cell,cell-has-top_token)]}{Num[Exists(rightdown_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Forall(leftup_cell,Forall(leftdown_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Forall(left_cell,cell-has-top_token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Exists(up_cell,<universe>)))]}
+warning: Feature 7.LessThan{Num[Forall(leftdown_cell,cell-has-bottom_token)]}{Num[Forall(rightdown_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Forall(leftdown_cell,cell-has-bottom_token)]}{Num[Forall(rightdown_cell,cell-has-token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Forall(leftdown_cell,cell-has-bottom_token)]}{Num[Forall(rightup_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(Exists(Star(leftdown_cell),cell-has-bottom_token))]}
+warning: Feature 7.LessThan{Num[Forall(leftdown_cell,cell-has-top_token)]}{Num[Forall(rightdown_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Forall(leftup_cell,Forall(leftdown_cell,cell-has-top_token))))]
+warning: Feature 5.LessThan{Num[Exists(right_cell,cell-has-bottom_token)]}{Num[cell-has-top_token]} has been pruned in favor of more complex 7.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(Exists(right_cell,cell-has-bottom_token))]}
+warning: Feature 7.LessThan{Num[Exists(right_cell,cell-has-bottom_token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Exists(right_cell,cell-has-bottom_token)]}{Num[Exists(left_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(right_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Exists(right_cell,cell-has-bottom_token)]}{Num[Exists(left_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Star(leftdown_cell),Exists(up_cell,cell-has-top_token))]}
+warning: Feature 7.LessThan{Num[Forall(right_cell,cell-has-bottom_token)]}{Num[Forall(left_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(right_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Forall(right_cell,cell-has-bottom_token)]}{Num[Forall(left_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Star(leftdown_cell),Exists(up_cell,cell-has-top_token))]}
+warning: Feature 5.LessThan{Num[Exists(right_cell,cell-has-top_token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 7.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(Exists(right_cell,cell-has-top_token))]}
+warning: Feature 7.LessThan{Num[Exists(right_cell,cell-has-top_token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Exists(right_cell,cell-has-top_token)]}{Num[Exists(down_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Forall(right_cell,cell-has-token))))]
+warning: Feature 7.LessThan{Num[Exists(right_cell,cell-has-top_token)]}{Num[Exists(left_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Exists(right_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Forall(right_cell,cell-has-top_token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Exists(up_cell,<universe>)))]}
+warning: Feature 7.LessThan{Num[Forall(right_cell,cell-has-top_token)]}{Num[Forall(down_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Forall(right_cell,cell-has-token))))]
+warning: Feature 7.LessThan{Num[Forall(right_cell,cell-has-top_token)]}{Num[Forall(left_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Exists(right_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Forall(right_cell,cell-has-top_token)]}{Num[Forall(rightdown_cell,cell-has-token)]} has been pruned in favor of more complex 8.LessThan{Num[Exists(down_cell,cell-has-top_token)]}{Num[Not(Forall(rightdown_cell,cell-has-top_token))]}
+warning: Feature 7.LessThan{Num[Forall(rightdown_cell,cell-has-bottom_token)]}{Num[Forall(leftdown_cell,cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(right_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Forall(rightdown_cell,cell-has-bottom_token)]}{Num[Forall(leftdown_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Star(leftdown_cell),Exists(up_cell,cell-has-top_token))]}
+warning: Feature 5.LessThan{Num[Exists(rightdown_cell,cell-has-top_token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 7.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(Exists(rightdown_cell,cell-has-top_token))]}
+warning: Feature 5.LessThan{Num[Exists(rightdown_cell,cell-has-top_token)]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-top_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Forall(leftup_cell,<empty>)))]}
+warning: Feature 7.LessThan{Num[Exists(rightdown_cell,cell-has-top_token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Exists(rightdown_cell,cell-has-top_token)]}{Num[Exists(left_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Forall(right_cell,Forall(right_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Forall(rightdown_cell,cell-has-top_token)]}{Num[Forall(leftdown_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Forall(right_cell,Forall(right_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Forall(rightup_cell,cell-has-top_token)]}{Num[Forall(leftdown_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Exists(right_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Forall(up_cell,cell-has-top_token)]}{Num[Exists(adjacent_cell,cell-has-top_token)]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(adjacent_cell,And(cell-has-top_token,Exists(up_cell,<universe>)))]}
+warning: Feature 6.LessThan{Num[Not(Exists(adjacent_cell,cell-has-top_token))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,And(Exists(rightdown_cell,<universe>),Exists(adjacent_cell,cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Not(Exists(adjacent_cell,cell-has-top_token))]}{Num[Not(cell-has-token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Not(Exists(adjacent_cell,cell-has-top_token))]}{Num[Not(cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Exists(Star(adjacent_cell),cell-has-bottom_token)]}{Num[Not(cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftdown_cell,Exists(adjacent_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Exists(Star(adjacent_cell),cell-has-bottom_token)]}{Num[Not(cell-has-token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftdown_cell,Exists(adjacent_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Exists(Star(adjacent_cell),cell-has-bottom_token)]}{Num[Not(cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftdown_cell,Exists(adjacent_cell,cell-has-bottom_token))))]
+warning: Feature 6.LessThan{Num[Exists(Star(adjacent_cell),cell-has-token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 7.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(Exists(adjacent_cell,cell-has-token))]}
+warning: Feature 6.LessThan{Num[Exists(Star(adjacent_cell),cell-has-token)]}{Num[cell-has-top_token]} has been pruned in favor of more complex 7.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(Exists(adjacent_cell,cell-has-token))]}
+warning: Feature 6.LessThan{Num[Exists(Star(adjacent_cell),cell-has-top_token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 7.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(Exists(adjacent_cell,cell-has-top_token))]}
+warning: Feature 7.LessThan{Num[Exists(Star(adjacent_cell),cell-has-top_token)]}{Num[Not(cell-has-bottom_token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftup_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Exists(Star(adjacent_cell),cell-has-top_token)]}{Num[Not(cell-has-token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftup_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Exists(Star(adjacent_cell),cell-has-top_token)]}{Num[Not(cell-has-top_token)]} has been pruned in favor of more complex 8.Bool[Not(Exists(adjacent_cell,Forall(leftup_cell,Exists(adjacent_cell,cell-has-top_token))))]
+warning: Feature 6.LessThan{Num[Exists(Star(left_cell),cell-has-bottom_token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(Exists(Star(left_cell),cell-has-bottom_token))]}
+warning: Feature 6.LessThan{Num[Exists(Star(left_cell),cell-has-bottom_token)]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(Exists(Star(left_cell),cell-has-bottom_token))]}
+warning: Feature 6.LessThan{Num[Exists(Star(left_cell),cell-has-top_token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(Exists(Star(left_cell),cell-has-top_token))]}
+warning: Feature 6.LessThan{Num[Exists(Star(left_cell),cell-has-top_token)]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(Exists(Star(left_cell),cell-has-top_token))]}
+warning: Feature 6.LessThan{Num[Exists(Star(leftdown_cell),cell-has-bottom_token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))))]
+warning: Feature 6.LessThan{Num[Exists(Star(leftdown_cell),cell-has-bottom_token)]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-top_token)]}{Num[Not(Exists(Star(leftdown_cell),cell-has-bottom_token))]}
+warning: Feature 6.LessThan{Num[And(cell-has-top_token,Forall(leftup_cell,<empty>))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(And(cell-has-top_token,Forall(leftup_cell,<empty>)))]}
+warning: Feature 6.LessThan{Num[And(cell-has-top_token,Forall(leftup_cell,<empty>))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 7.Bool[Exists(rightdown_cell,Exists(rightdown_cell,Exists(adjacent_cell,cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Not(Exists(Star(adjacent_cell),cell-has-bottom_token))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Not(Exists(Star(adjacent_cell),cell-has-top_token))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Not(Exists(Star(adjacent_cell),cell-has-top_token))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,Exists(left_cell,cell-has-bottom_token))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(leftdown_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,Exists(leftdown_cell,cell-has-bottom_token))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(leftdown_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,Exists(right_cell,cell-has-bottom_token))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(rightdown_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,Exists(right_cell,cell-has-bottom_token))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Forall(right_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,Exists(right_cell,cell-has-top_token))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Exists(rightup_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,Exists(rightdown_cell,cell-has-bottom_token))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(rightdown_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,Exists(rightdown_cell,cell-has-bottom_token))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Forall(right_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Exists(adjacent_cell,Exists(rightup_cell,cell-has-top_token))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.Bool[And(cell-has-top_token,Not(Exists(adjacent_cell,Exists(rightup_cell,cell-has-top_token))))]
+warning: Feature 7.LessThan{Num[Exists(leftdown_cell,Exists(adjacent_cell,cell-has-token))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Exists(adjacent_cell,cell-has-token)]}{Num[Exists(Star(down_cell),cell-has-bottom_token)]}
+warning: Feature 7.LessThan{Num[Exists(leftdown_cell,Forall(left_cell,cell-has-top_token))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Forall(Star(leftdown_cell),cell-has-top_token)]}{Num[Forall(down_cell,cell-has-bottom_token)]}
+warning: Feature 7.LessThan{Num[Exists(Inverse(Star(down_cell)),cell-has-top_token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-top_token]}{Num[And(cell-has-bottom_token,Not(Exists(up_cell,cell-has-token)))]}
+warning: Feature 7.LessThan{Num[Exists(Inverse(Star(leftdown_cell)),cell-has-top_token)]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.LessThan{Num[Forall(down_cell,cell-has-token)]}{Num[Forall(Star(left_cell),cell-has-top_token)]}
+warning: Feature 7.LessThan{Num[Exists(Inverse(Star(leftup_cell)),cell-has-bottom_token)]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.Bool[And(cell-has-bottom_token,Not(Exists(adjacent_cell,Exists(right_cell,cell-has-bottom_token))))]
+warning: Feature 7.LessThan{Num[Exists(Inverse(Star(leftup_cell)),cell-has-bottom_token)]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.LessThan{Num[cell-has-bottom_token]}{Num[Exists(Star(leftdown_cell),Exists(up_cell,cell-has-top_token))]}
+warning: Feature 7.LessThan{Num[And(cell-has-bottom_token,Forall(rightup_cell,cell-has-token))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(Exists(Star(left_cell),cell-has-bottom_token))]}{Num[Not(cell-has-token)]}
+warning: Feature 7.LessThan{Num[And(cell-has-top_token,Exists(adjacent_cell,cell-has-top_token))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.LessThan{Num[Exists(adjacent_cell,cell-has-top_token)]}{Num[Exists(Star(adjacent_cell),cell-has-top_token)]}
+warning: Feature 7.LessThan{Num[And(cell-has-top_token,Exists(left_cell,cell-has-top_token))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.Bool[Forall(adjacent_cell,Exists(leftdown_cell,Exists(Star(adjacent_cell),cell-has-top_token)))]
+warning: Feature 7.LessThan{Num[And(cell-has-top_token,Forall(leftdown_cell,cell-has-top_token))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Not(And(cell-has-top_token,Forall(left_cell,<empty>)))]}
+warning: Feature 7.LessThan{Num[And(cell-has-top_token,Forall(right_cell,cell-has-token))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(Exists(Star(left_cell),cell-has-top_token))]}{Num[Not(cell-has-token)]}
+warning: Feature 7.LessThan{Num[And(Not(cell-has-bottom_token),Forall(down_cell,<empty>))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Forall(down_cell,Forall(down_cell,cell-has-bottom_token))]}
+warning: Feature 7.LessThan{Num[And(Not(cell-has-bottom_token),Forall(down_cell,<empty>))]}{Num[cell-has-top_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-top_token)]}{Num[Forall(down_cell,Forall(down_cell,cell-has-bottom_token))]}
+warning: Feature 7.LessThan{Num[And(Not(cell-has-token),Forall(right_cell,<empty>))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.Bool[And(cell-has-token,Exists(down_cell,Forall(Star(left_cell),cell-has-bottom_token)))]
+warning: Feature 7.LessThan{Num[And(Not(cell-has-top_token),Forall(left_cell,<empty>))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Forall(left_cell,Forall(left_cell,cell-has-top_token))]}
+warning: Feature 7.LessThan{Num[And(Not(cell-has-top_token),Forall(right_cell,<empty>))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Forall(right_cell,Forall(right_cell,cell-has-top_token))]}
+Generating distance features...
+FEATURES: #features=5290, #nullary=2, #boolean=137, #numerical=4450, #distance=0, #conditional=0, #comparison=701
+Printing concept, role and feature denotations to /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/*-denotations.io.txt
+Serializing all concepts and features to:
+	/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/serialized-concepts.io
+	/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/serialized-features.io
+2021-05-25 10:27:09 INFO     Reading feature denotation matrix from /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/feature-matrix.io
+------------------------------------------------
+(0) C++ CNF generation module:
+------------------------------------------------
+2021-05-25 10:27:09 INFO     Calling C++ MaxSAT module
+2021-05-25 10:27:09 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cnfgen --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2 --v_slack 2 --distinguish-goals --initial-sample-size 50 --refinement-batch-size 10 --seed 0 --verbosity 2 --acyclicity topological --encodings_dir  --sampling_strategy full --optimal_steps 3 --consistency_bound 2 --n_features 2 --closed --maxsat_iter 3 --allow_bad_states" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+Parsing training data... 
+reading '/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/transitions-info.io
+TransitionSample::read_dump: #states=64, #transitions=104, #transitions (adv)=105
+reading '/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/feature-matrix.io
+FeatureMatrix::read_dump: #states=64, #features=5290
+Done. Training sample: [states: 64, transitions: 104 (from alive state: 98), unsolvable: 8, goals: 1, unknowns: 0, features: 5290, est. size: 0.65 MB.]
+Sampling 50 alive states at random
+
+
+###  STARTING ITERATION 1  ###
+Sample [sz=64]: 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 
+
+Number of transitions/equivalence classes: 104/104
+Number of necessarily bad transitions/classes: 21/21
+Generating CNF encoding for 55 alive states, 104 alive-to-solvable and alive-to-dead transitions and 104 transition equivalence classes
+A total of 5865 variables were created
+	Select(f): 5290
+	Good(s, a, s'): 104
+	Bad(s): 31
+	V(s, d): 440
+Posting distinguishability constraints
+A total of 11100 clauses were created
+	Policy completeness [1]: 0
+	Transition separation [5,6]: 3432
+	V descending along good transitions [X]: 595
+	V is total function within bounds [X]: 1595
+	Goal separation [X]: 55
+	(Weighted) Select(f): 5290
+Writing final DIMACS file...
+CNF [5865 vars, 11100 clauses] generated in 7.99 sec.
+Calling: open-wbo_static /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/theory.wsat > /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/maxsat_solver_run.log
+Call returned with exit code 7680
+Solution with cost 20 found in 349.18sec.
+
+Good(0, 0, 1) Good(2, 4, 35) Good(4, 6, 27) Good(9, 6, 56) Good(3, 5, 44) Good(13, 2, 56) Good(31, 3, 57) Good(29, 4, 60) Good(21, 1, 57) Good(26, 4, 63) 
+Good(30, 3, 60) Good(15, 4, 60) Good(47, 6, 63) Good(36, 6, 63) Good(18, 1, 56) Good(12, 3, 57) Good(0, 6, 27) Good(43, 5, 63) Good(24, 5, 63) Good(0, 4, 22) 
+Good(38, 4, 63) Good(23, 6, 63) Good(20, 2, 60) Good(17, 0, 44) Good(16, 3, 60) Good(11, 0, 35) Good(29, 6, 56) 
+Good(0, 0, 1) Good(2, 4, 35) Good(4, 6, 27) Good(9, 6, 56) Good(3, 5, 44) Good(13, 2, 56) Good(31, 3, 57) Good(29, 4, 60) Good(21, 1, 57) Good(26, 4, 63) 
+Good(30, 3, 60) Good(15, 4, 60) Good(47, 6, 63) Good(36, 6, 63) Good(18, 1, 56) Good(12, 3, 57) Good(0, 6, 27) Good(43, 5, 63) Good(24, 5, 63) Good(0, 4, 22) 
+Good(38, 4, 63) Good(23, 6, 63) Good(20, 2, 60) Good(17, 0, 44) Good(16, 3, 60) Good(11, 0, 35) Good(29, 6, 56) Bad(32) Bad(7) Bad(41) Bad(34) Bad(5) Bad(10) Bad(6) 
+Num Good(s, a, s') selected: 27 (25.96%)
+Num Bad(s) selected: 7 (22.58%)
+Num selected features: 3 (0.06%)
+Features: 
+	0: Num[Exists(adjacent_cell,cell-has-bottom_token)] [k=3]
+	1: LessThan{Num[cell-has-top_token]}{Num[cell-has-bottom_token]} [k=3]
+	2: LessThan{Num[cell-has-top_token]}{Num[And(Not(cell-has-bottom_token),Forall(down_cell,<empty>))]} [k=7]
+Solution found in iteration #1 is correct!
+DNF transition-classifier saved in /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/classifier.txt
+Total times: Theory generation: 7.99, Solver: 349.18, TOTAL: 357.43
+------------------------------------------------
+(END Episode 0)
+------------------------------------------------
+================================================================================
+END OF STEP #1: Train: Explore the state space of the training instances. 386.69 CPU sec - 463.46 MB
+================================================================================
+================================================================================
+(pid: 12751) STARTING STEP #2: Testing of the D2L policy
+================================================================================
+
+POLICY:
+Features (#: 3; total k: 3; max k = 3):
+  (A) Num[Exists(adjacent_cell,cell-has-bottom_token)] [k=3]
+  (B) LessThan{Num[cell-has-top_token]}{Num[cell-has-bottom_token]} [k=0]
+  (C) LessThan{Num[cell-has-top_token]}{Num[And(Not(cell-has-bottom_token),Forall(down_cell,<empty>))]} [k=0]
+Invariants: A>0
+Policy:
+  1. C=0 AND B>0 AND A>0 -> {A ·, B ·, C ↑}, {A ·, B ↓, C ·}
+  2. C>0 AND B=0 AND A>0 -> {A ↓, B ·, C ·}
+  3. C=0 AND B=0 AND A>0 -> {A ·, B ·, C ·}
+  4. C>0 AND B>0 AND A>0 -> {A ↓, B ↓, C ·}
+  5. B>0 AND A>0 -> {A ↓, B ↓, C ·}
+
+2021-05-25 10:33:07 INFO     Testing policy in instance: nim - 0
+ .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ T  T  t  #  T  T  T  #  T  T  .  #  T  T  .  #  .  T  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  .  B  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       
+
+2021-05-25 10:33:07 INFO     Goal found after expanding 3 nodes
+2021-05-25 10:33:07 INFO     The solution was: ['0.2', '2.2', '2.1']
+2021-05-25 10:33:07 INFO     Testing policy in instance: nim - 1
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  t  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ T  T  t  #  T  T  t  #  T  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  T  t  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  T  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  T  .  #  t  T  .  #  t  .  .  #  T  .  .  #  T  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  T  #  t  t  T  #  t  t  T  #  t  t  T  #  t  .  T  #  t  .  T  #  t  .  .  #  t  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  .  t  #  t  .  t  #  t  .  .  #  t  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  T  t  #  t  T  t  #  t  T  .  #  t  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  T  t  .  #  T  T  .  #  .  T  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  .  t  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  B  .  #  .  B  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       10 (n)      11 (n)      12 (n)      13 (n)      
+
+2021-05-25 10:33:07 INFO     Goal found after expanding 7 nodes
+2021-05-25 10:33:07 INFO     The solution was: ['8.2', '10.0', '11.0', '12.0', '19.2', '16.1', '19.1']
+2021-05-25 10:33:07 INFO     Testing policy in instance: nim - 2
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  t  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  t  #  .  .  t  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ T  T  t  #  T  T  t  #  T  T  .  #  T  T  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  t  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  t  .  .  #  t  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  t  .  .  #  t  .  .  #  t  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  t  .  .  #  t  .  .  #  t  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  T  .  #  t  T  .  #  t  T  .  #  t  T  .  #  t  T  .  #  T  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  .  t  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  .  t  .  #  .  t  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  .  t  .  #  .  t  .  #  .  t  .  #  .  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  T  t  .  #  T  t  .  #  T  t  .  #  T  t  .  #  .  t  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  .  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       10 (n)      11 (n)      12 (n)      13 (n)      14 (n)      15 (n)      16 (n)      17 (n)      
+
+2021-05-25 10:33:08 INFO     Goal found after expanding 9 nodes
+2021-05-25 10:33:08 INFO     The solution was: ['5.2', '19.2', '8.0', '10.0', '13.0', '14.1', '16.1', '18.1', '19.0']
+2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 3
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  t  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ T  T  t  #  T  T  t  #  .  T  t  #  .  T  T  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  T  t  t  #  T  t  t  #  T  t  T  #  T  T  T  #  T  T  .  #  .  T  .  #  .  .  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  .  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
+
+2021-05-25 10:33:08 INFO     Goal found after expanding 5 nodes
+2021-05-25 10:33:08 INFO     The solution was: ['15.2', '16.2', '17.1', '18.0', '19.0']
+2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 4
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ T  T  t  #  T  T  T  #  T  T  .  #  T  T  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  T  .  #  T  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  .  t  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  .  B  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
+
+2021-05-25 10:33:08 INFO     Goal found after expanding 5 nodes
+2021-05-25 10:33:08 INFO     The solution was: ['15.2', '19.2', '16.0', '18.1', '19.1']
+2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 5
+ T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  .  .  #  T  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  T  T  #  t  T  T  #  t  .  T  #  T  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  T  t  #  t  T  t  #  .  T  t  #  .  T  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  .  t  t  #  .  t  t  #  .  T  t  #  .  T  T  #  .  .  T  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  .  B  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
+
+2021-05-25 10:33:08 INFO     Goal found after expanding 5 nodes
+2021-05-25 10:33:08 INFO     The solution was: ['0.0', '1.0', '2.2', '3.2', '5.2']
+2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 6
+ T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  .  .  #  T  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  T  T  #  t  T  T  #  t  T  .  #  T  T  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  T  #  t  t  T  #  t  .  T  #  T  .  T  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  T  t  #  t  T  t  #  .  T  t  #  .  T  t  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  .  B  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       10 (n)      11 (n)      
+
+2021-05-25 10:33:08 INFO     Goal found after expanding 6 nodes
+2021-05-25 10:33:08 INFO     The solution was: ['0.0', '1.0', '2.0', '5.0', '4.1', '5.2']
+2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 7
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ T  T  T  #  .  T  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  T  t  t  #  T  .  t  #  T  .  T  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  T  t  #  t  T  t  #  t  T  .  #  T  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  .  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
+
+2021-05-25 10:33:08 INFO     Goal found after expanding 5 nodes
+2021-05-25 10:33:08 INFO     The solution was: ['2.0', '2.2', '3.0', '4.1', '5.0']
+2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 8
+ .  T  T  #  .  .  T  #  .  .  T  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  t  t  #  .  T  t  #  .  T  t  #  .  T  t  #  .  .  t  #  .  .  T  #  .  .  .  #  .  .  .  # 
+ T  t  t  #  T  t  t  #  .  t  t  #  .  t  t  #  .  T  t  #  .  T  t  #  .  T  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  B  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       
+
+2021-05-25 10:33:08 INFO     Goal found after expanding 4 nodes
+2021-05-25 10:33:08 INFO     The solution was: ['0.1', '3.0', '0.2', '3.1']
+2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 9
+ T  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  .  t  #  T  .  t  #  T  .  T  #  .  .  T  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  T  t  #  t  T  t  #  t  T  t  #  T  T  t  #  .  T  t  #  .  T  t  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  B  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
+
+2021-05-25 10:33:08 INFO     Goal found after expanding 5 nodes
+2021-05-25 10:33:08 INFO     The solution was: ['0.0', '1.0', '3.0', '2.1', '3.1']
+2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 10
+ T  T  .  #  .  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  .  #  T  t  .  #  .  t  .  #  .  T  .  #  .  T  .  #  .  .  .  # 
+ t  t  T  #  t  t  T  #  .  t  T  #  .  t  T  #  .  t  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       
+
+2021-05-25 10:33:08 INFO     Goal found after expanding 3 nodes
+2021-05-25 10:33:08 INFO     The solution was: ['0.0', '0.1', '3.1']
+2021-05-25 10:33:09 INFO     Testing policy in instance: nim - 11
+ .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  .  t  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ T  T  t  #  T  T  t  #  T  .  t  #  T  .  T  #  T  .  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  .  B  #  B  .  B  #  B  .  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       
+
+2021-05-25 10:33:09 INFO     Goal found after expanding 3 nodes
+2021-05-25 10:33:09 INFO     The solution was: ['0.2', '1.2', '3.0']
+2021-05-25 10:33:09 INFO     Testing policy in instance: nim - 12
+ .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ .  t  .  #  .  T  .  #  .  T  .  #  .  T  .  #  .  T  .  #  .  .  .  # 
+ T  t  T  #  T  t  T  #  T  t  .  #  T  t  .  #  .  t  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  .  B  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       
+
+2021-05-25 10:33:09 INFO     Goal found after expanding 3 nodes
+2021-05-25 10:33:09 INFO     The solution was: ['0.1', '3.2', '3.1']
+2021-05-25 10:33:09 INFO     Testing policy in instance: nim - 13
+ T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  .  .  #  T  .  .  #  T  .  .  #  T  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  T  T  #  t  T  T  #  t  T  .  #  t  T  .  #  t  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  B  .  #  .  B  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       
+
+2021-05-25 10:33:09 INFO     Goal found after expanding 4 nodes
+2021-05-25 10:33:09 INFO     The solution was: ['0.0', '3.2', '2.0', '3.1']
+2021-05-25 10:33:09 INFO     Testing policy in instance: nim - 14
+ T  T  T  #  .  T  T  #  .  T  T  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  T  t  t  #  .  t  t  #  .  T  t  #  .  T  t  #  .  T  T  #  .  T  T  #  .  T  T  #  .  .  T  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  T  t  t  #  T  t  t  #  .  t  t  #  .  t  t  #  .  t  t  #  .  t  t  #  .  .  t  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  T  t  t  #  T  t  t  #  .  t  t  #  .  t  t  #  .  .  t  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  .  B  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
+
+2021-05-25 10:33:09 INFO     Goal found after expanding 5 nodes
+2021-05-25 10:33:09 INFO     The solution was: ['0.0', '0.1', '0.2', '4.0', '4.2']
+2021-05-25 10:33:09 INFO     Testing policy in instance: nim - 15
+ T  T  T  #  .  T  T  #  .  T  T  #  .  T  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  T  t  t  #  .  t  t  #  .  t  t  #  .  .  t  #  .  .  T  #  .  .  .  #  .  .  .  # 
+ t  t  t  #  t  t  t  #  .  t  t  #  .  t  t  #  .  T  t  #  .  T  t  #  .  T  .  #  .  .  .  # 
+ B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  B  .  #  .  .  .  # 
+1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
+0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       
+
+2021-05-25 10:33:09 INFO     Goal found after expanding 4 nodes
+2021-05-25 10:33:09 INFO     The solution was: ['0.0', '3.0', '0.2', '3.1']
+2021-05-25 10:33:09 INFO     Learnt policy solves the 100.0% of test instances: 16/16
+2021-05-25 10:33:09 INFO     Solved instances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+2021-05-25 10:33:09 INFO     Unsolved instances: []
+================================================================================
+END OF STEP #2: Testing of the D2L policy. 1.76 CPU sec - 463.46 MB
+================================================================================

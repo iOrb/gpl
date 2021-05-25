@@ -279,7 +279,7 @@ equivalence relations, all those other transitions in whose equivalence class th
 
 \subsection{Space Invaders - v0}
 \subsubsection{Description}
-In this domain the agent can shoot, move to the right or to the left. To win the agent has to kill all the opponents, for this he must shoot each of them. The agent kills an opponent if he shoots while being in the same column, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents.
+In this domain the agent can shoot, move to the right or to the left. The agent has two actions per turn and the adversary one. To win the agent has to kill all the opponents, for this he must shoot each of them. The agent kills an opponent if he shoots while being in the same column, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents.
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -290,21 +290,54 @@ In this domain the agent can shoot, move to the right or to the left. To win the
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. C=0 AND A>0 AND B>0 -> {A ↓, B ↑, C ↑}, {A ·, B ↓, C ·}, {A ↓, B ·, C ↑}
-  2. C=0 AND A=0 AND B>0 -> {A ·, B ↓, C ↑}
-  3. C>0 AND B>0 -> {A ·, B ·, C ↓}
-  4. C>0 AND A=0 AND B>0 -> {A ·, B ·, C ↓}
+  1. B>0 AND C=0 AND A=0 -> {A ·, B ↓, C ↑}
+  2. B>0 AND C>0 -> {A ·, B ·, C ↓}
+  3. B>0 AND C=0 AND A>0 -> {A ↓, B ·, C ·}, {A ↓, B ·, C ↑}
 \end{Verbatim}
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
-
+  M..M # M..M # M..M # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... #
+  T..M # T..M # T..M # M..M # T..M # ...M # ..M. # ..M. # ..M. # ...M # ...M # ...T # ..T. # ..T. # .... #
+  .... # .... # .... # T..M # ...M # ...T # ..T. # ..T. # ..T. # ...T # ...T # .... # .... # .... # .... #
+  .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... #
+  ..A. # .A.. # A... # A... # A... # A... # A... # .A.. # ..A. # ..A. # ...A # ...A # ...A # ..A. # ..A. #
 \end{Verbatim}
 
+\subsection{Space Invaders - v1}
+\subsubsection{Description}
+In this domain the agent can move to the right or to the left. The agent and the opponents have one action per turn. To win the agent has to kill all the opponents, for this he must shoot each of them. The agent kills an opponent if he moves into the column of the adversary, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents.
+
+\subsubsection{Features}
+\begin{Verbatim}[fontsize=\footnotesize]
+  0: Num[cell-has-martian] [k=1]
+	1: Num[cell-has-target_martian] [k=1]
+	2: Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]]
+\end{Verbatim}
+
+\subsubsection{Policy}
+\begin{Verbatim}[fontsize=\footnotesize]
+  1. B>0 AND C>0 AND A=0 -> {A ·, B ↓, C ↑}
+  2. B>0 AND C>0 -> {A ·, B ·, C ↓}
+  3. B>0 AND C>0 AND A>0 -> {A ↓, B ·, C ↓}, {A ↓, B ·, C ↑}, {A ↓, B ·, C ·}, {A ·, B ·, C ↓}
+  4. B>0 AND C=0 -> {A ·, B ·, C ↑}
+  5. B>0 AND C=0 AND A=0 -> {A ·, B ·, C ↑}
+\end{Verbatim}
+
+\subsubsection{Example of Game}
+\begin{Verbatim}[fontsize=\footnotesize]
+  M..M # M..M # T..M # .... # .... # .... # .... # .... # .... # .... # .... #
+  T..M # T..M # ...M # T..M # T..M # ...M # ..M. # ..M. # ..T. # .T.. # .... #
+  .... # .... # .... # ...M # ...M # ...T # ..T. # ..T. # .... # .... # .... #
+  .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... #
+  ..A. # .A.. # A... # A... # .A.. # A... # A... # .A.. # ..A. # ..A. # .A.. #
+\end{Verbatim}
 
 \subsection{Chase - v0}
 \subsubsection{Description}
-In this domain an agent has to chase an adversary, he has a set of fixed actions $A$, that is~\{$up$, $rightup$, $right$, $rightdown$, $down$, $leftdown$, $left$, $leftup\}$. The agent can move only diagonally and the adversary can move in perpendicular directions.
+In this domain an agent has to chase an adversary. The goal is defined by the agent being in a target adjacent cell. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.
+The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $leftup\}$. The agent can move only diagonally and the adversary can move in perpendicular directions.  The agent and the target can move only once per turn.
+
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -325,37 +358,28 @@ In this domain an agent has to chase an adversary, he has a set of fixed actions
 \subsubsection{Policy (with no fixed action space)}
 
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. A>0 AND B=0 AND D>0 AND C>0 -> {A ↓, B ↑, C ↓, D ↓}, {A ↓, B ·, C ↓, D ↓}
-  2. A=0 AND B=0 AND D=0 AND C>0 -> {A ↑, B ↑, C ↓, D ↑}, {A ↑, B ·, C ↓, D ↑}
-  3. A=0 AND B>0 AND D>0 AND C>0 -> {A ·, B ↓, C ↓, D ↓}, {A ↑, B ↓, C ↓, D ↓}
-  4. A=0 AND B=0 AND D>0 AND C=0 -> {A ·, B ↑, C ↑, D ↓}, {A ↑, B ↑, C ↑, D ↓}
-  5. A=0 AND B=0 AND D>0 AND C>0 -> {A ·, B ↑, C ↓, D ↓}, {A ↑, B ↑, C ↓, D ↓},
+  1. A=0 AND B=0 AND D>0 AND C=0 -> {A ↑, B ↑, C ↑, D ↓}, {A ·, B ↑, C ↑, D ↓}
+  2. A=0 AND B=0 AND D>0 AND C>0 -> {A ·, B ↑, C ↓, D ↓}, {A ↑, B ↑, C ↓, D ↓},
                                     {A ·, B ·, C ↓, D ↓}, {A ↑, B ·, C ↓, D ↓}
+  3. A=0 AND B>0 AND D>0 AND C>0 -> {A ·, B ↓, C ↓, D ↓}, {A ↑, B ↓, C ↓, D ↓}
+  4. A>0 AND B=0 AND D>0 AND C>0 -> {A ↓, B ·, C ↓, D ↓}, {A ↓, B ↑, C ↓, D ↓}
+  5. A=0 AND B=0 AND D=0 AND C>0 -> {A ↑, B ·, C ↓, D ↑}, {A ↑, B ↑, C ↓, D ↑}
+
 
 \end{Verbatim}
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
-1.
-....... # ....... # ....... # ....T.. # ...T... # ...T... #
-....... # ....... # ....T.. # ....... # ....... # ...A... #
-....... # ....T.. # ....... # ....... # ....A.. # ....... #
-....T.. # ....... # ....... # ...A... # ....... # ....... #
-....... # ....... # ..A.... # ....... # ....... # ....... #
-....... # .A..... # ....... # ....... # ....... # ....... #
-A...... # ....... # ....... # ....... # ....... # ....... #
-
-2.
-T..... # T..... # ...... # ...... # T..... # T.A... # ..A... # ...... #
-...... # ...... # T..... # T..A.. # ...A.. # ...... # T..... # TA.... #
-...... # ....A. # ....A. # ...... # ...... # ...... # ...... # ...... #
-.....A # ...... # ...... # ...... # ...... # ...... # ...... # ...... #
+  A..... # ...... # ...... # ...... # ...... # ...... # .....T # ....AT #
+  ...... # .A.... # .A.... # ...... # .....T # ...A.T # ...A.. # ...... #
+  ...... # ...... # .....T # ..A..T # ..A... # ...... # ...... # ...... #
+  .....T # .....T # ...... # ...... # ...... # ...... # ...... # ...... #
 \end{Verbatim}
 
 
 \subsection{Chase - v1}
 \subsubsection{Description}
-In this domain an agent has to chase an adversary, he has a set of fixed actions $A$, that is~\{$up$, $right$, $down$, $left\}$. The agent can move twice per turn and the adversary can move only once.
+In this domain an agent has to chase an adversary. The goal is defined by the agent being in a target adjacent cell. The set of possile actions for the agent and the target is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$. The agent can move twice per turn and the adversary can move once per turn.
 
 \subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -394,71 +418,10 @@ In this domain an agent has to chase an adversary, he has a set of fixed actions
 \end{Verbatim}
 
 
-\subsection{Chase - v2}
-\subsubsection{Description}
-In this domain an agent has to chase an adversary, he has a set of fixed actions $A$, that is~\{$up$, $right$, $down$, $left\}$. The agent and the adversary can move only once per turn. In this version of the Chase the agent cannot always win, because if the adversary plays optimally, the agent will never catch it, but we can compute a policy using the Bad(state) feature. Of course now the policy will not be complete.
-
-\subsubsection{Training instances:}
-\begin{Verbatim}[fontsize=\footnotesize]
-#A.....#
-#......#
-#......#
-#.....T#
-\end{Verbatim}
-
-\subsubsection{Features}
-\begin{Verbatim}[fontsize=\footnotesize]
-  (A) Num[Forall(adjacent_col,col-hv-AGENT)] [k=3]
-  (B) Bool[And(row-hv-AGENT,row-hv-TARGET)] [k=3]
-  (C) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]
-  (D) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]
-  (E) Bool[And(row-hv-TARGET,Forall(adjacent_row,row-hv-AGENT))] [k=5]
-  (F) Dist[col-hv-TARGET;adjacent_col;col-hv-AGENT] [k=4]
-\end{Verbatim}
-
-\subsubsection{Policy (with no fixed action space)}
-\begin{Verbatim}[fontsize=\footnotesize]
-  1. C=0 AND D>0 AND B=0 AND F>0 AND A>0 -> {A ↑, B ·, C ·, D ·, E ·, F ↓},
-                                            {A ·, B ·, C ·, D ·, E ·, F ↓}
-  2. C=0 AND D=0 AND B=0 AND E=0 AND F=0 AND A>0 -> {A ·, B ·, C ·, D ↑, E ↑, F ·}
-  3. C=0 AND D=0 AND B>0 AND E=0 AND F>0 AND A>0 -> {A ↓, B ·, C ↑, D ·, E ·, F ↓}
-  4. C=0 AND B=0 AND E=0 AND F>0 AND A>0 -> {A ·, B ·, C ·, D ·, E ·, F ↓}
-  5. C=0 AND D=0 AND B=0 AND E=0 AND A>0 -> {A ·, B ·, C ·, D ↑, E ·, F ·}
-  6. C=0 AND D=0 AND E=0 AND F>0 AND A>0 -> {A ↑, B ·, C ·, D ·, E ·, F ↓},
-                                            {A ·, B ·, C ↑, D ·, E ·, F ↓},
-                                            {A ↓, B ·, C ·, D ·, E ·, F ↓},
-                                            {A ↑, B ·, C ↑, D ·, E ·, F ↓}
-  7. C=0 AND D>0 AND B=0 AND E>0 AND F>0 AND A>0 -> {A ↓, B ·, C ·, D ·, E ·, F ↓},
-                                                    {A ·, B ·, C ·, D ·, E ·, F ↓}
-  8. C>0 AND D=0 AND B=0 AND E=0 AND F>0 AND A>0 -> {A ·, B ·, C ·, D ·, E ·, F ·}
-  9. C=0 AND D=0 AND B=0 AND E=0 AND F>0 AND A>0 -> {A ·, B ·, C ·, D ·, E ·, F ↓}
-
-
-\end{Verbatim}
-
-\subsubsection{Example of Game}
-\begin{Verbatim}[fontsize=\footnotesize]
-  ....... # ....... # ....... # ....... # ....... # ....... # ....T.. #
-  ....... # ....... # ....... # ....... # ....T.. # ....T.. # ....... #
-  ....... # ....... # ....T.. # ....T.. # ....... # ....... # ....... #
-  ....T.. # ....T.. # ....... # ....... # ....... # ...A... # ...A... #
-  ....... # ....... # ....... # ...A... # ...A... # ....... # ....... #
-  ....... # ...A... # ...A... # ....... # ....... # ....... # ....... #
-  ...A... # ....... # ....... # ....... # ....... # ....... # ....... # ...
-
-   ....T.. # .....T. # .....T. # ......T # ......T # ....... #
-   ....... # ....... # ....... # ....... # ....... # ......T #
-   ...A... # ...A... # ....A.. # ....A.. # .....A. # .....A. #
-   ....... # ....... # ....... # ....... # ....... # ....... #
-   ....... # ....... # ....... # ....... # ....... # ....... #
-   ....... # ....... # ....... # ....... # ....... # ....... #
-   ....... # ....... # ....... # ....... # ....... # ....... #
-\end{Verbatim}
-
 
 \subsection{Shoot - v0}
 \subsubsection{Description}
-In this domain an agent has to shoot an adversary, he has a set of fixed actions $A$, that is~\{$up$, $right$, $down$, $left\}$. This game would be the equivalent of a check with the rook. If the agent manages to get in the opponent's row or column, the agent wins. Either the agent or the adversary may take one of the available actions per turn.
+In this domain an agent has to chase an adversary. The goal is defined by the agent being in the column or row of the adversary. The set of possile actions for the agent and the target is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.  The agent and the target can move only once per turn.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -470,9 +433,9 @@ In this domain an agent has to shoot an adversary, he has a set of fixed actions
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Bool[And(col-hv-AGENT,col-hv-TARGET)] [k=3]
-  (B) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]
-  (C) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]
+  (A) Bool[And(col-has-AGENT,col-has-TARGET)] [k=3]
+  (B) Bool[And(col-has-AGENT,Exists(adjacent_col,col-has-TARGET))] [k=5]
+  (C) Dist[row-has-TARGET;adjacent_row;row-has-AGENT] [k=4]
 
 \end{Verbatim}
 
@@ -493,73 +456,24 @@ In this domain an agent has to shoot an adversary, he has a set of fixed actions
   ....... # ....... # ....... # .....T. # ......T # ....... #
 \end{Verbatim}
 
-\subsection{Shoot - v0: Policy with fixed action space}
-
-\subsubsection{Action space}
-\begin{Verbatim}[fontsize=\footnotesize]
-UP = 0
-DOWN = 1
-RIGHT = 2
-LEFT = 3
-\end{Verbatim}
-
-\subsubsection{Features}
-\begin{Verbatim}[fontsize=\footnotesize]
-  (A) Bool[Exists(left_col,col-hv-AGENT)] [k=3]
-  (B) Bool[And(col-hv-AGENT,col-hv-TARGET)] [k=3]
-  (C) Bool[And(col-hv-TARGET,Forall(left_col,col-hv-AGENT))] [k=5]
-  (D) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]
-
-\end{Verbatim}
-
-\subsubsection{Policy}
-\begin{Verbatim}[fontsize=\footnotesize]
-  1. do((3,)): {D>0, D ·, A>0, A ·, C>0, C ·, B=0, B ·}
-  2. do((2,)): {D>0, D ·, A>0, A ↓, C>0, C ↓, B=0, B ↑}
-  3. do((2,)): {D>0, D ·, A>0, A ·, C>0, C ↓, B=0, B ↑}
-  4. do((0,)): {D>0, D ↓, A=0, A ·, C>0, C ·, B=0, B ·}
-  5. do((3,)): {D>0, D ·, A=0, A ↑, C=0, C ·, B=0, B ↑}
-  6. do((1,)): {D>0, D ↓, A>0, A ·, C=0, C ·, B=0, B ·}
-  7. do((3,)): {D>0, D ·, A>0, A ·, C ·, B=0, B ↑}
-  8. do((3,)): {D>0, D ·, A=0, A ↑, C=0, C ·, B=0, B ·}
-\end{Verbatim}
-
 \subsection{Shoot - v1}
 \subsubsection{Description}
-In this domain an agent has to shoot an adversary, he has a set of fixed actions $A$, that is~\{$up$, $right$, $down$, $left\}$. This game would be the equivalent of a check with the rook. The player who manages to get in the opponent's row before wins, the other player loses. Either the agent or the adversary may take one of the available actions per turn. In this version of Shoot the agent cannot always win, because if the adversary plays optimally, but we can compute a policy using the Bad(state) feature. Of course now the policy will not be complete.
+In this domain an agent has to chase an adversary. The goal is defined by the agent being in the column or row of the adversary. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.
+The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $leftup\}$.  The agent and the target can move only once per turn.
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Num[Forall(adjacent_col,col-hv-AGENT)] [k=3]
-  (B) Bool[Exists(up_row,Exists(up_row,row-hv-AGENT))] [k=5]
-  (C) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]
-  (D) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]
-  (E) Dist[row-hv-AGENT;up_row;row-hv-TARGET] [k=4]
-  (F) Dist[col-hv-AGENT;right_col;col-hv-TARGET] [k=4]
+  (A) Bool[And(col-has-AGENT,col-has-TARGET)] [k=3]
+  (B) Bool[And(row-has-AGENT,row-has-TARGET)] [k=3]
+  (C) Dist[col-has-TARGET;adjacent_col;col-has-AGENT] [k=4]
+  (D) Dist[row-has-TARGET;adjacent_row;row-has-AGENT] [k=4]
 
 \end{Verbatim}
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. C=0 AND D=0 AND B>0 AND F>0 AND E>0 AND A>0 -> {A ↓, B ·, C ·, D ·, E ·, F ↓},
-                                                    {A ·, B ·, C ·, D ·, E ↑, F ·},
-                                                    {A ·, B ·, C ·, D ·, E ·, F ↑},
-                                                    {A ↑, B ·, C ·, D ·, E ·, F ↓}
-  2. C=0 AND D=0 AND B=0 AND F>0 AND E>0 AND A>0 -> {A ↓, B ·, C ·, D ·, E ·, F ·},
-                                                    {A ·, B ·, C ·, D ·, E ↓, F ·},
-                                                    {A ·, B ↑, C ·, D ·, E ↓, F ·}
-  3. D>0 AND F>0 AND E>0 AND A>0 -> {A ·, B ·, C ·, D ↓, E ↓, F ·}
-  4. C>0 AND B>0 AND F>0 AND E>0 AND A>0 -> {A ↑, B ·, C ↓, D ·, E ·, F ↓},
-                                            {A ↓, B ·, C ↓, D ·, E ·, F ↓}
-  5. C>0 AND D>0 AND B=0 AND F>0 AND E>0 AND A>0 -> {A ↓, B ·, C ↓, D ·, E ·, F ↓},
-                                                    {A ↑, B ·, C ↓, D ·, E ·, F ↓}
-  6. D>0 AND B=0 AND F>0 AND E>0 AND A>0 -> {A ·, B ↑, C ·, D ↓, E ↓, F ·}
-  7. C>0 AND F>0 AND E>0 AND A>0 -> {A ↓, B ·, C ↓, D ·, E ·, F ↓},
-                                    {A ↑, B ·, C ↓, D ·, E ·, F ↓},
-                                    {A ·, B ·, C ↓, D ·, E ·, F ↓}
-  8. D>0 AND B>0 AND F>0 AND E>0 AND A>0 -> {A ·, B ↓, C ·, D ↓, E ↓, F ·}
-  9. C>0 AND D>0 AND F>0 AND E>0 AND A>0 -> {A ·, B ·, C ↓, D ·, E ·, F ↓}
-  10. C>0 AND D=0 AND B>0 AND F>0 AND E>0 AND A>0 -> {A ·, B ·, C ↓, D ·, E ·, F ↓}
+  1. A=0 AND B=0 AND C>0 AND D>0 -> {A ·, B ↑, C ↑, D ↓}, {A ↑, B ·, C ↓, D ↑}, {A ↑, B ·, C ↓, D ↓}, {A ·, B ·, C ↓, D ↓}, {A ·, B ↑, C ↓, D ↓}
+
 \end{Verbatim}
 
 \subsubsection{Example of Game}
@@ -573,6 +487,89 @@ In this domain an agent has to shoot an adversary, he has a set of fixed actions
   ....... # ....... # ....... # .....T. # ......T # ....... #
 \end{Verbatim}
 
+\subsection{Nim - v0}
+\subsubsection{Description}
+In this game the action space is equal to the number of cells in the grid. In order to win the agent has to remove the last token in his turn. If the opponet removes the last token in his turn, the agent loses. The agent and the adversary has on action per turn. When one token is removed, the tokens above in the same column are removed too.
+
+\subsubsection{Training instances:}
+\begin{Verbatim}[fontsize=\footnotesize]
+  # t  . #
+  # t  . #
+  # t  t #
+  # t  t #
+  # t  t #
+  # t  t #
+\end{Verbatim}
+
+\subsubsection{Features}
+\begin{Verbatim}[fontsize=\footnotesize]
+  (A) Num[And(cell-has-token,Exists(left_cell,cell-has-token))] [k=5]
+  (B) Num[And(cell-has-token,Forall(leftdown_cell,cell-has-token))] [k=5]
+  (C) Num[And(cell-has-token,Forall(rightdown_cell,cell-has-token))] [k=5]
+
+\end{Verbatim}
+
+\subsubsection{Policy}
+\begin{Verbatim}[fontsize=\footnotesize]
+  1. A>0 AND B>0 AND C>0 -> {A ·, B ↓, C ↓}
+  2. B>0 AND C>0 -> {A ·, B ↓, C ↓}
+
+\end{Verbatim}
+
+\subsubsection{Example of Game}
+\begin{Verbatim}[fontsize=\footnotesize]
+  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+  t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #
+  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
+  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
+\end{Verbatim}
+
+\subsection{Checkmate - v0}
+\subsubsection{Description}
+In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In the version v0 white pieces have the king and the queen, and black pieces have the king.
+
+\subsubsection{Features}
+\begin{Verbatim}[fontsize=\footnotesize]
+  (A) Bool[And(col-has-black_king,col-has-white_king)] [k=3]
+  (B) Bool[And(col-has-black_king,col-has-white_queen)] [k=3]
+  (C) Bool[And(row-has-black_king,row-has-white_king)] [k=3]
+  (D) Bool[And(row-has-black_king,row-has-white_queen)] [k=3]
+  (E) Bool[And(cell-has-black_king,Exists(adjacent_cell,cell-has-white_queen))] [k=5]
+
+\end{Verbatim}
+
+\subsubsection{Policy}
+\begin{Verbatim}[fontsize=\footnotesize]
+  1. E=0 AND A>0 AND B=0 AND C=0 AND D=0 -> {A ·, B ↑, C ·, D ·, E ↑}, {A ·, B ·, C ·, D ↑, E ·}
+  2. E=0 AND A=0 AND B=0 AND C>0 AND D=0 -> {A ·, B ·, C ·, D ↑, E ↑}, {A ·, B ↑, C ·, D ·, E ·}
+  3. E=0 AND A>0 AND B>0 AND C=0 AND D=0 -> {A ·, B ↓, C ·, D ↑, E ·}
+  4. E=0 AND A=0 AND B=0 AND C=0 AND D=0 -> {A ·, B ·, C ·, D ·, E ↑}
+  5. E=0 AND A=0 AND B=0 AND C>0 AND D>0 -> {A ·, B ↑, C ·, D ↓, E ·}
+
+\end{Verbatim}
+
+\subsection{Checkmate - v1}
+\subsubsection{Description}
+In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In the version v0 white pieces have the king and the queen, and black pieces have the king.
+
+\subsubsection{Features}
+\begin{Verbatim}[fontsize=\footnotesize]
+  (A) Bool[And(col-has-black_king,col-has-white_king)] [k=3]
+  (B) Bool[And(col-has-black_king,col-has-white_tower)] [k=3]
+  (C) Bool[And(row-has-black_king,row-has-white_tower)] [k=3]
+
+\end{Verbatim}
+
+\subsubsection{Policy}
+\begin{Verbatim}[fontsize=\footnotesize]
+  1. A>0 AND B=0 AND C=0 -> {A ·, B ·, C ↑}
+  2. A=0 AND B=0 AND C=0 -> {A ·, B ↑, C ·}
+
+\end{Verbatim}
 
 \newpage
 

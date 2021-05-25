@@ -4,8 +4,10 @@ NONE = 'none'
 PLAYER1 = 1
 PLAYER2 = 2
 
-WHITE_KING = 'white_king'
-BLACK_KING = 'black_king'
+WHITE_KING = 'AGENT'
+# WHITE_KING = 'white_king'
+BLACK_KING = 'TARGET'
+# BLACK_KING = 'black_king'
 WHITE_QUEEN = 'white_queen'
 WHITE_TOWER = 'white_tower'
 

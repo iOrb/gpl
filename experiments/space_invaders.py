@@ -96,12 +96,16 @@ def experiments():
 
     # version 2: the agent can not shoot, but can kill moving into the adv column, has 2 moves
     space_invaders_params_v2 = copy.deepcopy(space_invaders_params)
+    space_invaders_params_v2.unary_predicates = {}
+    space_invaders_params_v2.use_player_as_feature = True
+    space_invaders_params_v2.use_bidirectional = {}
+    space_invaders_params_v2.max_actions = {PLAYER1: 1, PLAYER2: 1}
+    space_invaders_params_v2.target_columns = False
     space_invaders_params_v2.agent_has_to_shoot = False
     exps["2"] = update_dict(
         exps["1"],
         domain=Domain(space_invaders_params_v2),
-        instances=[17],
-        # instances=[3, 4],
+        instances=[0, 17, 18],
     )
 
     # version 3:
