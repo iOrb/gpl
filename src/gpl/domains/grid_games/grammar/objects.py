@@ -99,9 +99,11 @@ OBJECTS_CHASE = Bunch({
     'none': NONE,
 })
 
-OBJECTS_PICK = Bunch({
+
+OBJECTS_DELIVERY = Bunch({
     'general': {AGENT,
                 PACKAGE,
+                DESTINY,
                 PIT},
     'empty': EMPTY,
     'player1': PLAYER1,
@@ -118,4 +120,5 @@ def get_domain_objects(domain_name):
         'space_invaders': OBJECTS_SPACE,
         'checkmate_tactic': OBJECTS_CHECK,
         'wumpus': OBJECTS_WUMPUS,
+        'delivery': OBJECTS_DELIVERY,
     }[domain_name]

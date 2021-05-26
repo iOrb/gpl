@@ -406,11 +406,13 @@ class TransitionActionClassificationPolicy:
         for i, (statef, transitionf) in enumerate(grouped.items(), start=1):
             state_conds_tmp = list()
             feature_conds_tmp = list()
-            for f in sorted(map(str, statef)):
+            for f in statef:
+                f = str(f)
                 f_s, val_s = str(f)[:-2], str(f)[-2:]
-                sc = "{}{}".format(self.get_feature_key(f_s),val_s)
+                sc = "{}{}".format(self.get_feature_key(f_s), val_s)
                 if sc not in state_conds_tmp:
                     state_conds_tmp.append(sc)
+            state_conds_tmp = sorted(state_conds_tmp)
             for effect in transitionf:
                 effect_tmp = list()
                 for e in effect:
