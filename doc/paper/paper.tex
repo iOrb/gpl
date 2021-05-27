@@ -291,22 +291,25 @@ In this domain the agent can shoot, move to the right or to the left. The agent 
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-(A) Num[cell-has-martian] [k=1]:
-number of martians
-
-(B) Bool[cell-has-target_martian] [k=1]:
-there is some target martian
-
+(A) Num[cell-has-martian] [k=1]
+(B) Bool[cell-has-target_martian] [k=1]
 (C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]:
-absolute horizontal distance between agent and target martian
 \end{Verbatim}
+
+\subsubsection{Feature Descrition}
+$A$. Number of martians\\
+$B$. There is some target martian\\
+$C$. Absolute horizontal distance between agent and target martian
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
     1. B>0 AND C>0 -> {A ·, B ·, C ↓}
     2. A=0 AND B>0 AND C=0 -> {A ·, B ↓, C ↑}
-    3. A>0 AND B>0 AND C=0 -> {A ↓, B ·, C ↑}, {A ↓, B ·, C ·}
+    3. A>0 AND B>0 AND C=0 -> {A ↓, B ·}
 \end{Verbatim}
+
+\subsubsection{Policy Description}
+According to the first rule if the distance between the agent and the target martian is greater than zero, it is good to decrease this distance, i.e. move towards the target martian. The third rule is applicable when there are several Martians and the agent is in the same column as the targeted Martian, and indicates that in this abstraction of the state it is good to decrease the number of Martians. The second rule indicates that if there is only one Martian left, and we are below him, it is good to eliminate him.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -319,7 +322,7 @@ absolute horizontal distance between agent and target martian
 
 \subsection{Space Invaders - v1}
 \subsubsection{Description}
-In this domain the agent $A$ can move to the right or to the left. The agent has two actions per turn and the martians $m$ one. To win the agent has to kill all the martians, for this he must shoot each of them. The agent kills an opponent if he moves into the column of the adversary, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents. The agent can select a Martian as a target $M$.
+In this domain the agent $A$ can move to the right or to the left. The agent has two actions per turn and the martians $m$ have one. To win the agent has to kill all the martians, for this he must shoot each of them. The agent kills an opponent if he moves into the column of the adversary, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, and all the adversaries move in the same direction. The agent cannot be destroyed by the opponents. The agent can select a Martian as a target $M$.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -332,24 +335,26 @@ In this domain the agent $A$ can move to the right or to the left. The agent has
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
   (A) Num[cell-has-martian] [k=1]:
-  number of martians
-
   (B) Bool[cell-has-target_martian] [k=1]:
-  there is one target martian
-
   (C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]:
   absolute horizontal distance between agent and target martian
 \end{Verbatim}
+
+\subsubsection{Feature Descrition}
+$A$. Number of martians\\
+$B$. There is some target martian\\
+$C$. Absolute horizontal distance between agent and target martian
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
   1. B>0 AND C=0 -> {A ·, B ·, C ↑}
   2. B>0 AND C>0 -> {A ·, B ·, C ↓}
-  3. A=0 AND B>0 AND C>0 -> {A ·, B ↓, C ↑}
-  4. A>0 AND B>0 AND C>0 -> {A ↓, B ·, C ↓},
-                            {A ↓, B ·, C ↑},
-                            {A ↓, B ·, C ·}
+  3. A=0 AND B>0 AND C>0 -> {A ·, B ↓}
+  4. A>0 AND B>0 AND C>0 -> {A ↓, B ·}
 \end{Verbatim}
+
+\subsubsection{Policy Description}
+In the $Space Invaders - v1$ the agent cannot shoot, but he can kill the Martians by positioning himself in their column. According to the second rule, if the agent is not in the column of the target Martian, it is good to move closer to this column. According to the first rule of the policy, if we are below the target Martian, it is good to increase the horizontal distance between him and the agent. Intuitively, if the agent is under the target Martian, it is good to for the agent to moves away from the target martinan and then get in his column and finish him off. Finally, rules three and four say that transitions to states where the number of Martians has decreased are good.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -626,7 +631,7 @@ The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $l
 
 \subsection{Checkmate - v0}
 \subsubsection{Description}
-In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In the version $checkmate-v0$ white pieces have the king $K$ and the queen $Q$, and black pieces have the king $k$.
+In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In $Checkmate-v0$ white pieces have the king $K$ and the queen $Q$, and black pieces have the king $k$.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -687,7 +692,7 @@ In this game the action space is equal to the number of cells in the grid. In or
 
 \subsection{Checkmate - v1}
 \subsubsection{Description}
-In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In the version $checkmate-v1$ white pieces have the king and the rook $R$, and black pieces have the king.
+In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In $Checkmate-v1$ white pieces have the king and the rook $R$, and black pieces have the king.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
