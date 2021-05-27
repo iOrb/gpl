@@ -291,9 +291,9 @@ In this domain the agent can shoot, move to the right or to the left. The agent 
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-(A) Num[cell-has-martian] [k=1]
-(B) Bool[cell-has-target_martian] [k=1]
-(C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]
+(A) Num[cell-has-martian] [k=1]: number of martians
+(B) Bool[cell-has-target_martian] [k=1]: there is one target martian
+(C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]: absolute horizontal distance between agent and target martian
 \end{Verbatim}
 
 \subsubsection{Policy}
@@ -326,9 +326,9 @@ In this domain the agent $A$ can move to the right or to the left. The agent has
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Num[cell-has-martian] [k=1]
-  (B) Bool[cell-has-target_martian] [k=1]
-  (C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]
+  (A) Num[cell-has-martian] [k=1]: number of martians
+  (B) Bool[cell-has-target_martian] [k=1]: there is one target martian
+  (C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]: absolute horizontal distance between agent and target martian
 \end{Verbatim}
 
 \subsubsection{Policy}
@@ -366,10 +366,10 @@ The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $l
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]
-  (B) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]
-  (C) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]
-  (D) Dist[col-hv-TARGET;adjacent_col;col-hv-AGENT] [k=4]
+  (A) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]: the column of the agent is adjacent to the column of the adversary
+  (B) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]: the row of the agent is adjacent to the row of the adversary
+  (C) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]: absolute vertical distance between agent and adversary
+  (D) Dist[col-hv-TARGET;adjacent_col;col-hv-AGENT] [k=4]: absolute horizontal distance between agent and adversary
 \end{Verbatim}
 
 \subsubsection{Policy (with no fixed action space)}
@@ -408,10 +408,10 @@ In this domain an agent has to chase an adversary. The goal is defined by the ag
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]
-  (B) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]
-  (C) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]
-  (D) Dist[col-hv-TARGET;adjacent_col;col-hv-AGENT] [k=4]
+  (A) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]: the column of the agent is adjacent to the column of the adversary
+  (B) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]: the row of the agent is adjacent to the row of the adversary
+  (C) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]: absolute vertical distance between agent and adversary
+  (D) Dist[col-hv-TARGET;adjacent_col;col-hv-AGENT] [k=4]: absolute horizontal distance between agent and adversary
 \end{Verbatim}
 
 \subsubsection{Policy (with no fixed action space)}
@@ -450,9 +450,9 @@ In this game the action space is equal to the number of tokens $t$ in the grid. 
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Num[And(cell-has-token,Exists(left_cell,cell-has-token))] [k=5]
-  (B) Num[And(cell-has-token,Forall(leftdown_cell,cell-has-token))] [k=5]
-  (C) Num[And(cell-has-token,Forall(rightdown_cell,cell-has-token))] [k=5]
+  (A) Num[And(cell-has-token,Exists(left_cell,cell-has-token))] [k=5]: number of tokens with a token immediately to the left of it
+  (B) Num[And(cell-has-token,Forall(leftdown_cell,cell-has-token))] [k=5]: number of tokens with a token immediately to the leftdown of it
+  (C) Num[And(cell-has-token,Forall(rightdown_cell,cell-has-token))] [k=5]: number of tokens with a token immediately to the rightdown of it
 
 \end{Verbatim}
 
@@ -479,7 +479,7 @@ In this game the action space is equal to the number of tokens $t$ in the grid. 
 \subsection{Delivery - v0}
 \subsubsection{Description}
 
-In this domain the agent has to pick up a missed pet $p$ and take it to a certain location, the destiny $D$. The pet has the option on its turn to escape from its captor to any of the cells adjacent to it. The goal is defined by the agent in a cell adjacent to the destination while carrying the pet. The agent has two actions per turn and the adversary one. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.  The set of possile actions for the pet consist in escape to one of the adjacent cells to the agent, i.e. at most eight possible actions depending on the position of the agent in the grid. The pet can not escape to the delivey point.
+In this domain the agent has to pick up a missed pet $p$ and take it to a certain location, the destination $D$. The pet has the option on its turn to escape from its captor to any of the cells adjacent to it. The goal is defined by the agent in a cell adjacent to the destination while carrying the pet. The agent has two actions per turn and the adversary one. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.  The set of possile actions for the pet consist in escape to one of the adjacent cells to the agent, i.e. at most eight possible actions depending on the position of the agent in the grid. The pet can not escape to the delivey point.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -493,10 +493,10 @@ In this domain the agent has to pick up a missed pet $p$ and take it to a certai
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Atom[holding_pet] [k=1]
-  (B) Bool[And(cell-has-agent,Exists(adjacent_cell,cell-has-destiny))] [k=5]
-  (C) Dist[cell-has-agent;adjacent_cell;cell-has-destiny] [k=4]
-  (D) Dist[cell-has-agent;adjacent_cell;cell-has-pet] [k=4]
+  (A) Atom[holding_pet] [k=1]: the agent is holding the pet
+  (B) Bool[And(cell-has-agent,Exists(adjacent_cell,cell-has-destination))] [k=5]: the destination is adjacent to the agent
+  (C) Dist[cell-has-agent;adjacent_cell;cell-has-destination] [k=4]: manhattan distance between agent and destination
+  (D) Dist[cell-has-agent;adjacent_cell;cell-has-pet] [k=4]: manhattan distance between agent and pet
 \end{Verbatim}
 
 \subsubsection{Policy}
