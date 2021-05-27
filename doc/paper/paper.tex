@@ -279,7 +279,7 @@ equivalence relations, all those other transitions in whose equivalence class th
 
 \subsection{Space Invaders - v0}
 \subsubsection{Description}
-In this domain the agent can shoot, move to the right or to the left. The agent has two actions per turn and the adversary one. To win the agent has to kill all the opponents, for this he must shoot each of them. The agent kills an opponent if he shoots while being in the same column, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents.
+In this domain the agent can shoot, move to the right or to the left. The agent $A$ has two actions per turn and the mastians $m$ one. To win the agent has to kill all the martians, for this he must shoot each of them. The agent kills an opponent if he shoots while being in the same column, and he can only kill one for each shoot. The martians has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents. The agent can select a Martian as a target $M$.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -314,7 +314,7 @@ In this domain the agent can shoot, move to the right or to the left. The agent 
 
 \subsection{Space Invaders - v1}
 \subsubsection{Description}
-In this domain the agent can move to the right or to the left. TThe agent has two actions per turn and the adversary one. To win the agent has to kill all the opponents, for this he must shoot each of them. The agent kills an opponent if he moves into the column of the adversary, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents.
+In this domain the agent $A$ can move to the right or to the left. The agent has two actions per turn and the martians $m$ one. To win the agent has to kill all the martians, for this he must shoot each of them. The agent kills an opponent if he moves into the column of the adversary, and he can only kill one for each shoot. The adversary has three possible actions, left, right and down, all the adversaries move in the same direction. The agent cannot be destroyed by the opponents. The agent can select a Martian as a target $M$.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -353,8 +353,8 @@ In this domain the agent can move to the right or to the left. TThe agent has tw
 
 \subsection{Chase - v0}
 \subsubsection{Description}
-In this domain an agent has to chase an adversary. The goal is defined by the agent being in a target adjacent cell. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.
-The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $leftup\}$. The agent can move only diagonally and the adversary can move in perpendicular directions.  The agent and the target can move only once per turn.
+In this domain an agent $A$ has to chase an adversary $T$. The goal is defined by the agent being in a adversary's adjacent cell. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.
+The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $leftup\}$. The agent can move only diagonally and the adversary can move in perpendicular directions.  The agent and the adversary can move only once per turn.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -396,7 +396,7 @@ The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $l
 
 \subsection{Chase - v1}
 \subsubsection{Description}
-In this domain an agent has to chase an adversary. The goal is defined by the agent being in a target adjacent cell. The set of possile actions for the agent and the target is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$. The agent can move twice per turn and the adversary can move once per turn.
+In this domain an agent has to chase an adversary. The goal is defined by the agent being in a target adjacent cell. The set of possile actions for the agent and the adversary is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$. The agent can move twice per turn and the adversary can move once per turn.
 
 \subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -436,7 +436,7 @@ In this domain an agent has to chase an adversary. The goal is defined by the ag
 
 \subsection{Nim - v0}
 \subsubsection{Description}
-In this game the action space is equal to the number of cells in the grid. In order to win the agent has to remove the last token in his turn. If the opponet removes the last token in his turn, the agent loses. The agent and the adversary has on action per turn. When one token is removed, the tokens above in the same column are removed too.
+In this game the action space is equal to the number of tokens $t$ in the grid. In order to win the agent has to remove the last token in his turn. If the opponet removes the last token in his turn, the agent loses. The agent and the adversary has on action per turn. When one token is removed, the tokens above in the same column are removed too.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -479,7 +479,7 @@ In this game the action space is equal to the number of cells in the grid. In or
 \subsection{Delivery - v0}
 \subsubsection{Description}
 
-In this domain the agent has to pick up a pet and take it to a certain location. The pet has the option on its turn to escape from its captor to any of the cells adjacent to it. The goal is defined by the agent in a cell adjacent to the destination while carrying the pet. The agent has two actions per turn and the adversary one. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.  The set of possile actions for the pet consist in escape to one of the adjacent cells to the agent, i.e. at most eight possible actions depending on the position of the agent in the grid. The pet can not escape to the delivey point.
+In this domain the agent has to pick up a missed pet $p$ and take it to a certain location, the destiny $D$. The pet has the option on its turn to escape from its captor to any of the cells adjacent to it. The goal is defined by the agent in a cell adjacent to the destination while carrying the pet. The agent has two actions per turn and the adversary one. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.  The set of possile actions for the pet consist in escape to one of the adjacent cells to the agent, i.e. at most eight possible actions depending on the position of the agent in the grid. The pet can not escape to the delivey point.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -590,7 +590,7 @@ The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $l
 
 \subsection{Checkmate - v0}
 \subsubsection{Description}
-In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In the version v0 white pieces have the king and the queen, and black pieces have the king.
+In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In the version $checkmate-v0$ white pieces have the king $K$ and the queen $Q$, and black pieces have the king $k$.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -651,7 +651,7 @@ In this game the action space is equal to the number of cells in the grid. In or
 
 \subsection{Checkmate - v1}
 \subsubsection{Description}
-In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In the version v0 white pieces have the king and the rook, and black pieces have the king.
+In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In the version $checkmate-v1$ white pieces have the king and the rook $R$, and black pieces have the king.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
