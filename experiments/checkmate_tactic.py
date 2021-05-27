@@ -1,3 +1,4 @@
+import copy
 import math
 from sltp.util.misc import update_dict
 from gpl.domains.grid_games.domain import Domain
@@ -9,11 +10,13 @@ from gpl.domains.grid_games.envs.checkmate_tactic import CHECKMATE, STALEMATE, N
 ct_params = Bunch({
     'domain_name': 'checkmate_tactic',
     'use_player_as_feature': True,
+    'use_next_player_as_feature': False,
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
-    'use_adjacency': {CELL_S},
+    'use_margin_as_feature': True,
+    'use_adjacency': {CELL_S, COL_S, ROW_S},
     'use_bidirectional': {},
-    'sorts_to_use': {COL_S, ROW_S, CELL_S},
+    'sorts_to_use': {CELL_S, COL_S, ROW_S},
     'n_moves': 1,
     'unary_predicates': {},
     # 'unary_predicates': {"{}_{}".format(N_MOVE, i) for i in range(CHECKMATE_IN_N + 1)},
@@ -55,8 +58,8 @@ def experiments():
         distinguish_goals=True,
         sampling_strategy="full",
 
-        # skip_train_steps=[0, 1, 2],  # do not generate features twice!
-        skip_train_steps=[],
+        skip_train_steps=[0, 1, 2, 3],  # do not generate features twice!
+        # skip_train_steps=[],
 
         # rollouts
         # num_episodes=1,
@@ -74,18 +77,24 @@ def experiments():
     exps = dict()
     exps["1"] = update_dict(
         base,
-        instances=list(range(50)) + [74, 76, 77, 79, 86, 50, 52, 118, 142, 147, 159, 169, 187, 200, 201, 202, 206, 208,
-                                     221, 223, 233, 235, 242, 244, 78, 80, 81, 83, 90, 92, 96, 98, 327, 56, 222, 224,
-                                     228, 230, 243, 245, 255, 257, 264, 266, 267, 269, 294, 296, 309, 311, 315],
-        test_instances=list(range(2000)),
+        # instances=[1, 9, 11, 43, 45, 47, 48, 49, 50, 56, 57, 62, 63, 65, 68, 69, 71, 77, 78, 80, 81, 83, 89, 90, 93, 98,
+        #            99, 15, 18, 19, 23, 24, 25, 26, 28, 30, 32, 82, 84, 101, 110, 111, 112, 113, 124, 125, 126, 128, 13, 35,
+        #            52, 54, 58, 60, 64, 66, 70, 72, 73, 75, 85, 87, 95, 100, 102, 103, 106, 108, 115, 117, 225, 228, 236,
+        #            239, 240, 243, 257, 260, 265, 268, 284, 296, 301, 315, 319, 327, 348, 351, 358, 360, 361, 362,
+        #            403, 405, 406, 408, 415, 417],
+        # test_instances=list(range(500)),
+        instances=[0],
+        test_instances=[5],
     )
 
     # version 2:
     # checkmate in 1 move
     # using tower
-    ct_params.game_version = 1
+    ct_params_v1 = copy.deepcopy(ct_params)
+    ct_params_v1.game_version = 1
     exps["2"] = update_dict(
         exps["1"],
+        domain=Domain(ct_params_v1),
     )
 
     # version 3:
@@ -94,6 +103,7 @@ def experiments():
     # ct_params.game_version = 1
     exps["3"] = update_dict(
         exps["1"],
+
     )
 
     return exps

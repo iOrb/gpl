@@ -10,11 +10,11 @@ from ..utils import identify_next_player
 
 
 SIMPLIFIED_OBJECT = {
-    EMPTY:' . ',
-    AGENT:' A ',
-    PACKAGE:' p ',
-    DESTINY:' D ',
-    PIT:' * ',
+    EMPTY:'.',
+    AGENT:'A',
+    PACKAGE:'p',
+    DESTINY:'D',
+    PIT:'*',
 }
 
 opposite_player = lambda c: PLAYER2 if c == PLAYER1 else PLAYER1
@@ -72,7 +72,7 @@ ACTION_DROP_DIRECTION = {
 }
 
 # unary predicates
-HOLDING_PACKAGE = 'holding_package'
+HOLDING_PACKAGE = 'holding_pet'
 
 # Begin Wumpus =================================
 

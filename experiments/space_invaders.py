@@ -13,6 +13,7 @@ from gpl.domains.grid_games.domain import Domain
 space_invaders_params = Bunch({
     'domain_name': 'space_invaders',
     'use_player_as_feature': False,
+    'use_next_player_as_feature': False,
     'map_cells': True,
     'use_diagonals_for_map_cells': False,
     'use_adjacency': {COL_S},

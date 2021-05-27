@@ -2,7 +2,7 @@
 SLTP v.0.2.0
 ================================================================================
 ================================================================================
-(pid: 59290) STARTING STEP #1: Train: Explore the state space of the training instances
+(pid: 63147) STARTING STEP #1: Train: Explore the state space of the training instances
 ================================================================================
 ------------------------------------------------
  DOMAIN PARAMETERS: 
@@ -19,7 +19,7 @@ use_bidirectional: {}
 sorts_to_use: {'cell', 'col', 'row'}
 n_moves: 1
 unary_predicates: {}
-game_version: 0
+game_version: 1
 ------------------------------------------------
 ------------------------------------------------
 (START Episode 0)
@@ -40,56 +40,43 @@ game_version: 0
 (END Episode 0)
 ------------------------------------------------
 ================================================================================
-END OF STEP #1: Train: Explore the state space of the training instances. 0.01 CPU sec - 38.84 MB
+END OF STEP #1: Train: Explore the state space of the training instances. 0.03 CPU sec - 38.85 MB
 ================================================================================
 ================================================================================
-(pid: 59294) STARTING STEP #2: Testing of the D2L policy
+(pid: 63151) STARTING STEP #2: Testing of the D2L policy
 ================================================================================
 
 POLICY:
-Features (#: 7; total k: 27; max k = 5):
+Features (#: 3; total k: 9; max k = 3):
   (A) Bool[And(col-has-black_king,col-has-white_king)] [k=3]
-  (B) Bool[And(col-has-black_king,col-has-white_queen)] [k=3]
-  (C) Bool[And(row-has-black_king,row-has-white_king)] [k=3]
-  (D) Bool[And(row-has-black_king,row-has-white_queen)] [k=3]
-  (E) Bool[And(cell-has-black_king,Exists(adjacent_cell,cell-has-white_queen))] [k=5]
-  (F) Bool[And(col-has-white_king,Exists(adjacent_col,col-has-white_queen))] [k=5]
-  (G) Bool[And(row-has-black_king,Exists(adjacent_row,row-has-white_king))] [k=5]
-Invariants: E=0
+  (B) Bool[And(col-has-black_king,col-has-white_tower)] [k=3]
+  (C) Bool[And(row-has-black_king,row-has-white_tower)] [k=3]
+Invariants: B=0,C=0
 Policy:
-  1. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ↓, E ·, F ↓, G ·}
-  2. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ·, F ·, G ·}, {A ·, B ·, C ·, D ↑, E ↑, F ↑, G ·}
-  3. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ·, F ↓, G ·}
-  4. A>0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ·, C ·, D ↑, E ·, F ·, G ·}, {A ·, B ↑, C ·, D ·, E ↑, F ·, G ·}
-  5. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ↑, F ↑, G ·}, {A ·, B ·, C ·, D ·, E ↑, F ↑, G ·}
-  6. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G>0 -> {A ·, B ·, C ·, D ↑, E ↑, F ·, G ·}
-  7. A>0 AND B>0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ↓, C ·, D ↑, E ·, F ·, G ·}
-  8. A>0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ↑, F ↓, G ·}, {A ·, B ·, C ·, D ↑, E ·, F ↓, G ·}
-  9. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ↑, F ·, G ·}, {A ·, B ·, C ·, D ·, E ↑, F ·, G ·}
-  10. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G>0 -> {A ·, B ·, C ·, D ↑, E ↑, F ↑, G ·}
-  11. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F=0 AND G=0 -> {A ·, B ↑, C ·, D ↓, E ·, F ·, G ·}
+  1. A=0 AND B=0 AND C=0 -> {A ·, B ↑, C ·}
+  2. A>0 AND B=0 AND C=0 -> {A ·, B ·, C ↑}
 
-2021-05-27 11:46:14 INFO     Testing policy in instance: checkmate_tactic - 5
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  .  .  .  .  .  K  .  .  #  .  .  .  .  .  .  .  K  .  .  # 
- .  .  .  .  .  .  .  .  .  k  #  .  .  .  .  .  .  .  .  Q  k  # 
+2021-05-27 12:15:16 INFO     Testing policy in instance: checkmate_tactic - 4
  .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
  .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
  .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
  .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
+ .  .  .  .  .  .  .  K  .  k  #  .  .  .  .  .  .  .  K  .  k  # 
  .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  Q  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
+ .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
+ .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
+ .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
+ .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
+ .  .  R  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  R  # 
  .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
 1 (pl)                           2 (pl)                           
 0 (nm)                           1 (nm)                           
 
-2021-05-27 11:46:14 INFO     Goal found after expanding 1 nodes
-2021-05-27 11:46:14 INFO     The solution was: ['white_queen_10.2_4.8']
-2021-05-27 11:46:14 INFO     Learnt policy solves the 100.0% of test instances: 1/1
-2021-05-27 11:46:14 INFO     Solved instances: [5]
-2021-05-27 11:46:14 INFO     Unsolved instances: []
+2021-05-27 12:15:16 INFO     Goal found after expanding 1 nodes
+2021-05-27 12:15:16 INFO     The solution was: ['white_tower_10.2_10.9']
+2021-05-27 12:15:16 INFO     Learnt policy solves the 100.0% of test instances: 1/1
+2021-05-27 12:15:16 INFO     Solved instances: [4]
+2021-05-27 12:15:16 INFO     Unsolved instances: []
 ================================================================================
-END OF STEP #2: Testing of the D2L policy. 0.24 CPU sec - 43.07 MB
+END OF STEP #2: Testing of the D2L policy. 0.14 CPU sec - 42.20 MB
 ================================================================================

@@ -13,6 +13,7 @@ from gpl.domains.grid_games.envs.nim import ONLY_ONE_LEFT
 nim_params = Bunch({
     'domain_name': 'nim',
     'use_player_as_feature': True,
+    'use_next_player_as_feature': False,
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
     'use_adjacency': {CELL_S},

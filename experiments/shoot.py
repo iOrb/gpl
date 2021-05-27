@@ -13,6 +13,7 @@ from gpl.domains.grid_games.grammar.objects import PLAYER1, PLAYER2
 shoot_params = Bunch({
     'domain_name': 'shoot',
     'use_player_as_feature': True,
+    'use_next_player_as_feature': False,
     'map_cells': False,
     'use_diagonals_for_map_cells': True,
     'use_adjacency': {COL_S, ROW_S},

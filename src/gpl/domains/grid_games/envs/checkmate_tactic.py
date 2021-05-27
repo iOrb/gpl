@@ -12,9 +12,9 @@ N_MOVE = 'n_move'
 
 SIMPLIFIED_OBJECT = {
     EMPTY:' . ',
-    BLACK_KING:' k ',
+    BLACK_KING:' k ' ,
     WHITE_KING:' K ',
-    WHITE_QUEEN:' Q ',
+    WHITE_QUEEN:' Q ' ,
     WHITE_TOWER:' R ',
 }
 
@@ -308,18 +308,6 @@ def cool_piece_valid_moves(pos, layout, color, piece):
 
 ### Instances
 
-# def generate_gird(key):
-#     height, width, cell_white_king, cell_black_king, cell_white_queen, cell_white_tower = \
-#         LAYOUTS_QUEEN[key]
-#     grid = np.full((height, width), EMPTY, dtype=object)
-#     grid[cell_white_king] = WHITE_KING
-#     grid[cell_black_king] = BLACK_KING
-#     if cell_white_queen:
-#         grid[cell_white_queen] = WHITE_QUEEN
-#     if cell_white_tower:
-#         grid[cell_white_tower] = WHITE_TOWER
-#     return grid
-
 
 def generate_gird(key, params):
     return LAYOUTS[params.game_version][key]
@@ -332,33 +320,50 @@ def generate_check_in_one(shapes, piece):
         grid_blank = np.full((height, width), EMPTY, dtype=object)
         # checkmate in one grids
         for i in range(width + 1):
-            grid_tmp = grid_blank.copy()
-            if i == width:
-                if piece == WHITE_TOWER:
+            for j in range(-1, 2):
+                grid_tmp = grid_blank.copy()
+                if i == width:
+                    if piece == WHITE_TOWER:
+                        continue
+                    bk_pos = (0, i - 1)
+                    if j == -1:
+                        wk_pos = (1, i - 3)
+                    elif j == 0:
+                        wk_pos = (2, i - 3)
+                    elif j == 1:
+                        wk_pos = (2, i - 2)
+                else:
+                    bk_pos = (0, i)
+                    wk_pos = (2, i + j)
+                if np.any(np.array(wk_pos) < 0) or np.any(np.array(wk_pos) > width - 1):
                     continue
-                bk_pos = (0, i - 1)
-                wk_pos = (2, i - 3)
-            else:
-                bk_pos = (0, i)
-                wk_pos = (2, i)
-            grid_tmp[wk_pos[0], wk_pos[1]] = WHITE_KING
-            grid_tmp[bk_pos[0], bk_pos[1]] = BLACK_KING
-            if piece == WHITE_TOWER:
-                checkmate_positions = [(0, j) for j in range(width) if 0 < j < width and abs(i - j) > 1]
-            elif piece == WHITE_QUEEN:
-                checkmate_positions = [(0, j) for j in range(width) if 0 < j < width and abs(i - j) > 1] + [(1, i)] if i != width else [(1, i - 2)]
-            for pos in checkmate_positions:
-                checkmate_positions_from = cool_piece_valid_moves(pos, grid_tmp, WHITE, piece)
-                for r, c in checkmate_positions_from:
-                    grid = grid_tmp.copy()
-                    cell_value = grid[r, c]
-                    if cell_value != EMPTY:
-                        continue
-                    grid[r, c] = piece
-                    if get_attacking_mask(grid, WHITE)[bk_pos[0], bk_pos[1]]:
-                        continue
-                    grids_tmp.append(grid)
-                    grids.append(grid)
+                grid_tmp[wk_pos[0], wk_pos[1]] = WHITE_KING
+                grid_tmp[bk_pos[0], bk_pos[1]] = BLACK_KING
+                if piece == WHITE_TOWER:
+                    checkmate_positions = [(0, j) for j in range(width) if 0 < j < width and abs(i - j) > 1]
+                elif piece == WHITE_QUEEN:
+                    if i != width:
+                        checkmate_positions = [(1, i)]
+                        if j==0:
+                            checkmate_positions += [(0, j) for j in range(width) if 0 < j < width and abs(i - j) > 1]
+                    else:
+                        checkmate_positions = [(1, i - 2)]
+                        if j == -1:
+                            checkmate_positions += [(0, i - 2)]
+                        elif j == 1:
+                            checkmate_positions += [(1, i - 1)]
+                for pos in checkmate_positions:
+                    checkmate_positions_from = cool_piece_valid_moves(pos, grid_tmp, WHITE, piece)
+                    for r, c in checkmate_positions_from:
+                        grid = grid_tmp.copy()
+                        cell_value = grid[r, c]
+                        if cell_value != EMPTY:
+                            continue
+                        grid[r, c] = piece
+                        if get_attacking_mask(grid, WHITE)[bk_pos[0], bk_pos[1]]:
+                            continue
+                        grids_tmp.append(grid)
+                        grids.append(grid)
 
         for grid_tmp in grids_tmp:
             grids.append(np.rot90(grid_tmp, 1))
@@ -368,11 +373,27 @@ def generate_check_in_one(shapes, piece):
     return {i: g for i, g in enumerate(grids)}
 
 
+def generate_gird_queen(key):
+    height, width, cell_white_king, cell_black_king, cell_white_queen, cell_white_tower = \
+        LAYOUTS_TOWER[key]
+    grid = np.full((height, width), EMPTY, dtype=object)
+    grid[cell_white_king] = WHITE_KING
+    grid[cell_black_king] = BLACK_KING
+    if cell_white_queen is not None:
+        grid[cell_white_queen] = WHITE_QUEEN
+    if cell_white_tower is not None:
+        grid[cell_white_tower] = WHITE_TOWER
+    return grid
+
+
 LAYOUTS_QUEEN = {
-    0: (4, 4, (1, 1), (1, 3), (1, 0), None),
+    0: (4, 4, (1, 1), (1, 3), (0, 1), None),
     1: (4, 3, (1, 1), (3, 1), (1, 2), None),
     2: (3, 3, (0, 0), (1, 2), (2, 0), None),
     3: (3, 2, (0, 1), (2, 1), (0, 0), None),
+    5: (12, 10, (3, 7), (4, 9), (10, 2), None),
+    6: (3, 2, (0, 1), (2, 1), (0, 0), None),
+    7: (3, 2, (0, 1), (2, 1), (0, 0), None),
 }
 
 LAYOUTS_TOWER = {
@@ -380,12 +401,18 @@ LAYOUTS_TOWER = {
     1: (4, 3, (2, 0), (0, 0), None, (3, 2)),
     2: (3, 3, (0, 0), (2, 0), None, (1, 2)),
     3: (5, 5, (4, 0), (0, 4), None, (4, 2)),
+    4: (12, 10, (4, 7), (4, 9), None, (10, 2)),
 }
 
 LAYOUTS_CHECK_IN_ONE_QUEEN = generate_check_in_one([(4, 4), (5, 5), (6, 6)], WHITE_QUEEN)
 LAYOUTS_CHECK_IN_ONE_TOWER = generate_check_in_one([(4, 4), (5, 5), (6, 6)], WHITE_TOWER)
 
+# LAYOUTS_QUEEN_CUSTOM = {k: generate_gird_queen(k) for k in LAYOUTS_QUEEN.keys()}
+# LAYOUTS_TOWER_CUSTOM = {k: generate_gird_queen(k) for k in LAYOUTS_TOWER.keys()}
+
 LAYOUTS = {
     0: LAYOUTS_CHECK_IN_ONE_QUEEN,
+    # 0: LAYOUTS_QUEEN_CUSTOM,
     1: LAYOUTS_CHECK_IN_ONE_TOWER,
+    # 1: LAYOUTS_TOWER_CUSTOM,
 }

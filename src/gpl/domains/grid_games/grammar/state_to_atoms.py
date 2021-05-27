@@ -16,9 +16,9 @@ def state_to_atoms(domain_name, state, p):
         for c in range(-1, ncols + 1):
             for sort in p.sorts_to_use:
                 o = brd[r, c] if (nrows > r >= 0 and ncols > c >= 0) else OBJECTS.none
-                if o == OBJECTS.none:
+                if o == OBJECTS.none and not p.use_margin_as_feature:
                     continue
-                if o not in {OBJECTS.empty, OBJECTS.none}:
+                if o not in {OBJECTS.empty}:
                     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
 
     for u in p.unary_predicates:
