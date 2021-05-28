@@ -293,7 +293,7 @@ In this domain the agent can shoot, move to the right or to the left. The agent 
 \begin{Verbatim}[fontsize=\footnotesize]
 (A) Num[cell-has-martian] [k=1]
 (B) Bool[cell-has-target_martian] [k=1]
-(C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]:
+(C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]
 \end{Verbatim}
 
 \subsubsection{Feature Descrition}
@@ -334,9 +334,9 @@ In this domain the agent $A$ can move to the right or to the left. The agent has
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Num[cell-has-martian] [k=1]:
-  (B) Bool[cell-has-target_martian] [k=1]:
-  (C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]:
+  (A) Num[cell-has-martian] [k=1]
+  (B) Bool[cell-has-target_martian] [k=1]
+  (C) Dist[col-has-agent;adjacent_col;col-has-target_martian] [k=4]
   absolute horizontal distance between agent and target martian
 \end{Verbatim}
 
@@ -363,7 +363,6 @@ In the $Space Invaders - v1$ the agent cannot shoot, but he can kill the Martian
   .... # .... # .... # m... # M... # M... # .M.. # .... # .... # .... # .... # .... #
   .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... # .... #
   ..A. # ...A # ..A. # ..A. # ...A # ..A. # ..A. # .A.. # ..A. # ..A. # .A.. # A... #
-  1 (p)  1 (p)  2 (p)  1 (p)  1 (p)  2 (p)  1 (p)  1 (p)  2 (p)  1 (p)  1 (p)  2 (p)
 \end{Verbatim}
 
 \subsection{Chase - v0}
@@ -371,7 +370,7 @@ In the $Space Invaders - v1$ the agent cannot shoot, but he can kill the Martian
 In this domain an agent $A$ has to chase an adversary $T$. The goal is defined by the agent being in a adversary's adjacent cell. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.
 The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $leftup\}$. The agent can move only diagonally and the adversary can move in perpendicular directions.  The agent and the adversary can move only once per turn.
 
-\subsubsection{Training instances:}
+\subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
 #A.....#
 #......#
@@ -381,31 +380,29 @@ The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $l
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]:
-  the column of the agent is adjacent to the column of the adversary
-
-  (B) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]:
-  the row of the agent is adjacent to the row of the adversary
-
-  (C) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]:
-  absolute vertical distance between agent and adversary
-
-  (D) Dist[col-hv-TARGET;adjacent_col;col-hv-AGENT] [k=4]:
-  absolute horizontal distance between agent and adversary
+  (A) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]
+  (B) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]
+  (C) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]
+  (D) Dist[col-hv-TARGET;adjacent_col;col-hv-AGENT] [k=4]
 \end{Verbatim}
 
-\subsubsection{Policy (with no fixed action space)}
+\subsubsection{Feature Descrition}
+$A$. The column of the agent is adjacent to the column of the adversary\\
+$B$. The row of the agent is adjacent to the row of the adversary\\
+$C$. Absolute vertical distance between agent and adversary\\
+$D$. Absolute horizontal distance between agent and adversary
+\subsubsection{Policy}
 
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. A=0 AND B=0 AND D>0 AND C=0 -> {A ↑, B ↑, C ↑, D ↓}, {A ·, B ↑, C ↑, D ↓}
-  2. A=0 AND B=0 AND D>0 AND C>0 -> {A ·, B ↑, C ↓, D ↓}, {A ↑, B ↑, C ↓, D ↓},
-                                    {A ·, B ·, C ↓, D ↓}, {A ↑, B ·, C ↓, D ↓}
-  3. A=0 AND B>0 AND D>0 AND C>0 -> {A ·, B ↓, C ↓, D ↓}, {A ↑, B ↓, C ↓, D ↓}
-  4. A>0 AND B=0 AND D>0 AND C>0 -> {A ↓, B ·, C ↓, D ↓}, {A ↓, B ↑, C ↓, D ↓}
-  5. A=0 AND B=0 AND D=0 AND C>0 -> {A ↑, B ·, C ↓, D ↑}, {A ↑, B ↑, C ↓, D ↑}
-
-
+  1. A=0 AND B=0 AND D>0 AND C=0 -> {B ↑, C ↑, D ↓}
+  2. A=0 AND B=0 AND D>0 AND C>0 -> {C ↓, D ↓}
+  3. A=0 AND B>0 AND D>0 AND C>0 -> {B ↓, C ↓, D ↓}
+  4. A>0 AND B=0 AND D>0 AND C>0 -> {A ↓, C ↓, D ↓}
+  5. A=0 AND B=0 AND D=0 AND C>0 -> {A ↑, C ↓, D ↑}
 \end{Verbatim}
+
+\subsubsection{Policy Description}
+According to rule three, if the agent is in the row adjacent to the adversary, it is good to stand in the same row as him. Following the rule four if the agent is in the column adjacent to the opponent it is good to be in the same column. According to rule three, if the agent is in the row adjacent to the adversary, it is good to stand in the same row as him.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -430,30 +427,31 @@ In this domain an agent has to chase an adversary. The goal is defined by the ag
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]:
-  the column of the agent is adjacent to the column of the adversary
-
-  (B) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]:
-  the row of the agent is adjacent to the row of the adversary
-
-  (C) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]:
-  absolute vertical distance between agent and adversary
-
-  (D) Dist[col-hv-TARGET;adjacent_col;col-hv-AGENT] [k=4]:
-  absolute horizontal distance between agent and adversary
+  (A) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]
+  (B) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]
+  (C) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]
+  (D) Dist[col-hv-TARGET;adjacent_col;col-hv-AGENT] [k=4]
 \end{Verbatim}
 
-\subsubsection{Policy (with no fixed action space)}
+\subsubsection{Feature Descrition}
+$A$. The column of the agent is adjacent to the column of the adversary\\
+$B$. The row of the agent is adjacent to the row of the adversary\\
+$C$. Absolute vertical distance between agent and adversary\\
+$D$. Absolute horizontal distance between agent and adversary
+
+\subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. A=0 AND B=0 AND C>0 -> {A ·, B ↑, C ↓, D ·}, {A ·, B ·, C ↓, D ·}
+  1. A=0 AND B=0 AND C>0 -> {A ·, C ↓, D ·}
   2. A=0 AND B>0 AND D>0 AND C>0 -> {A ·, B ·, C ·, D ↓}
-  3. A=0 AND B=0 AND D>0 AND C=0 -> {A ·, B ·, C ·, D ↓}, {A ↑, B ·, C ·, D ↓}
-  4. B=0 AND D>0 AND C>0 -> {A ·, B ↑, C ↓, D ·}, {A ·, B ·, C ↓, D ·}
+  3. A=0 AND B=0 AND D>0 AND C=0 -> {B ·, C ·, D ↓}
+  4. B=0 AND D>0 AND C>0 -> {A ·, C ↓, D ·}
   5. A=0 AND D>0 AND C>0 -> {A ↑, B ·, C ·, D ↓}
-  6. A>0 AND B=0 AND D>0 AND C>0 -> {A ·, B ↑, C ↓, D ·}, {A ·, B ·, C ↓, D ·}
-  7. A=0 AND B=0 AND D=0 AND C>0 -> {A ·, B ·, C ↓, D ·}, {A ·, B ↑, C ↓, D ·}
-
+  6. A>0 AND B=0 AND D>0 AND C>0 -> {A ·, C ↓, D ·}
+  7. A=0 AND B=0 AND D=0 AND C>0 -> {A ·, C ↓, D ·}
 \end{Verbatim}
+
+\subsubsection{Policy Description}
+According to rule two, if the agent is in the opponent's adjacent row, it is good to reduce the distance between them without moving from the adjacent row. Rule six is the same as 2 but with the column.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -479,23 +477,23 @@ In this game the action space is equal to the number of tokens $t$ in the grid. 
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Num[And(cell-has-token,Exists(left_cell,cell-has-token))] [k=5]:
-  number of tokens with a token immediately to the left of it
-
-  (B) Num[And(cell-has-token,Forall(leftdown_cell,cell-has-token))] [k=5]:
-  number of tokens with a token immediately to the leftdown of it
-
-  (C) Num[And(cell-has-token,Forall(rightdown_cell,cell-has-token))] [k=5]:
-  number of tokens with a token immediately to the rightdown of it
-
+  (A) Num[And(cell-has-token,Exists(left_cell,cell-has-token))] [k=5]
+  (B) Num[And(cell-has-token,Forall(leftdown_cell,cell-has-token))] [k=5]
+  (C) Num[And(cell-has-token,Forall(rightdown_cell,cell-has-token))] [k=5]
 \end{Verbatim}
+
+\subsubsection{Feature Descrition}
+$A$. Number of tokens with a token immediately to the left of it\\
+$B$. Number of tokens with a token immediately to the leftdown of it\\
+$C$. Number of tokens with a token immediately to the rightdown of it\\
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. A>0 AND B>0 AND C>0 -> {A ·, B ↓, C ↓}
-  2. B>0 AND C>0 -> {A ·, B ↓, C ↓}
-
+  1. B>0 AND C>0 -> {A ·, B ↓, C ↓}
 \end{Verbatim}
+
+\subsubsection{Policy Description}
+The policy can be interpreted as leaving the two token stacks with the same number of tokens. This is done by decreasing the number of tokens that have a token to their leftdown or rightdown without decreasing the number of tokens with a token next to them.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -509,11 +507,10 @@ In this game the action space is equal to the number of tokens $t$ in the grid. 
   t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
 \end{Verbatim}
 
-
 \subsection{Delivery - v0}
 \subsubsection{Description}
 
-In this domain the agent has to pick up a missed pet $p$ and take it to a certain location, the destination $D$. The pet has the option on its turn to escape from its captor to any of the cells adjacent to it. The goal is defined by the agent in a cell adjacent to the destination while carrying the pet. The agent has two actions per turn and the adversary one. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.  The set of possile actions for the pet consist in escape to one of the adjacent cells to the agent, i.e. at most eight possible actions depending on the position of the agent in the grid. The pet can not escape to the delivey point.
+In this domain the agent has to pick up a missed pet $p$ and take it to a certain location, the destination $D$. The pet has the option on its turn to escape from its captor to any of the cells adjacent to it. The goal is defined by the agent in a cell adjacent to the destination while carrying the pet. The agent has two actions per turn and the adversary one. The set of possile actions for the agent is ~\{$pick$, $rightup$, $rightdown$, $leftdown$, $leftup\}$. The agent to pick up the pet has to execute the $pick$ action or move to the same cell where the pet is located. The set of possile actions for the pet consist in escape to one of the adjacent cells to the agent, i.e. at most eight possible actions depending on the position of the agent in the grid. The pet can not escape to the delivey point.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -527,28 +524,31 @@ In this domain the agent has to pick up a missed pet $p$ and take it to a certai
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Atom[holding_pet] [k=1]:
-  the agent is holding the pet
-
-  (B) Bool[And(cell-has-agent,Exists(adjacent_cell,cell-has-destination))] [k=5]:
-  the destination is adjacent to the agent
-
-  (C) Dist[cell-has-agent;adjacent_cell;cell-has-destination] [k=4]:
-  manhattan distance between agent and destination
-
-  (D) Dist[cell-has-agent;adjacent_cell;cell-has-pet] [k=4]:
-  manhattan distance between agent and pet
+  (A) Atom[holding_pet] [k=1]
+  (B) Bool[And(cell-has-agent,Exists(adjacent_cell,cell-has-destination))] [k=5]
+  (C) Dist[cell-has-agent;adjacent_cell;cell-has-destination] [k=4]
+  (D) Dist[cell-has-agent;adjacent_cell;cell-has-pet] [k=4]
 \end{Verbatim}
+
+\subsubsection{Feature Descrition}
+$A$. The agent is holding the pet\\
+$B$. The destination is adjacent to the agent\\
+$C$. Manhattan distance between agent and destination\\
+$D$. Manhattan distance between agent and pet
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
   1. B=0 AND C>0 AND D>0 -> {A ·, B ·, C ↓, D ·}
-  2. A=0 AND B=0 AND C>0 AND D>0 -> {A ·, B ·, C ↓, D ↓}, {A ·, B ·, C ↑, D ↓},
-                                    {A ↑, B ·, C ·, D ↑}, {A ·, B ·, C ·, D ↓}
+  2. A=0 AND B=0 AND C>0 AND D>0 -> {A ·, B ·, C ↓, D ↓},
+                                    {A ·, B ·, C ↑, D ↓},
+                                    {A ↑, B ·, C ·, D ↑},
+                                    {A ·, B ·, C ·, D ↓}
   3. A>0 AND B=0 AND C>0 AND D>0 -> {A ·, B ↑, C ↓, D ·}
   4. A=0 AND B>0 AND C>0 AND D>0 -> {A ·, B ↓, C ↑, D ↓}
-
 \end{Verbatim}
+
+\subsubsection{Policy Description}
+According to the third rule, if the agent has the pet, it is good to move towards the destination. According to the fourth rule of the policy, if the agent does not have the pet, it is good to increase the distance to the destination and decrease the distance to the pet. Finally, according to the second rule, it is good to take the pet if you have the possibility, and if not, it is good to decrease the distance between the agent and the pet.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -576,7 +576,6 @@ In this domain an agent has to chase an adversary. The goal is defined by the ag
   (A) Bool[And(col-has-AGENT,col-has-TARGET)] [k=3]
   (B) Bool[And(col-has-AGENT,Exists(adjacent_col,col-has-TARGET))] [k=5]
   (C) Dist[row-has-TARGET;adjacent_row;row-has-AGENT] [k=4]
-
 \end{Verbatim}
 
 \subsubsection{Policy}
