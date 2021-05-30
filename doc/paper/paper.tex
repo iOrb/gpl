@@ -277,7 +277,7 @@ equivalence relations, all those other transitions in whose equivalence class th
 \section{Empirical Results}
 
 
-\subsection{Space Invaders - v0}
+\subsection{Space Invaders}
 \subsubsection{Description}
 In this domain the agent can $shoot$, move to the $right$ or to the $left$. The agent during his turn can do two actions, while the Martians can do one. Note that if the Martians and the agent have only one action per turn the agent cannot win, this is because of the situation where the agent stands in the Martian's column to shoot him on his next turn, but the next turn (the Martian's turn) the Martian can move away, this leads to an infinite loop if both are playing perfectly. That is, the agent must be able to move to the agent's column and then shoot. To win the agent has to kill all the martians, for this he must shoot each of them. The agent kills an opponent if he shoots while being in the same column, and he can only kill one for each shoot. The martians has three possible actions $left$, $right$, $up$ and $down$. All the adversaries move in the same direction. The agent cannot be destroyed in any way by the Martians, they can go down to the row above the agent. The agent cannot collide with the Martians as they cannot descend to the row above it. Note that the policy found is optimal and will solve all possible instances of the game. The policy is also optimal for a version of the game where the Martians destroy the agent when they reach the row above him.
 
@@ -299,7 +299,7 @@ In this domain the agent can $shoot$, move to the $right$ or to the $left$. The 
 
 \subsubsection{Feature Descrition}
 $A$. Number of martians\\
-$B$. Minimum absolute horizontal distance between a column with an agent and a column with martian
+$B$. Minimum absolute horizontal distance between a column with an agent and a column with a martian
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -321,8 +321,7 @@ According to the first rule if the agent is not in the column of a Martian, $B$ 
 
 \subsection{Chase - v0}
 \subsubsection{Description}
-In this domain an agent $A$ has to chase an adversary $T$. The goal is defined by the agent being in a adversary's adjacent cell. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.
-The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $leftup\}$. The agent can move only diagonally and the adversary can move in perpendicular directions.  The agent and the adversary can move only once per turn.
+In this domain an agent $A$ has to chase an adversary $T$. The goal is defined by the agent being in a adversary's adjacent cell. The set of possile actions for the agent and the adversary is ~\{$up$, $right$, $down$, $left\}$. The agent can move only diagonally and the adversary can move in perpendicular directions.  The agent and the adversary can move only once per turn.
 
 \subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -356,7 +355,7 @@ $D$. Absolute horizontal distance between agent and adversary
 \end{Verbatim}
 
 \subsubsection{Policy Description}
-According to rule three, if the agent is in the row adjacent to the adversary, it is good to stand in the same row as him. Following the rule four if the agent is in the column adjacent to the opponent it is good to be in the same column. According to rule three, if the agent is in the row adjacent to the adversary, it is good to stand in the same row as him.
+According to rule three, if the agent is in the row adjacent to the adversary, it is good to stand in the same row as him. Following the rule four if the agent is in the column adjacent to the opponent it is good to go into the same column.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -369,7 +368,7 @@ According to rule three, if the agent is in the row adjacent to the adversary, i
 
 \subsection{Chase - v1}
 \subsubsection{Description}
-In this domain an agent has to chase an adversary. The goal is defined by the agent being in a target adjacent cell. The set of possile actions for the agent and the adversary is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$. The agent can move twice per turn and the adversary can move once per turn.
+In this domain an agent has to chase an adversary. The goal is defined by the agent being in a target adjacent cell. The set of possile actions for the agent and the adversary is ~\{$up$, $down$, $left$, $right\}$. The agent can move twice per turn and the adversary can move once per turn.
 
 \subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -506,90 +505,60 @@ According to the third rule, if the agent has the pet, it is good to move toward
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
-  p.... # p.... # p.... # p.... # ..... # ..... # ..... # ..... # ..... # ..... # ..... #
-  ..... # ..... # ..... # .A... # .A... # pA... # .A... # ..... # ..... # ..... # ..... #
-  ..... # ..... # A.... # ..... # ..... # ..... # ..... # ..A.. # .pA.. # ..A.. # ..... #
-  ..... # .A... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ...A. #
-  A...D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D #
+p.... # p.... # p.... # p.... # ..... # ..... # ..... # ..... # ..... # ..... # ..... #
+..... # ..... # ..... # .A... # .A... # pA... # .A... # ..... # ..... # ..... # ..... #
+..... # ..... # A.... # ..... # ..... # ..... # ..... # ..A.. # .pA.. # ..A.. # ..... #
+..... # .A... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ...A. #
+A...D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D #
 \end{Verbatim}
 
-\subsection{Shoot - v0}
+\subsection{Shoot}
 \subsubsection{Description}
-In this domain an agent has to chase an adversary. The goal is defined by the agent being in the column or row of the adversary. The set of possile actions for the agent and the target is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.  The agent and the target can move once per turn.
+In this domain an agent has to shoot an adversary. The goal is defined by the agent being alone on the grid, having finished with the opponent. The agent can execute the action $shoot$, but the opponent does not, so the opponent is able to win the game from any state of any instance if he knows the right strategy. The agent and the adversary share the set of actions ~{$up$, $right$, $down$, $left\}$. To reach the goal state, the agent has to be in the same row or column as the adverary and execute the action $shoot$. When the agent executes the $shoot$ action on the adversary's line, the adversary disappears. We can define the goal state, as the adversary not being on the board. The agent and the opponent have two actions per turn, so that the agent can stand in the opponent's row or column and shoot before the opponent escapes.
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
-#A.....#
-#......#
-#......#
-#.....T#
+  # A . . . #
+  # . . . . #
+  # . . . . #
+  # . . . T #
 \end{Verbatim}
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Bool[And(col-has-agent,col-has-adversary)] [k=3]
-  (B) Bool[And(col-has-agent,Exists(adjacent_col,col-has-adversary))] [k=5]
-  (C) Dist[row-has-agent;adjacent_row;row-has-adversary] [k=4]
+  (A) Bool[cell-has-adversary] [k=1]
+  (B) Bool[And(row-has-adversary,row-has-agent)] [k=3]
+  (C) Bool[And(row-has-adversary,Exists(adjacent_row,row-has-agent))] [k=5]
+  (D) Dist[col-has-agent;adjacent_col;col-has-adversary] [k=4]
 \end{Verbatim}
 
 \subsubsection{Feature Description}
-$A$. The agent and the adversary are in the same column\\
-$B$. The agent column is adjacent to the adversary column\\
-$C$. Absolute vertical distance between the agent and the adversary
+$A$. The adversary is in the board\\
+$B$. The agent and the adversary are in the same row\\
+$C$. The agent row is adjacent to the adversary row\\
+$D$. Absolute horizontal distance between the agent and the adversary
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. A=0 AND B=0 AND C>0 -> {A ·, B ·, C ↓}
-  2. A=0 AND B>0 AND C>0 -> {A ↑, B ↓, C ·}
+  1. A>0 AND B=0 AND C=0 AND D>0 -> {B ·, C ·, D ↓}
+  2. A>0 AND B=0 AND C>0 AND D>0 -> {B ↑, C ↓, D ·}
+  3. A>0 AND D=0 -> {A ↓}
+  4. A>0 AND B>0 -> {A ↓}
 \end{Verbatim}
 
 \subsubsection{Policy Description}
-
-
-\subsubsection{Example of Game}
-\begin{Verbatim}[fontsize=\footnotesize]
-  A...... # ....... # ....... # ....... # ....... # ....... #
-  ....... # A...... # ....... # ....... # ....... # ....... #
-  ....... # ....... # A...... # ....... # ....... # ....... #
-  ....... # ....... # ....... # A...... # ....... # ....... #
-  ....... # .....T. # ....... # ....... # A...... # ....... #
-  .....T. # ....... # .....T. # ....... # ....... # A.....T #
-  ....... # ....... # ....... # .....T. # ......T # ....... #
-\end{Verbatim}
-
-\subsection{Shoot - v1}
-\subsubsection{Description}
-In this domain an agent has to chase an adversary. The goal is defined by the agent being in the column or row of the adversary. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftdown$, $leftup\}$.
-The set of possile action for the target is ~\{$up$, $right$, $down$, $left$, $leftup\}$.  The agent and the target can move once per turn.
-
-\subsubsection{Features}
-\begin{Verbatim}[fontsize=\footnotesize]
-  (A) Bool[And(col-has-AGENT,col-has-TARGET)] [k=3]
-  (B) Bool[And(row-has-AGENT,row-has-TARGET)] [k=3]
-  (C) Dist[col-has-TARGET;adjacent_col;col-has-AGENT] [k=4]
-  (D) Dist[row-has-TARGET;adjacent_row;row-has-AGENT] [k=4]
-
-\end{Verbatim}
-
-\subsubsection{Policy}
-\begin{Verbatim}[fontsize=\footnotesize]
-  1. A=0 AND B=0 AND C>0 AND D>0 -> {A ·, B ↑, C ↑, D ↓},
-                                    {A ↑, B ·, C ↓, D ↑},
-                                    {A ↑, B ·, C ↓, D ↓},
-                                    {A ·, B ·, C ↓, D ↓},
-                                    {A ·, B ↑, C ↓, D ↓}
-\end{Verbatim}
+According to the fourth rule of the policy, if the agent is in the same column as the agent it is good to decrease $A$, i.e. shoot the adversary. In the same way, according to the third rule, if the agent is in the same row as the adversary it is good to execute the action $shoot$. According to the second rule, if the agent is in the row adjacent to the adversary it is good to get in the same row. Finally, according to the first rule, if the agent is not in the row adjacent to the adversary, and is not in the same row or column, it is good to decrease the horizontal distance between the agent and the adversary. The first rule can also be read as, it is good for the agent to approach the adversary horizontally if you do not have the possibility to stand, or you are already in a position where it is good to shoot.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
-  A...... # ....... # ....... # ....... # ....... # ....... #
-  ....... # A...... # ....... # ....... # ....... # ....... #
-  ....... # ....... # A...... # ....... # ....... # ....... #
-  ....... # ....... # ....... # A...... # ....... # ....... #
-  ....... # .....T. # ....... # ....... # A...... # ....... #
-  .....T. # ....... # .....T. # ....... # ....... # A.....T #
-  ....... # ....... # ....... # .....T. # ......T # ....... #
+  A....... # .A...... # ..A..... # ..A..... # ...A.... # ....A... # ....A... # .....A.. # ......A. # ......A. # .....A.. # .....A.. #
+  ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ #
+  ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ #
+  ........ # ........ # ........ # .....T.. # .....T.. # .....T.. # ......T. # ......T. # ......T. # .....T.. # .....T.. # ........ #
+  .....T.. # .....T.. # .....T.. # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ #
+
 \end{Verbatim}
+
 
 \subsection{Checkmate - v0}
 \subsubsection{Description}

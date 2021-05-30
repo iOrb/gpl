@@ -26,6 +26,7 @@ COLOR_TO_PIECES = {
 
 opposite_color = lambda c: BLACK if c == WHITE else WHITE
 
+
 # Actions IDs
 
 SHOOT = 0
@@ -75,7 +76,7 @@ class Env(object):
         if rep.player == WHITE:
             l = layout_after_agent_action(layout, action_id, self.params)
         elif rep.player == BLACK:
-            l = layout_after_env_action(layout, action_id) if action_id else layout
+            l = layout_after_env_action(layout, action_id, self.params) if action_id else layout
         new_rep = copy.deepcopy(rep)
         new_rep.grid = l
         if rep.nact < self.params.max_actions[rep.player]:
@@ -141,7 +142,7 @@ class Env(object):
 
     def init_instance(self, key):
         rep = {u: False for u in self.params.unary_predicates}
-        rep['grid'] = generate_gird(key)
+        rep['grid'] = generate_gird(key, self.params)
         rep['nact'] = 1
         rep['player'] = WHITE
         rep['goal'] = False
@@ -182,27 +183,29 @@ def martians_valid_actions(layout, params):
     return valid_actions
 
 
-def layout_after_env_action(layout, action_id):
-    assert TARGET_MARTIAN in layout
+def layout_after_env_action(layout, action_id, params):
+    if params.use_target_margin:
+        assert TARGET_MARTIAN in layout
+        target_martian_pos = np.argwhere(layout == TARGET_MARTIAN)[0]
     assert action_id in MARTIANS_ACTION_SPACE
     martians_pos = np.argwhere(layout == MARTIAN)
-    target_martian_pos = np.argwhere(layout == TARGET_MARTIAN)[0]
     martians_new_pos = []
     for pos in martians_pos:
         running_pos = np.add(pos, ACTION_MOVE_DIRECTION[action_id])
         martians_new_pos.append((running_pos[0], running_pos[1]))
-    new_target_martian_pos = np.add(target_martian_pos, ACTION_MOVE_DIRECTION[action_id])
     nrows, ncols = layout.shape
     l = copy.deepcopy(layout)
     l = np.where(l == MARTIAN, EMPTY, l)
-    l = np.where(l == TARGET_MARTIAN, EMPTY, l)
     for pos in martians_new_pos:
         l[pos] = MARTIAN
         if pos[0] == nrows-2:
             l = np.where(l == AGENT, EMPTY, l)
-    l[new_target_martian_pos[0], new_target_martian_pos[1]] = TARGET_MARTIAN
-    if new_target_martian_pos[0] == nrows-2:
-        l = np.where(l == AGENT, EMPTY, l)
+    if params.use_target_margin:
+        new_target_martian_pos = np.add(target_martian_pos, ACTION_MOVE_DIRECTION[action_id])
+        l = np.where(l == TARGET_MARTIAN, EMPTY, l)
+        l[new_target_martian_pos[0], new_target_martian_pos[1]] = TARGET_MARTIAN
+        if new_target_martian_pos[0] == nrows-2:
+            l = np.where(l == AGENT, EMPTY, l)
     return l
 
 
@@ -224,7 +227,7 @@ def agent_valid_actions(pos, layout, params):
     if params.agent_has_to_shoot:
         if SHOOT in AGENT_ACTION_SPACE:
             num_martias = len(np.argwhere((layout == MARTIAN) | (layout == TARGET_MARTIAN)))
-            layout_after_shoot = layout_after_agent_shoot(pos, layout)
+            layout_after_shoot = layout_after_agent_shoot(pos, layout, params)
             num_martias_after_shoot = len(np.argwhere((layout_after_shoot == MARTIAN) | (layout_after_shoot == TARGET_MARTIAN)))
             if num_martias != num_martias_after_shoot:
                 valid_action.append(SHOOT)
@@ -235,7 +238,7 @@ def layout_after_agent_action(layout, action_id, params):
     assert action_id in AGENT_ACTION_SPACE
     if action_id == SHOOT:
         pos = np.argwhere(layout == AGENT)[0]
-        return layout_after_agent_shoot(pos, layout)
+        return layout_after_agent_shoot(pos, layout, params)
     else:
         l = copy.deepcopy(layout)
         assert AGENT in layout
@@ -248,11 +251,11 @@ def layout_after_agent_action(layout, action_id, params):
             l[new_r, new_c] = piece
         l[old_r, old_c] = EMPTY
         if not params.agent_has_to_shoot:
-            return layout_after_agent_shoot(running_pos, l)
+            return layout_after_agent_shoot(running_pos, l, params)
         else:
             return l
 
-def layout_after_agent_shoot(pos, layout):
+def layout_after_agent_shoot(pos, layout, params):
     new_layout = layout.copy()
     for direction in [(-1, 0)]: # always shoot up
         running_pos = np.array(pos)
@@ -262,15 +265,16 @@ def layout_after_agent_shoot(pos, layout):
                 next_cell = layout[running_pos[0], running_pos[1]]
             except IndexError:
                 break
-            if next_cell in MARTIAN:
-                # new_layout[running_pos[0], running_pos[1]] = EMPTY
-                # break
-                continue # The Agent can not shoot normal martians
-            if next_cell in TARGET_MARTIAN:
+            if next_cell == MARTIAN:
+                if not params.use_target_margin:
+                    new_layout[running_pos[0], running_pos[1]] = EMPTY
+                break # The Agent can not shoot normal martians
+            if next_cell == TARGET_MARTIAN:
                 new_layout[running_pos[0], running_pos[1]] = EMPTY
                 break
     if MARTIAN in new_layout and TARGET_MARTIAN not in new_layout:
-        new_layout = set_one_random_target_martian(new_layout)
+        if params.use_target_margin:
+            new_layout = set_one_random_target_martian(new_layout)
     return new_layout
 
 
@@ -302,13 +306,14 @@ def set_one_random_target_martian(layout):
 
 
 ### Instances
-def generate_gird(key):
+def generate_gird(key, params):
     height, width, col_agent, martian_rows, target_martian_column, martian_columns = LAYOUTS[key]
     grid = np.full((height, width), EMPTY, dtype=object)
     grid[height - 1, col_agent] = AGENT
     for c in martian_columns:
         grid[martian_rows, c] = MARTIAN
-    grid = set_one_random_target_martian(grid)
+    if params.use_target_margin:
+        grid = set_one_random_target_martian(grid)
     return grid
 
 LAYOUTS = {
@@ -333,4 +338,5 @@ LAYOUTS = {
     16: (4, 5, 2, [0, 1], 4, [0, 4]),
     17: (5, 4, 2, [0, 1], 0, [0, 3]),
     18: (4, 5, 3, [0, 1], 0, [0, 4]),
+    19: (8, 4, 2, [0,], 0, [0, 3]),
 }

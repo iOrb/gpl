@@ -14,11 +14,13 @@ space_invaders_params = Bunch({
     'domain_name': 'space_invaders',
     'use_player_as_feature': False,
     'use_next_player_as_feature': False,
+    'use_margin_as_feature': False,
+    'use_target_margin': False,
     'map_cells': True,
     'use_diagonals_for_map_cells': False,
-    'use_adjacency': {COL_S},
+    'use_adjacency': {COL_S, ROW_S},
     'use_bidirectional': {},
-    'sorts_to_use': {CELL_S, COL_S},
+    'sorts_to_use': {CELL_S, COL_S, ROW_S},
     'unary_predicates': {},
     'predicates_arity_1': {},
     'agent_has_to_shoot': True,
@@ -46,12 +48,12 @@ def experiments():
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
         cond_feature_max_complexity=0,
-        comparison_features=False,
+        comparison_features=True,
         generate_goal_concepts=False,
         print_denotations=True,
         print_hstar_in_feature_matrix=False,
 
-        verbosity=2,
+        verbosity=3,
         initial_sample_size=100,
         refinement_batch_size=200,
         maxsat_iter=20,
@@ -84,7 +86,7 @@ def experiments():
     # martians can't Kill the Agent
     space_invaders_params_v1 = copy.deepcopy(space_invaders_params)
     space_invaders_params_v1.unary_predicates = {}
-    space_invaders_params_v1.use_player_as_feature = True
+    space_invaders_params_v1.use_player_as_feature = False
     space_invaders_params_v1.use_bidirectional = {}
     space_invaders_params_v1.max_actions={PLAYER1: 2, PLAYER2: 1}
     space_invaders_params_v1.target_columns=False
@@ -92,21 +94,23 @@ def experiments():
         base,
         domain=Domain(space_invaders_params_v1),
         instances=[0, 17, 18],
-        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18],
+        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19],
+        allow_bad_states=False,
     )
 
     # version 2: the agent can not shoot, but can kill moving into the adv column, has 2 moves
     space_invaders_params_v2 = copy.deepcopy(space_invaders_params)
     space_invaders_params_v2.unary_predicates = {}
-    space_invaders_params_v2.use_player_as_feature = True
+    space_invaders_params_v2.use_player_as_feature = False
     space_invaders_params_v2.use_bidirectional = {}
-    space_invaders_params_v2.max_actions = {PLAYER1: 2, PLAYER2: 1}
+    space_invaders_params_v2.max_actions = {PLAYER1: 1, PLAYER2: 1}
     space_invaders_params_v2.target_columns = False
     space_invaders_params_v2.agent_has_to_shoot = False
     exps["2"] = update_dict(
         exps["1"],
         domain=Domain(space_invaders_params_v2),
         instances=[0, 17, 18],
+        allow_bad_states=False,
     )
 
     # version 3:

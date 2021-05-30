@@ -2,7 +2,7 @@
 SLTP v.0.2.0
 ================================================================================
 ================================================================================
-(pid: 33626) STARTING STEP #1: Train: Explore the state space of the training instances
+(pid: 57639) STARTING STEP #1: Train: Explore the state space of the training instances
 ================================================================================
 ------------------------------------------------
  DOMAIN PARAMETERS: 
@@ -10,16 +10,19 @@ SLTP v.0.2.0
 ------------------------------------------------
 domain_name: delivery
 use_player_as_feature: False
-use_next_player_as_feature: True
+use_player_to_encode: False
+use_next_player_as_feature: False
+use_next_player_to_encode: False
+use_margin_as_feature: False
 map_cells: True
 use_diagonals_for_map_cells: True
 use_adjacency: {'cell'}
 use_bidirectional: {}
 sorts_to_use: {'cell'}
-unary_predicates: {'holding_package'}
+unary_predicates: {'holding_pet'}
 can_build_walls: False
 wumpus_active: False
-ava_actions: {1: {4, 5, 6, 7, 16}, 2: {10, 11}}
+ava_actions: {1: {0, 1, 2, 3, 16}, 2: {10, 11}}
 max_actions: {1: 2, 2: 1}
 ------------------------------------------------
 ------------------------------------------------
@@ -28,7 +31,7 @@ max_actions: {1: 2, 2: 1}
 ------------------------------------------------
 (0) Exploration of the training sample:
 ------------------------------------------------
-2021-05-26 21:36:30 INFO     Expanding train instance: delivery - 1
+2021-05-30 23:16:50 INFO     Expanding train instance: delivery - 1
 #D....A#
 #......#
 #......#
@@ -39,18 +42,18 @@ max_actions: {1: 2, 2: 1}
 ------------------------------------------------
 (0) Generation of the training sample:
 ------------------------------------------------
-2021-05-26 21:36:31 INFO     sample: #states=283, #transition-entries=783, #transitions=783
-2021-05-26 21:36:31 INFO     Entire sample: roots: 1, states: 283, transitions: 783 (405 optimal), goals: 2, alive: 281, deadends: 0
-2021-05-26 21:36:31 INFO     Printing SAT transition matrix with 283 states, 266 states with some outgoing transition, 5 operators, 783 (non-det) transitions, and 283 (adv) transitions,
+2021-05-30 23:16:52 INFO     sample: #states=919, #transition-entries=3112, #transitions=3112
+2021-05-30 23:16:52 INFO     Entire sample: roots: 1, states: 919, transitions: 3112 (1594 optimal), goals: 3, alive: 916, deadends: 0
+2021-05-30 23:16:52 INFO     Printing SAT transition matrix with 919 states, 913 states with some outgoing transition, 5 operators, 3112 (non-det) transitions, and 951 (adv) transitions,
 ------------------------------------------------
 (0) Generate the pool of candidate features:
 ------------------------------------------------
-2021-05-26 21:36:31 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 283, transitions: 783 (405 optimal), goals: 2, alive: 281, deadends: 0
-2021-05-26 21:36:31 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/sample.io'
-2021-05-26 21:36:31 INFO     Invoking C++ feature generation module
-2021-05-26 21:36:31 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 5 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+2021-05-30 23:16:52 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 919, transitions: 3112 (1594 optimal), goals: 3, alive: 916, deadends: 0
+2021-05-30 23:16:52 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/sample.io'
+2021-05-30 23:16:52 INFO     Invoking C++ feature generation module
+2021-05-30 23:16:52 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 5 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
 reading '/home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/transitions-info.io
-BASIS: #concepts=7, #roles=1
+BASIS: #concepts=8, #roles=1
 ROLES: #roles=2
 Generating concepts for k=1. Total concepts: 5 (2, 3, 0, 0, 0, 0)... 0 concepts generated, 3 pruned.
 Generating concepts for k=2. Total concepts: 5 (2, 3, 0, 0, 0, 0)... 3 concepts generated, 16 pruned.
@@ -62,200 +65,45 @@ A total of 113 concepts were pruned
 A total of 0 features were marked as goal-identifying
 Generating cardinality features...
 Generating distance features...
-FEATURES: #features=19, #nullary=3, #boolean=3, #numerical=10, #distance=3, #conditional=0, #comparison=0
+FEATURES: #features=17, #nullary=1, #boolean=3, #numerical=10, #distance=3, #conditional=0, #comparison=0
 Printing concept, role and feature denotations to /home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/*-denotations.io.txt
 Serializing all concepts and features to:
 	/home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/serialized-concepts.io
 	/home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/serialized-features.io
-2021-05-26 21:36:33 INFO     Reading feature denotation matrix from /home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/feature-matrix.io
+2021-05-30 23:16:58 INFO     Reading feature denotation matrix from /home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/feature-matrix.io
 ------------------------------------------------
 (0) C++ CNF generation module:
 ------------------------------------------------
-2021-05-26 21:36:33 INFO     Calling C++ MaxSAT module
-2021-05-26 21:36:33 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cnfgen --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1 --v_slack 2 --distinguish-goals --initial-sample-size 20 --refinement-batch-size 50 --seed 0 --verbosity 3 --acyclicity topological --encodings_dir  --sampling_strategy full --optimal_steps 3 --consistency_bound 2 --n_features 2 --closed --maxsat_iter 10 --allow_bad_states" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+2021-05-30 23:16:58 INFO     Calling C++ MaxSAT module
+2021-05-30 23:16:58 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cnfgen --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1 --v_slack 2 --distinguish-goals --initial-sample-size 20 --refinement-batch-size 50 --seed 0 --verbosity 3 --acyclicity topological --encodings_dir  --sampling_strategy full --optimal_steps 3 --consistency_bound 2 --n_features 2 --closed --maxsat_iter 10 --allow_bad_states" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
 Parsing training data... 
 reading '/home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/transitions-info.io
-TransitionSample::read_dump: #states=283, #transitions=783, #transitions (adv)=283
+TransitionSample::read_dump: #states=919, #transitions=3112, #transitions (adv)=951
 reading '/home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/feature-matrix.io
-FeatureMatrix::read_dump: #states=283, #features=19
-Done. Training sample: [states: 283, transitions: 783 (from alive state: 783), unsolvable: 0, goals: 2, unknowns: 0, features: 19, est. size: 0.01 MB.]
+FeatureMatrix::read_dump: #states=919, #features=17
+Done. Training sample: [states: 919, transitions: 3112 (from alive state: 3112), unsolvable: 0, goals: 3, unknowns: 0, features: 17, est. size: 0.03 MB.]
 Sampling 20 alive states at random
 
 
 ###  STARTING ITERATION 1  ###
-Sample [sz=283]: 282, 281, 280, 279, 278, 277, 276, 275, 274, 273, 272, 271, 270, 269, 268, 267, 266, 265, 264, 263, 262, 261, 260, 259, 258, 257, 256, 255, 254, 253, 252, 251, 250, 249, 248, 247, 246, 245, 244, 243, 242, 241, 240, 239, 238, 237, 236, 235, 234, 233, 232, 231, 230, 229, 228, 227, 226, 225, 224, 223, 222, 221, 220, 219, 218, 217, 216, 215, 214, 213, 212, 211, 210, 209, 208, 207, 206, 205, 204, 203, 202, 201, 200, 199, 198, 197, 196, 195, 194, 193, 192, 191, 190, 189, 188, 187, 186, 185, 184, 183, 182, 181, 180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 169, 168, 167, 166, 165, 164, 163, 162, 161, 160, 159, 158, 157, 156, 155, 154, 153, 152, 151, 150, 149, 148, 147, 146, 145, 144, 143, 142, 141, 140, 139, 138, 137, 136, 135, 134, 133, 132, 131, 130, 129, 128, 127, 126, 125, 124, 123, 122, 121, 120, 119, 118, 117, 116, 115, 114, 113, 112, 111, 110, 109, 108, 107, 106, 105, 104, 103, 102, 101, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 
+Sample [sz=919]: 918, 917, 916, 915, 914, 913, 912, 911, 910, 909, 908, 907, 906, 905, 904, 903, 902, 901, 900, 899, 898, 897, 896, 895, 894, 893, 892, 891, 890, 889, 888, 887, 886, 885, 884, 883, 882, 881, 880, 879, 878, 877, 876, 875, 874, 873, 872, 871, 870, 869, 868, 867, 866, 865, 864, 863, 862, 861, 860, 859, 858, 857, 856, 855, 854, 853, 852, 851, 850, 849, 848, 847, 846, 845, 844, 843, 842, 841, 840, 839, 838, 837, 836, 835, 834, 833, 832, 831, 830, 829, 828, 827, 826, 825, 824, 823, 822, 821, 820, 819, 818, 817, 816, 815, 814, 813, 812, 811, 810, 809, 808, 807, 806, 805, 804, 803, 802, 801, 800, 799, 798, 797, 796, 795, 794, 793, 792, 791, 790, 789, 788, 787, 786, 785, 784, 783, 782, 781, 780, 779, 778, 777, 776, 775, 774, 773, 772, 771, 770, 769, 768, 767, 766, 765, 764, 763, 762, 761, 760, 759, 758, 757, 756, 755, 754, 753, 752, 751, 750, 749, 748, 747, 746, 745, 744, 743, 742, 741, 740, 739, 738, 737, 736, 735, 734, 733, 732, 731, 730, 729, 728, 727, 726, 725, 724, 723, 722, 721, 720, 719, 718, 717, 716, 715, 714, 713, 712, 711, 710, 709, 708, 707, 706, 705, 704, 703, 702, 701, 700, 699, 698, 697, 696, 695, 694, 693, 692, 691, 690, 689, 688, 687, 686, 685, 684, 683, 682, 681, 680, 679, 678, 677, 676, 675, 674, 673, 672, 671, 670, 669, 668, 667, 666, 665, 664, 663, 662, 661, 660, 659, 658, 657, 656, 655, 654, 653, 652, 651, 650, 649, 648, 647, 646, 645, 644, 643, 642, 641, 640, 639, 638, 637, 636, 635, 634, 633, 632, 631, 630, 629, 628, 627, 626, 625, 624, 623, 622, 621, 620, 619, 618, 617, 616, 615, 614, 613, 612, 611, 610, 609, 608, 607, 606, 605, 604, 603, 602, 601, 600, 599, 598, 597, 596, 595, 594, 593, 592, 591, 590, 589, 588, 587, 586, 585, 584, 583, 582, 581, 580, 579, 578, 577, 576, 575, 574, 573, 572, 571, 570, 569, 568, 567, 566, 565, 564, 563, 562, 561, 560, 559, 558, 557, 556, 555, 554, 553, 552, 551, 550, 549, 548, 547, 546, 545, 544, 543, 542, 541, 540, 539, 538, 537, 536, 535, 534, 533, 532, 531, 530, 529, 528, 527, 526, 525, 524, 523, 522, 521, 520, 519, 518, 517, 516, 515, 514, 513, 512, 511, 510, 509, 508, 507, 506, 505, 504, 503, 502, 501, 500, 499, 498, 497, 496, 495, 494, 493, 492, 491, 490, 489, 488, 487, 486, 485, 484, 483, 482, 481, 480, 479, 478, 477, 476, 475, 474, 473, 472, 471, 470, 469, 468, 467, 466, 465, 464, 463, 462, 461, 460, 459, 458, 457, 456, 455, 454, 453, 452, 451, 450, 449, 448, 447, 446, 445, 444, 443, 442, 441, 440, 439, 438, 437, 436, 435, 434, 433, 432, 431, 430, 429, 428, 427, 426, 425, 424, 423, 422, 421, 420, 419, 418, 417, 416, 415, 414, 413, 412, 411, 410, 409, 408, 407, 406, 405, 404, 403, 402, 401, 400, 399, 398, 397, 396, 395, 394, 393, 392, 391, 390, 389, 388, 387, 386, 385, 384, 383, 382, 381, 380, 379, 378, 377, 376, 375, 374, 373, 372, 371, 370, 369, 368, 367, 366, 365, 364, 363, 362, 361, 360, 359, 358, 357, 356, 355, 354, 353, 352, 351, 350, 349, 348, 347, 346, 345, 344, 343, 342, 341, 340, 339, 338, 337, 336, 335, 334, 333, 332, 331, 330, 329, 328, 327, 326, 325, 324, 323, 322, 321, 320, 319, 318, 317, 316, 315, 314, 313, 312, 311, 310, 309, 308, 307, 306, 305, 304, 303, 302, 301, 300, 299, 298, 297, 296, 295, 294, 293, 292, 291, 290, 289, 288, 287, 286, 285, 284, 283, 282, 281, 280, 279, 278, 277, 276, 275, 274, 273, 272, 271, 270, 269, 268, 267, 266, 265, 264, 263, 262, 261, 260, 259, 258, 257, 256, 255, 254, 253, 252, 251, 250, 249, 248, 247, 246, 245, 244, 243, 242, 241, 240, 239, 238, 237, 236, 235, 234, 233, 232, 231, 230, 229, 228, 227, 226, 225, 224, 223, 222, 221, 220, 219, 218, 217, 216, 215, 214, 213, 212, 211, 210, 209, 208, 207, 206, 205, 204, 203, 202, 201, 200, 199, 198, 197, 196, 195, 194, 193, 192, 191, 190, 189, 188, 187, 186, 185, 184, 183, 182, 181, 180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 169, 168, 167, 166, 165, 164, 163, 162, 161, 160, 159, 158, 157, 156, 155, 154, 153, 152, 151, 150, 149, 148, 147, 146, 145, 144, 143, 142, 141, 140, 139, 138, 137, 136, 135, 134, 133, 132, 131, 130, 129, 128, 127, 126, 125, 124, 123, 122, 121, 120, 119, 118, 117, 116, 115, 114, 113, 112, 111, 110, 109, 108, 107, 106, 105, 104, 103, 102, 101, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 
 
-Number of transitions/equivalence classes: 783/783
+Number of transitions/equivalence classes: 3112/3112
 Number of necessarily bad transitions/classes: 0/0
-Generating CNF encoding for 281 alive states, 783 alive-to-solvable and alive-to-dead transitions and 783 transition equivalence classes
-A total of 10062 variables were created
-	Select(f): 19
-	Good(s, a, s'): 783
-	Bad(s): 268
-	V(s, d): 8992
+Generating CNF encoding for 916 alive states, 3112 alive-to-solvable and alive-to-dead transitions and 3112 transition equivalence classes
+A total of 29693 variables were created
+	Select(f): 17
+	Good(s, a, s'): 3112
+	Bad(s): 916
+	V(s, d): 25648
 Posting distinguishability constraints
-A total of 778074 clauses were created
+A total of 10127403 clauses were created
 	Policy completeness [1]: 0
-	Transition separation [5,6]: 613089
-	V descending along good transitions [X]: 24211
-	V is total function within bounds [X]: 139657
-	Goal separation [X]: 562
-	(Weighted) Select(f): 19
+	Transition separation [5,6]: 9684544
+	V descending along good transitions [X]: 91098
+	V is total function within bounds [X]: 347164
+	Goal separation [X]: 2748
+	(Weighted) Select(f): 17
 Writing final DIMACS file...
-CNF [10062 vars, 778074 clauses] generated in 6.91 sec.
+CNF [29693 vars, 10127403 clauses] generated in 87.18 sec.
 Calling: open-wbo_static /home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/theory.wsat > /home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/maxsat_solver_run.log
-Call returned with exit code 7680
-Solution with cost 15 found in 0.54sec.
-
-Good(0, 0, 1) Good(1, 3, 3) Good(1, 0, 4) Good(4, 3, 6) Good(5, 3, 4) Good(7, 3, 11) Good(14, 3, 12) Good(16, 1, 21) Good(18, 2, 12) Good(20, 4, 25) 
-Good(26, 3, 22) Good(27, 0, 22) Good(28, 1, 22) Good(29, 2, 22) Good(32, 3, 24) Good(35, 4, 51) Good(37, 0, 26) Good(38, 3, 29) Good(39, 2, 28) Good(39, 1, 29) 
-Good(42, 4, 61) Good(44, 3, 32) Good(45, 3, 33) Good(45, 2, 31) Good(48, 4, 21) Good(13, 3, 9) Good(53, 3, 37) Good(58, 4, 84) Good(58, 0, 42) Good(59, 4, 21) 
-Good(59, 1, 42) Good(60, 2, 42) Good(61, 1, 89) Good(62, 3, 43) Good(63, 3, 44) Good(64, 2, 43) Good(67, 3, 47) Good(68, 3, 48) Good(69, 3, 50) Good(69, 2, 47) 
-Good(73, 4, 103) Good(75, 2, 105) Good(50, 2, 35) Good(76, 3, 54) Good(77, 3, 56) Good(77, 2, 54) Good(78, 2, 56) Good(65, 0, 44) Good(80, 3, 58) Good(81, 3, 60) 
-Good(81, 2, 57) Good(82, 0, 58) Good(179, 2, 147) Good(87, 2, 59) Good(12, 2, 7) Good(71, 4, 16) Good(92, 0, 63) Good(190, 2, 161) Good(230, 3, 200) Good(2, 3, 1) 
-Good(79, 3, 57) Good(57, 3, 42) Good(190, 1, 162) Good(194, 3, 165) Good(253, 4, 106) Good(195, 0, 165) Good(215, 0, 188) Good(15, 4, 19) Good(36, 3, 26) Good(243, 1, 220) 
-Good(282, 0, 274) Good(203, 3, 177) Good(54, 2, 36) Good(204, 1, 176) Good(205, 2, 176) Good(196, 4, 51) Good(161, 4, 72) Good(209, 2, 178) Good(210, 3, 179) Good(220, 4, 134) 
-Good(97, 0, 68) Good(200, 3, 170) Good(211, 2, 179) Good(204, 2, 175) Good(144, 2, 112) Good(38, 2, 26) Good(115, 2, 86) Good(219, 2, 190) Good(272, 0, 262) Good(208, 1, 178) 
-Good(47, 3, 35) Good(104, 2, 139) Good(12, 3, 17) Good(221, 1, 193) Good(186, 3, 160) Good(218, 1, 190) Good(222, 2, 134) Good(14, 2, 9) Good(31, 3, 23) Good(236, 3, 211) 
-Good(174, 2, 143) Good(185, 2, 151) Good(271, 0, 261) Good(165, 4, 72) Good(212, 2, 183) Good(66, 2, 45) Good(226, 1, 195) Good(226, 0, 196) Good(207, 4, 233) Good(201, 0, 170) 
-Good(270, 3, 261) Good(43, 3, 31) Good(114, 1, 146) Good(228, 4, 136) Good(54, 3, 38) Good(110, 3, 85) Good(56, 2, 38) Good(264, 2, 254) Good(151, 1, 121) Good(130, 4, 30) 
-Good(120, 4, 41) Good(232, 0, 201) Good(227, 1, 196) Good(258, 0, 242) Good(261, 3, 252) Good(113, 2, 85) Good(242, 0, 220) Good(30, 1, 41) Good(260, 1, 243) Good(80, 0, 57) 
-Good(262, 0, 252) Good(265, 2, 255) Good(278, 3, 271) Good(101, 4, 34) Good(49, 4, 19) Good(154, 3, 127) Good(267, 1, 258) Good(238, 0, 215) Good(25, 1, 34) Good(185, 1, 152) 
-Good(259, 0, 243) Good(200, 0, 169) Good(263, 1, 252) Good(56, 3, 40) Good(247, 0, 224) Good(277, 1, 268) Good(193, 2, 220) Good(64, 3, 45) Good(173, 3, 143) Good(281, 1, 272) 
-Good(196, 1, 165) Good(129, 0, 100) Good(123, 3, 95) Good(274, 1, 263) Good(70, 0, 48) Good(97, 3, 70) Good(279, 0, 271) Good(40, 2, 29) Good(198, 4, 229) Good(132, 1, 102) 
-Good(229, 2, 136) Good(93, 0, 65) Good(235, 1, 211) Good(212, 1, 184) Good(120, 1, 90) Good(255, 1, 235) Good(11, 3, 15) Good(52, 3, 36) Good(231, 3, 201) Good(231, 0, 200) 
-Good(108, 3, 88) Good(178, 1, 147) Good(275, 0, 267) Good(140, 2, 104) Good(83, 1, 58) Good(280, 0, 272) Good(122, 1, 153) Good(221, 2, 243) Good(281, 0, 273) Good(176, 1, 145) 
-Good(125, 0, 97) Good(216, 1, 188) Good(187, 0, 160) Good(117, 2, 88) Good(217, 1, 189) Good(273, 1, 262) Good(138, 2, 169) Good(246, 3, 224) Good(65, 3, 46) Good(188, 1, 160) 
-Good(215, 1, 187) Good(245, 2, 221) Good(161, 1, 135) Good(276, 1, 267) Good(252, 0, 228) Good(172, 1, 141) Good(201, 3, 171) Good(269, 1, 260) Good(2, 0, 5) Good(271, 3, 262) 
-Good(256, 2, 235) Good(104, 3, 75) Good(273, 0, 263) Good(263, 0, 253) Good(223, 3, 194) Good(17, 2, 11) Good(224, 3, 195) Good(248, 0, 225) Good(198, 2, 228) Good(128, 3, 102) 
-Good(244, 1, 221) Good(257, 3, 242) Good(247, 3, 225) Good(221, 4, 136) Good(259, 1, 242) Good(224, 0, 194) Good(249, 1, 225) Good(243, 4, 103) Good(203, 2, 174) Good(145, 2, 113) 
-Good(256, 1, 237) Good(55, 0, 37) Good(239, 1, 215) Good(172, 0, 142) Good(255, 2, 234) Good(254, 1, 234) Good(244, 2, 260) Good(251, 3, 228) Good(225, 0, 195) Good(213, 1, 185) 
-Good(184, 1, 151) Good(250, 0, 227) Good(155, 0, 127) Good(250, 1, 226) Good(157, 1, 129) Good(241, 3, 220) Good(109, 0, 21) Good(249, 0, 226) Good(114, 0, 41) Good(234, 1, 209) 
-Good(33, 2, 23) Good(207, 0, 178) Good(163, 1, 191) Good(202, 3, 174) Good(218, 2, 189) Good(168, 1, 192) Good(152, 2, 121) Good(279, 3, 272) Good(267, 0, 259) Good(9, 3, 7) 
-Good(119, 4, 146) Good(234, 2, 208) Good(282, 1, 273) Good(239, 0, 216) Good(148, 3, 121) Good(266, 2, 256) Good(237, 2, 211) Good(53, 0, 36) Good(75, 4, 106) Good(162, 2, 135) 
-Good(118, 3, 90) Good(235, 2, 209) Good(184, 2, 150) Good(49, 1, 35) Good(183, 1, 150) Good(182, 0, 150) Good(182, 1, 149) Good(180, 0, 89) Good(181, 0, 149) Good(253, 1, 228) 
-Good(213, 2, 184) Good(91, 3, 63) Good(205, 1, 177) Good(178, 4, 84) Good(206, 2, 177) Good(176, 2, 144) Good(175, 1, 144) Good(233, 0, 84) Good(116, 1, 88) Good(174, 3, 145) 
-Good(131, 1, 101) Good(171, 0, 141) Good(170, 0, 139) Good(170, 3, 141) Good(169, 3, 139) Good(168, 2, 72) Good(265, 1, 256) Good(167, 2, 137) Good(277, 0, 269) Good(166, 1, 137) 
-Good(37, 3, 27) Good(157, 0, 130) Good(166, 2, 196) Good(166, 4, 74) Good(46, 0, 32) Good(100, 4, 41) Good(83, 0, 59) Good(164, 2, 194) Good(164, 3, 137) Good(149, 1, 119) 
-Good(160, 4, 89) Good(159, 3, 135) Good(101, 1, 73) Good(158, 1, 130) Good(156, 0, 129) Good(155, 3, 129) Good(151, 2, 120) Good(268, 1, 259) Good(133, 2, 102) Good(240, 1, 216) 
-Good(150, 1, 120) Good(149, 4, 114) Good(189, 1, 161) Good(143, 3, 113) Good(147, 4, 180) Good(116, 2, 87) Good(144, 1, 113) Good(209, 1, 179) Good(109, 1, 84) Good(95, 3, 68) 
-Good(23, 3, 20) Good(71, 1, 48) Good(105, 4, 34) Good(143, 2, 110) Good(142, 1, 105) Good(214, 2, 185) Good(142, 4, 25) Good(141, 0, 105) Good(96, 2, 67) Good(268, 0, 260) 
-Good(193, 4, 222) Good(139, 3, 105) Good(98, 2, 69) Good(137, 2, 165) Good(137, 4, 168) Good(135, 4, 163) Good(177, 2, 145) Good(132, 2, 101) Good(276, 0, 268) Good(130, 1, 100) 
-Good(96, 3, 69) Good(264, 1, 255) Good(87, 1, 60) Good(127, 3, 100) Good(138, 3, 104) Good(126, 3, 99) Good(124, 0, 95) Good(124, 3, 97) Good(188, 4, 61) Good(51, 1, 72) 
-Good(128, 2, 99) Good(121, 2, 90) Good(261, 0, 251) Good(119, 0, 90) Good(115, 1, 87) Good(149, 0, 120) Good(10, 4, 16) Good(112, 1, 85) Good(111, 0, 85) Good(108, 2, 81) 
-Good(3, 0, 6) Good(107, 3, 81) Good(6, 3, 10) Good(106, 1, 136) Good(106, 2, 34) Good(103, 1, 134) Good(102, 2, 73) Good(85, 4, 114) Good(99, 3, 73) Good(8, 3, 5) 
-Good(199, 3, 169) Good(94, 3, 67) Good(92, 3, 65) Good(90, 4, 122) Good(83, 4, 109) Good(22, 4, 30) Good(88, 2, 60) Good(86, 1, 59) 
-Good(0, 0, 1) Good(1, 3, 3) Good(1, 0, 4) Good(4, 3, 6) Good(5, 3, 4) Good(7, 3, 11) Good(14, 3, 12) Good(16, 1, 21) Good(18, 2, 12) Good(20, 4, 25) 
-Good(26, 3, 22) Good(27, 0, 22) Good(28, 1, 22) Good(29, 2, 22) Good(32, 3, 24) Good(35, 4, 51) Good(37, 0, 26) Good(38, 3, 29) Good(39, 2, 28) Good(39, 1, 29) 
-Good(42, 4, 61) Good(44, 3, 32) Good(45, 3, 33) Good(45, 2, 31) Good(48, 4, 21) Good(13, 3, 9) Good(53, 3, 37) Good(58, 4, 84) Good(58, 0, 42) Good(59, 4, 21) 
-Good(59, 1, 42) Good(60, 2, 42) Good(61, 1, 89) Good(62, 3, 43) Good(63, 3, 44) Good(64, 2, 43) Good(67, 3, 47) Good(68, 3, 48) Good(69, 3, 50) Good(69, 2, 47) 
-Good(73, 4, 103) Good(75, 2, 105) Good(50, 2, 35) Good(76, 3, 54) Good(77, 3, 56) Good(77, 2, 54) Good(78, 2, 56) Good(65, 0, 44) Good(80, 3, 58) Good(81, 3, 60) 
-Good(81, 2, 57) Good(82, 0, 58) Good(179, 2, 147) Good(87, 2, 59) Good(12, 2, 7) Good(71, 4, 16) Good(92, 0, 63) Good(190, 2, 161) Good(230, 3, 200) Good(2, 3, 1) 
-Good(79, 3, 57) Good(57, 3, 42) Good(190, 1, 162) Good(194, 3, 165) Good(253, 4, 106) Good(195, 0, 165) Good(215, 0, 188) Good(15, 4, 19) Good(36, 3, 26) Good(243, 1, 220) 
-Good(282, 0, 274) Good(203, 3, 177) Good(54, 2, 36) Good(204, 1, 176) Good(205, 2, 176) Good(196, 4, 51) Good(161, 4, 72) Good(209, 2, 178) Good(210, 3, 179) Good(220, 4, 134) 
-Good(97, 0, 68) Good(200, 3, 170) Good(211, 2, 179) Good(204, 2, 175) Good(144, 2, 112) Good(38, 2, 26) Good(115, 2, 86) Good(219, 2, 190) Good(272, 0, 262) Good(208, 1, 178) 
-Good(47, 3, 35) Good(104, 2, 139) Good(12, 3, 17) Good(221, 1, 193) Good(186, 3, 160) Good(218, 1, 190) Good(222, 2, 134) Good(14, 2, 9) Good(31, 3, 23) Good(236, 3, 211) 
-Good(174, 2, 143) Good(185, 2, 151) Good(271, 0, 261) Good(165, 4, 72) Good(212, 2, 183) Good(66, 2, 45) Good(226, 1, 195) Good(226, 0, 196) Good(207, 4, 233) Good(201, 0, 170) 
-Good(270, 3, 261) Good(43, 3, 31) Good(114, 1, 146) Good(228, 4, 136) Good(54, 3, 38) Good(110, 3, 85) Good(56, 2, 38) Good(264, 2, 254) Good(151, 1, 121) Good(130, 4, 30) 
-Good(120, 4, 41) Good(232, 0, 201) Good(227, 1, 196) Good(258, 0, 242) Good(261, 3, 252) Good(113, 2, 85) Good(242, 0, 220) Good(30, 1, 41) Good(260, 1, 243) Good(80, 0, 57) 
-Good(262, 0, 252) Good(265, 2, 255) Good(278, 3, 271) Good(101, 4, 34) Good(49, 4, 19) Good(154, 3, 127) Good(267, 1, 258) Good(238, 0, 215) Good(25, 1, 34) Good(185, 1, 152) 
-Good(259, 0, 243) Good(200, 0, 169) Good(263, 1, 252) Good(56, 3, 40) Good(247, 0, 224) Good(277, 1, 268) Good(193, 2, 220) Good(64, 3, 45) Good(173, 3, 143) Good(281, 1, 272) 
-Good(196, 1, 165) Good(129, 0, 100) Good(123, 3, 95) Good(274, 1, 263) Good(70, 0, 48) Good(97, 3, 70) Good(279, 0, 271) Good(40, 2, 29) Good(198, 4, 229) Good(132, 1, 102) 
-Good(229, 2, 136) Good(93, 0, 65) Good(235, 1, 211) Good(212, 1, 184) Good(120, 1, 90) Good(255, 1, 235) Good(11, 3, 15) Good(52, 3, 36) Good(231, 3, 201) Good(231, 0, 200) 
-Good(108, 3, 88) Good(178, 1, 147) Good(275, 0, 267) Good(140, 2, 104) Good(83, 1, 58) Good(280, 0, 272) Good(122, 1, 153) Good(221, 2, 243) Good(281, 0, 273) Good(176, 1, 145) 
-Good(125, 0, 97) Good(216, 1, 188) Good(187, 0, 160) Good(117, 2, 88) Good(217, 1, 189) Good(273, 1, 262) Good(138, 2, 169) Good(246, 3, 224) Good(65, 3, 46) Good(188, 1, 160) 
-Good(215, 1, 187) Good(245, 2, 221) Good(161, 1, 135) Good(276, 1, 267) Good(252, 0, 228) Good(172, 1, 141) Good(201, 3, 171) Good(269, 1, 260) Good(2, 0, 5) Good(271, 3, 262) 
-Good(256, 2, 235) Good(104, 3, 75) Good(273, 0, 263) Good(263, 0, 253) Good(223, 3, 194) Good(17, 2, 11) Good(224, 3, 195) Good(248, 0, 225) Good(198, 2, 228) Good(128, 3, 102) 
-Good(244, 1, 221) Good(257, 3, 242) Good(247, 3, 225) Good(221, 4, 136) Good(259, 1, 242) Good(224, 0, 194) Good(249, 1, 225) Good(243, 4, 103) Good(203, 2, 174) Good(145, 2, 113) 
-Good(256, 1, 237) Good(55, 0, 37) Good(239, 1, 215) Good(172, 0, 142) Good(255, 2, 234) Good(254, 1, 234) Good(244, 2, 260) Good(251, 3, 228) Good(225, 0, 195) Good(213, 1, 185) 
-Good(184, 1, 151) Good(250, 0, 227) Good(155, 0, 127) Good(250, 1, 226) Good(157, 1, 129) Good(241, 3, 220) Good(109, 0, 21) Good(249, 0, 226) Good(114, 0, 41) Good(234, 1, 209) 
-Good(33, 2, 23) Good(207, 0, 178) Good(163, 1, 191) Good(202, 3, 174) Good(218, 2, 189) Good(168, 1, 192) Good(152, 2, 121) Good(279, 3, 272) Good(267, 0, 259) Good(9, 3, 7) 
-Good(119, 4, 146) Good(234, 2, 208) Good(282, 1, 273) Good(239, 0, 216) Good(148, 3, 121) Good(266, 2, 256) Good(237, 2, 211) Good(53, 0, 36) Good(75, 4, 106) Good(162, 2, 135) 
-Good(118, 3, 90) Good(235, 2, 209) Good(184, 2, 150) Good(49, 1, 35) Good(183, 1, 150) Good(182, 0, 150) Good(182, 1, 149) Good(180, 0, 89) Good(181, 0, 149) Good(253, 1, 228) 
-Good(213, 2, 184) Good(91, 3, 63) Good(205, 1, 177) Good(178, 4, 84) Good(206, 2, 177) Good(176, 2, 144) Good(175, 1, 144) Good(233, 0, 84) Good(116, 1, 88) Good(174, 3, 145) 
-Good(131, 1, 101) Good(171, 0, 141) Good(170, 0, 139) Good(170, 3, 141) Good(169, 3, 139) Good(168, 2, 72) Good(265, 1, 256) Good(167, 2, 137) Good(277, 0, 269) Good(166, 1, 137) 
-Good(37, 3, 27) Good(157, 0, 130) Good(166, 2, 196) Good(166, 4, 74) Good(46, 0, 32) Good(100, 4, 41) Good(83, 0, 59) Good(164, 2, 194) Good(164, 3, 137) Good(149, 1, 119) 
-Good(160, 4, 89) Good(159, 3, 135) Good(101, 1, 73) Good(158, 1, 130) Good(156, 0, 129) Good(155, 3, 129) Good(151, 2, 120) Good(268, 1, 259) Good(133, 2, 102) Good(240, 1, 216) 
-Good(150, 1, 120) Good(149, 4, 114) Good(189, 1, 161) Good(143, 3, 113) Good(147, 4, 180) Good(116, 2, 87) Good(144, 1, 113) Good(209, 1, 179) Good(109, 1, 84) Good(95, 3, 68) 
-Good(23, 3, 20) Good(71, 1, 48) Good(105, 4, 34) Good(143, 2, 110) Good(142, 1, 105) Good(214, 2, 185) Good(142, 4, 25) Good(141, 0, 105) Good(96, 2, 67) Good(268, 0, 260) 
-Good(193, 4, 222) Good(139, 3, 105) Good(98, 2, 69) Good(137, 2, 165) Good(137, 4, 168) Good(135, 4, 163) Good(177, 2, 145) Good(132, 2, 101) Good(276, 0, 268) Good(130, 1, 100) 
-Good(96, 3, 69) Good(264, 1, 255) Good(87, 1, 60) Good(127, 3, 100) Good(138, 3, 104) Good(126, 3, 99) Good(124, 0, 95) Good(124, 3, 97) Good(188, 4, 61) Good(51, 1, 72) 
-Good(128, 2, 99) Good(121, 2, 90) Good(261, 0, 251) Good(119, 0, 90) Good(115, 1, 87) Good(149, 0, 120) Good(10, 4, 16) Good(112, 1, 85) Good(111, 0, 85) Good(108, 2, 81) 
-Good(3, 0, 6) Good(107, 3, 81) Good(6, 3, 10) Good(106, 1, 136) Good(106, 2, 34) Good(103, 1, 134) Good(102, 2, 73) Good(85, 4, 114) Good(99, 3, 73) Good(8, 3, 5) 
-Good(199, 3, 169) Good(94, 3, 67) Good(92, 3, 65) Good(90, 4, 122) Good(83, 4, 109) Good(22, 4, 30) Good(88, 2, 60) Good(86, 1, 59) Bad(24) 
-Num Good(s, a, s') selected: 378 (48.28%)
-Num Bad(s) selected: 1 (0.37%)
-Num selected features: 4 (21.05%)
-Features: 
-	0: Atom[holding_package] [k=1]
-	1: Bool[And(cell-has-agent,Exists(adjacent_cell,cell-has-destiny))] [k=5]
-	2: Dist[cell-has-agent;adjacent_cell;cell-has-destiny] [k=4]
-	3: Dist[cell-has-agent;adjacent_cell;cell-has-pet] [k=4]
-Solution found in iteration #1 is correct!
-DNF transition-classifier saved in /home/orbital/ws/research/gpl/code/gpl/workspace/delivery_1/classifier.txt
-Total times: Theory generation: 6.91, Solver: 0.54, TOTAL: 7.46
-------------------------------------------------
-(END Episode 0)
-------------------------------------------------
-================================================================================
-END OF STEP #1: Train: Explore the state space of the training instances. 9.98 CPU sec - 109.52 MB
-================================================================================
-================================================================================
-(pid: 33638) STARTING STEP #2: Testing of the D2L policy
-================================================================================
-
-POLICY:
-Features (#: 4; total k: 14; max k = 5):
-  (A) Atom[holding_package] [k=1]
-  (B) Bool[And(cell-has-agent,Exists(adjacent_cell,cell-has-destiny))] [k=5]
-  (C) Dist[cell-has-agent;adjacent_cell;cell-has-destiny] [k=4]
-  (D) Dist[cell-has-agent;adjacent_cell;cell-has-pet] [k=4]
-Invariants: D>0,C>0
-Policy:
-  1. B=0 AND C>0 AND D>0 -> {A ·, B ·, C ↓, D ·}
-  2. A=0 AND B=0 AND C>0 AND D>0 -> {A ·, B ·, C ↓, D ↓}, {A ·, B ·, C ↑, D ↓}, {A ↑, B ·, C ·, D ↑}, {A ·, B ·, C ·, D ↓}
-  3. A>0 AND B=0 AND C>0 AND D>0 -> {A ·, B ↑, C ↓, D ·}
-  4. A=0 AND B>0 AND C>0 AND D>0 -> {A ·, B ↓, C ↑, D ↓}
-
-2021-05-26 21:36:40 INFO     Testing policy in instance: delivery - 0
-A..D # ...D # ...D # ...D # ...D # 
-.... # .A.. # .... # .... # ...A # 
-.... # .... # ..A. # ..A. # .... # 
-...p # ...p # ...p # .... # .... # 
-1 (pl) 1 (pl) 2 (pl) 1 (pl) 2 (pl) 
-0 (nm) 1 (nm) 2 (nm) 4 (nm) 5 (nm) 
-1 (ne) 2 (ne) 1 (ne) 2 (ne) 1 (ne) 
-
-2021-05-26 21:36:40 INFO     Goal found after expanding 4 nodes
-2021-05-26 21:36:40 INFO     The solution was: [6, 6, 16, 5]
-2021-05-26 21:36:40 INFO     Testing policy in instance: delivery - 1
-D....A # D..... # D..... # D..... # D..... # D..... # D..... # D..... # D..... # D..... # D..... # D..... # D..... # D..... # D..... # DA.... # 
-...... # ....A. # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ..A... # ..Ap.. # ..A... # ...... # 
-...... # ...... # .....A # ...... # ...... # ...... # ...... # ...... # ...... # ...A.. # ...Ap. # ...A.. # ...... # ...... # ...... # ...... # 
-...... # ...... # ...... # ....A. # ...... # ...... # ....A. # ....Ap # ....A. # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
-...... # ...... # ...... # ...... # .....A # .....A # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
-.....p # .....p # .....p # .....p # .....p # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
-1 (pl)   1 (pl)   2 (pl)   1 (pl)   2 (pl)   1 (pl)   2 (pl)   1 (pl)   1 (pl)   2 (pl)   1 (pl)   1 (pl)   2 (pl)   1 (pl)   1 (pl)   2 (pl)   
-0 (nm)   1 (nm)   2 (nm)   4 (nm)   5 (nm)   7 (nm)   8 (nm)   9 (nm)   10 (nm)  11 (nm)  12 (nm)  13 (nm)  14 (nm)  15 (nm)  16 (nm)  17 (nm)  
-1 (ne)   2 (ne)   1 (ne)   2 (ne)   1 (ne)   2 (ne)   1 (ne)   1 (ne)   2 (ne)   1 (ne)   1 (ne)   2 (ne)   1 (ne)   1 (ne)   2 (ne)   1 (ne)   
-
-2021-05-26 21:36:41 INFO     Goal found after expanding 12 nodes
-2021-05-26 21:36:41 INFO     The solution was: [7, 6, 7, 6, 16, 4, 16, 4, 16, 4, 16, 4]
-2021-05-26 21:36:41 INFO     Testing policy in instance: delivery - 2
-p.... # p.... # p.... # p.... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
-..... # ..... # ..... # .A... # .A... # pA... # .A... # ..... # ..... # ..... # ..... # 
-..... # ..... # A.... # ..... # ..... # ..... # ..... # ..A.. # .pA.. # ..A.. # ..... # 
-..... # .A... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ...A. # 
-A...D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # 
-1 (pl)  1 (pl)  2 (pl)  1 (pl)  2 (pl)  1 (pl)  1 (pl)  2 (pl)  1 (pl)  1 (pl)  2 (pl)  
-0 (nm)  1 (nm)  2 (nm)  4 (nm)  5 (nm)  6 (nm)  7 (nm)  8 (nm)  9 (nm)  10 (nm) 11 (nm) 
-1 (ne)  2 (ne)  1 (ne)  2 (ne)  1 (ne)  1 (ne)  2 (ne)  1 (ne)  1 (ne)  2 (ne)  1 (ne)  
-
-2021-05-26 21:36:41 INFO     Goal found after expanding 8 nodes
-2021-05-26 21:36:41 INFO     The solution was: [5, 4, 5, 16, 16, 6, 16, 6]
-2021-05-26 21:36:41 INFO     Learnt policy solves the 30.0% of test instances: 3/10
-2021-05-26 21:36:41 INFO     Solved instances: [0, 1, 2]
-2021-05-26 21:36:41 INFO     Unsolved instances: []
-================================================================================
-END OF STEP #2: Testing of the D2L policy. 0.22 CPU sec - 109.52 MB
-================================================================================

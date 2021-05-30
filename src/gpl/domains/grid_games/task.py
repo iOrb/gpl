@@ -42,7 +42,11 @@ class Task(ITask):
             return self.colapse_state(r1)
         op = self.env.player2_policy(r1)
         r2 = self.env.act(r1, op)  # adversary move
-        return self.colapse_state(r2)
+        s2 = self.colapse_state(r2)
+        if r2.player != self.objects.player1:
+            return self.transition_env(s2)
+        else:
+            return s2
 
     def colapse_state(self, rep):
         s_encoded = self.encode_state(rep)
@@ -70,20 +74,19 @@ class Task(ITask):
                 succs.append((op0, s1, s1))
             else:
                 assert s1[0].player == self.objects.player2
-                ava_actions_1 = self.env.available_actions(s1[0])
-                for op1 in ava_actions_1:
-                    # global i
-                    # i += 1
-                    # if i == 76:
-                    #     print('H')
-                    s2 = __transition_player(s1, op1)
-                    # print("{}. deadend: {}, turn: {}".format(i, s2[0].deadend, s2[0].player))
-                    # print(self.get_printable_rep(s2[0]))
-                    # if s2[1] == s1[1]:
-                    #     continue
-                    assert s2[0].player == self.objects.player1
-                    succs.append((op0, s1, s2))
-
+                s2 = copy.deepcopy(s1)
+                queue = [s2]
+                vistited_s2={s2[1]}
+                while queue:
+                    s2_ = queue.pop()
+                    ava_actions_1 = self.env.available_actions(s2_[0])
+                    for op1 in ava_actions_1:
+                        s2 = __transition_player(s2_, op1)
+                        if s2[0].player == self.objects.player1:
+                            succs.append((op0, s1, s2))
+                        else:
+                            if s2[1] not in vistited_s2:
+                                queue.append(s2)
         # succs_reps.append(r0)
         # for _, sp, spp in succs:
         #     succs_reps.append(sp[0])
@@ -139,12 +142,13 @@ class Task(ITask):
             single_rep_row += simplified_objects[o]
         size_single_row = len("{} # ".format(single_rep_row))
 
-        info_to_print = ["player", "nmoves", "last_turn", "next_player"]
+        info_to_print = ["player", "nmoves", "last_turn", "next_player", "holding_pet", "goal"]
         for info in info_to_print:
             try:
                 tmp_full_row = ""
                 for rep in reps:
-                    tmp_full_row += "{} ({})".format(getattr(rep, info), info[:2]).ljust(size_single_row)
+                    att = getattr(rep, info)
+                    tmp_full_row += "{} ({})".format(int(att), info[:2]).ljust(size_single_row)
                 total_path_rep += "{}\n".format(tmp_full_row)
             except:
                 pass

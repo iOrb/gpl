@@ -7,6 +7,8 @@ from ..grammar.language import D1_S, D2_S, COL_S, ROW_S
 import numpy as np
 from gpl.utils import Bunch
 import copy
+from ..utils import identify_next_player
+
 
 WHITE = 1 # player 1
 BLACK = 2 # player 2
@@ -78,7 +80,10 @@ class Env(object):
         layout = rep.grid
         l = layout.copy()
         valid_actions = self.available_actions(rep)
-        assert action in valid_actions
+        try:
+            assert action in valid_actions
+        except:
+            raise
         if action == SHOOT and rep.player in self.params.player_can_shoot:
             l = layout_after_shoot(l, rep.player, self.params)
         else:
@@ -101,6 +106,7 @@ class Env(object):
         else:
             new_rep.nact = 0
             new_rep.player = opposite_color(rep.player)
+        new_rep.next_player = identify_next_player(new_rep, self.params)
         return self.__update_rep(new_rep, rep.player)
 
     def __update_rep(self, rep, prev_in_act):
@@ -147,56 +153,28 @@ class Env(object):
         valid_actions = self.available_actions(rep)
         r_wk, c_wk = runnable_position(rep.grid, WHITE)
         r_bk, c_bk = runnable_position(rep.grid, BLACK)
-        if 2 in self.params.player_can_shoot:
-            if r_wk - r_bk == -1:
-                if UP in valid_actions:
-                    return UP
-            if r_wk - r_bk == 1:
-                if DOWN in valid_actions:
-                    return DOWN
-            if c_wk - c_bk == 1:
-                if RIGHT in valid_actions:
-                    return RIGHT
-            if c_wk - c_bk == -1:
-                if LEFT in valid_actions:
-                    return LEFT
-            if r_wk - r_bk == -2:
-                if DOWN in valid_actions:
-                    return DOWN
-            if r_wk - r_bk == 2:
-                if UP in valid_actions:
-                    return UP
-            if c_wk - c_bk == 2:
-                if LEFT in valid_actions:
-                    return LEFT
-            if c_wk - c_bk == -2:
-                if RIGHT in valid_actions:
-                    return RIGHT
-        else:
-            if r_wk - r_bk == 1:
-                if UP in valid_actions:
-                    return UP
-            if r_wk - r_bk == -1:
-                if DOWN in valid_actions:
-                    return DOWN
-            if c_wk - c_bk == -1:
-                if RIGHT in valid_actions:
-                    return RIGHT
-            if c_wk - c_bk == 1:
-                if LEFT in valid_actions:
-                    return LEFT
-            if r_wk - r_bk == 2:
-                if DOWN in valid_actions:
-                    return DOWN
-            if r_wk - r_bk == -2:
-                if UP in valid_actions:
-                    return UP
-            if c_wk - c_bk == -2:
-                if LEFT in valid_actions:
-                    return LEFT
-            if c_wk - c_bk == 2:
-                if RIGHT in valid_actions:
-                    return RIGHT
+        if r_wk - r_bk == 1:
+            if UP in valid_actions:
+                return UP
+        if r_wk - r_bk == -1:
+            if DOWN in valid_actions:
+                return DOWN
+        if c_wk - c_bk == -1:
+            if RIGHT in valid_actions:
+                return RIGHT
+        if c_wk - c_bk == 1:
+            if LEFT in valid_actions:
+                return LEFT
+        if r_wk == r_bk:
+            if DOWN in valid_actions:
+                return DOWN
+            if UP in valid_actions:
+                return UP
+        if c_wk == c_bk:
+            if LEFT in valid_actions:
+                return LEFT
+            if RIGHT in valid_actions:
+                return RIGHT
         return random.choice(valid_actions)
 
     @staticmethod
@@ -223,6 +201,7 @@ class Env(object):
         rep['deadend'] = False
         rep['nmoves'] = 0
         rep['prev_in_act'] = WHITE
+        rep['next_player'] = identify_next_player(Bunch(rep), self.params)
         return Bunch(rep)
 
 
@@ -322,4 +301,7 @@ LAYOUTS = {
     6: (4, 4, (2, 3), (0, 0)),
     7: (4, 4, (0, 0), (2, 3)),
     8: (20, 20, (0, 0), (16, 19)),
+    9: (4, 4, (0, 0), (3, 3)),
+    10: (4, 4, (3, 3), (1, 1)),
+    11: (5, 5, (4, 4), (1, 1)),
 }

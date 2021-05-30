@@ -13,14 +13,17 @@ from gpl.domains.grid_games.grammar.objects import PLAYER1, PLAYER2
 shoot_params = Bunch({
     'domain_name': 'shoot',
     'use_player_as_feature': True,
+    'use_player_to_encode': True,
     'use_next_player_as_feature': False,
+    'use_next_player_to_encode': True,
+    'use_margin_as_feature': False,
     'map_cells': False,
-    'use_diagonals_for_map_cells': True,
+    'use_diagonals_for_map_cells': False,
     'use_adjacency': {COL_S, ROW_S},
     'use_bidirectional': {},
     'sorts_to_use': {CELL_S, COL_S, ROW_S},
     'player_can_shoot': {},
-    'player_can_check': {PLAYER1},
+    'player_can_check': {},
     'unary_predicates': {},
     'attaking_mask': {UP, DOWN, RIGHT, LEFT},
     'ava_actions': {
@@ -50,7 +53,7 @@ def experiments():
         print_denotations=True,
         print_hstar_in_feature_matrix=False,
 
-        verbosity=1,
+        verbosity=3,
         initial_sample_size=50,
         refinement_batch_size=10,
         maxsat_iter=3,
@@ -80,24 +83,28 @@ def experiments():
 
     # version 1:
     # agent and adversary moves ortogonal
+    p_v1 = copy.deepcopy(shoot_params)
+    p_v1.player_can_shoot={PLAYER1}
+    p_v1.player_can_check={}
+    p_v1.max_actions = {PLAYER1: 2,
+                        PLAYER2: 1}
     exps["1"] = update_dict(
         base,
-        instances=[0],
-        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8],
+        domain=Domain(p_v1),
+        instances=[11],
+        allow_bad_states=False,
+        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     )
 
     # version 2:
-    # agent moves diagonal, adversary moves ortogonal
-    shoot_params_v2 = copy.deepcopy(shoot_params)
-    shoot_params_v2.ava_actions = {
-        PLAYER1: {RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP},
-        PLAYER2: {UP, DOWN, RIGHT, LEFT}
-    }
-    shoot_params_v2.max_actions={PLAYER1: 1,
-                                 PLAYER2: 1}
+    p_v2 = copy.deepcopy(shoot_params)
+    p_v2.player_can_shoot = {}
+    p_v2.player_can_check = {PLAYER1}
+    p_v2.max_actions={PLAYER1: 1, PLAYER2: 1}
     exps["2"] = update_dict(
         exps["1"],
-        domain=Domain(shoot_params_v2),
+        instances=[9, 10],
+        domain=Domain(p_v2),
     )
 
     return exps

@@ -5,14 +5,17 @@ from gpl.domains.grid_games.domain import Domain
 from gpl.utils import Bunch
 from gpl.domains.grid_games.grammar.language import CELL_S, COL_S, ROW_S
 from gpl.domains.grid_games.envs.delivery import \
-    RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP, UP, DOWN, RIGHT, LEFT, HOLDING_PACKAGE, PICK, \
+    RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP, UP, DOWN, RIGHT, LEFT, HOLDING_PACKAGE, PICK, DROP, \
     DROP_RIGHT, DROP_LEFT, DROP_DOWN, DROP_UP, DROP_LEFTDOWN, DROP_RIGHTDOWN, DROP_RIGHTUP, DROP_LEFTUP
 from gpl.domains.grid_games.grammar.objects import PLAYER1, PLAYER2
 
 chase_params = Bunch({
     'domain_name': 'delivery',
     'use_player_as_feature': False,
-    'use_next_player_as_feature': True,
+    'use_player_to_encode': False,
+    'use_next_player_as_feature': False,
+    'use_next_player_to_encode': False,
+    'use_margin_as_feature': False,
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
     'use_adjacency': {CELL_S},
@@ -22,8 +25,8 @@ chase_params = Bunch({
     'can_build_walls': False,
     'wumpus_active': False,
     'ava_actions': {
-        # PLAYER1: {PICK, UP, DOWN, RIGHT, LEFT},
-        PLAYER1: {PICK, RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP},
+        PLAYER1: {PICK, UP, DOWN, RIGHT, LEFT},
+        # PLAYER1: {PICK, RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP, DROP},
         PLAYER2: {DROP_LEFT, DROP_RIGHT}},
         # PLAYER2: {DROP_UP, DROP_DOWN, DROP_LEFT, DROP_RIGHT, DROP_LEFTDOWN, DROP_RIGHTDOWN, DROP_RIGHTUP, DROP_LEFTUP}},
     'max_actions': {PLAYER1: 2,
@@ -85,6 +88,7 @@ def experiments():
     exps["1"] = update_dict(
         base,
         instances=[1],
+        # test_instances=[],
         test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         max_concept_size=5,
         allow_bad_states=True,

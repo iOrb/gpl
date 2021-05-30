@@ -34,9 +34,9 @@ class Grammar:
         """
         try:
             b = list(self.object_bytes[obj] for obj in r.grid.flatten())
-            if self.params.use_player_as_feature:
+            if self.params.use_player_to_encode:
                 b = b + [self.object_bytes[r.player]]
-            if self.params.use_next_player_as_feature:
+            if self.params.use_next_player_to_encode:
                 b = b + [self.object_bytes[r.next_player]]
             for u in self.params.unary_predicates:
                 b = b + [self.object_bytes['true']] if getattr(r, u) else b + [self.object_bytes['false']]
@@ -46,9 +46,10 @@ class Grammar:
             # b = b + [self.object_bytes['true']] if info['deadend'] else b + [self.object_bytes['false']]
             return bytes(b)
         except:
-            for o in r.grid.flatten():
-                if o not in self.object_bytes:
-                    print('EXCEPTION: Unknown object: {}'.format(o))
+            raise
+            # for o in r.grid.flatten():
+            #     if o not in self.object_bytes:
+            #         print('EXCEPTION: Unknown object: {}'.format(o))
 
     def objects_to_bytes(self):
         OBJECTS = get_domain_objects(self.domain_name)

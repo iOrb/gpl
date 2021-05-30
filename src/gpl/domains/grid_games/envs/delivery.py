@@ -21,8 +21,8 @@ opposite_player = lambda c: PLAYER2 if c == PLAYER1 else PLAYER1
 
 
 PLAYER_VALID_ACTIONS = {
-    PLAYER1: lambda pos, layout, params: agent_valid_actions(pos, layout, params),
-    PLAYER2: lambda layout, params: wumpus_valid_actions(layout, params),
+    PLAYER1: lambda pos, rep, params: agent_valid_actions(pos, rep, params),
+    PLAYER2: lambda rep, params: wumpus_valid_actions(rep, params),
 }
 
 ALL_DIRECTIONS = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
@@ -48,6 +48,7 @@ DROP_RIGHTDOWN = 14
 DROP_LEFTDOWN = 15
 
 PICK = 16
+DROP = 17
 
 ACTION_MOVE_DIRECTION = {
     UP: (-1, 0),
@@ -87,11 +88,9 @@ class Env(object):
         assert action in valid_actions
         l = layout.copy()
         if rep.player == PLAYER1:
-            l = layout_after_agent_action(layout, action, self.params)
+            new_rep = rep_after_agent_action(rep, action, self.params)
         else:
-            l = layout_after_wumpus_action(layout, action, self.params)
-        new_rep = copy.deepcopy(rep)
-        new_rep.grid = l
+            new_rep = rep_after_wumpus_action(rep, action, self.params)
         if rep.nact < self.params.max_actions[rep.player]:
             new_rep.nact += 1
         else:
@@ -99,12 +98,11 @@ class Env(object):
             new_rep.player = opposite_player(rep.player)
         if self.params.use_next_player_as_feature:
             new_rep.next_player = identify_next_player(new_rep, self.params)
-        setattr(new_rep, HOLDING_PACKAGE, check_if_holding_package(new_rep.grid))
         return self.__update_rep(new_rep)
 
     def __update_rep(self, rep):
         updated_rep = rep.to_dict()
-        gstatus = Env.check_game_status(rep)
+        gstatus = self.check_game_status(rep)
         if gstatus == 1:
             updated_rep['goal'] = True
         updated_rep['nmoves'] += 1
@@ -114,9 +112,8 @@ class Env(object):
     def get_simplified_objects():
         return SIMPLIFIED_OBJECT
 
-    @staticmethod
-    def check_game_status(rep):
-        if terminated(rep):
+    def check_game_status(self, rep):
+        if terminated(rep, self.params):
             return 1
         else:
             return 0
@@ -126,14 +123,17 @@ class Env(object):
         actions = []
         if rep.player == PLAYER1:
             c0 = np.argwhere(layout == AGENT)[0]
-            actions += PLAYER_VALID_ACTIONS[PLAYER1](c0, layout, self.params)
+            actions += PLAYER_VALID_ACTIONS[PLAYER1](c0, rep, self.params)
         elif rep.player == PLAYER2:
-            actions += PLAYER_VALID_ACTIONS[PLAYER2](layout, self.params)
+            actions += PLAYER_VALID_ACTIONS[PLAYER2](rep, self.params)
         return actions
 
     def player2_policy(self, rep):
         ava_actions = self.available_actions(rep)
-        return np.random.choice(ava_actions)
+        try:
+            return np.random.choice(ava_actions)
+        except:
+            raise
 
     def get_action_space(self):
         if not self.params.can_build_walls:
@@ -158,36 +158,32 @@ class Env(object):
         rep['deadend'] = False
         assert PACKAGE in rep['grid']
         rep[HOLDING_PACKAGE] = False
-        if self.params.use_next_player_as_feature:
-            rep['next_player'] = identify_next_player(Bunch(rep), self.params)
+        rep['next_player'] = identify_next_player(Bunch(rep), self.params)
         return Bunch(rep)
 
 
 # Helper mehtods =================================
 
-def terminated(rep):
+def terminated(rep, params):
     layout = rep.grid
-    agent_pos = np.argwhere(layout == AGENT)[0]
-    try:
-        destiny_pos = np.argwhere(layout == DESTINY)[0]
-    except:
-        raise
-    agent_mask = get_mask(agent_pos, layout)
-    if getattr(rep, HOLDING_PACKAGE):
-        if agent_mask[destiny_pos[0], destiny_pos[1]]:
+    if not DROP in params.ava_actions[PLAYER1]:
+        dpos = np.argwhere(layout==DESTINY)[0]
+        amask = get_mask(np.argwhere(layout == AGENT)[0], layout)
+        if holding_package(rep) and amask[dpos[0], dpos[1]]:
             return True
-        else:
-            return False
+    elif not holding_package(rep) and PACKAGE not in layout:
+        return True
     else:
         return False
 
 
-def check_if_holding_package(layout):
-    return PACKAGE not in layout
+def holding_package(rep):
+    return getattr(rep, HOLDING_PACKAGE)
 
 
-def agent_valid_actions(pos, layout, params):
-    valid_action = []
+def agent_valid_actions(pos, rep, params):
+    layout = rep.grid
+    valid_action = set()
     action_space = params.ava_actions[PLAYER1]
     for action_id, direction in ACTION_MOVE_DIRECTION.items():
         if not action_id in action_space:
@@ -201,22 +197,41 @@ def agent_valid_actions(pos, layout, params):
             continue
         if next_cell in {DESTINY, PIT, PACKAGE}:
             continue
-        valid_action.append(action_id)
-    if not check_if_holding_package(layout):
-        ppos = package_pos(layout)
-        if get_mask(pos, layout)[ppos[0], ppos[1]]:
-            valid_action.append(PICK)
-    return valid_action
+        valid_action.add(action_id)
+    if not holding_package(rep):
+        for ppos in package_pos(layout):
+            if get_mask(pos, layout)[ppos[0], ppos[1]]:
+                valid_action.add(PICK)
+    else:
+        dst_pos = np.argwhere(layout == DESTINY)[0]
+        if get_mask(pos, layout)[dst_pos[0], dst_pos[1]]:
+            valid_action.add(DROP)
+    return list(valid_action)
 
 
-def layout_after_agent_action(layout, action, params):
+def rep_after_agent_action(rep, action, params):
+    layout = rep.grid
     assert AGENT in layout
     assert action in params.ava_actions[PLAYER1]
     l = layout.copy()
+    new_rep = copy.deepcopy(rep)
     if action == PICK:
         assert PACKAGE in layout
-        ppos = package_pos(layout)
-        l[ppos[0], ppos[1]] = EMPTY
+        assert not holding_package(rep)
+        amask = get_mask(np.argwhere(layout==AGENT)[0], layout)
+        for ppos in package_pos(layout):
+            if amask[ppos[0], ppos[1]]:
+                l[ppos[0], ppos[1]] = EMPTY
+                setattr(new_rep, HOLDING_PACKAGE, True)
+                break
+    elif action == DROP:
+        setattr(new_rep, HOLDING_PACKAGE, False)
+        # amask = get_mask(np.argwhere(layout == AGENT)[0], layout)
+        # for epos in np.argwhere(layout == EMPTY):
+        #     if amask[epos[0], epos[1]]:
+        #         l[epos[0], epos[1]] = PACKAGE
+        #         setattr(new_rep, HOLDING_PACKAGE, False)
+        #         break
     else:
         agent_pos = np.argwhere(layout == AGENT)[0]
         running_pos = np.add(agent_pos, ACTION_MOVE_DIRECTION[action])
@@ -226,14 +241,16 @@ def layout_after_agent_action(layout, action, params):
         except:
             raise IndexError
         l[agent_pos[0], agent_pos[1]] = EMPTY
-        if next_cell not in {PIT}:
+        if next_cell not in {PIT, DESTINY}:
             l[running_pos[0], running_pos[1]] = AGENT
-    return l
+    new_rep.grid = l
+    return new_rep
 
 
-def wumpus_valid_actions(layout, params):
-    if not check_if_holding_package(layout):
+def wumpus_valid_actions(rep, params, relaxed=False):
+    if not holding_package(rep):
         return [None]
+    layout=rep.grid
     valid_actions = []
     agent_pos = ar, ac = np.argwhere(layout == AGENT)[0]
     dr, dc = np.argwhere(layout == DESTINY)[0]
@@ -251,16 +268,19 @@ def wumpus_valid_actions(layout, params):
             continue
         if next_cell in {DESTINY, PIT}:
             continue
-        if distance(pr, dr) < distance(ar, dr) or distance(pc, dc) < distance(ac, dc):
+        if not relaxed and (distance(pr, dr) < distance(ar, dr) or distance(pc, dc) < distance(ac, dc)):
             continue
         valid_actions.append(action_id)
+    if not valid_actions:
+        valid_actions = wumpus_valid_actions(rep, params, relaxed=True)
     return valid_actions
 
 
-def layout_after_wumpus_action(layout, action, params):
-    # assert action in params.ava_actions[PLAYER2]
-    if action is None:
-        return layout.copy()
+def rep_after_wumpus_action(rep, action, params):
+    layout = rep.grid
+    new_rep = copy.deepcopy(rep)
+    if action is None or not holding_package(rep):
+        return new_rep
     agent_pos = np.argwhere(layout == AGENT)[0]
     l = layout.copy()
     next_package_pos = np.add(agent_pos, ACTION_DROP_DIRECTION[action])
@@ -271,11 +291,13 @@ def layout_after_wumpus_action(layout, action, params):
         raise IndexError
     assert next_cell not in {DESTINY, PIT}
     l[next_package_pos[0], next_package_pos[1]] = PACKAGE
-    return l
+    new_rep.grid = l
+    setattr(new_rep, HOLDING_PACKAGE, False)
+    return new_rep
 
 
 def package_pos(layout):
-    return np.argwhere((layout==PACKAGE))[0]
+    return np.argwhere((layout==PACKAGE))
 
 
 def get_mask(pos, layout):
@@ -296,19 +318,23 @@ def get_mask(pos, layout):
 ### Instances
 
 def generate_gird(key):
-    height, width, cell_agent, cell_package, cell_destiny =\
+    height, width, cell_agent, cells_package, cell_destiny =\
         LAYOUTS[key]
     grid = np.full((height, width), EMPTY, dtype=object)
     grid[cell_agent] = AGENT
     grid[cell_destiny] = DESTINY
-    grid[cell_package] = PACKAGE
+    for c in cells_package:
+        grid[c] = PACKAGE
     return grid
 
 
 LAYOUTS = {
-    0: (4, 4, (0, 0), (3, 3), (0, 3)),
-    1: (6, 6, (0, 5), (5, 5), (0, 0)),
-    2: (5, 5, (4, 0), (0, 0), (4, 4)),
+    0: (4, 4, (0, 0), {(3, 0)}, (0, 3)),
+    1: (6, 6, (0, 5), {(5, 5)}, (0, 0)),
+    2: (5, 5, (4, 0), {(0, 0)}, (4, 4)),
+    3: (6, 6, (0, 5), {(5, 5)}, (0, 0)),
+    4: (5, 5, (4, 0), {(0, 0)}, (4, 4)),
+    5: (3, 3, (1, 0), {(0, 0), (0, 2)}, (2, 2)),
 }
 
 
