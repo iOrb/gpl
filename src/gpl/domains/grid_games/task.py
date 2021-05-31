@@ -124,7 +124,7 @@ class Task(ITask):
             print(tmp_str)
         print("#" * ncols)
 
-    def print_path(self, reps_, divide=15):
+    def print_path(self, reps_, divide=10):
         simplified_objects = self.env.get_simplified_objects()
         nrows, ncols = reps_[0].grid.shape
         while reps_:

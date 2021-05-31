@@ -13,7 +13,9 @@ from gpl.domains.grid_games.domain import Domain
 space_invaders_params = Bunch({
     'domain_name': 'space_invaders',
     'use_player_as_feature': False,
+    'use_player_to_encode': False,
     'use_next_player_as_feature': False,
+    'use_next_player_to_encode': False,
     'use_margin_as_feature': False,
     'use_target_margin': False,
     'map_cells': True,
@@ -94,7 +96,7 @@ def experiments():
         base,
         domain=Domain(space_invaders_params_v1),
         instances=[0, 17, 18],
-        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19],
+        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 20],
         allow_bad_states=False,
     )
 
