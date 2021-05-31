@@ -140,7 +140,6 @@ Our encoding is parametrized by
 \end{itemize}
 
 
-
 \subsubsection{Hard Constraints}
 
 \smallpar{C1 (if $\neg$\texttt{allow\_bad\_states})}
@@ -270,6 +269,12 @@ We use \badtx{} to denote the set of transitions that have been determined at pr
 \emph{not} good.
 At the moment, this set contains all transitions that go from an alive to an unsolvable state and, if using
 equivalence relations, all those other transitions in whose equivalence class there is some other ``bad'' transition.
+
+\newpage
+
+\section{Grammar}
+
+The sorts used are: $cell$, $row$, $column$ and . The constants for the sort $cell$ have the form $cell.r\_c$, this constant refers to the cell that is at the same time in the row $r$ and in the column $c$. The constants for sort $row$ are $row.r$, and this constant refers to the row $r$. The constants for sort $column$ are $column.c$, and this constant refers to column $c$. Each sort can be linked to an object, using a one-arity predicate, depending on the objects of the domain, given by a predicate of arity one with any variable belonging to the sorts $cell$, $row$ or $column$. An example for the sort $cell$ would be $cell\_has\_v(cell)$, where the variable of type $cell$ can take the value of $cell.r\_c$, and this predicate would indicate that the cell $cell.r\_c$ has an object with value $v$, which is the name of the object currently in $cell.r\_c$. To map the relative position between constants of the same sort, we use two-arity predicates, which have as variables these constants belonging to the same sort. For example, $adjacent\_cell(cell, cell)$ takes two constants of the sort $cell$, and means that the two cells are adjacent. The same philosophy would apply to the predicates $adjacent\_col(column, column)$ or $adjacent\_row(row, row)$.
 
 
 \newpage
@@ -436,7 +441,7 @@ t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  # 
 \subsection{Delivery}
 \subsubsection{Description}
 
-In this domain the agent has to pick up a missed pet and take it to a certain location, the destination. The pet has the option on its turn to escape from its captor to any of the cells adjacent to the pet, even if is holded by the agent it can escape. The goal is defined by the pet being droped at the destination cell, not holded by the agent. The agent has two actions per turn and the adversary one, otherwise the game would not be solvable for all the states. The set of possile actions for the agent is ~\{$pick$, $drop$, $right$, $up$, $down$, $left\}$. The agent, in order to pick up or drop the pet has to execute the actions $pick$ or $drop$ respectively being at the pet's cell. The set of possile actions for the pet consist in escape to one of the adjacent cells to it, i.e. at most eight possible actions depending on the position of the pet in the grid. The pet can not move into the delivery point.
+In this domain the agent has to pick up a missed pet and take it to a certain location, the destination. The pet has the option on its turn to escape from its captor to any of the cells adjacent to the pet, even if is holded by the agent it can escape. The goal is defined by the pet being droped at the destination cell, not holded by the agent. The agent has two actions per turn and the adversary one, otherwise the game would not be solvable for all the states. The set of possile actions for the agent is ~\{$pick$, $drop$, $rightup$, $reightdown$, $leftup$, $leftdown\}$. The agent, in order to pick up or drop the pet has to execute the actions $pick$ or $drop$ respectively being at the pet's cell. The set of possile actions for the pet consist in escape to one of the adjacent cells to it, i.e. at most eight possible actions depending on the position of the pet in the grid. The pet can not move into the delivery point.
 
 \subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -605,7 +610,7 @@ The policy is an abstraction of all the possible one-move checkmates that exist 
   .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  #
 \end{Verbatim}
 
-\subsection{Checkmate - v1}
+\subsection{Checkmate with Rook}
 \subsubsection{Description}
 In this game the action space is equal to the number of cells in the grid. In order to win the white pieces has to do a checkmate in one movement. In white pieces have the white-king and the white-rook, and black pieces have the black-king.
 
@@ -662,7 +667,7 @@ The policy is an abstraction of all the possible one-move checkmates that exist 
 \item Learning generalized policies in unsupervised FOND domains from small examples.
 \item FOND encoding, introducing Good(s, a) features to deal with non-determinism. Where $a \in A$, and $A$ is not required to be fixed. However, if $A$ is fixed we show a way to exploit it reducing the number of transitions to distinguish.
 \item Being complete in domains where not all states have a good transition, with the optional constraint Bad(s).
-\item Empirical results with five domains: Chase, Shoot, Space Invaders, Delivery, Wumpus world.
+\item Empirical results with six different domains: Chase, Shoot, Space Invaders, Delivery, Checkmate with Queen, Checkmate with Rook.
 \item Incremental policy learning, to address the scalability problem. First a random sample is taken from the whole graph and the policy is then refined incrementally by iteratively increasing the sample size. The strategy for increasing the size of the sample can be goal-directed or random.
 %\item Introducing the sort of novelty to choose between the different successors classified as good by our policy
 \item Use of a uniform grammar for the different grid domains.
