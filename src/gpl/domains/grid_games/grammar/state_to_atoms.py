@@ -1,7 +1,9 @@
 import copy
 
+import numpy as np
+
 from .language import *
-from .objects import OBJECTS
+from .objects import OBJECTS, DESTINY, AGENT
 
 # General State to atoms
 def state_to_atoms(domain_name, state, p):
@@ -20,6 +22,12 @@ def state_to_atoms(domain_name, state, p):
                     continue
                 if o not in {OBJECTS.empty}:
                     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
+
+    if DESTINY not in brd:
+        r, c = np.argwhere(brd==AGENT)[0]
+        sort = CELL_S
+        o=DESTINY
+        atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
 
     for u in p.unary_predicates:
         if getattr(rep, u):

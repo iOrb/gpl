@@ -168,7 +168,7 @@ def run_test(config, search_policy, task, instance_name, rng):
         if spp[0].deadend:
             exitcode = ExitCode.DeadEndReached
             break
-        if visited_sp[sp[1]] > 3:
+        if visited_sp[sp[1]] > 10:
             exitcode = ExitCode.AbstractPolicyNonTerminatingOnTestInstances
             break
 

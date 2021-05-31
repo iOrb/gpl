@@ -87,6 +87,7 @@ class Task(ITask):
                         else:
                             if s2[1] not in vistited_s2:
                                 queue.append(s2)
+
         # succs_reps.append(r0)
         # for _, sp, spp in succs:
         #     succs_reps.append(sp[0])

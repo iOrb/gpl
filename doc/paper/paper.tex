@@ -293,6 +293,7 @@ In this domain the agent can $shoot$, move to the $right$ or to the $left$. The 
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
+
 (A) Num[cell-has-martian] [k=1]
 (B) Dist[col-has-agent;adjacent_col;col-has-martian] [k=4]
 \end{Verbatim}
@@ -319,9 +320,9 @@ According to the first rule if the agent is not in the column of a Martian, $B$ 
   ..A. # .A.. # A... # A... # A... # A... # A... # .A.. # ..A. # ..A. # ...A # ...A # ...A # ..A. # ..A. #
 \end{Verbatim}
 
-\subsection{Chase - v0}
+\subsection{Chase}
 \subsubsection{Description}
-In this domain an agent $A$ has to chase an adversary $T$. The goal is defined by the agent being in a adversary's adjacent cell. The set of possile actions for the agent and the adversary is ~\{$up$, $right$, $down$, $left\}$. The agent can move only diagonally and the adversary can move in perpendicular directions.  The agent and the adversary can move only once per turn.
+In this domain an agent $A$ has to chase an adversary $T$. The goal is defined by the agent being in a adversary's adjacent cell. The set of possile actions for the agent and the adversary is ~\{$up$, $right$, $down$, $left\}$. The agent can move only diagonally and the adversary can move in perpendicular directions. The agent and the adversary can move only once per turn.
 
 \subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -365,56 +366,7 @@ According to rule three, if the agent is in the row adjacent to the adversary, i
   .....T # .....T # ...... # ...... # ...... # ...... # ...... # ...... #
 \end{Verbatim}
 
-
-\subsection{Chase - v1}
-\subsubsection{Description}
-In this domain an agent has to chase an adversary. The goal is defined by the agent being in a target adjacent cell. The set of possile actions for the agent and the adversary is ~\{$up$, $down$, $left$, $right\}$. The agent can move twice per turn and the adversary can move once per turn.
-
-\subsubsection{Training instances}
-\begin{Verbatim}[fontsize=\footnotesize]
-#A.....#
-#......#
-#......#
-#.....T#
-\end{Verbatim}
-
-\subsubsection{Features}
-\begin{Verbatim}[fontsize=\footnotesize]
-  (A) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]
-  (B) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]
-  (C) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]
-  (D) Dist[col-hv-TARGET;adjacent_col;col-hv-AGENT] [k=4]
-\end{Verbatim}
-
-\subsubsection{Feature Descrition}
-$A$. The column of the agent is adjacent to the column of the adversary\\
-$B$. The row of the agent is adjacent to the row of the adversary\\
-$C$. Absolute vertical distance between agent and adversary\\
-$D$. Absolute horizontal distance between agent and adversary
-
-\subsubsection{Policy}
-\begin{Verbatim}[fontsize=\footnotesize]
-  1. A=0 AND B=0 AND C>0 -> {A ·, C ↓, D ·}
-  2. A=0 AND B>0 AND D>0 AND C>0 -> {A ·, B ·, C ·, D ↓}
-  3. A=0 AND B=0 AND D>0 AND C=0 -> {B ·, C ·, D ↓}
-  4. B=0 AND D>0 AND C>0 -> {A ·, C ↓, D ·}
-  5. A=0 AND D>0 AND C>0 -> {A ↑, B ·, C ·, D ↓}
-  6. A>0 AND B=0 AND D>0 AND C>0 -> {A ·, C ↓, D ·}
-  7. A=0 AND B=0 AND D=0 AND C>0 -> {A ·, C ↓, D ·}
-\end{Verbatim}
-
-\subsubsection{Policy Description}
-According to rule two, if the agent is in the opponent's adjacent row, it is good to reduce the distance between them without moving from the adjacent row. Rule six is the same as 2 but with the column.
-
-\subsubsection{Example of Game}
-\begin{Verbatim}[fontsize=\footnotesize]
-  ...... # ...... # ...... # .T.... # .T.... # .T.... # T..... # T..... # T..... #
-  .T.... # .T.... # .T.... # ...... # ....A. # ...A.. # ...A.. # ..A... # .A.... #
-  ...... # .....A # ....A. # ....A. # ...... # ...... # ...... # ...... # ...... #
-  .....A # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... #
-\end{Verbatim}
-
-\subsection{Nim - v0}
+\subsection{Nim}
 \subsubsection{Description}
 In this game the action space is equal to the number of tokens $t$ in the grid. In order to win the agent has to remove the last token in his turn. If the opponet removes the last token in his turn, the agent loses. The agent and the adversary has on action per turn. When one token is removed, the tokens above in the same column are removed too.
 
@@ -450,14 +402,14 @@ The policy can be interpreted as leaving the two token stacks with the same numb
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
-  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
-  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
-  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
-  t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
-  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
-  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #
-  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
-  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
+.  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #
+t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
+t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
 \end{Verbatim}
 
 \subsection{Delivery - v0}
@@ -477,27 +429,20 @@ In this domain the agent has to pick up a missed pet $p$ and take it to a certai
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Atom[holding_pet] [k=1]
-  (B) Bool[And(cell-has-agent,Exists(adjacent_cell,cell-has-destination))] [k=5]
-  (C) Dist[cell-has-agent;adjacent_cell;cell-has-destination] [k=4]
-  (D) Dist[cell-has-agent;adjacent_cell;cell-has-pet] [k=4]
+    (A) Bool[holding-pet] [k=1]
+    (B) Dist[cell-has-agent;adjacent_cell;cell-has-destination] [k=4]
+    (C) Dist[cell-has-agent;adjacent_cell;cell-has-pet] [k=4]
 \end{Verbatim}
 
 \subsubsection{Feature Descrition}
 $A$. The agent is holding the pet\\
-$B$. The destination is adjacent to the agent\\
-$C$. Manhattan distance between agent and destination\\
-$D$. Manhattan distance between agent and pet
+$B$. Manhattan distance between agent and destination\\
+$C$. Manhattan distance between agent and pet
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. B=0 AND C>0 AND D>0 -> {A ·, B ·, C ↓, D ·}
-  2. A=0 AND B=0 AND C>0 AND D>0 -> {A ·, B ·, C ↓, D ↓},
-                                    {A ·, B ·, C ↑, D ↓},
-                                    {A ↑, B ·, C ·, D ↑},
-                                    {A ·, B ·, C ·, D ↓}
-  3. A>0 AND B=0 AND C>0 AND D>0 -> {A ·, B ↑, C ↓, D ·}
-  4. A=0 AND B>0 AND C>0 AND D>0 -> {A ·, B ↓, C ↑, D ↓}
+  1. A=0 AND C>0 -> {A ·, C ↓}, {A ↑}
+  1. A>0 AND B>0 -> {A ·, B ↓}
 \end{Verbatim}
 
 \subsubsection{Policy Description}
