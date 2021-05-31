@@ -278,6 +278,8 @@ equivalence relations, all those other transitions in whose equivalence class th
 
 In all domains we managed to solve with the shown policies any instance of the problem class, of any size. The policies have been found by learning unsupervised form from the tranining instances shown in the domains.
 
+The sections broken down into each domain are: Description of the domain, the training instances used to discover the policy, the learned features, description of the features, learned policy, description of the policy, and finally an example of a possible game, from initial state to goal, using the discovered policy in a test instance against an expert adversary. The initial state of the example test instance is taken from the infinite set of possible instances in the domain.
+
 Layouts have been created to show the problems and examples of game traces. The objects that can be found in the layouts are equivalent to:
 \begin{Verbatim}[fontsize=\footnotesize]
   A: Agent
@@ -417,11 +419,16 @@ As the policy clearly shows, there is no good transition, that includes a change
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
 .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+.  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+.  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
+t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
 t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
 t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
 t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
 t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #  .  .  #  .  .  #
 t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #  .  .  #  .  .  #
+t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
+t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
 t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
 t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
 \end{Verbatim}
@@ -466,7 +473,7 @@ According to the first rule, it is good to move towards the pet if the agent is 
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
-p.... # p.... # p.... # p.... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... #
+p.... # p.... # .p... # .p... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... #
 ..... # ..... # ..... # .A... # .A... # pA... # .A... # ..... # ..... # ..... # ..... # ..... # ..... #
 ..... # ..... # A.... # ..... # ..... # ..... # ..... # ..A.. # .pA.. # ..A.. # ..... # ..... # ..... #
 ..... # .A... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ...A. # ..... # ..... #
