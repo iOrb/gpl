@@ -124,37 +124,39 @@ class Task(ITask):
             print(tmp_str)
         print("#" * ncols)
 
-    def print_path(self, reps):
+    def print_path(self, reps_, divide=15):
         simplified_objects = self.env.get_simplified_objects()
-        nrows, ncols = reps[0].grid.shape
-        total_path_rep = ""
-        for row in range(nrows):
-            tmp_full_row = ""
-            for rep in reps:
-                layout = rep.grid
-                tmp_row = ""
-                for o in layout[row, :]:
-                    tmp_row += simplified_objects[o]
-                tmp_full_row += "{} # ".format(tmp_row)
-            total_path_rep += "{}\n".format(tmp_full_row)
-
-        single_rep_row = ""
-        for o in layout[0, :]:
-            single_rep_row += simplified_objects[o]
-        size_single_row = len("{} # ".format(single_rep_row))
-
-        info_to_print = ["player", "nmoves", "last_turn", "next_player", "holding_pet", "goal"]
-        for info in info_to_print:
-            try:
+        nrows, ncols = reps_[0].grid.shape
+        while reps_:
+            reps, reps_ = reps_[:divide], reps_[divide:]
+            total_path_rep = ""
+            for row in range(nrows):
                 tmp_full_row = ""
                 for rep in reps:
-                    att = getattr(rep, info)
-                    tmp_full_row += "{} ({})".format(int(att), info[:2]).ljust(size_single_row)
+                    layout = rep.grid
+                    tmp_row = ""
+                    for o in layout[row, :]:
+                        tmp_row += simplified_objects[o]
+                    tmp_full_row += "{} # ".format(tmp_row)
                 total_path_rep += "{}\n".format(tmp_full_row)
-            except:
-                pass
 
-        print(total_path_rep)
+            single_rep_row = ""
+            for o in layout[0, :]:
+                single_rep_row += simplified_objects[o]
+            size_single_row = len("{} # ".format(single_rep_row))
+
+            info_to_print = ["player", "nmoves", "last_turn", "next_player", "holding_pet", "at_destination", "goal"]
+            for info in info_to_print:
+                try:
+                    tmp_full_row = ""
+                    for rep in reps:
+                        att = getattr(rep, info)
+                        tmp_full_row += "{}({})".format(int(att), info[:2]).ljust(size_single_row)
+                    total_path_rep += "{}\n".format(tmp_full_row)
+                except:
+                    pass
+
+            print(total_path_rep)
 
     def get_printable_rep(self, rep):
         simplified_objects = self.env.get_simplified_objects()

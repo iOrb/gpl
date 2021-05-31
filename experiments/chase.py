@@ -10,11 +10,15 @@ from gpl.domains.grid_games.grammar.objects import PLAYER1, PLAYER2
 chase_params = Bunch({
     'domain_name': 'chase',
     'use_player_as_feature': False,
+    'use_player_to_encode': False,
+    'use_next_player_as_feature': False,
+    'use_next_player_to_encode': False,
+    'use_margin_as_feature': False,
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
-    'use_adjacency': {COL_S, ROW_S},
+    'use_adjacency': {COL_S, ROW_S, CELL_S},
     'use_bidirectional': {},
-    'sorts_to_use': {COL_S, ROW_S},
+    'sorts_to_use': {COL_S, ROW_S, CELL_S},
     'unary_predicates': {},
     'can_build_walls': False,
     'ava_actions': {
@@ -56,7 +60,7 @@ def experiments():
         allow_cycles=False,
         use_action_ids=False,
         use_weighted_tx=True,
-        distinguish_goals=True,
+        distinguish_goals=False,
 
         sampling_strategy="full",
 

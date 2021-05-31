@@ -276,6 +276,21 @@ equivalence relations, all those other transitions in whose equivalence class th
 
 \section{Empirical Results}
 
+In all domains we managed to solve with the shown policies any instance of the problem class, of any size. The policies have been found by learning unsupervised form from the tranining instances shown in the domains.
+
+Layouts have been created to show the problems and examples of game traces. The objects that can be found in the layouts are equivalent to:
+\begin{Verbatim}[fontsize=\footnotesize]
+  A: Agent
+  D: destination
+  T: adversary
+  K: white-king
+  Q: white-queen
+  R: white-rook
+  k: black-king
+  m: martian
+  p: pet
+  t: token
+\end{Verbatim}
 
 \subsection{Space Invaders}
 \subsubsection{Description}
@@ -283,8 +298,9 @@ In this domain the agent can $shoot$, move to the $right$ or to the $left$. The 
 
 \subsubsection{Training instances:}
 \begin{Verbatim}[fontsize=\footnotesize]
-  # m  .  .  m #
-  # m  .  .  m #
+  # m  m  .  m #
+  # m  m  .  m #
+  # .  .  .  . #
   # .  .  .  . #
   # .  .  .  . #
   # .  .  .  . #
@@ -322,41 +338,35 @@ According to the first rule if the agent is not in the column of a Martian, $B$ 
 
 \subsection{Chase}
 \subsubsection{Description}
-In this domain an agent $A$ has to chase an adversary $T$. The goal is defined by the agent being in a adversary's adjacent cell. The set of possile actions for the agent and the adversary is ~\{$up$, $right$, $down$, $left\}$. The agent can move only diagonally and the adversary can move in perpendicular directions. The agent and the adversary can move only once per turn.
+In this domain an agent has to chase an adversary. The goal is defined by the agent being in a adversary's adjacent cell. The set of possile actions for the adversary is ~\{$up$, $right$, $down$, $left\}$. The set of possile actions for the agent is ~\{$rightup$, $rightdown$, $leftup$, $leftdown\}$. The agent and the adversary can move only once per turn.
 
 \subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
-#A.....#
-#......#
-#......#
-#.....T#
+#. . . . . .#
+#. A . . . .#
+#. . . . . .#
+#. . . . T .#
 \end{Verbatim}
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-  (A) Bool[And(col-hv-AGENT,Exists(adjacent_col,col-hv-TARGET))] [k=5]
-  (B) Bool[And(row-hv-AGENT,Exists(adjacent_row,row-hv-TARGET))] [k=5]
-  (C) Dist[row-hv-AGENT;adjacent_row;row-hv-TARGET] [k=4]
-  (D) Dist[col-hv-TARGET;adjacent_col;col-hv-AGENT] [k=4]
+  (A) Dist[col-has-agent;adjacent_col;col-has-adversary] [k=4]
+  (B) Dist[row-has-agent;adjacent_row;row-has-adversary] [k=4]
 \end{Verbatim}
 
 \subsubsection{Feature Descrition}
-$A$. The column of the agent is adjacent to the column of the adversary\\
-$B$. The row of the agent is adjacent to the row of the adversary\\
-$C$. Absolute vertical distance between agent and adversary\\
-$D$. Absolute horizontal distance between agent and adversary
+$A$. Absolute vertical distance between the agent and the adversary\\
+$B$. Absolute horizontal distance between the agent and the adversary
 \subsubsection{Policy}
 
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. A=0 AND B=0 AND D>0 AND C=0 -> {B ↑, C ↑, D ↓}
-  2. A=0 AND B=0 AND D>0 AND C>0 -> {C ↓, D ↓}
-  3. A=0 AND B>0 AND D>0 AND C>0 -> {B ↓, C ↓, D ↓}
-  4. A>0 AND B=0 AND D>0 AND C>0 -> {A ↓, C ↓, D ↓}
-  5. A=0 AND B=0 AND D=0 AND C>0 -> {A ↑, C ↓, D ↑}
+  1. A>0 AND B>0 -> {A ↓, B ↓}
+  2. A=0 AND B>0 -> {A ↑, B ↓}
+  3. A>0 AND B=0 -> {A ↓, B ↑}
 \end{Verbatim}
 
 \subsubsection{Policy Description}
-According to rule three, if the agent is in the row adjacent to the adversary, it is good to stand in the same row as him. Following the rule four if the agent is in the column adjacent to the opponent it is good to go into the same column.
+According to rule one, is good to decrease the horizontal and vertical distance from the angent to the adversary if possible, i.e. move in diagonal towards him. Following the rule two if the agent is in the column of the adversary it is good to decrease the vertical distance. Finally, following the rule three if the agent is in the row of the adversary it is good to decrease the horizonal distance.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -369,12 +379,14 @@ According to rule three, if the agent is in the row adjacent to the adversary, i
 \subsection{Nim}
 \subsubsection{Description}
 In this game the action space is equal to the number of tokens $t$ in the grid. In order to win the agent has to remove the last token in his turn. If the opponet removes the last token in his turn, the agent loses. The agent and the adversary has on action per turn. When one token is removed, the tokens above in the same column are removed too.
+It is interesting to note that in this game not all states are solvable if the opponent plays optimally. Knowing that the expert policy is to leave the opponent with both stacks with the same number of tokens, this state with both stacks leveled will not be solvable. Therefore, in order to solve it, we have made use of the $Bad(state)$ feature, which allows us not to have to define a good transition for each state, and as an alternative to label it as a bad state. The advantage is that if the initial state is solvable, bad states can always be avoided. However the policy is not complete for all states, in particular there will be no good transition for states with the two token stacks leveled, as we will see below, which we can say is the optimal representation of the game strategy.
 
-\subsubsection{Training instances:}
+
+\subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
+  # .  . #
   # t  . #
   # t  . #
-  # t  t #
   # t  t #
   # t  t #
   # t  t #
@@ -390,7 +402,7 @@ In this game the action space is equal to the number of tokens $t$ in the grid. 
 \subsubsection{Feature Descrition}
 $A$. Number of tokens with a token immediately to the left of it\\
 $B$. Number of tokens with a token immediately to the leftdown of it\\
-$C$. Number of tokens with a token immediately to the rightdown of it\\
+$C$. Number of tokens with a token immediately to the rightdown of it
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -399,6 +411,8 @@ $C$. Number of tokens with a token immediately to the rightdown of it\\
 
 \subsubsection{Policy Description}
 The policy can be interpreted as leaving the two token stacks with the same number of tokens. This is done by decreasing the number of tokens that have a token to their leftdown or rightdown without decreasing the number of tokens with a token next to them.
+As the policy clearly shows, there is no good transition, that includes a change in the number of tokens that a token has on its left. In other words, states where the same number of tokens in the two stacks cannot be preserved with some legal move are bad, and therefore they have no good transition. In fact according to the policy it is good to leave the opponent in these states bad, because there will be no legal move for the opponent to leave us with the same number of tokens in the two stacks.
+
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -412,61 +426,63 @@ t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  # 
 t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  t  #  t  .  #  .  .  #
 \end{Verbatim}
 
-\subsection{Delivery - v0}
+\subsection{Delivery}
 \subsubsection{Description}
 
-In this domain the agent has to pick up a missed pet $p$ and take it to a certain location, the destination $D$. The pet has the option on its turn to escape from its captor to any of the cells adjacent to it. The goal is defined by the agent in a cell adjacent to the destination while carrying the pet. The agent has two actions per turn and the adversary one. The set of possile actions for the agent is ~\{$pick$, $rightup$, $rightdown$, $leftdown$, $leftup\}$. The agent to pick up the pet has to execute the $pick$ action or move to the same cell where the pet is located. The set of possile actions for the pet consist in escape to one of the adjacent cells to the agent, i.e. at most eight possible actions depending on the position of the agent in the grid. The pet can not escape to the delivey point.
+In this domain the agent has to pick up a missed pet and take it to a certain location, the destination. The pet has the option on its turn to escape from its captor to any of the cells adjacent to the pet, even if is holded by the agent it can escape. The goal is defined by the pet being droped at the destination cell, not holded by the agent. The agent has two actions per turn and the adversary one, otherwise the game would not be solvable for all the states. The set of possile actions for the agent is ~\{$pick$, $drop$, $right$, $up$, $down$, $left\}$. The agent, in order to pick up or drop the pet has to execute the actions $pick$ or $drop$ respectively being at the pet's cell. The set of possile actions for the pet consist in escape to one of the adjacent cells to it, i.e. at most eight possible actions depending on the position of the pet in the grid. The pet can not move into the delivery point.
 
-\subsubsection{Training instances:}
+\subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
-  # D  .  .  .  .  A #
+  # .  .  .  .  .  A #
+  # .  D  .  .  .  . #
   # .  .  .  .  .  . #
   # .  .  .  .  .  . #
+  # .  .  p  .  .  . #
   # .  .  .  .  .  . #
-  # .  .  .  .  .  . #
-  # .  .  .  .  .  p #
 \end{Verbatim}
 
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
-    (A) Bool[holding-pet] [k=1]
-    (B) Dist[cell-has-agent;adjacent_cell;cell-has-destination] [k=4]
-    (C) Dist[cell-has-agent;adjacent_cell;cell-has-pet] [k=4]
+  (A) Atom[holding_pet] [k=1]
+  (B) Dist[cell-has-pet;adjacent_cell;cell-has-agent] [k=4]
+  (C) Dist[cell-has-destiny;adjacent_cell;cell-has-agent] [k=4
 \end{Verbatim}
 
 \subsubsection{Feature Descrition}
-$A$. The agent is holding the pet\\
-$B$. Manhattan distance between agent and destination\\
-$C$. Manhattan distance between agent and pet
+$A$. The agent is holding a pet
+$B$. Manhattan distance between the agent and the pet\\
+$C$. Manhattan distance between the agent and the destination
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. A=0 AND C>0 -> {A ·, C ↓}, {A ↑}
-  1. A>0 AND B>0 -> {A ·, B ↓}
+  1. A=0 AND B>0 -> {B ↓}
+  2. A>0 AND C>0 -> {C ↓}
+  3. A>0 AND C=0 -> {A ↓}
+  4. A=0 AND B>0 -> {A ↑, B ↓}
 \end{Verbatim}
 
 \subsubsection{Policy Description}
-According to the third rule, if the agent has the pet, it is good to move towards the destination. According to the fourth rule of the policy, if the agent does not have the pet, it is good to increase the distance to the destination and decrease the distance to the pet. Finally, according to the second rule, it is good to take the pet if you have the possibility, and if not, it is good to decrease the distance between the agent and the pet.
+According to the first rule, it is good to move towards the pet if the agent is not holding it and the distance to it is greater than zero. According to the second rule, if the agent has the pet, and is at the destination, it is good to move towards the destination. According to the third rule of the policy, if the agent is holding the pet, and is at destination it is good to drop the pet. Finally, according to the fourth rule of the policy, if the agent does not have the pet, and is at the same cell it is good to pick it.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
-p.... # p.... # p.... # p.... # ..... # ..... # ..... # ..... # ..... # ..... # ..... #
-..... # ..... # ..... # .A... # .A... # pA... # .A... # ..... # ..... # ..... # ..... #
-..... # ..... # A.... # ..... # ..... # ..... # ..... # ..A.. # .pA.. # ..A.. # ..... #
-..... # .A... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ...A. #
-A...D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D #
+p.... # p.... # p.... # p.... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... #
+..... # ..... # ..... # .A... # .A... # pA... # .A... # ..... # ..... # ..... # ..... # ..... # ..... #
+..... # ..... # A.... # ..... # ..... # ..... # ..... # ..A.. # .pA.. # ..A.. # ..... # ..... # ..... #
+..... # .A... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ...A. # ..... # ..... #
+A...D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....D # ....A # ....A #
 \end{Verbatim}
 
 \subsection{Shoot}
 \subsubsection{Description}
-In this domain an agent has to shoot an adversary. The goal is defined by the agent being alone on the grid, having finished with the opponent. The agent can execute the action $shoot$, but the opponent does not, so the opponent is able to win the game from any state of any instance if he knows the right strategy. The agent and the adversary share the set of actions ~{$up$, $right$, $down$, $left\}$. To reach the goal state, the agent has to be in the same row or column as the adverary and execute the action $shoot$. When the agent executes the $shoot$ action on the adversary's line, the adversary disappears. We can define the goal state, as the adversary not being on the board. The agent and the opponent have two actions per turn, so that the agent can stand in the opponent's row or column and shoot before the opponent escapes.
+In this domain an agent has to shoot an adversary. The goal is defined by the agent being alone on the grid, having finished with the opponent. The agent can execute the action $shoot$, but the opponent does not, so the opponent is able to win the game from any state of any instance if he knows the right strategy. The agent and the adversary share the set of actions ~\{$up$, $right$, $down$, $left\}$. To reach the goal state, the agent has to be in the same row or column as the adverary and execute the action $shoot$. When the agent executes the $shoot$ action on the adversary's line, the adversary disappears. We can define the goal state, as the adversary not being on the board. The agent have one actions per turn and the adversary two, so that the agent can stand in the opponent's row or column and shoot before the opponent escapes.
 
-\subsubsection{Training instances:}
+\subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
+  # . . . . #
   # A . . . #
+  # . . T . #
   # . . . . #
-  # . . . . #
-  # . . . T #
 \end{Verbatim}
 
 \subsubsection{Features}
@@ -496,20 +512,26 @@ According to the fourth rule of the policy, if the agent is in the same column a
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
-  A....... # .A...... # ..A..... # ..A..... # ...A.... # ....A... # ....A... # .....A.. # ......A. # ......A. # .....A.. # .....A.. #
-  ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ #
-  ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ #
-  ........ # ........ # ........ # .....T.. # .....T.. # .....T.. # ......T. # ......T. # ......T. # .....T.. # .....T.. # ........ #
-  .....T.. # .....T.. # .....T.. # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ #
+  A....... # .A...... # ..A..... # ..A..... # ...A.... # ....A... # ....A... # .....A.. # ......A. #
+  ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ #
+  ........ # ........ # ........ # ........ # ........ # ........ # .....T.. # ......T. # ......T. #
+  ........ # ........ # ........ # .....T.. # .....T.. # .....T.. # ........ # ........ # ........ #
+  .....T.. # .....T.. # .....T.. # ........ # ........ # ........ # ........ # ........ # ........ # ...
+
+     # ......A. # .....A.. # .....A.. #
+     # ........ # ........ # ........ #
+     # .....T.. # .....T.. # ........ #
+     # ........ # ........ # ........ #
+  ...# ........ # ........ # ........ #
 
 \end{Verbatim}
 
 
-\subsection{Checkmate - v0}
+\subsection{Checkmate whith Queen}
 \subsubsection{Description}
-In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In $Checkmate-v0$ white pieces have the king $K$ and the queen $Q$, and black pieces have the king $k$.
+In this game the action space is equal to the number of cells in the grid. In order to win the white pieces has to do a checkmate in one movement. The white pieces have the white-king and the white-queen, and black pieces have the black-king.
 
-\subsubsection{Training instances:}
+\subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
   # .  k  .  .  . #
   # .  .  .  .  . #
@@ -530,6 +552,15 @@ In this game the action space is equal to the number of cells in the grid. In or
   (G) Bool[And(row-has-black_king,Exists(adjacent_row,row-has-white_king))] [k=5]
 \end{Verbatim}
 
+\subsubsection{Feature Description}
+$A$. The black-king and the white-king are in the same column\\
+$B$. The black-king and the white-queen are in the same column\\
+$C$. The black-king and the white-king are in the same row\\
+$D$. The black-king and the white-king are in the same row\\
+$E$. The black-king's cell and the white-queen's cell are adjacent\\
+$F$. The white-king's column and the white-queen's column are adjacent\\
+$G$. The black-king's column and the white-king's column are adjacent
+
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
   1. A>0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ·, C ·, D ↑, E ·, F ·, G ·},
@@ -537,18 +568,19 @@ In this game the action space is equal to the number of cells in the grid. In or
   2. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ·, F ↓, G ·}
   3. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ·, C ·, D ↑, E ↑, F ↑, G ·},
                                                             {A ·, B ↑, C ·, D ·, E ·, F ·, G ·}
-  4. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ↑, F ↑, G ·},
-                                                            {A ·, B ·, C ·, D ·, E ↑, F ↑, G ·}
+  4. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, C ·, D ·, E ↑, F ↑, G ·}
   5. A>0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ↑, F ↓, G ·},
                                                             {A ·, B ·, C ·, D ↑, E ·, F ↓, G ·}
   6. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ↓, E ·, F ↓, G ·}
-  7. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ↑, F ·, G ·},
-                                                            {A ·, B ·, C ·, D ·, E ↑, F ·, G ·}
+  7. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G=0 -> {A ·, C ·, D ·, E ↑, F ·, G ·}
   8. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F=0 AND G=0 -> {A ·, B ↑, C ·, D ↓, E ·, F ·, G ·}
   9. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G>0 -> {A ·, B ·, C ·, D ↑, E ↑, F ↑, G ·}
   10. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G>0 -> {A ·, B ·, C ·, D ↑, E ↑, F ·, G ·}
   11. A>0 AND B>0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ↓, C ·, D ↑, E ·, F ·, G ·}
 \end{Verbatim}
+
+\subsubsection{Policy description}
+The policy is an abstraction of all the possible one-move checkmates that exist on a chessboard of any size with two kings and a queen. For example rule one tells us that if the white king is on the same column as the black king, it is good to put the white queen on the same row as the black king, avoiding squares where the white queen would be in a cell adjacent to the black king. Following on from the first rule, transitions where the white queen is placed on the same column as the black king, and in a cell adjacent to the black king, would also be good, i.e. it is good for the white queen to be placed between the white and black kings. This policy will generalise to any chessboard size board.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
@@ -568,9 +600,9 @@ In this game the action space is equal to the number of cells in the grid. In or
 
 \subsection{Checkmate - v1}
 \subsubsection{Description}
-In this game the action space is equal to the number of cells in the grid. In order to win the agent has to do a checkmate in one movement. Otherwise he loses. In $Checkmate-v1$ white pieces have the king and the rook $R$, and black pieces have the king.
+In this game the action space is equal to the number of cells in the grid. In order to win the white pieces has to do a checkmate in one movement. In white pieces have the white-king and the white-rook, and black pieces have the black-king.
 
-\subsubsection{Training instances:}
+\subsubsection{Training instances}
 \begin{Verbatim}[fontsize=\footnotesize]
   # .  k  .  .  . #
   # .  .  .  .  . #
@@ -584,14 +616,21 @@ In this game the action space is equal to the number of cells in the grid. In or
   (A) Bool[And(col-has-black_king,col-has-white_king)] [k=3]
   (B) Bool[And(col-has-black_king,col-has-white_rook)] [k=3]
   (C) Bool[And(row-has-black_king,row-has-white_rook)] [k=3]
-
 \end{Verbatim}
+
+\subsubsection{Feature Description}
+$A$. The black-king and the white-king are in the same column\\
+$B$. The black-king and the white-rook are in the same column\\
+$C$. The black-king and the white-rook are in the same row
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
   1. A>0 AND B=0 AND C=0 -> {A ·, B ·, C ↑}
   2. A=0 AND B=0 AND C=0 -> {A ·, B ↑, C ·}
 \end{Verbatim}
+
+\subsubsection{Policy description}
+The policy is an abstraction of all the possible one-move checkmates that exist on a chessboard of any size with two kings and a tower. According to rule one, if the black king is in the same column as the white king, it is good to put the white rook in the same row as the white king. According to the second rule if the black king is not on the same column as the white king, it is good to put the white rook on the same column as the white king. This policy will generalise to any chessboard size board where checkmate is possible in one with rook and king.
 
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
