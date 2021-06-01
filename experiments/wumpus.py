@@ -4,25 +4,29 @@ from sltp.util.misc import update_dict
 from gpl.domains.grid_games.domain import Domain
 from gpl.utils import Bunch
 from gpl.domains.grid_games.grammar.language import CELL_S, COL_S, ROW_S
-from gpl.domains.grid_games.envs.wumpus import RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP, UP, DOWN, RIGHT, LEFT
+from gpl.domains.grid_games.envs.wumpus import RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP, UP, DOWN, RIGHT, LEFT, PIT
 from gpl.domains.grid_games.grammar.objects import PLAYER1, PLAYER2
 
 chase_params = Bunch({
     'domain_name': 'wumpus',
     'use_player_as_feature': False,
-    'use_next_player_as_feature': False,
+    'use_player_to_encode': False,
+    'use_next_player_as_feature': True,
+    'use_next_player_to_encode': True,
+    'use_margin_as_feature': False,
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
     'use_adjacency': {CELL_S},
     'use_bidirectional': {},
     'sorts_to_use': {CELL_S},
+    'objects_to_ignore': set(),
     'unary_predicates': {},
     'can_build_walls': False,
     'wumpus_active': False,
     'ava_actions': {
         # PLAYER1: {RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP},
         PLAYER1: {UP, DOWN, RIGHT, LEFT, RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP},
-        PLAYER2: {UP, DOWN, RIGHT, LEFT, RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP}},
+        PLAYER2: {UP, DOWN, RIGHT, LEFT}},
     'max_actions': {PLAYER1: 2,
                     PLAYER2: 1},
 })
@@ -48,7 +52,7 @@ def experiments():
         print_denotations=True,
         print_hstar_in_feature_matrix=False,
 
-        verbosity=1,
+        verbosity=3,
         initial_sample_size=20,
         refinement_batch_size=50,
         maxsat_iter=10,
@@ -82,7 +86,8 @@ def experiments():
     exps["1"] = update_dict(
         base,
         instances=[0],
-        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        # test_instances=[],
+        test_instances=[0, 1, 2, 4, 5, 6, 7, 8, 9],
         max_concept_size=5,
         allow_bad_states=True,
     )

@@ -6,44 +6,46 @@ Database file #1: abbrv-short.bib
 Database file #2: literatur.bib
 Database file #3: references.bib
 Database file #4: crossref-short.bib
-You've used 1 entry,
+Warning--can't use both volume and number fields in silver2020few
+You've used 2 entries,
             2118 wiz_defined-function locations,
-            550 strings with 4845 characters,
-and the built_in function-call counts, 571 in all, are:
-= -- 56
-> -- 23
-< -- 1
-+ -- 9
-- -- 8
-* -- 37
-:= -- 85
-add.period$ -- 3
-call.type$ -- 1
-change.case$ -- 7
+            558 strings with 5099 characters,
+and the built_in function-call counts, 1207 in all, are:
+= -- 120
+> -- 51
+< -- 3
++ -- 20
+- -- 18
+* -- 84
+:= -- 171
+add.period$ -- 6
+call.type$ -- 2
+change.case$ -- 15
 chr.to.int$ -- 0
-cite$ -- 1
-duplicate$ -- 25
-empty$ -- 45
-format.name$ -- 8
-if$ -- 127
+cite$ -- 3
+duplicate$ -- 52
+empty$ -- 92
+format.name$ -- 18
+if$ -- 270
 int.to.chr$ -- 0
-int.to.str$ -- 1
-missing$ -- 1
-newline$ -- 8
-num.names$ -- 2
-pop$ -- 10
+int.to.str$ -- 2
+missing$ -- 2
+newline$ -- 13
+num.names$ -- 4
+pop$ -- 19
 preamble$ -- 1
-purify$ -- 6
+purify$ -- 13
 quote$ -- 0
-skip$ -- 23
+skip$ -- 50
 stack$ -- 0
-substring$ -- 45
-swap$ -- 13
-text.length$ -- 1
+substring$ -- 98
+swap$ -- 30
+text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 4
-warning$ -- 0
-while$ -- 5
-width$ -- 2
-write$ -- 13
+type$ -- 8
+warning$ -- 1
+while$ -- 10
+width$ -- 3
+write$ -- 25
+(There was 1 warning)

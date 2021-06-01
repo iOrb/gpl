@@ -6,4 +6,11 @@ Guillem Franc{\`e}s, Augusto~B. Corr\^{e}a, Cedric Geissmann, and Florian
 \newblock Generalized potential heuristics for classical planning.
 \newblock In {\em Proc.\ IJCAI 2019}, pages 5554--5561, 2019.
 
+\bibitem{silver2020few}
+Tom Silver, Kelsey~R Allen, Alex~K Lew, Leslie~Pack Kaelbling, and Josh
+  Tenenbaum.
+\newblock Few-shot bayesian imitation learning with logical program policies.
+\newblock In {\em Proceedings of the AAAI Conference on Artificial
+  Intelligence}, volume~34, pages 10251--10258, 2020.
+
 \end{thebibliography}

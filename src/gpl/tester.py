@@ -168,7 +168,7 @@ def run_test(config, search_policy, task, instance_name, rng):
         if spp[0].deadend:
             exitcode = ExitCode.DeadEndReached
             break
-        if visited_sp[sp[1]] > 10:
+        if visited_sp[sp[1]] > 3:
             exitcode = ExitCode.AbstractPolicyNonTerminatingOnTestInstances
             break
 
@@ -228,11 +228,13 @@ def run(config, data, rng):
         else:
             print("\nPOLICY:")
             data.d2l_policy.print_aaai20()
-        print('')
+        print("")
 
     def get_policy(model_factory, static_atoms, data):
-        policy = create_action_selection_function_from_transition_policy(config, model_factory, static_atoms,
-                                                                             data.d2l_policy)
+        policy = create_action_selection_function_from_transition_policy(config,
+                                                                         model_factory,
+                                                                         static_atoms,
+                                                                         data.d2l_policy)
         return policy
 
     # Test that the policy reaches a goal when applied on all test instances

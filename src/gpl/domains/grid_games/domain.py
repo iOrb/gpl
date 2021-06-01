@@ -95,20 +95,34 @@ def load_general_problem(problem, lang, rep, env):
                     map_sorts[(r, c, sort)] = lang.constant(CONST[sort](r, c, nrows, ncols), lang.get(sort))
                 except:
                     map_sorts[(r, c, sort)] = lang.get(CONST[sort](r, c, nrows, ncols))
-                if o not in {OBJECTS.empty}:
+                if o not in {OBJECTS.empty} | params.objects_to_ignore:
                     problem.init.add(lang.get(f'{sort}-has-{o}'), lang.get(CONST[sort](r, c, nrows, ncols)))
 
-    # from .envs.delivery import AT_DESTINATION, HOLDING_PACKAGE, DESTINY, PACKAGE
-    # if getattr(rep, AT_DESTINATION):
-    #     r, c = np.argwhere(brd==AGENT)[0]
+    # WUMPUS
+    # from .envs.wumpus import AT_WUMPUS, AT_PIT, AGENT, WUMPUS
+    # if AGENT not in brd and getattr(rep, AT_WUMPUS):
+    #     r, c = np.argwhere(brd == WUMPUS)[0]
     #     sort = CELL_S
-    #     o=DESTINY
+    #     o = AGENT
     #     problem.init.add(lang.get(f'{sort}-has-{o}'), lang.get(CONST[sort](r, c, nrows, ncols)))
-    # if not PACKAGE in rep.grid:
-    #     r, c = np.argwhere(brd==AGENT)[0]
+    # if AGENT not in brd and getattr(rep, AT_PIT) is not None:
+    #     r, c = getattr(rep, AT_PIT)
     #     sort = CELL_S
-    #     o=PACKAGE
+    #     o = AGENT
     #     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
+
+    # DELIVERY
+    from .envs.delivery import AT_DESTINATION, HOLDING_PACKAGE, DESTINY, PACKAGE
+    if getattr(rep, AT_DESTINATION):
+        r, c = np.argwhere(brd==AGENT)[0]
+        sort = CELL_S
+        o=DESTINY
+        problem.init.add(lang.get(f'{sort}-has-{o}'), lang.get(CONST[sort](r, c, nrows, ncols)))
+    if not PACKAGE in rep.grid:
+        r, c = np.argwhere(brd==AGENT)[0]
+        sort = CELL_S
+        o=PACKAGE
+        atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
 
     def __add_direction_predicate(problem, lang, direction, sort, const, new_r, new_c):
         if (new_r<0 or new_c<0 or ncols==new_c or nrows==new_r) and not params.use_margin_as_feature:

@@ -5,7 +5,7 @@ import numpy as np
 from gpl.utils import Bunch
 import copy
 
-from ..grammar.objects import WUMPUS, GOLD, TARGET_GOLD, AGENT, EMPTY, PIT, PLAYER1, PLAYER2
+from ..grammar.objects import WUMPUS, GOLD, AGENT, EMPTY, PIT, PLAYER1, PLAYER2
 from ..utils import identify_next_player
 
 
@@ -14,7 +14,6 @@ SIMPLIFIED_OBJECT = {
     WUMPUS:' W ',
     AGENT:' A ',
     GOLD:' g ',
-    TARGET_GOLD:' G ',
     PIT:' * ',
 }
 
@@ -27,8 +26,8 @@ opposite_player = lambda c: PLAYER2 if c == PLAYER1 else PLAYER1
 
 
 PIECE_VALID_ACTIONS = {
-    AGENT: lambda pos, layout, params: agent_valid_actions(pos, layout, params),
-    WUMPUS: lambda pos, layout, params: wumpus_valid_actions(pos, layout, params),
+    AGENT: lambda pos, rep, params: agent_valid_actions(pos, rep, params),
+    WUMPUS: lambda pos, rep, params: wumpus_valid_actions(pos, rep, params),
 }
 
 # Actions IDs
@@ -64,6 +63,9 @@ MOVE_ACTION = {
     ACTION_MOVE_DIRECTION[LEFTDOWN]: LEFTDOWN,
 }
 
+# unary predicates
+AT_WUMPUS = 'at_wumpus'
+AT_PIT = 'at_pit'
 
 
 # Begin Wumpus =================================
@@ -80,9 +82,9 @@ class Env(object):
         assert action in valid_actions
         l = layout.copy()
         if rep.player == PLAYER1:
-            l = layout_after_agent_action(layout, action, self.params)
+            l, at_wumpus_, at_pit_ = layout_after_agent_action(rep, action, self.params)
         else:
-            l = layout_after_wumpus_action(layout, action, self.params)
+            l, at_wumpus_, at_pit_ = layout_after_wumpus_action(rep, action, self.params)
         new_rep = copy.deepcopy(rep)
         new_rep.grid = l
         if rep.nact < self.params.max_actions[rep.player]:
@@ -92,11 +94,13 @@ class Env(object):
             new_rep.player = opposite_player(rep.player)
         if self.params.use_next_player_as_feature:
             new_rep.next_player = identify_next_player(new_rep, self.params)
+        setattr(new_rep, AT_WUMPUS, at_wumpus_)
+        setattr(new_rep, AT_PIT, at_pit_)
         return self.__update_rep(new_rep)
 
     def __update_rep(self, rep):
         updated_rep = rep.to_dict()
-        gstatus = Env.check_game_status(rep)
+        gstatus = self.check_game_status(rep)
         if gstatus == 1:
             updated_rep['goal'] = True
         elif gstatus == -1:
@@ -108,11 +112,10 @@ class Env(object):
     def get_simplified_objects():
         return SIMPLIFIED_OBJECT
 
-    @staticmethod
-    def check_game_status(rep):
+    def check_game_status(self, rep):
         if len(gold_positions(rep.grid)) == 0:
             return 1
-        elif agent_catched(rep):
+        elif not agent_alive(rep):
             return -1
         else:
             return 0
@@ -121,11 +124,14 @@ class Env(object):
         layout = rep.grid
         actions = []
         if rep.player == PLAYER1:
-            c0 = np.argwhere(layout == AGENT)[0]
-            actions += PIECE_VALID_ACTIONS[AGENT](c0, layout, self.params)
+            try:
+                c0 = np.argwhere(layout == AGENT)[0]
+            except:
+                print('H')
+            actions += PIECE_VALID_ACTIONS[AGENT](c0, rep, self.params)
         elif rep.player == PLAYER2:
             c0 = np.argwhere(layout == WUMPUS)[0]
-            actions += PIECE_VALID_ACTIONS[WUMPUS](c0, layout, self.params)
+            actions += PIECE_VALID_ACTIONS[WUMPUS](c0, rep, self.params)
         return actions
 
     def player2_policy(self, rep):
@@ -153,45 +159,40 @@ class Env(object):
         rep['goal'] = False
         rep['nmoves'] = 0
         rep['deadend'] = False
-        if self.params.use_next_player_as_feature:
-            rep['next_player'] = identify_next_player(Bunch(rep), self.params)
+        assert AGENT in rep['grid'] and GOLD in rep['grid']
+        rep[AT_WUMPUS] = False
+        rep[AT_PIT] = None
+        rep['next_player'] = identify_next_player(Bunch(rep), self.params)
         return Bunch(rep)
-
 
 # Helper mehtods =================================
 
 def terminated(rep):
-    if agent_catched(rep) or len(gold_positions(rep.grid)) == 0:
+    if not agent_alive(rep) or len(gold_positions(rep.grid)) == 0:
         return 1
     else:
         return 0
 
-def agent_catched(rep):
-    if AGENT not in rep.grid:
-        return True
-    else:
+
+def agent_alive(rep):
+    if at_pit(rep) is not None:
         return False
-
-def layout_after_agent_action(layout, action, params):
-    assert AGENT in layout
-    assert action in params.ava_actions[PLAYER1]
-    l = layout.copy()
-    agent_pos = np.argwhere(layout == AGENT)[0]
-    running_pos = np.add(agent_pos, ACTION_MOVE_DIRECTION[action])
-    assert not np.any(running_pos < 0)
-    try:
-        next_cell = l[running_pos[0], running_pos[1]]
-    except:
-        raise IndexError
-    l[agent_pos[0], agent_pos[1]] = EMPTY
-    if next_cell not in {PIT, WUMPUS}:
-        l[running_pos[0], running_pos[1]] = AGENT
-    if GOLD in l and not TARGET_GOLD in l:
-        l = set_one_random_target_gold(l)
-    return l
+    elif at_wumpus(rep):
+        return False
+    else:
+        return True
 
 
-def agent_valid_actions(pos, layout, params):
+def at_wumpus(rep):
+    return getattr(rep, AT_WUMPUS)
+
+
+def at_pit(rep):
+    return getattr(rep, AT_PIT)
+
+
+def agent_valid_actions(pos, rep, params):
+    layout = rep.grid
     valid_action = []
     action_space = params.ava_actions[PLAYER1]
     for action_id, direction in ACTION_MOVE_DIRECTION.items():
@@ -204,31 +205,39 @@ def agent_valid_actions(pos, layout, params):
             next_cell = layout[running_pos[0], running_pos[1]]
         except IndexError:
             continue
-        if next_cell in {WUMPUS, GOLD, PIT}:
+        if next_cell in {PIT, WUMPUS}:
             continue
         else:
             valid_action.append(action_id)
     return valid_action
 
 
-def layout_after_wumpus_action(layout, action, params):
-    assert WUMPUS in layout
-    assert action in params.ava_actions[PLAYER2]
+def layout_after_agent_action(rep, action, params):
+    layout = rep.grid
+    assert AGENT in layout
+    assert action in params.ava_actions[PLAYER1]
+    at_wumpus_ = at_wumpus(rep)
+    at_pit_ = at_pit(rep)
     l = layout.copy()
-    pos = np.argwhere(layout == WUMPUS)[0]
-    running_pos = np.add(pos, ACTION_MOVE_DIRECTION[action])
+    agent_pos = np.argwhere(layout == AGENT)[0]
+    running_pos = np.add(agent_pos, ACTION_MOVE_DIRECTION[action])
     assert not np.any(running_pos < 0)
     try:
         next_cell = l[running_pos[0], running_pos[1]]
     except:
         raise IndexError
-    assert next_cell not in {GOLD, TARGET_GOLD}
-    l[pos[0], pos[1]] = EMPTY
-    l[running_pos[0], running_pos[1]] = WUMPUS
-    return l
+    l[agent_pos[0], agent_pos[1]] = EMPTY
+    if next_cell not in {PIT, WUMPUS}:
+        l[running_pos[0], running_pos[1]] = AGENT
+    elif next_cell in WUMPUS:
+        at_wumpus_ = True
+    elif next_cell in PIT:
+        at_pit_ = (running_pos[0], running_pos[1])
+    return l, at_wumpus_, at_pit_
 
 
-def wumpus_valid_actions(pos, layout, params):
+def wumpus_valid_actions(pos, rep, params):
+    layout = rep.grid
     valid_action = []
     action_space = params.ava_actions[PLAYER2]
     for action_id, direction in ACTION_MOVE_DIRECTION.items():
@@ -241,23 +250,38 @@ def wumpus_valid_actions(pos, layout, params):
             next_cell = layout[running_pos[0], running_pos[1]]
         except IndexError:
             continue
-        if next_cell in {TARGET_GOLD, GOLD, PIT}:
+        if next_cell in {GOLD, PIT}:
             continue
         else:
             valid_action.append(action_id)
     return valid_action
 
 
-def gold_positions(layout):
-    return np.argwhere((layout==GOLD) | (layout==TARGET_GOLD))
-
-
-def set_one_random_target_gold(layout):
-    assert TARGET_GOLD not in layout
-    gold_pos = random.choice(gold_positions(layout))
+def layout_after_wumpus_action(rep, action, params):
+    layout = rep.grid
+    assert WUMPUS in layout
+    assert action in params.ava_actions[PLAYER2]
+    at_wumpus_ = at_wumpus(rep)
+    at_pit_ = at_pit(rep)
     l = layout.copy()
-    l[gold_pos[0], gold_pos[1]] = TARGET_GOLD
-    return l
+    pos = np.argwhere(layout == WUMPUS)[0]
+    running_pos = np.add(pos, ACTION_MOVE_DIRECTION[action])
+    assert not np.any(running_pos < 0)
+    try:
+        next_cell = l[running_pos[0], running_pos[1]]
+    except:
+        raise IndexError
+    assert next_cell not in {GOLD, PIT}
+    l[pos[0], pos[1]] = EMPTY
+    if next_cell in AGENT:
+        at_wumpus_ = True
+    l[running_pos[0], running_pos[1]] = WUMPUS
+    return l, at_wumpus_, at_pit_
+
+
+def gold_positions(layout):
+    return np.argwhere(layout==GOLD)
+
 
 ### Instances
 
@@ -271,7 +295,6 @@ def generate_gird(key):
         grid[p_pos] = PIT
     for g_pos in golds:
         grid[g_pos] = GOLD
-    grid = set_one_random_target_gold(grid)
     return grid
 
 
@@ -283,9 +306,10 @@ LAYOUTS = {
     4: (5, 5, (1, 1), (4, 4), {(0, 1)}, {(4, 0)}),
     5: (4, 4, (0, 0), (3, 3), {}, {(3, 0)}),
     6: (3, 3, (2, 0), (0, 0), {}, {(1, 2)}),
-    7: (5, 5, (0, 0), (4, 1), {(2 ,0), (2 ,1), (2 ,2), (0, 4)}, {(1, 3), (2, 4)}),
+    7: (5, 5, (0, 0), (4, 1), {(2 ,0), (2 ,1), (2 ,2), (0, 4)}, {(2, 4)}),
     8: (4, 4, (2, 3), (3, 0), {(2, 1)}, {(0, 1)}),
-    9: (4, 4, (0, 3), (1, 0), {(2, 1)}, {(3, 2)}),
+    9: (4, 3, (0, 2), (3, 0), {(2, 1), (1, 1)}, {(3, 2), (0, 1)}),
+    9: (4, 3, (0, 2), (3, 0), {(2, 1), (1, 1)}, {(3, 2), (0, 1)}),
 }
 
 

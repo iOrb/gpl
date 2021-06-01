@@ -7,8 +7,6 @@ from sltp.util.misc import update_dict
 
 from gpl.domains.grid_games.domain import Domain
 
-# from gpl.domains.grid_games.envs.space_invaders import LAST_TURN
-
 
 space_invaders_params = Bunch({
     'domain_name': 'space_invaders',

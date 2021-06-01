@@ -5,8 +5,6 @@ import numpy as np
 from .language import *
 from .objects import OBJECTS
 
-from ..envs.delivery import AT_DESTINATION, HOLDING_PACKAGE, DESTINY, PACKAGE, AGENT
-
 # General State to atoms
 def state_to_atoms(domain_name, state, p):
     rep, _ = state
@@ -22,19 +20,34 @@ def state_to_atoms(domain_name, state, p):
                 o = brd[r, c] if (nrows > r >= 0 and ncols > c >= 0) else OBJECTS.none
                 if o == OBJECTS.none and not p.use_margin_as_feature:
                     continue
-                if o not in {OBJECTS.empty}:
+                if o not in {OBJECTS.empty} | p.objects_to_ignore:
                     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
 
-    # if getattr(rep, AT_DESTINATION):
-    #     r, c = np.argwhere(brd==AGENT)[0]
+    # WUMPUS
+    # from ..envs.wumpus import AT_WUMPUS, AT_PIT, AGENT, WUMPUS
+    # if AGENT not in brd and getattr(rep, AT_WUMPUS):
+    #     r, c = np.argwhere(brd==WUMPUS)[0]
     #     sort = CELL_S
-    #     o=DESTINY
+    #     o=AGENT
     #     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
-    # if not PACKAGE in rep.grid:
-    #     r, c = np.argwhere(brd==AGENT)[0]
+    # if AGENT not in brd and getattr(rep, AT_PIT) is not None:
+    #     r, c = getattr(rep, AT_PIT)
     #     sort = CELL_S
-    #     o=PACKAGE
+    #     o=AGENT
     #     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
+
+    # DELIVERY
+    from ..envs.delivery import AT_DESTINATION, HOLDING_PACKAGE, DESTINY, PACKAGE, AGENT
+    if getattr(rep, AT_DESTINATION):
+        r, c = np.argwhere(brd==AGENT)[0]
+        sort = CELL_S
+        o=DESTINY
+        atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
+    if not PACKAGE in rep.grid:
+        r, c = np.argwhere(brd==AGENT)[0]
+        sort = CELL_S
+        o=PACKAGE
+        atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
 
     for u in p.unary_predicates:
         if getattr(rep, u):
