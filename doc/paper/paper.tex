@@ -414,7 +414,7 @@ According to rule one, is good to decrease the horizontal and vertical distance 
 
 \subsection{Nim}
 \subsubsection{Description}
-In this domain there are two stacks (columns) of tokens. The number of actions available in each state depends on the number of tokens, a valid action involves removing one of the tokens. When a token is removed, that token and all the tokens above it are removed as well. When a token is removed, the turn is changed and the other player must remove a token as an action if there is one. The objective of the game is to leave the opponent with no actions available on his turn, i.e., without any token. The agent and the adversary has on action per turn.
+This is the Nim version used in~\cite{silver2020few}.In this domain there are two stacks (columns) of tokens. The number of actions available in each state depends on the number of tokens, a valid action involves removing one of the tokens. When a token is removed, that token and all the tokens above it are removed as well. When a token is removed, the turn is changed and the other player must remove a token as an action if there is one. The objective of the game is to leave the opponent with no actions available on his turn, i.e. without any token. The agent and the adversary has on action per turn.
 It is interesting to note that in this game not all states are solvable if the opponent plays optimally. Knowing that the expert policy is to leave the opponent with both stacks with the same number of tokens, this state with both stacks leveled will not be solvable. Therefore, in order to solve it, we have made use of the $Bad(state)$ feature, which allows us not to have to define a good transition for each state, and as an alternative to label it as a bad state. The advantage is that if the initial state is solvable, bad states can always be avoided. However the policy is not complete for all states, in particular there will be no good transition for states with the two token stacks leveled, as we will see below, which we can say is the optimal representation of the game strategy. The winning tactic in this game is to level the two stacks of tokens by removing the token next to an empty cell and diagonally above another token, como se puede ver en~\cite{silver2020few}. The intuition behind this tactic is that if we follow it we can always reach a final situation where the opponent is forced to remove all the tokens from one pile, then we can remove the remaining tokens from the other pile.
 
 
@@ -431,22 +431,23 @@ It is interesting to note that in this game not all states are solvable if the o
 \subsubsection{Features}
 \begin{Verbatim}[fontsize=\footnotesize]
   (A) Num[And(cell-has-token,Exists(left_cell,cell-has-token))] [k=5]
-  (B) Num[And(cell-has-token,Exists(leftdown_cell,cell-has-token))] [k=5]
-  (C) Num[And(cell-has-token,Exists(rightdown_cell,cell-has-token))] [k=5]
+  (B) Num[And(cell-has-token,Forall(leftdown_cell,cell-has-token))] [k=5]
+  (C) Num[And(cell-has-token,Forall(rightdown_cell,cell-has-token))] [k=5]
 \end{Verbatim}
 
 \subsubsection{Feature Descrition}
 $A$. Number of tokens with a token immediately to the left of it\\
-$B$. Number of tokens with a token immediately to the leftdown of it\\
-$C$. Number of tokens with a token immediately to the rightdown of it
+$B$. Number of tokens s.t. any cell to the leftdown also has a token.\\
+$C$. Number of tokens s.t. any cell to the rightdown also has a token.
 
 \subsubsection{Policy}
 \begin{Verbatim}[fontsize=\footnotesize]
-  1. B>0 AND C>0 -> {A ·, B ↓, C ·}, {A ·, B ·, C ↓}
+  1. B>0 AND C>0 -> {A ·, B ↓, C ↓}
 \end{Verbatim}
 
 \subsubsection{Policy Description}
-The policy guarantees to leave both stacks with the same number of tokens. This is done by decreasing the number of tokens that have a token to their leftdown or rightdown without decreasing the number of tokens with a token next to them.
+The policy guarantees to leave both stacks with the same number of tokens. This is done by decreasing the number of tokens s.t. any cell to the leftdown and to the rightdown has a token, without changing the number of tokens with a token at left to them. The only way to fulfill this policy is to remove the token that has a token to its leftdown and an empty cell to its left, or to remove the token that has a token to its rightdown and an empty cell to its right.
+
 As the policy clearly shows, there is no good transition, that includes a change in the number of tokens that a token has on its left. In other words, states where the same number of tokens in the two stacks cannot be preserved with some legal move are bad, and therefore they have no good transition. In fact according to the policy it is good to leave the opponent in these states bad, because there will be no legal move for the opponent to leave us with the same number of tokens in the two stacks.
 
 
