@@ -1,0 +1,580 @@
+================================================================================
+SLTP v.0.2.0
+================================================================================
+================================================================================
+(pid: 57547) STARTING STEP #1: Train: Explore the state space of the training instances
+================================================================================
+------------------------------------------------
+ DOMAIN PARAMETERS: 
+------------------------------------------------
+------------------------------------------------
+domain_name: checkmate_tactic
+use_player_as_feature: True
+use_player_to_encode: True
+use_next_player_as_feature: False
+use_next_player_to_encode: False
+use_margin_as_feature: False
+objects_to_ignore: set()
+map_cells: True
+use_diagonals_for_map_cells: True
+use_adjacency: {'row', 'col'}
+use_distance_2: {'row', 'col'}
+use_distance_more_than_1: {'row', 'col'}
+use_bidirectional: {}
+sorts_to_use: {'row', 'col'}
+n_moves: 1000
+unary_predicates: {'checkmate'}
+game_version: 1
+------------------------------------------------
+------------------------------------------------
+(START Episode 0)
+------------------------------------------------
+------------------------------------------------
+(0) Exploration of the training sample:
+------------------------------------------------
+2021-06-08 13:55:56 INFO     Expanding train instance: checkmate_tactic - 31
+# .  R  .  . #
+# .  .  K  . #
+# k  .  .  . #
+
+------------------------------------------------
+(0) Generation of the training sample:
+------------------------------------------------
+2021-06-08 13:56:01 INFO     sample: #states=1102, #transition-entries=2476, #transitions=2476
+2021-06-08 13:56:01 INFO     Entire sample: roots: 1, states: 1102, transitions: 2476 (1460 optimal), goals: 28, alive: 830, deadends: 244
+2021-06-08 13:56:01 INFO     Printing SAT transition matrix with 1102 states, 102 states with some outgoing transition, 116 operators, 2476 (non-det) transitions, and 1108 (adv) transitions,
+------------------------------------------------
+(0) Generate the pool of candidate features:
+------------------------------------------------
+2021-06-08 13:56:01 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 1102, transitions: 2476 (1460 optimal), goals: 28, alive: 830, deadends: 244
+2021-06-08 13:56:01 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4/sample.io'
+2021-06-08 13:56:01 INFO     Invoking C++ feature generation module
+2021-06-08 13:56:01 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 5 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+reading '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4/transitions-info.io
+BASIS: #concepts=14, #roles=6
+ROLES: #roles=5
+Generating concepts for k=1. Total concepts: 10 (2, 8, 0, 0, 0, 0)... 0 concepts generated, 3 pruned.
+Generating concepts for k=2. Total concepts: 10 (2, 8, 0, 0, 0, 0)... 6 concepts generated, 54 pruned.
+Generating concepts for k=3. Total concepts: 16 (2, 8, 6, 0, 0, 0)... 18 concepts generated, 114 pruned.
+Generating concepts for k=4. Total concepts: 34 (2, 8, 6, 18, 0, 0)... 36 concepts generated, 210 pruned.
+Generating concepts for k=5. Total concepts: 70 (2, 8, 6, 18, 36, 0)... 107 concepts generated, 466 pruned.
+Total concepts: 177 (2, 8, 6, 18, 36, 107)... 
+A total of 847 concepts were pruned
+A total of 0 features were marked as goal-identifying
+Generating cardinality features...
+Generating distance features...
+FEATURES: #features=120, #nullary=3, #boolean=38, #numerical=67, #distance=12, #conditional=0, #comparison=0
+Printing concept, role and feature denotations to /home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4/*-denotations.io.txt
+Serializing all concepts and features to:
+	/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4/serialized-concepts.io
+	/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4/serialized-features.io
+2021-06-08 13:56:05 INFO     Reading feature denotation matrix from /home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4/feature-matrix.io
+------------------------------------------------
+(0) C++ CNF generation module:
+------------------------------------------------
+2021-06-08 13:56:05 INFO     Calling C++ MaxSAT module
+2021-06-08 13:56:05 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cnfgen --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4 --v_slack 2 --distinguish-goals --initial-sample-size 20 --refinement-batch-size 50 --seed 0 --verbosity 2 --acyclicity topological --encodings_dir  --sampling_strategy full --optimal_steps 3 --consistency_bound 2 --n_features 2 --closed --maxsat_iter 4 --use_weighted_tx" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+Parsing training data... 
+reading '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4/transitions-info.io
+TransitionSample::read_dump: #states=1102, #transitions=2476, #transitions (adv)=1108
+reading '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4/feature-matrix.io
+FeatureMatrix::read_dump: #states=1102, #features=120
+Done. Training sample: [states: 1102, transitions: 2476 (from alive state: 2476), unsolvable: 244, goals: 28, unknowns: 0, features: 120, est. size: 0.25 MB.]
+Sampling 20 alive states at random
+
+
+###  STARTING ITERATION 1  ###
+Sample [sz=1102]: 1101, 1100, 1099, 1098, 1097, 1096, 1095, 1094, 1093, 1092, 1091, 1090, 1089, 1088, 1087, 1086, 1085, 1084, 1083, 1082, 1081, 1080, 1079, 1078, 1077, 1076, 1075, 1074, 1073, 1072, 1071, 1070, 1069, 1068, 1067, 1066, 1065, 1064, 1063, 1062, 1061, 1060, 1059, 1058, 1057, 1056, 1055, 1054, 1053, 1052, 1051, 1050, 1049, 1048, 1047, 1046, 1045, 1044, 1043, 1042, 1041, 1040, 1039, 1038, 1037, 1036, 1035, 1034, 1033, 1032, 1031, 1030, 1029, 1028, 1027, 1026, 1025, 1024, 1023, 1022, 1021, 1020, 1019, 1018, 1017, 1016, 1015, 1014, 1013, 1012, 1011, 1010, 1009, 1008, 1007, 1006, 1005, 1004, 1003, 1002, 1001, 1000, 999, 998, 997, 996, 995, 994, 993, 992, 991, 990, 989, 988, 987, 986, 985, 984, 983, 982, 981, 980, 979, 978, 977, 976, 975, 974, 973, 972, 971, 970, 969, 968, 967, 966, 965, 964, 963, 962, 961, 960, 959, 958, 957, 956, 955, 954, 953, 952, 951, 950, 949, 948, 947, 946, 945, 944, 943, 942, 941, 940, 939, 938, 937, 936, 935, 934, 933, 932, 931, 930, 929, 928, 927, 926, 925, 924, 923, 922, 921, 920, 919, 918, 917, 916, 915, 914, 913, 912, 911, 910, 909, 908, 907, 906, 905, 904, 903, 902, 901, 900, 899, 898, 897, 896, 895, 894, 893, 892, 891, 890, 889, 888, 887, 886, 885, 884, 883, 882, 881, 880, 879, 878, 877, 876, 875, 874, 873, 872, 871, 870, 869, 868, 867, 866, 865, 864, 863, 862, 861, 860, 859, 858, 857, 856, 855, 854, 853, 852, 851, 850, 849, 848, 847, 846, 845, 844, 843, 842, 841, 840, 839, 838, 837, 836, 835, 834, 833, 832, 831, 830, 829, 828, 827, 826, 825, 824, 823, 822, 821, 820, 819, 818, 817, 816, 815, 814, 813, 812, 811, 810, 809, 808, 807, 806, 805, 804, 803, 802, 801, 800, 799, 798, 797, 796, 795, 794, 793, 792, 791, 790, 789, 788, 787, 786, 785, 784, 783, 782, 781, 780, 779, 778, 777, 776, 775, 774, 773, 772, 771, 770, 769, 768, 767, 766, 765, 764, 763, 762, 761, 760, 759, 758, 757, 756, 755, 754, 753, 752, 751, 750, 749, 748, 747, 746, 745, 744, 743, 742, 741, 740, 739, 738, 737, 736, 735, 734, 733, 732, 731, 730, 729, 728, 727, 726, 725, 724, 723, 722, 721, 720, 719, 718, 717, 716, 715, 714, 713, 712, 711, 710, 709, 708, 707, 706, 705, 704, 703, 702, 701, 700, 699, 698, 697, 696, 695, 694, 693, 692, 691, 690, 689, 688, 687, 686, 685, 684, 683, 682, 681, 680, 679, 678, 677, 676, 675, 674, 673, 672, 671, 670, 669, 668, 667, 666, 665, 664, 663, 662, 661, 660, 659, 658, 657, 656, 655, 654, 653, 652, 651, 650, 649, 648, 647, 646, 645, 644, 643, 642, 641, 640, 639, 638, 637, 636, 635, 634, 633, 632, 631, 630, 629, 628, 627, 626, 625, 624, 623, 622, 621, 620, 619, 618, 617, 616, 615, 614, 613, 612, 611, 610, 609, 608, 607, 606, 605, 604, 603, 602, 601, 600, 599, 598, 597, 596, 595, 594, 593, 592, 591, 590, 589, 588, 587, 586, 585, 584, 583, 582, 581, 580, 579, 578, 577, 576, 575, 574, 573, 572, 571, 570, 569, 568, 567, 566, 565, 564, 563, 562, 561, 560, 559, 558, 557, 556, 555, 554, 553, 552, 551, 550, 549, 548, 547, 546, 545, 544, 543, 542, 541, 540, 539, 538, 537, 536, 535, 534, 533, 532, 531, 530, 529, 528, 527, 526, 525, 524, 523, 522, 521, 520, 519, 518, 517, 516, 515, 514, 513, 512, 511, 510, 509, 508, 507, 506, 505, 504, 503, 502, 501, 500, 499, 498, 497, 496, 495, 494, 493, 492, 491, 490, 489, 488, 487, 486, 485, 484, 483, 482, 481, 480, 479, 478, 477, 476, 475, 474, 473, 472, 471, 470, 469, 468, 467, 466, 465, 464, 463, 462, 461, 460, 459, 458, 457, 456, 455, 454, 453, 452, 451, 450, 449, 448, 447, 446, 445, 444, 443, 442, 441, 440, 439, 438, 437, 436, 435, 434, 433, 432, 431, 430, 429, 428, 427, 426, 425, 424, 423, 422, 421, 420, 419, 418, 417, 416, 415, 414, 413, 412, 411, 410, 409, 408, 407, 406, 405, 404, 403, 402, 401, 400, 399, 398, 397, 396, 395, 394, 393, 392, 391, 390, 389, 388, 387, 386, 385, 384, 383, 382, 381, 380, 379, 378, 377, 376, 375, 374, 373, 372, 371, 370, 369, 368, 367, 366, 365, 364, 363, 362, 361, 360, 359, 358, 357, 356, 355, 354, 353, 352, 351, 350, 349, 348, 347, 346, 345, 344, 343, 342, 341, 340, 339, 338, 337, 336, 335, 334, 333, 332, 331, 330, 329, 328, 327, 326, 325, 324, 323, 322, 321, 320, 319, 318, 317, 316, 315, 314, 313, 312, 311, 310, 309, 308, 307, 306, 305, 304, 303, 302, 301, 300, 299, 298, 297, 296, 295, 294, 293, 292, 291, 290, 289, 288, 287, 286, 285, 284, 283, 282, 281, 280, 279, 278, 277, 276, 275, 274, 273, 272, 271, 270, 269, 268, 267, 266, 265, 264, 263, 262, 261, 260, 259, 258, 257, 256, 255, 254, 253, 252, 251, 250, 249, 248, 247, 246, 245, 244, 243, 242, 241, 240, 239, 238, 237, 236, 235, 234, 233, 232, 231, 230, 229, 228, 227, 226, 225, 224, 223, 222, 221, 220, 219, 218, 217, 216, 215, 214, 213, 212, 211, 210, 209, 208, 207, 206, 205, 204, 203, 202, 201, 200, 199, 198, 197, 196, 195, 194, 193, 192, 191, 190, 189, 188, 187, 186, 185, 184, 183, 182, 181, 180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 169, 168, 167, 166, 165, 164, 163, 162, 161, 160, 159, 158, 157, 156, 155, 154, 153, 152, 151, 150, 149, 148, 147, 146, 145, 144, 143, 142, 141, 140, 139, 138, 137, 136, 135, 134, 133, 132, 131, 130, 129, 128, 127, 126, 125, 124, 123, 122, 121, 120, 119, 118, 117, 116, 115, 114, 113, 112, 111, 110, 109, 108, 107, 106, 105, 104, 103, 102, 101, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 
+
+Number of transitions/equivalence classes: 2476/2476
+Number of necessarily bad transitions/classes: 724/724
+Generating CNF encoding for 830 alive states, 2476 alive-to-solvable and alive-to-dead transitions and 2476 transition equivalence classes
+A total of 12556 variables were created
+	Select(f): 120
+	Good(s, a, s'): 2476
+	Bad(s): 0
+	V(s, d): 9960
+Posting distinguishability constraints
+A total of 4450592 clauses were created
+	Policy completeness [1]: 0
+	Transition separation [5,6]: 4337952
+	V descending along good transitions [X]: 32516
+	V is total function within bounds [X]: 55610
+	Goal separation [X]: 23240
+	(Weighted) Select(f): 120
+Writing final DIMACS file...
+CNF [12556 vars, 4450592 clauses] generated in 107.61 sec.
+Calling: open-wbo_static /home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4/theory.wsat > /home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4/maxsat_solver_run.log
+Call returned with exit code 7680
+Solution with cost 37 found in 90.44sec.
+
+Good(0, 0, 1) Good(3, 8, 31) Good(5, 17, 42) Good(8, 19, 19) Good(22, 15, 1) Good(26, 28, 131) Good(28, 12, 134) Good(533, 83, 659) Good(551, 66, 322) Good(16, 34, 19) 
+Good(558, 86, 322) Good(562, 81, 805) Good(806, 54, 1010) Good(482, 27, 217) Good(571, 102, 603) Good(578, 102, 749) Good(429, 84, 633) Good(581, 85, 759) Good(233, 34, 42) Good(216, 5, 356) 
+Good(595, 26, 497) Good(604, 106, 848) Good(579, 102, 756) Good(364, 11, 598) Good(629, 55, 865) Good(490, 97, 694) Good(487, 57, 229) Good(634, 19, 871) Good(638, 86, 436) Good(34, 12, 170) 
+Good(444, 63, 640) Good(362, 71, 596) Good(631, 20, 866) Good(658, 52, 868) Good(664, 79, 620) Good(455, 77, 667) Good(665, 109, 874) Good(669, 112, 888) Good(678, 78, 935) Good(671, 92, 620) 
+Good(704, 100, 804) Good(651, 67, 892) Good(691, 66, 911) Good(702, 53, 808) Good(704, 101, 952) Good(696, 97, 464) Good(742, 50, 989) Good(654, 100, 902) Good(728, 98, 980) Good(636, 83, 873) 
+Good(36, 12, 189) Good(738, 88, 840) Good(666, 109, 853) Good(740, 2, 504) Good(449, 79, 670) Good(934, 73, 749) Good(750, 12, 996) Good(921, 111, 663) Good(794, 92, 1025) Good(394, 32, 620) 
+Good(47, 16, 236) Good(103, 34, 21) Good(469, 53, 555) Good(50, 31, 4) Good(771, 39, 657) Good(40, 43, 194) Good(781, 88, 864) Good(533, 82, 648) Good(522, 88, 777) Good(786, 110, 837) 
+Good(301, 20, 218) Good(136, 30, 380) Good(139, 67, 163) Good(852, 88, 614) Good(660, 109, 840) Good(24, 28, 114) Good(118, 26, 352) Good(860, 112, 614) Good(241, 17, 503) Good(929, 21, 714) 
+Good(548, 94, 441) Good(740, 1, 553) Good(148, 69, 114) Good(297, 34, 300) Good(157, 37, 37) Good(570, 85, 822) Good(718, 112, 933) Good(945, 110, 1048) Good(654, 101, 904) Good(1013, 110, 514) 
+Good(318, 60, 229) Good(879, 97, 648) Good(959, 82, 1031) Good(397, 31, 217) Good(961, 85, 946) Good(377, 71, 612) Good(182, 74, 189) Good(964, 102, 853) Good(649, 109, 888) Good(56, 37, 4) 
+Good(136, 33, 381) Good(794, 86, 563) Good(1005, 67, 933) Good(590, 62, 352) Good(554, 86, 320) Good(226, 32, 462) Good(882, 58, 643) Good(882, 59, 695) Good(932, 113, 940) Good(210, 26, 236) 
+Good(539, 70, 563) Good(1061, 15, 1016) Good(631, 19, 868) Good(41, 44, 94) Good(978, 22, 1067) Good(675, 48, 527) Good(941, 57, 1067) Good(956, 22, 1053) Good(105, 37, 21) Good(1042, 102, 933) 
+Good(1001, 109, 749) Good(760, 111, 848) Good(1043, 102, 940) Good(220, 24, 42) Good(755, 113, 749) Good(498, 88, 352) Good(99, 24, 21) Good(611, 92, 587) Good(29, 32, 154) Good(556, 91, 322) 
+Good(539, 71, 705) Good(1047, 50, 1040) Good(1006, 63, 756) Good(1009, 113, 756) Good(91, 4, 300) Good(815, 102, 869) Good(796, 58, 637) Good(973, 53, 1065) Good(900, 20, 946) Good(1006, 67, 997) 
+Good(499, 92, 612) Good(629, 56, 779) Good(851, 88, 1064) Good(846, 0, 1016) Good(929, 22, 674) Good(818, 0, 763) Good(715, 97, 486) Good(803, 20, 837) Good(1057, 112, 756) Good(285, 24, 300) 
+Good(51, 29, 243) Good(820, 2, 996) Good(668, 97, 448) Good(292, 51, 538) Good(1020, 111, 694) Good(372, 91, 343) Good(852, 92, 1054) Good(204, 39, 456) Good(847, 0, 1017) Good(761, 1, 1008) 
+Good(927, 15, 1024) Good(55, 38, 134) Good(722, 98, 944) Good(999, 112, 749) Good(745, 63, 990) Good(982, 92, 1040) Good(457, 77, 670) Good(272, 78, 527) Good(427, 39, 630) Good(560, 63, 798) 
+Good(1084, 96, 805) Good(788, 101, 1024) Good(862, 74, 1063) Good(854, 94, 1067) Good(172, 66, 203) Good(983, 102, 888) Good(615, 71, 853) Good(841, 74, 996) Good(138, 30, 119) Good(919, 0, 861) 
+Good(87, 54, 299) Good(410, 35, 150) Good(708, 86, 471) Good(917, 109, 1054) Good(584, 65, 594) Good(474, 44, 576) Good(719, 112, 940) Good(875, 83, 840) Good(35, 12, 104) Good(906, 112, 819) 
+Good(986, 112, 737) Good(579, 10, 831) Good(870, 107, 955) Good(110, 66, 336) Good(446, 58, 617) Good(512, 14, 759) Good(569, 102, 819) Good(773, 39, 670) Good(899, 21, 1076) Good(883, 53, 667) 
+Good(879, 88, 1073) Good(858, 98, 763) Good(681, 49, 944) Good(672, 88, 873) Good(536, 23, 369) Good(825, 102, 977) Good(856, 99, 1064) Good(721, 112, 869) Good(72, 52, 281) Good(766, 113, 614) 
+Good(785, 100, 989) Good(14, 31, 19) Good(57, 16, 250) Good(994, 99, 940) Good(849, 2, 1063) Good(137, 63, 382) Good(303, 24, 214) Good(424, 93, 176) Good(193, 61, 439) Good(859, 70, 1070) 
+Good(353, 71, 587) Good(591, 99, 614) Good(851, 92, 874) Good(224, 28, 408) Good(210, 44, 479) Good(847, 112, 603) Good(765, 110, 588) Good(691, 64, 867) Good(662, 96, 909) Good(816, 20, 989) 
+Good(324, 43, 514) Good(838, 94, 1053) Good(25, 27, 2) Good(589, 99, 840) Good(953, 53, 1070) Good(797, 53, 707) Good(1005, 63, 1087) Good(368, 4, 602) Good(606, 26, 495) Good(1027, 81, 909) 
+Good(815, 20, 1021) Good(814, 20, 1040) Good(811, 53, 1031) Good(149, 29, 352) Good(806, 52, 822) Good(709, 102, 737) Good(985, 88, 1016) Good(423, 39, 620) Good(525, 25, 332) Good(521, 91, 418) 
+Good(642, 91, 464) Good(518, 64, 770) Good(508, 61, 753) Good(505, 13, 439) Good(496, 54, 602) Good(584, 64, 605) Good(494, 64, 601) Good(494, 66, 730) Good(491, 49, 727) Good(489, 47, 684) 
+Good(97, 17, 325) Good(960, 102, 874) Good(487, 73, 640) Good(483, 27, 300) Good(232, 47, 458) Good(319, 34, 94) Good(117, 69, 144) Good(477, 53, 497) Good(1077, 113, 933) Good(208, 51, 322) 
+Good(126, 26, 367) Good(395, 93, 140) Good(472, 62, 497) Good(591, 62, 597) Good(723, 112, 977) Good(475, 77, 707) Good(198, 44, 441) Good(470, 62, 495) Good(621, 83, 864) Good(466, 44, 694) 
+Good(528, 73, 782) Good(762, 111, 1015) Good(465, 43, 673) Good(79, 23, 11) Good(454, 43, 684) Good(338, 57, 221) Good(121, 27, 62) Good(452, 79, 683) Good(451, 47, 673) Good(357, 56, 546) 
+Good(757, 42, 940) Good(93, 43, 21) Good(447, 79, 657) Good(323, 44, 503) Good(446, 53, 641) Good(344, 26, 513) Good(312, 50, 546) Good(440, 42, 639) Good(437, 67, 552) Good(426, 21, 273) 
+Good(426, 37, 217) Good(289, 51, 436) Good(125, 1, 153) Good(812, 53, 1036) Good(46, 24, 4) Good(901, 110, 955) Good(738, 92, 853) Good(280, 37, 300) Good(388, 35, 332) Good(375, 94, 359) 
+Good(373, 92, 596) Good(368, 0, 597) Good(86, 54, 296) Good(18, 37, 19) Good(223, 27, 42) Good(784, 113, 874) Good(346, 25, 150) Good(152, 57, 408) Good(338, 27, 215) Good(329, 86, 514) 
+Good(328, 17, 576) Good(227, 29, 311) Good(327, 14, 568) Good(925, 112, 840) Good(910, 52, 1075) Good(267, 57, 311) Good(137, 67, 385) Good(295, 60, 443) Good(314, 27, 195) Good(321, 12, 96) 
+Good(318, 34, 195) Good(316, 31, 195) Good(531, 36, 633) Good(309, 34, 92) Good(308, 34, 214) Good(764, 111, 861) Good(321, 42, 552) Good(796, 59, 557) Good(306, 27, 92) Good(937, 67, 1085) 
+Good(305, 27, 214) Good(238, 77, 497) Good(32, 11, 166) Good(95, 47, 21) Good(679, 109, 940) Good(206, 44, 325) Good(278, 31, 300) Good(276, 60, 532) Good(269, 57, 441) Good(128, 68, 369) 
+Good(656, 53, 889) Good(249, 37, 92) Good(248, 39, 523) Good(12, 27, 19) Good(155, 12, 52) Good(915, 109, 737) Good(247, 37, 214) Good(244, 51, 514) Good(237, 24, 92) Good(181, 74, 170) 
+Good(232, 46, 456) Good(230, 47, 442) Good(228, 30, 359) Good(460, 53, 670) Good(222, 46, 336) Good(242, 62, 492) Good(718, 55, 908) Good(213, 43, 189) Good(644, 97, 443) Good(59, 52, 251) 
+Good(204, 43, 467) Good(202, 60, 464) Good(200, 43, 442) Good(463, 60, 694) Good(706, 99, 853) Good(41, 43, 4) Good(187, 37, 90) Good(185, 38, 140) Good(122, 57, 359) Good(179, 37, 62) 
+Good(178, 38, 385) Good(836, 99, 888) Good(177, 37, 215) Good(518, 65, 772) Good(175, 66, 250) Good(174, 66, 212) Good(173, 66, 418) Good(159, 31, 90) Good(627, 83, 777) Good(109, 66, 197) 
+Good(143, 29, 356) Good(142, 55, 396) Good(141, 29, 266) Good(138, 33, 183) Good(125, 27, 90) Good(43, 50, 218) Good(115, 32, 31) Good(112, 66, 343) Good(111, 66, 209) Good(139, 63, 131) 
+Good(370, 4, 607) Good(101, 32, 52) Good(364, 10, 592) Good(93, 44, 42) Good(618, 66, 464) Good(507, 99, 749) Good(73, 52, 9) Good(68, 36, 279) Good(665, 79, 866) Good(63, 56, 218) 
+Good(40, 44, 195) Good(10, 24, 19) Good(60, 52, 90) Good(60, 54, 7) Good(59, 54, 217) Good(53, 15, 166) Good(469, 58, 550) Good(845, 0, 1024) Good(564, 99, 737) Good(49, 33, 170) 
+Good(47, 17, 239) Good(46, 51, 96) Good(45, 24, 194) Good(910, 54, 980) Good(38, 11, 1) Good(35, 37, 2) Good(30, 10, 158) Good(145, 27, 37) 
+Good(0, 0, 1) Good(3, 8, 31) Good(5, 17, 42) Good(8, 19, 19) Good(22, 15, 1) Good(26, 28, 131) Good(28, 12, 134) Good(533, 83, 659) Good(551, 66, 322) Good(16, 34, 19) 
+Good(558, 86, 322) Good(562, 81, 805) Good(806, 54, 1010) Good(482, 27, 217) Good(571, 102, 603) Good(578, 102, 749) Good(429, 84, 633) Good(581, 85, 759) Good(233, 34, 42) Good(216, 5, 356) 
+Good(595, 26, 497) Good(604, 106, 848) Good(579, 102, 756) Good(364, 11, 598) Good(629, 55, 865) Good(490, 97, 694) Good(487, 57, 229) Good(634, 19, 871) Good(638, 86, 436) Good(34, 12, 170) 
+Good(444, 63, 640) Good(362, 71, 596) Good(631, 20, 866) Good(658, 52, 868) Good(664, 79, 620) Good(455, 77, 667) Good(665, 109, 874) Good(669, 112, 888) Good(678, 78, 935) Good(671, 92, 620) 
+Good(704, 100, 804) Good(651, 67, 892) Good(691, 66, 911) Good(702, 53, 808) Good(704, 101, 952) Good(696, 97, 464) Good(742, 50, 989) Good(654, 100, 902) Good(728, 98, 980) Good(636, 83, 873) 
+Good(36, 12, 189) Good(738, 88, 840) Good(666, 109, 853) Good(740, 2, 504) Good(449, 79, 670) Good(934, 73, 749) Good(750, 12, 996) Good(921, 111, 663) Good(794, 92, 1025) Good(394, 32, 620) 
+Good(47, 16, 236) Good(103, 34, 21) Good(469, 53, 555) Good(50, 31, 4) Good(771, 39, 657) Good(40, 43, 194) Good(781, 88, 864) Good(533, 82, 648) Good(522, 88, 777) Good(786, 110, 837) 
+Good(301, 20, 218) Good(136, 30, 380) Good(139, 67, 163) Good(852, 88, 614) Good(660, 109, 840) Good(24, 28, 114) Good(118, 26, 352) Good(860, 112, 614) Good(241, 17, 503) Good(929, 21, 714) 
+Good(548, 94, 441) Good(740, 1, 553) Good(148, 69, 114) Good(297, 34, 300) Good(157, 37, 37) Good(570, 85, 822) Good(718, 112, 933) Good(945, 110, 1048) Good(654, 101, 904) Good(1013, 110, 514) 
+Good(318, 60, 229) Good(879, 97, 648) Good(959, 82, 1031) Good(397, 31, 217) Good(961, 85, 946) Good(377, 71, 612) Good(182, 74, 189) Good(964, 102, 853) Good(649, 109, 888) Good(56, 37, 4) 
+Good(136, 33, 381) Good(794, 86, 563) Good(1005, 67, 933) Good(590, 62, 352) Good(554, 86, 320) Good(226, 32, 462) Good(882, 58, 643) Good(882, 59, 695) Good(932, 113, 940) Good(210, 26, 236) 
+Good(539, 70, 563) Good(1061, 15, 1016) Good(631, 19, 868) Good(41, 44, 94) Good(978, 22, 1067) Good(675, 48, 527) Good(941, 57, 1067) Good(956, 22, 1053) Good(105, 37, 21) Good(1042, 102, 933) 
+Good(1001, 109, 749) Good(760, 111, 848) Good(1043, 102, 940) Good(220, 24, 42) Good(755, 113, 749) Good(498, 88, 352) Good(99, 24, 21) Good(611, 92, 587) Good(29, 32, 154) Good(556, 91, 322) 
+Good(539, 71, 705) Good(1047, 50, 1040) Good(1006, 63, 756) Good(1009, 113, 756) Good(91, 4, 300) Good(815, 102, 869) Good(796, 58, 637) Good(973, 53, 1065) Good(900, 20, 946) Good(1006, 67, 997) 
+Good(499, 92, 612) Good(629, 56, 779) Good(851, 88, 1064) Good(846, 0, 1016) Good(929, 22, 674) Good(818, 0, 763) Good(715, 97, 486) Good(803, 20, 837) Good(1057, 112, 756) Good(285, 24, 300) 
+Good(51, 29, 243) Good(820, 2, 996) Good(668, 97, 448) Good(292, 51, 538) Good(1020, 111, 694) Good(372, 91, 343) Good(852, 92, 1054) Good(204, 39, 456) Good(847, 0, 1017) Good(761, 1, 1008) 
+Good(927, 15, 1024) Good(55, 38, 134) Good(722, 98, 944) Good(999, 112, 749) Good(745, 63, 990) Good(982, 92, 1040) Good(457, 77, 670) Good(272, 78, 527) Good(427, 39, 630) Good(560, 63, 798) 
+Good(1084, 96, 805) Good(788, 101, 1024) Good(862, 74, 1063) Good(854, 94, 1067) Good(172, 66, 203) Good(983, 102, 888) Good(615, 71, 853) Good(841, 74, 996) Good(138, 30, 119) Good(919, 0, 861) 
+Good(87, 54, 299) Good(410, 35, 150) Good(708, 86, 471) Good(917, 109, 1054) Good(584, 65, 594) Good(474, 44, 576) Good(719, 112, 940) Good(875, 83, 840) Good(35, 12, 104) Good(906, 112, 819) 
+Good(986, 112, 737) Good(579, 10, 831) Good(870, 107, 955) Good(110, 66, 336) Good(446, 58, 617) Good(512, 14, 759) Good(569, 102, 819) Good(773, 39, 670) Good(899, 21, 1076) Good(883, 53, 667) 
+Good(879, 88, 1073) Good(858, 98, 763) Good(681, 49, 944) Good(672, 88, 873) Good(536, 23, 369) Good(825, 102, 977) Good(856, 99, 1064) Good(721, 112, 869) Good(72, 52, 281) Good(766, 113, 614) 
+Good(785, 100, 989) Good(14, 31, 19) Good(57, 16, 250) Good(994, 99, 940) Good(849, 2, 1063) Good(137, 63, 382) Good(303, 24, 214) Good(424, 93, 176) Good(193, 61, 439) Good(859, 70, 1070) 
+Good(353, 71, 587) Good(591, 99, 614) Good(851, 92, 874) Good(224, 28, 408) Good(210, 44, 479) Good(847, 112, 603) Good(765, 110, 588) Good(691, 64, 867) Good(662, 96, 909) Good(816, 20, 989) 
+Good(324, 43, 514) Good(838, 94, 1053) Good(25, 27, 2) Good(589, 99, 840) Good(953, 53, 1070) Good(797, 53, 707) Good(1005, 63, 1087) Good(368, 4, 602) Good(606, 26, 495) Good(1027, 81, 909) 
+Good(815, 20, 1021) Good(814, 20, 1040) Good(811, 53, 1031) Good(149, 29, 352) Good(806, 52, 822) Good(709, 102, 737) Good(985, 88, 1016) Good(423, 39, 620) Good(525, 25, 332) Good(521, 91, 418) 
+Good(642, 91, 464) Good(518, 64, 770) Good(508, 61, 753) Good(505, 13, 439) Good(496, 54, 602) Good(584, 64, 605) Good(494, 64, 601) Good(494, 66, 730) Good(491, 49, 727) Good(489, 47, 684) 
+Good(97, 17, 325) Good(960, 102, 874) Good(487, 73, 640) Good(483, 27, 300) Good(232, 47, 458) Good(319, 34, 94) Good(117, 69, 144) Good(477, 53, 497) Good(1077, 113, 933) Good(208, 51, 322) 
+Good(126, 26, 367) Good(395, 93, 140) Good(472, 62, 497) Good(591, 62, 597) Good(723, 112, 977) Good(475, 77, 707) Good(198, 44, 441) Good(470, 62, 495) Good(621, 83, 864) Good(466, 44, 694) 
+Good(528, 73, 782) Good(762, 111, 1015) Good(465, 43, 673) Good(79, 23, 11) Good(454, 43, 684) Good(338, 57, 221) Good(121, 27, 62) Good(452, 79, 683) Good(451, 47, 673) Good(357, 56, 546) 
+Good(757, 42, 940) Good(93, 43, 21) Good(447, 79, 657) Good(323, 44, 503) Good(446, 53, 641) Good(344, 26, 513) Good(312, 50, 546) Good(440, 42, 639) Good(437, 67, 552) Good(426, 21, 273) 
+Good(426, 37, 217) Good(289, 51, 436) Good(125, 1, 153) Good(812, 53, 1036) Good(46, 24, 4) Good(901, 110, 955) Good(738, 92, 853) Good(280, 37, 300) Good(388, 35, 332) Good(375, 94, 359) 
+Good(373, 92, 596) Good(368, 0, 597) Good(86, 54, 296) Good(18, 37, 19) Good(223, 27, 42) Good(784, 113, 874) Good(346, 25, 150) Good(152, 57, 408) Good(338, 27, 215) Good(329, 86, 514) 
+Good(328, 17, 576) Good(227, 29, 311) Good(327, 14, 568) Good(925, 112, 840) Good(910, 52, 1075) Good(267, 57, 311) Good(137, 67, 385) Good(295, 60, 443) Good(314, 27, 195) Good(321, 12, 96) 
+Good(318, 34, 195) Good(316, 31, 195) Good(531, 36, 633) Good(309, 34, 92) Good(308, 34, 214) Good(764, 111, 861) Good(321, 42, 552) Good(796, 59, 557) Good(306, 27, 92) Good(937, 67, 1085) 
+Good(305, 27, 214) Good(238, 77, 497) Good(32, 11, 166) Good(95, 47, 21) Good(679, 109, 940) Good(206, 44, 325) Good(278, 31, 300) Good(276, 60, 532) Good(269, 57, 441) Good(128, 68, 369) 
+Good(656, 53, 889) Good(249, 37, 92) Good(248, 39, 523) Good(12, 27, 19) Good(155, 12, 52) Good(915, 109, 737) Good(247, 37, 214) Good(244, 51, 514) Good(237, 24, 92) Good(181, 74, 170) 
+Good(232, 46, 456) Good(230, 47, 442) Good(228, 30, 359) Good(460, 53, 670) Good(222, 46, 336) Good(242, 62, 492) Good(718, 55, 908) Good(213, 43, 189) Good(644, 97, 443) Good(59, 52, 251) 
+Good(204, 43, 467) Good(202, 60, 464) Good(200, 43, 442) Good(463, 60, 694) Good(706, 99, 853) Good(41, 43, 4) Good(187, 37, 90) Good(185, 38, 140) Good(122, 57, 359) Good(179, 37, 62) 
+Good(178, 38, 385) Good(836, 99, 888) Good(177, 37, 215) Good(518, 65, 772) Good(175, 66, 250) Good(174, 66, 212) Good(173, 66, 418) Good(159, 31, 90) Good(627, 83, 777) Good(109, 66, 197) 
+Good(143, 29, 356) Good(142, 55, 396) Good(141, 29, 266) Good(138, 33, 183) Good(125, 27, 90) Good(43, 50, 218) Good(115, 32, 31) Good(112, 66, 343) Good(111, 66, 209) Good(139, 63, 131) 
+Good(370, 4, 607) Good(101, 32, 52) Good(364, 10, 592) Good(93, 44, 42) Good(618, 66, 464) Good(507, 99, 749) Good(73, 52, 9) Good(68, 36, 279) Good(665, 79, 866) Good(63, 56, 218) 
+Good(40, 44, 195) Good(10, 24, 19) Good(60, 52, 90) Good(60, 54, 7) Good(59, 54, 217) Good(53, 15, 166) Good(469, 58, 550) Good(845, 0, 1024) Good(564, 99, 737) Good(49, 33, 170) 
+Good(47, 17, 239) Good(46, 51, 96) Good(45, 24, 194) Good(910, 54, 980) Good(38, 11, 1) Good(35, 37, 2) Good(30, 10, 158) Good(145, 27, 37) 
+Num Good(s, a, s') selected: 428 (17.29%)
+Num Bad(s) selected: 0 (0.00%)
+Num selected features: 9 (7.50%)
+Features: 
+	0: Atom[checkmate] [k=1]
+	1: Bool[And(col-has-white_king,col-has-white_rook)] [k=3]
+	2: Bool[And(row-has-white_king,row-has-white_rook)] [k=3]
+	3: Bool[Exists(adjacent_col,Forall(adjacent_col,col-has-white_king))] [k=5]
+	4: Bool[Exists(adjacent_row,Forall(adjacent_row,row-has-white_king))] [k=5]
+	5: Num[Exists(distance_2_col,Forall(adjacent_col,col-has-black_king))] [k=5]
+	6: Bool[And(col-has-black_king,Exists(adjacent_col,col-has-white_rook))] [k=5]
+	7: Bool[And(col-has-white_king,Exists(adjacent_col,col-has-white_rook))] [k=5]
+	8: Num[And(row,Forall(adjacent_row,row-has-black_king))] [k=5]
+Solution found in iteration #1 is correct!
+DNF transition-classifier saved in /home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_4/classifier.txt
+Total times: Theory generation: 107.63, Solver: 90.44, TOTAL: 198.17
+------------------------------------------------
+(END Episode 0)
+------------------------------------------------
+================================================================================
+END OF STEP #1: Train: Explore the state space of the training instances. 213.47 CPU sec - 2234.76 MB
+================================================================================
+================================================================================
+(pid: 57680) STARTING STEP #2: Testing of the D2L policy
+================================================================================
+
+POLICY:
+Features (#: 9; total k: 37; max k = 5):
+  (A) Atom[checkmate] [k=1]
+  (B) Bool[And(col-has-white_king,col-has-white_rook)] [k=3]
+  (C) Bool[And(row-has-white_king,row-has-white_rook)] [k=3]
+  (D) Bool[Exists(adjacent_col,Forall(adjacent_col,col-has-white_king))] [k=5]
+  (E) Bool[Exists(adjacent_row,Forall(adjacent_row,row-has-white_king))] [k=5]
+  (F) Num[Exists(distance_2_col,Forall(adjacent_col,col-has-black_king))] [k=5]
+  (G) Bool[And(col-has-black_king,Exists(adjacent_col,col-has-white_rook))] [k=5]
+  (H) Bool[And(col-has-white_king,Exists(adjacent_col,col-has-white_rook))] [k=5]
+  (I) Num[And(row,Forall(adjacent_row,row-has-black_king))] [k=5]
+Invariants: A=0
+Policy:
+  1. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F=0 AND G=0 AND H>0 AND I=0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ·, H ↓, I ·}, {A ↑, B ·, C ↓, D ·, E ·, F ·, G ·, H ·, I ·}, {A ·, B ·, C ↓, D ·, E ↑, F ·, G ·, H ·, I ·}
+  2. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F=0 AND H>0 AND I>0 -> {A ·, B ·, C ↓, D ·, E ↑, F ·, G ·, H ·, I ·}
+  3. A=0 AND B>0 AND C=0 AND D=0 AND E=0 AND F>0 AND G=0 AND H=0 AND I=0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ·, H ·, I ·}
+  4. A=0 AND B=0 AND D=0 AND E=0 AND F=0 AND G>0 AND H>0 AND I=0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ↓, H ↓, I ·}
+  5. A=0 AND B=0 AND C>0 AND E=0 AND F=0 AND G=0 AND H=0 AND I=0 -> {A ↑, B ·, C ↓, D ·, E ·, F ·, G ·, H ·, I ·}
+  6. A=0 AND B>0 AND C=0 AND D=0 AND E=0 AND F>0 AND H=0 AND I=0 -> {A ·, B ↓, C ·, D ↑, E ·, F ·, G ·, H ↑, I ·}
+  7. A=0 AND B=0 AND C=0 AND D>0 AND E=0 AND F=0 AND H>0 AND I>0 -> {A ·, B ·, C ·, D ·, E ↑, F ·, G ·, H ·, I ·}
+  8. A=0 AND B=0 AND C>0 AND D=0 AND E>0 AND F=0 AND G=0 AND H>0 AND I=0 -> {A ·, B ·, C ↓, D ·, E ↓, F ·, G ·, H ·, I ·}
+  9. A=0 AND B=0 AND C=0 AND D>0 AND E>0 AND F=0 AND H>0 AND I>0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ·, H ·, I ·}
+  10. A=0 AND B>0 AND C=0 AND D=0 AND E>0 AND F>0 AND G=0 AND H=0 AND I>0 -> {A ·, B ·, C ·, D ·, E ↓, F ·, G ·, H ·, I ·}
+  11. A=0 AND B=0 AND C=0 AND D>0 AND E=0 AND F>0 AND G>0 AND H>0 AND I=0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ↓, H ↓, I ·}
+  12. A=0 AND B>0 AND C=0 AND D=0 AND E=0 AND F>0 AND G=0 AND H=0 AND I>0 -> {A ·, B ·, C ·, D ·, E ↑, F ·, G ·, H ·, I ·}
+  13. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G>0 AND H>0 -> {A ·, B ↑, C ·, D ·, E ·, F ·, G ↓, H ↓, I ·}
+  14. A=0 AND B>0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 AND H=0 AND I=0 -> {A ·, B ↓, C ↑, D ↑, E ↑, F ·, G ·, H ↑, I ·}
+  15. A=0 AND B>0 AND C=0 AND D>0 AND E=0 AND F=0 AND G>0 AND H=0 AND I=0 -> {A ·, B ↓, C ·, D ·, E ·, F ·, G ↓, H ↑, I ·}
+  16. A=0 AND B=0 AND C=0 AND D=0 AND E>0 AND F>0 AND G>0 AND H=0 AND I=0 -> {A ·, B ·, C ↑, D ↑, E ↓, F ·, G ·, H ·, I ·}
+  17. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F>0 AND G>0 AND H=0 AND I=0 -> {A ·, B ·, C ·, D ↑, E ·, F ·, G ·, H ·, I ·}
+  18. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G>0 AND H=0 -> {A ·, B ·, C ·, D ↑, E ↑, F ·, G ·, H ↑, I ·}
+  19. A=0 AND B>0 AND C=0 AND D>0 AND E=0 AND F=0 AND G=0 AND H=0 AND I=0 -> {A ·, B ↓, C ↑, D ↓, E ↑, F ·, G ·, H ↑, I ·}
+  20. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G>0 AND H=0 -> {A ·, B ↑, C ·, D ·, E ·, F ·, G ↓, H ·, I ·}
+  21. A=0 AND B>0 AND C=0 AND D>0 AND E>0 AND F=0 AND G=0 AND H=0 AND I>0 -> {A ·, B ·, C ·, D ·, E ↓, F ·, G ·, H ·, I ·}
+  22. A=0 AND B=0 AND C=0 AND D>0 AND E=0 AND F>0 AND G>0 AND H=0 AND I=0 -> {A ·, B ·, C ↑, D ·, E ·, F ·, G ·, H ·, I ·}
+  23. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F>0 AND G=0 AND H>0 AND I=0 -> {A ·, B ·, C ↓, D ·, E ·, F ·, G ·, H ·, I ·}
+  24. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G>0 AND H=0 AND I=0 -> {A ·, B ↑, C ·, D ·, E ·, F ·, G ↓, H ·, I ·}
+  25. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 AND H=0 AND I=0 -> {A ↑, B ·, C ·, D ·, E ·, F ·, G ·, H ·, I ·}
+  26. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G=0 AND H=0 AND I=0 -> {A ·, B ·, C ·, D ↑, E ·, F ·, G ·, H ·, I ·}
+  27. A=0 AND B=0 AND C=0 AND D>0 AND F=0 AND G=0 AND H>0 AND I=0 -> {A ↑, B ·, C ·, D ·, E ·, F ·, G ·, H ↓, I ·}
+  28. A=0 AND B>0 AND C=0 AND D>0 AND E=0 AND F=0 AND G=0 AND H=0 AND I>0 -> {A ·, B ↓, C ·, D ·, E ·, F ·, G ·, H ↑, I ·}
+  29. A=0 AND B=0 AND C=0 AND D=0 AND E>0 AND F>0 AND G>0 AND H>0 AND I=0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ↓, H ↓, I ·}
+  30. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 AND H>0 -> {A ·, B ↑, C ·, D ↑, E ↑, F ·, G ·, H ↓, I ·}
+  31. A=0 AND B=0 AND C=0 AND D>0 AND E>0 AND F=0 AND G>0 AND H>0 AND I=0 -> {A ↑, B ·, C ·, D ·, E ·, F ·, G ↓, H ↓, I ·}
+  32. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F=0 AND G>0 AND H=0 AND I=0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ↓, H ↑, I ·}
+  33. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND G>0 AND H>0 AND I=0 -> {A ·, B ·, C ·, D ↓, E ·, F ·, G ·, H ↓, I ·}
+  34. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F>0 AND G>0 AND H>0 AND I=0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ·, H ↓, I ·}
+  35. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G>0 AND H>0 AND I=0 -> {A ·, B ↑, C ·, D ·, E ·, F ·, G ↓, H ↓, I ·}
+  36. A=0 AND B=0 AND C=0 AND D=0 AND E>0 AND F>0 AND G>0 AND H>0 AND I>0 -> {A ·, B ↑, C ·, D ·, E ·, F ·, G ↓, H ↓, I ·}
+  37. A=0 AND B>0 AND C=0 AND D>0 AND F=0 AND G=0 AND H=0 AND I=0 -> {A ↑, B ↓, C ·, D ·, E ·, F ·, G ·, H ·, I ·}
+  38. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND G=0 AND H=0 AND I=0 -> {A ↑, B ·, C ↓, D ·, E ·, F ·, G ·, H ·, I ·}
+  39. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 AND H>0 AND I=0 -> {A ·, B ↑, C ·, D ·, E ·, F ·, G ·, H ↓, I ·}
+  40. A=0 AND B>0 AND C=0 AND D=0 AND E>0 AND F=0 AND G=0 AND H=0 AND I>0 -> {A ·, B ↓, C ·, D ↑, E ↓, F ·, G ·, H ↑, I ·}
+  41. A=0 AND B=0 AND C=0 AND D=0 AND E>0 AND F>0 AND G>0 AND H=0 AND I>0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ·, H ↑, I ·}
+  42. A=0 AND B=0 AND D=0 AND E=0 AND F>0 AND G>0 AND H=0 AND I=0 -> {A ·, B ·, C ·, D ↑, E ·, F ·, G ·, H ↑, I ·}
+  43. A=0 AND B>0 AND C=0 AND D>0 AND E=0 AND F>0 AND G>0 AND H=0 AND I=0 -> {A ·, B ↓, C ·, D ·, E ·, F ·, G ·, H ↑, I ·}
+  44. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F=0 AND G=0 AND H>0 -> {A ·, B ↑, C ↓, D ↑, E ↑, F ·, G ·, H ↓, I ·}
+  45. A=0 AND B>0 AND C=0 AND D=0 AND E>0 AND F>0 AND G=0 AND H=0 AND I=0 -> {A ·, B ↓, C ↑, D ↑, E ↓, F ·, G ·, H ↑, I ·}
+  46. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F>0 AND G=0 AND H=0 AND I=0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ↑, H ·, I ·}
+  47. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F=0 AND G>0 AND H>0 AND I>0 -> {A ·, B ·, C ↓, D ·, E ↑, F ·, G ·, H ·, I ·}
+  48. A=0 AND B=0 AND C>0 AND D=0 AND E>0 AND F>0 AND G>0 AND H>0 AND I=0 -> {A ·, B ·, C ↓, D ·, E ·, F ·, G ·, H ·, I ·}
+  49. A=0 AND B=0 AND C=0 AND D>0 AND E=0 AND F>0 AND G=0 AND H=0 AND I=0 -> {A ↑, B ·, C ·, D ·, E ·, F ·, G ·, H ·, I ·}
+  50. A=0 AND B=0 AND C=0 AND D=0 AND E>0 AND F=0 AND G=0 AND H>0 -> {A ·, B ↑, C ·, D ↑, E ↓, F ·, G ·, H ↓, I ·}
+  51. A=0 AND B=0 AND C=0 AND D>0 AND E=0 AND F=0 AND G>0 AND H>0 AND I=0 -> {A ·, B ·, C ↑, D ·, E ·, F ·, G ·, H ·, I ·}
+  52. A=0 AND B=0 AND C=0 AND D>0 AND E=0 AND F>0 AND G=0 AND H>0 AND I=0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ·, H ↓, I ·}
+  53. A=0 AND B=0 AND C=0 AND D=0 AND E>0 AND F=0 AND G>0 AND H=0 -> {A ·, B ·, C ·, D ↑, E ·, F ·, G ·, H ↑, I ·}
+  54. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F=0 AND G=0 AND H>0 -> {A ·, B ·, C ↓, D ·, E ↑, F ·, G ·, H ·, I ·}
+  55. A=0 AND B=0 AND C>0 AND D>0 AND E>0 AND F=0 AND G=0 AND H>0 AND I>0 -> {A ·, B ·, C ↓, D ·, E ·, F ·, G ·, H ·, I ·}
+  56. A=0 AND B=0 AND C>0 AND D>0 AND E>0 AND F=0 AND G=0 AND H>0 -> {A ·, B ·, C ↓, D ·, E ·, F ·, G ·, H ·, I ·}
+  57. A=0 AND B=0 AND C=0 AND D=0 AND F>0 AND G>0 AND H>0 AND I>0 -> {A ·, B ↑, C ·, D ·, E ·, F ·, G ↓, H ↓, I ·}
+  58. A=0 AND B=0 AND C>0 AND D>0 AND E>0 AND F=0 AND H>0 AND I=0 -> {A ·, B ·, C ↓, D ·, E ·, F ·, G ·, H ·, I ·}
+  59. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F=0 AND G=0 AND H=0 AND I=0 -> {A ↑, B ·, C ↓, D ·, E ·, F ·, G ·, H ·, I ·}
+  60. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F=0 AND G>0 AND H=0 -> {A ·, B ·, C ↓, D ↑, E ↑, F ·, G ·, H ↑, I ·}
+  61. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F>0 AND G>0 AND H=0 AND I=0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ·, H ↑, I ·}
+  62. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F>0 AND G>0 AND H>0 -> {A ·, B ·, C ↓, D ·, E ↑, F ·, G ·, H ·, I ·}
+  63. A=0 AND B=0 AND C=0 AND E=0 AND F=0 AND G=0 AND H=0 AND I=0 -> {A ↑, B ·, C ·, D ·, E ·, F ·, G ·, H ·, I ·}
+  64. A=0 AND B=0 AND C>0 AND D>0 AND E>0 AND F=0 AND G>0 AND H>0 AND I=0 -> {A ·, B ·, C ↓, D ·, E ·, F ·, G ·, H ·, I ·}
+  65. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F=0 AND G>0 AND H>0 AND I=0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ↓, H ↓, I ·}
+  66. A=0 AND B=0 AND C=0 AND D>0 AND E=0 AND F=0 AND G=0 AND H>0 AND I=0 -> {A ↑, B ·, C ·, D ·, E ·, F ·, G ·, H ·, I ·}, {A ·, B ·, C ↑, D ·, E ↑, F ·, G ·, H ·, I ·}
+  67. A=0 AND B>0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 AND H=0 -> {A ·, B ↓, C ·, D ↑, E ↑, F ·, G ·, H ↑, I ·}
+  68. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F>0 AND G>0 AND H=0 AND I>0 -> {A ·, B ·, C ·, D ·, E ·, F ·, G ·, H ↑, I ·}
+  69. A=0 AND B=0 AND C=0 AND D>0 AND E=0 AND F=0 AND G=0 AND I=0 -> {A ↑, B ·, C ·, D ·, E ·, F ·, G ·, H ·, I ·}
+  70. A=0 AND B>0 AND C=0 AND D=0 AND E>0 AND F=0 AND G=0 AND H=0 AND I=0 -> {A ·, B ↓, C ·, D ↑, E ·, F ·, G ·, H ↑, I ·}
+  71. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F>0 AND G=0 AND H=0 AND I=0 -> {A ↑, B ·, C ↓, D ·, E ·, F ·, G ·, H ·, I ·}
+
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 0
+ k  .  .  #  k  .  R  # 
+ .  .  R  #  .  .  .  # 
+ K  .  .  #  K  .  .  # 
+1(pl)       2(pl)       
+0(nm)       1(nm)       
+2(ne)       1(ne)       
+0(de)       0(de)       
+0(go)       1(go)       
+
+2021-06-08 13:59:33 INFO     Goal found after expanding 1 nodes
+2021-06-08 13:59:33 INFO     The solution was: ['white_rook_1.2_0.2']
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 1
+ k  .  .  #  k  .  R  # 
+ .  .  .  #  .  .  .  # 
+ K  .  R  #  K  .  .  # 
+1(pl)       2(pl)       
+0(nm)       1(nm)       
+2(ne)       1(ne)       
+0(de)       0(de)       
+0(go)       1(go)       
+
+2021-06-08 13:59:33 INFO     Goal found after expanding 1 nodes
+2021-06-08 13:59:33 INFO     The solution was: ['white_rook_2.2_0.2']
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 2
+ k  .  .  #  k  .  R  # 
+ .  .  R  #  .  .  .  # 
+ .  K  .  #  .  K  .  # 
+1(pl)       2(pl)       
+0(nm)       1(nm)       
+2(ne)       1(ne)       
+0(de)       0(de)       
+0(go)       1(go)       
+
+2021-06-08 13:59:33 INFO     Goal found after expanding 1 nodes
+2021-06-08 13:59:33 INFO     The solution was: ['white_rook_1.2_0.2']
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 3
+ k  .  .  #  k  .  R  # 
+ .  .  .  #  .  .  .  # 
+ .  K  R  #  .  K  .  # 
+1(pl)       2(pl)       
+0(nm)       1(nm)       
+2(ne)       1(ne)       
+0(de)       0(de)       
+0(go)       1(go)       
+
+2021-06-08 13:59:33 INFO     Goal found after expanding 1 nodes
+2021-06-08 13:59:33 INFO     The solution was: ['white_rook_2.2_0.2']
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 4
+ .  R  .  # 
+ .  .  .  # 
+ k  .  K  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:33 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 5
+ .  .  K  #  .  .  K  # 
+ R  .  .  #  .  .  .  # 
+ .  .  k  #  R  .  k  # 
+1(pl)       2(pl)       
+0(nm)       1(nm)       
+2(ne)       1(ne)       
+0(de)       0(de)       
+0(go)       1(go)       
+
+2021-06-08 13:59:33 INFO     Goal found after expanding 1 nodes
+2021-06-08 13:59:33 INFO     The solution was: ['white_rook_1.0_2.0']
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 6
+ K  .  k  # 
+ .  .  .  # 
+ .  R  .  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:33 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 7
+ .  .  R  # 
+ .  .  .  # 
+ k  .  K  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:33 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 8
+ R  .  K  #  .  .  K  # 
+ .  .  .  #  .  .  .  # 
+ .  .  k  #  R  .  k  # 
+1(pl)       2(pl)       
+0(nm)       1(nm)       
+2(ne)       1(ne)       
+0(de)       0(de)       
+0(go)       1(go)       
+
+2021-06-08 13:59:33 INFO     Goal found after expanding 1 nodes
+2021-06-08 13:59:33 INFO     The solution was: ['white_rook_0.0_2.0']
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 9
+ K  .  k  # 
+ .  .  .  # 
+ R  .  .  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:33 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 10
+ .  R  .  # 
+ .  .  K  # 
+ k  .  .  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:33 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 11
+ .  K  .  #  .  K  .  # 
+ R  .  .  #  .  .  .  # 
+ .  .  k  #  R  .  k  # 
+1(pl)       2(pl)       
+0(nm)       1(nm)       
+2(ne)       1(ne)       
+0(de)       0(de)       
+0(go)       1(go)       
+
+2021-06-08 13:59:33 INFO     Goal found after expanding 1 nodes
+2021-06-08 13:59:33 INFO     The solution was: ['white_rook_1.0_2.0']
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 12
+ .  .  k  # 
+ K  .  .  # 
+ .  R  .  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:33 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 13
+ .  .  R  # 
+ .  .  K  # 
+ k  .  .  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:33 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 14
+ R  K  .  #  .  K  .  # 
+ .  .  .  #  .  .  .  # 
+ .  .  k  #  R  .  k  # 
+1(pl)       2(pl)       
+0(nm)       1(nm)       
+2(ne)       1(ne)       
+0(de)       0(de)       
+0(go)       1(go)       
+
+2021-06-08 13:59:33 INFO     Goal found after expanding 1 nodes
+2021-06-08 13:59:33 INFO     The solution was: ['white_rook_0.0_2.0']
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 15
+ .  .  k  # 
+ K  .  .  # 
+ R  .  .  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:33 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 16
+ k  .  .  # 
+ .  .  R  # 
+ K  .  .  # 
+ .  .  .  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:33 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 17
+ k  .  .  # 
+ .  .  .  # 
+ K  .  R  # 
+ .  .  .  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:33 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 18
+ k  .  .  # 
+ .  .  .  # 
+ K  .  .  # 
+ .  .  R  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:33 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:33 INFO     Testing policy in instance: checkmate_tactic - 19
+ k  .  .  # 
+ .  .  R  # 
+ .  K  .  # 
+ .  .  .  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:34 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:34 INFO     Testing policy in instance: checkmate_tactic - 20
+ k  .  .  #  k  .  .  #  .  k  .  # 
+ .  .  .  #  .  .  R  #  .  .  R  # 
+ .  K  R  #  .  K  .  #  .  K  .  # 
+ .  .  .  #  .  .  .  #  .  .  .  # 
+1(pl)       2(pl)       1(pl)       
+0(nm)       1(nm)       1(nm)       
+2(ne)       1(ne)       2(ne)       
+0(de)       0(de)       0(de)       
+0(go)       0(go)       0(go)       
+
+2021-06-08 13:59:34 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:34 INFO     Testing policy in instance: checkmate_tactic - 21
+ k  .  .  # 
+ .  .  .  # 
+ .  K  .  # 
+ .  .  R  # 
+1(pl)       
+0(nm)       
+2(ne)       
+0(de)       
+0(go)       
+
+2021-06-08 13:59:34 WARNING  Testing of policy failed with code: ExitCode.AbstractPolicyNotCompleteOnTestInstances
+2021-06-08 13:59:34 INFO     Testing policy in instance: checkmate_tactic - 22
+2021-06-08 13:59:34 ERROR    Critical error in the pipeline
+2021-06-08 13:59:34 ERROR    (<gpl.pipeline_steps.PolicyTesting object at 0x7fb16682c280>, 'Critical error processing step "Testing of the D2L policy". Error message: Error: \'Bunch\' object is not subscriptable')
+Traceback (most recent call last):
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 160, in _run
+    exitcode, output = self.target(config=config, data=data, rng=rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/tester.py", line 242, in run
+    res = test_d2l_policy_on_gym_env(config, data, get_policy, rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/tester.py", line 81, in test_d2l_policy_on_gym_env
+    exitcode, solution, path, expanded = run_test(config, search_policy, task, instance_name, rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/tester.py", line 165, in run_test
+    spp = task.transition_env(sp)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/task.py", line 43, in transition_env
+    op = self.env.player2_policy(r1)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/envs/checkmate_tactic.py", line 150, in player2_policy
+    king_valid_moves = PIECE_VALID_MOVES[BLACK_KING](king_pos, rep[0])
+TypeError: 'Bunch' object is not subscriptable

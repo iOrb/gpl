@@ -14,6 +14,7 @@ chase_params = Bunch({
     'use_next_player_as_feature': False,
     'use_next_player_to_encode': False,
     'use_margin_as_feature': False,
+    'objects_to_ignore': set(),
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
     'use_adjacency': {COL_S, ROW_S, CELL_S},

@@ -16,6 +16,7 @@ space_invaders_params = Bunch({
     'use_next_player_to_encode': False,
     'use_margin_as_feature': False,
     'use_target_margin': False,
+    'objects_to_ignore':set(),
     'map_cells': True,
     'use_diagonals_for_map_cells': False,
     'use_adjacency': {COL_S, ROW_S},
@@ -27,7 +28,7 @@ space_invaders_params = Bunch({
     'adv_can_move_down': True,
     'adv_can_move_up': False,
     'adv_can_kill_agent': False,
-    'max_actions': {PLAYER1: 2,
+    'max_actions': {PLAYER1: 1,
                     PLAYER2: 1},
     'target_columns': True,
 })

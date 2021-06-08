@@ -102,8 +102,7 @@ class Env(object):
         else:
             new_rep.nact = 1
             new_rep.player = opposite_player(rep.player)
-        if self.params.use_next_player_as_feature:
-            new_rep.next_player = identify_next_player(new_rep, self.params)
+        new_rep.next_player = identify_next_player(new_rep, self.params)
         setattr(new_rep, HOLDING_PACKAGE, holding)
         setattr(new_rep, AT_DESTINATION, at_dest)
         return self.__update_rep(new_rep)

@@ -16,10 +16,11 @@ shoot_params = Bunch({
     'use_player_to_encode': True,
     'use_next_player_as_feature': False,
     'use_next_player_to_encode': True,
-    'use_margin_as_feature': False,
-    'map_cells': False,
-    'use_diagonals_for_map_cells': False,
-    'use_adjacency': {COL_S, ROW_S},
+    'use_margin_as_feature': True,
+    'objects_to_ignore': set(),
+    'map_cells': True,
+    'use_diagonals_for_map_cells': True,
+    'use_adjacency': {COL_S, ROW_S, CELL_S},
     'use_bidirectional': {},
     'sorts_to_use': {CELL_S, COL_S, ROW_S},
     'player_can_shoot': {},
@@ -84,16 +85,16 @@ def experiments():
     # version 1:
     # agent and adversary moves ortogonal
     p_v1 = copy.deepcopy(shoot_params)
-    p_v1.player_can_shoot={PLAYER1}
-    p_v1.player_can_check={}
+    p_v1.player_can_shoot={}
+    p_v1.player_can_check={PLAYER1}
     p_v1.max_actions = {PLAYER1: 2,
                         PLAYER2: 1}
     exps["1"] = update_dict(
         base,
         domain=Domain(p_v1),
         instances=[11],
-        allow_bad_states=False,
         test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        allow_bad_states=False,
     )
 
     # version 2:
@@ -108,7 +109,3 @@ def experiments():
     )
 
     return exps
-
-
-
-

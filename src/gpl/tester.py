@@ -141,10 +141,11 @@ def run_test(config, search_policy, task, instance_name, rng):
 
         not_novelty_sp = dict()
         for op, sp in goods:
+            enc_op = encode_operator(s, op, task)
             if config.use_state_novelty:
                 times_seen = visited_sp[sp[1]]
                 if times_seen > 0:
-                    not_novelty_sp[(op, sp[1])] = times_seen
+                    not_novelty_sp[(enc_op, sp[1])] = times_seen
                     continue
                 else:
                     break

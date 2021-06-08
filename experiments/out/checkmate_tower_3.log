@@ -1,0 +1,4 @@
+================================================================================
+SLTP v.0.2.0
+================================================================================
+2021-06-08 14:28:26 ERROR    (<gpl.pipeline_steps.TrainStep object at 0x7fc7afcf8f40>, 'Critical error processing step "Train: Explore the state space of the training instances". Error message: Can\'t pickle <function debug_features_checkmate_tactic_rook at 0x7fc7afd00670>: import of module \'imported\' failed')

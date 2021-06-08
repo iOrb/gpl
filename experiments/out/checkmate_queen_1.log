@@ -2,7 +2,7 @@
 SLTP v.0.2.0
 ================================================================================
 ================================================================================
-(pid: 59290) STARTING STEP #1: Train: Explore the state space of the training instances
+(pid: 8826) STARTING STEP #1: Train: Explore the state space of the training instances
 ================================================================================
 ------------------------------------------------
  DOMAIN PARAMETERS: 
@@ -10,15 +10,18 @@ SLTP v.0.2.0
 ------------------------------------------------
 domain_name: checkmate_tactic
 use_player_as_feature: True
+use_player_to_encode: True
 use_next_player_as_feature: False
+use_next_player_to_encode: False
+use_margin_as_feature: True
+objects_to_ignore: set()
 map_cells: True
 use_diagonals_for_map_cells: True
-use_margin_as_feature: True
 use_adjacency: {'cell', 'col', 'row'}
 use_bidirectional: {}
 sorts_to_use: {'cell', 'col', 'row'}
-n_moves: 1
-unary_predicates: {}
+n_moves: 1000
+unary_predicates: {'stalemate', 'checkmate'}
 game_version: 0
 ------------------------------------------------
 ------------------------------------------------
@@ -27,69 +30,58 @@ game_version: 0
 ------------------------------------------------
 (0) Exploration of the training sample:
 ------------------------------------------------
+2021-06-05 12:32:05 INFO     Expanding train instance: checkmate_tactic - 0
+# k  .  .  . #
+# .  .  Q  . #
+# K  .  .  . #
+# .  .  .  . #
+
 ------------------------------------------------
 (0) Generation of the training sample:
 ------------------------------------------------
+2021-06-05 12:32:32 INFO     sample: #states=2981, #transition-entries=9230, #transitions=9230
+2021-06-05 12:32:33 INFO     Entire sample: roots: 1, states: 2981, transitions: 9230 (3876 optimal), goals: 108, alive: 1997, deadends: 876
+2021-06-05 12:32:33 INFO     Printing SAT transition matrix with 2981 states, -187 states with some outgoing transition, 236 operators, 9230 (non-det) transitions, and 3224 (adv) transitions,
 ------------------------------------------------
 (0) Generate the pool of candidate features:
 ------------------------------------------------
-------------------------------------------------
-(0) C++ CNF generation module:
-------------------------------------------------
-------------------------------------------------
-(END Episode 0)
-------------------------------------------------
-================================================================================
-END OF STEP #1: Train: Explore the state space of the training instances. 0.01 CPU sec - 38.84 MB
-================================================================================
-================================================================================
-(pid: 59294) STARTING STEP #2: Testing of the D2L policy
-================================================================================
-
-POLICY:
-Features (#: 7; total k: 27; max k = 5):
-  (A) Bool[And(col-has-black_king,col-has-white_king)] [k=3]
-  (B) Bool[And(col-has-black_king,col-has-white_queen)] [k=3]
-  (C) Bool[And(row-has-black_king,row-has-white_king)] [k=3]
-  (D) Bool[And(row-has-black_king,row-has-white_queen)] [k=3]
-  (E) Bool[And(cell-has-black_king,Exists(adjacent_cell,cell-has-white_queen))] [k=5]
-  (F) Bool[And(col-has-white_king,Exists(adjacent_col,col-has-white_queen))] [k=5]
-  (G) Bool[And(row-has-black_king,Exists(adjacent_row,row-has-white_king))] [k=5]
-Invariants: E=0
-Policy:
-  1. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ↓, E ·, F ↓, G ·}
-  2. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ·, F ·, G ·}, {A ·, B ·, C ·, D ↑, E ↑, F ↑, G ·}
-  3. A=0 AND B=0 AND C>0 AND D=0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ·, F ↓, G ·}
-  4. A>0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ·, C ·, D ↑, E ·, F ·, G ·}, {A ·, B ↑, C ·, D ·, E ↑, F ·, G ·}
-  5. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ↑, F ↑, G ·}, {A ·, B ·, C ·, D ·, E ↑, F ↑, G ·}
-  6. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G>0 -> {A ·, B ·, C ·, D ↑, E ↑, F ·, G ·}
-  7. A>0 AND B>0 AND C=0 AND D=0 AND E=0 AND F=0 AND G=0 -> {A ·, B ↓, C ·, D ↑, E ·, F ·, G ·}
-  8. A>0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ↑, F ↓, G ·}, {A ·, B ·, C ·, D ↑, E ·, F ↓, G ·}
-  9. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F>0 AND G=0 -> {A ·, B ↑, C ·, D ·, E ↑, F ·, G ·}, {A ·, B ·, C ·, D ·, E ↑, F ·, G ·}
-  10. A=0 AND B=0 AND C=0 AND D=0 AND E=0 AND F=0 AND G>0 -> {A ·, B ·, C ·, D ↑, E ↑, F ↑, G ·}
-  11. A=0 AND B=0 AND C>0 AND D>0 AND E=0 AND F=0 AND G=0 -> {A ·, B ↑, C ·, D ↓, E ·, F ·, G ·}
-
-2021-05-27 11:46:14 INFO     Testing policy in instance: checkmate_tactic - 5
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  .  .  .  .  .  K  .  .  #  .  .  .  .  .  .  .  K  .  .  # 
- .  .  .  .  .  .  .  .  .  k  #  .  .  .  .  .  .  .  .  Q  k  # 
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  Q  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
- .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  # 
-1 (pl)                           2 (pl)                           
-0 (nm)                           1 (nm)                           
-
-2021-05-27 11:46:14 INFO     Goal found after expanding 1 nodes
-2021-05-27 11:46:14 INFO     The solution was: ['white_queen_10.2_4.8']
-2021-05-27 11:46:14 INFO     Learnt policy solves the 100.0% of test instances: 1/1
-2021-05-27 11:46:14 INFO     Solved instances: [5]
-2021-05-27 11:46:14 INFO     Unsolved instances: []
-================================================================================
-END OF STEP #2: Testing of the D2L policy. 0.24 CPU sec - 43.07 MB
-================================================================================
+2021-06-05 12:32:33 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 2981, transitions: 9230 (3876 optimal), goals: 108, alive: 1997, deadends: 876
+2021-06-05 12:32:36 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_1/sample.io'
+2021-06-05 12:32:36 INFO     Invoking C++ feature generation module
+2021-06-05 12:32:36 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 5 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_1" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+reading '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_1/transitions-info.io
+BASIS: #concepts=20, #roles=3
+ROLES: #roles=9
+Generating concepts for k=1. Total concepts: 15 (2, 13, 0, 0, 0, 0)... 0 concepts generated, 3 pruned.
+Generating concepts for k=2. Total concepts: 15 (2, 13, 0, 0, 0, 0)... 13 concepts generated, 64 pruned.
+Generating concepts for k=3. Total concepts: 28 (2, 13, 13, 0, 0, 0)... 24 concepts generated, 204 pruned.
+Generating concepts for k=4. Total concepts: 52 (2, 13, 13, 24, 0, 0)... 53 concepts generated, 617 pruned.
+Generating concepts for k=5. Total concepts: 105 (2, 13, 13, 24, 53, 0)... 169 concepts generated, 970 pruned.
+Total concepts: 274 (2, 13, 13, 24, 53, 169)... 
+A total of 1858 concepts were pruned
+A total of 0 features were marked as goal-identifying
+Generating cardinality features...
+Generating distance features...
+Traceback (most recent call last):
+  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 44, in <module>
+    do(args.exp_id, args.steps, args.workspace, args.show)
+  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 40, in do
+    experiment.run(steps)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 204, in run
+    run_and_check_output(step, stepnum, SubprocessStepRunner)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 213, in run_and_check_output
+    exitcode = runner.run(config=Bunch(step.config))
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 136, in run
+    exitcode = self._run(config)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 179, in _run
+    exitcode = result.get()
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 765, in get
+    self.wait(timeout)
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 762, in wait
+    self._event.wait(timeout)
+  File "/usr/lib/python3.8/threading.py", line 558, in wait
+    signaled = self._cond.wait(timeout)
+  File "/usr/lib/python3.8/threading.py", line 302, in wait
+    waiter.acquire()
+KeyboardInterrupt
+Process ForkPoolWorker-1:

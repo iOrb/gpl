@@ -28,3 +28,11 @@ def identify_next_player(rep, params):
         return rep.player
     else:
         return opposite_player(rep.player)
+
+def in_grid(r, c, nrows, ncols, use_margins=False):
+    if (nrows > r >= 0 and ncols > c >= 0):
+        return True
+    elif use_margins and (nrows >= r >= -1 and ncols >= c >= -1):
+        return True
+    else:
+        return False

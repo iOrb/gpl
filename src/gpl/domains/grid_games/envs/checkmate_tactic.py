@@ -1,6 +1,7 @@
 import sys
 from gpl.utils import Bunch
 from ..grammar.objects import  WHITE_KING, WHITE_QUEEN, BLACK_KING, EMPTY, WHITE_TOWER, OBJECTS_CHECK
+from ..utils import identify_next_player
 
 import numpy as np
 import copy
@@ -69,9 +70,6 @@ class Env(object):
 
     def act(self, rep, action):
         layout = rep.grid
-        # assert not terminated(rep)
-        # valid_actions = Env.available_actions(rep)
-        # assert action in valid_actions
         new_rep = copy.deepcopy(rep)
         l = new_rep.grid
         pos = action[0]
@@ -90,6 +88,7 @@ class Env(object):
         if rep.player == WHITE:
             new_rep.nmoves += 1
         new_rep.player = opposite_color(rep.player)
+        new_rep.next_player = rep.player
         return self.__update_rep(new_rep)
 
     def __update_rep(self, rep):
@@ -114,6 +113,8 @@ class Env(object):
             return 1
         if stale_mate(rep):
             return -1
+        if rep.player==BLACK and deadend_extension(rep):
+            return -1
         else:
             return 0
 
@@ -136,8 +137,7 @@ class Env(object):
             actions += [(c0, c1) for c1 in PIECE_VALID_MOVES[BLACK_KING](c0, layout)]
         return actions
 
-    @staticmethod
-    def player2_policy(rep):
+    def player2_policy(self, rep):
         layout = rep.grid
         king_pos = np.argwhere(layout == BLACK_KING)[0]
         valid_actions = Env.available_actions(rep)
@@ -146,7 +146,7 @@ class Env(object):
         elif WHITE_TOWER in layout:
             no_king_piece_pos = np.argwhere(layout == WHITE_TOWER)[0]
         if abs(no_king_piece_pos[0] - king_pos[0]) == 1 and abs(no_king_piece_pos[1] - king_pos[1]) == 1:
-            king_valid_moves = PIECE_VALID_MOVES[BLACK_KING](king_pos, rep[0])
+            king_valid_moves = PIECE_VALID_MOVES[BLACK_KING](king_pos, rep.grid)
             if any((no_king_piece_pos == pos).all() for pos in king_valid_moves):
                 return [king_pos, no_king_piece_pos]
         return valid_actions[0]
@@ -172,6 +172,7 @@ class Env(object):
         rep[f"{N_MOVE}_0"] = True
         rep['grid'] = generate_gird(key, self.params)
         rep['player'] = WHITE
+        rep['next_player'] = BLACK
         rep['goal'] = False
         rep['deadend'] = False
         return Bunch(rep)
@@ -180,10 +181,11 @@ class Env(object):
 # Helper mehtods =================================
 
 def terminated(rep):
-    if checkmate(rep) or stalemate(rep):
+    if checkmate(rep) or stalemate(rep) or deadend_extension(rep):
         return True
     else:
         return False
+
 
 def checkmate(rep):
     layout = rep.grid
@@ -198,6 +200,22 @@ def checkmate(rep):
         return False
     return False
 
+
+def deadend_extension(rep):
+    layout = rep.grid
+    assert rep.player == BLACK
+    bk_mask = get_attacking_mask(layout, BLACK)
+    wk_mask = get_king_attacking_spaces(np.argwhere(layout==WHITE_KING)[0], layout, get_mask=True)
+    if WHITE_QUEEN in layout:
+        piece_pos = np.argwhere(layout == WHITE_QUEEN)[0]
+    elif WHITE_TOWER in layout:
+        piece_pos = np.argwhere(layout == WHITE_TOWER)[0]
+    if bk_mask[piece_pos[0], piece_pos[1]] and not wk_mask[piece_pos[0], piece_pos[1]]:
+        return True
+    else:
+        return False
+
+
 def check(rep):
     layout = rep.grid
     assert BLACK_KING in layout
@@ -210,6 +228,7 @@ def check(rep):
                 return True
         return False
     return False
+
 
 def stale_mate(rep):
     layout = rep.grid
@@ -404,8 +423,8 @@ LAYOUTS_TOWER = {
     4: (12, 10, (4, 7), (4, 9), None, (10, 2)),
 }
 
-LAYOUTS_CHECK_IN_ONE_QUEEN = generate_check_in_one([(4, 4), (5, 5), (6, 6)], WHITE_QUEEN)
-LAYOUTS_CHECK_IN_ONE_TOWER = generate_check_in_one([(4, 4), (5, 5), (6, 6)], WHITE_TOWER)
+LAYOUTS_CHECK_IN_ONE_QUEEN = generate_check_in_one([(3, 3), (4, 3), (4, 4), (5, 5), (6, 6)], WHITE_QUEEN)
+LAYOUTS_CHECK_IN_ONE_TOWER = generate_check_in_one([(3, 3), (4, 3), (4, 4), (5, 5), (6, 6)], WHITE_TOWER)
 
 # LAYOUTS_QUEEN_CUSTOM = {k: generate_gird_queen(k) for k in LAYOUTS_QUEEN.keys()}
 # LAYOUTS_TOWER_CUSTOM = {k: generate_gird_queen(k) for k in LAYOUTS_TOWER.keys()}

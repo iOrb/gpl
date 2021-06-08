@@ -37,17 +37,17 @@ def state_to_atoms(domain_name, state, p):
     #     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
 
     # DELIVERY
-    from ..envs.delivery import AT_DESTINATION, HOLDING_PACKAGE, DESTINY, PACKAGE, AGENT
-    if getattr(rep, AT_DESTINATION):
-        r, c = np.argwhere(brd==AGENT)[0]
-        sort = CELL_S
-        o=DESTINY
-        atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
-    if not PACKAGE in rep.grid:
-        r, c = np.argwhere(brd==AGENT)[0]
-        sort = CELL_S
-        o=PACKAGE
-        atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
+    # from ..envs.delivery import AT_DESTINATION, HOLDING_PACKAGE, DESTINY, PACKAGE, AGENT
+    # if getattr(rep, AT_DESTINATION):
+    #     r, c = np.argwhere(brd==AGENT)[0]
+    #     sort = CELL_S
+    #     o=DESTINY
+    #     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
+    # if not PACKAGE in rep.grid:
+    #     r, c = np.argwhere(brd==AGENT)[0]
+    #     sort = CELL_S
+    #     o=PACKAGE
+    #     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
 
     for u in p.unary_predicates:
         if getattr(rep, u):

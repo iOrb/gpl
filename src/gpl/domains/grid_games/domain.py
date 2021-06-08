@@ -51,6 +51,12 @@ def load_general_lang(lang, statics, env):
         lang.sort(sort)
         for o in OBJECTS.general | {OBJECTS.none}:
             lang.predicate(f'{sort}-has-{o}', sort)
+        if sort in params.use_distance_2:
+            lang.predicate(f'{DISTANCE_2}_{sort}', sort, sort)
+            statics.add(f'{DISTANCE_2}_{sort}')
+        if sort in params.use_distance_more_than_1:
+            lang.predicate(f'{DISTANCE_MORE_THAN_1}_{sort}', sort, sort)
+            statics.add(f'{DISTANCE_MORE_THAN_1}_{sort}')
         if sort in params.use_adjacency:
             lang.predicate(f'{ADJACENT}_{sort}', sort, sort)
             statics.add(f'{ADJACENT}_{sort}')
@@ -112,17 +118,17 @@ def load_general_problem(problem, lang, rep, env):
     #     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
 
     # DELIVERY
-    from .envs.delivery import AT_DESTINATION, HOLDING_PACKAGE, DESTINY, PACKAGE
-    if getattr(rep, AT_DESTINATION):
-        r, c = np.argwhere(brd==AGENT)[0]
-        sort = CELL_S
-        o=DESTINY
-        problem.init.add(lang.get(f'{sort}-has-{o}'), lang.get(CONST[sort](r, c, nrows, ncols)))
-    if not PACKAGE in rep.grid:
-        r, c = np.argwhere(brd==AGENT)[0]
-        sort = CELL_S
-        o=PACKAGE
-        atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
+    # from .envs.delivery import AT_DESTINATION, HOLDING_PACKAGE, DESTINY, PACKAGE
+    # if getattr(rep, AT_DESTINATION):
+    #     r, c = np.argwhere(brd==AGENT)[0]
+    #     sort = CELL_S
+    #     o=DESTINY
+    #     problem.init.add(lang.get(f'{sort}-has-{o}'), lang.get(CONST[sort](r, c, nrows, ncols)))
+    # if not PACKAGE in rep.grid:
+    #     r, c = np.argwhere(brd==AGENT)[0]
+    #     sort = CELL_S
+    #     o=PACKAGE
+    #     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
 
     def __add_direction_predicate(problem, lang, direction, sort, const, new_r, new_c):
         if (new_r<0 or new_c<0 or ncols==new_c or nrows==new_r) and not params.use_margin_as_feature:
@@ -140,7 +146,7 @@ def load_general_problem(problem, lang, rep, env):
             if col < ncols:
                 __add_direction_predicate(problem, lang, RIGHT, sort, const, row, col + 1)
             # Left
-            if col > 0:
+            if col > -1:
                 __add_direction_predicate(problem, lang, LEFT, sort, const, row, col - 1)
         if sort in {CELL_S, ROW_S}:
             # Down
@@ -164,6 +170,39 @@ def load_general_problem(problem, lang, rep, env):
             if col > -1 and row < nrows:
                 __add_direction_predicate(problem, lang, LEFTDOWN, sort, const, row + 1, col - 1)
 
+    # add distance 2 predicates
+    DISTANCE_2_DIRECTIONS = [(-2, -2), (-2, -1), (-2, 0), (-2, 1), (-2, 2),
+                             (-1, -2),                             (-1, 2),
+                             (0, -2),                              (0, 2),
+                             (1, -2),                              (1, 2),
+                             (2, -2),  (2, -1),  (2, 0),  (2, 1),  (2, 2),
+    ]
+    from .utils import in_grid
+    for (row, col, sort), const in map_sorts.items():
+        if sort not in params.use_distance_2:
+            continue
+        for dr, dc in DISTANCE_2_DIRECTIONS:
+            new_r, new_c = row + dr, col + dc
+            in_grid_ = in_grid(new_r, new_c, nrows, ncols, use_margins=params.use_margin_as_feature)
+            if in_grid_:
+                problem.init.add(lang.get(f'{DISTANCE_2}_{sort}'), const, lang.get(CONST[sort](new_r, new_c, nrows, ncols)))
+
+    # add distance more than 1 predicates
+    ALL_DIRECTIONS = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    for (row, col, sort), const in map_sorts.items():
+        if sort not in params.use_distance_more_than_1:
+            continue
+        for dr, dc in ALL_DIRECTIONS:
+            new_r, new_c  = row, col
+            while True:
+                new_r += dr
+                new_c += dc
+                in_grid_ = in_grid(new_r, new_c, nrows, ncols, use_margins=params.use_margin_as_feature)
+                if in_grid_:
+                    problem.init.add(lang.get(f'{DISTANCE_2}_{sort}'), const,
+                                     lang.get(CONST[sort](new_r, new_c, nrows, ncols)))
+                else:
+                    break
     return problem
 
 

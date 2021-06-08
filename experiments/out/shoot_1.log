@@ -2,7 +2,7 @@
 SLTP v.0.2.0
 ================================================================================
 ================================================================================
-(pid: 8672) STARTING STEP #1: Train: Explore the state space of the training instances
+(pid: 14230) STARTING STEP #1: Train: Explore the state space of the training instances
 ================================================================================
 ------------------------------------------------
  DOMAIN PARAMETERS: 
@@ -11,20 +11,21 @@ SLTP v.0.2.0
 domain_name: shoot
 use_player_as_feature: True
 use_player_to_encode: True
-use_margin_as_feature: False
-use_next_player_as_feature: True
+use_next_player_as_feature: False
 use_next_player_to_encode: True
-map_cells: False
-use_diagonals_for_map_cells: False
-use_adjacency: {'col', 'row'}
+use_margin_as_feature: True
+objects_to_ignore: set()
+map_cells: True
+use_diagonals_for_map_cells: True
+use_adjacency: {'cell', 'row', 'col'}
 use_bidirectional: {}
-sorts_to_use: {'cell', 'col', 'row'}
-player_can_shoot: {1}
-player_can_check: {}
+sorts_to_use: {'cell', 'row', 'col'}
+player_can_shoot: {}
+player_can_check: {1}
 unary_predicates: {}
 attaking_mask: {0, 1, 2, 3}
 ava_actions: {1: {0, 1, 2, 3}, 2: {0, 1, 2, 3}}
-max_actions: {1: 2, 2: 1}
+max_actions: {1: 1, 2: 1}
 ------------------------------------------------
 ------------------------------------------------
 (START Episode 0)
@@ -32,7 +33,7 @@ max_actions: {1: 2, 2: 1}
 ------------------------------------------------
 (0) Exploration of the training sample:
 ------------------------------------------------
-2021-05-29 20:05:27 INFO     Expanding train instance: shoot - 11
+2021-06-03 13:52:18 INFO     Expanding train instance: shoot - 11
 #.....#
 #.T...#
 #.....#
@@ -42,393 +43,354 @@ max_actions: {1: 2, 2: 1}
 ------------------------------------------------
 (0) Generation of the training sample:
 ------------------------------------------------
-2021-05-29 20:05:29 INFO     sample: #states=937, #transition-entries=2040, #transitions=2040
-2021-05-29 20:05:29 INFO     Entire sample: roots: 1, states: 937, transitions: 2040 (1400 optimal), goals: 25, alive: 912, deadends: 0
-2021-05-29 20:05:29 INFO     Printing SAT transition matrix with 937 states, 575 states with some outgoing transition, 5 operators, 2040 (non-det) transitions, and 1273 (adv) transitions,
+2021-06-03 13:52:18 INFO     sample: #states=177, #transition-entries=164, #transitions=164
+2021-06-03 13:52:18 INFO     Entire sample: roots: 1, states: 177, transitions: 164 (128 optimal), goals: 78, alive: 99, deadends: 0
+2021-06-03 13:52:18 INFO     Printing SAT transition matrix with 177 states, -27 states with some outgoing transition, 4 operators, 164 (non-det) transitions, and 198 (adv) transitions,
 ------------------------------------------------
 (0) Generate the pool of candidate features:
 ------------------------------------------------
-2021-05-29 20:05:29 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 937, transitions: 2040 (1400 optimal), goals: 25, alive: 912, deadends: 0
-2021-05-29 20:05:29 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/sample.io'
-2021-05-29 20:05:29 INFO     Invoking C++ feature generation module
-2021-05-29 20:05:29 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 5 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+2021-06-03 13:52:18 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 177, transitions: 164 (128 optimal), goals: 78, alive: 99, deadends: 0
+2021-06-03 13:52:18 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/sample.io'
+2021-06-03 13:52:18 INFO     Invoking C++ feature generation module
+2021-06-03 13:52:18 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 5 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
 reading '/home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/transitions-info.io
-BASIS: #concepts=14, #roles=2
-ROLES: #roles=4
-Generating concepts for k=1. Total concepts: 11 (2, 9, 0, 0, 0, 0)... 0 concepts generated, 3 pruned.
-Generating concepts for k=2. Total concepts: 11 (2, 9, 0, 0, 0, 0)... 9 concepts generated, 44 pruned.
-Generating concepts for k=3. Total concepts: 20 (2, 9, 9, 0, 0, 0)... 10 concepts generated, 106 pruned.
-Generating concepts for k=4. Total concepts: 30 (2, 9, 9, 10, 0, 0)... 22 concepts generated, 262 pruned.
-Generating concepts for k=5. Total concepts: 52 (2, 9, 9, 10, 22, 0)... 67 concepts generated, 281 pruned.
-Total concepts: 119 (2, 9, 9, 10, 22, 67)... 
-A total of 696 concepts were pruned
+BASIS: #concepts=14, #roles=3
+ROLES: #roles=9
+Generating concepts for k=1. Total concepts: 12 (2, 10, 0, 0, 0, 0)... 0 concepts generated, 3 pruned.
+Generating concepts for k=2. Total concepts: 12 (2, 10, 0, 0, 0, 0)... 10 concepts generated, 52 pruned.
+Generating concepts for k=3. Total concepts: 22 (2, 10, 10, 0, 0, 0)... 15 concepts generated, 150 pruned.
+Generating concepts for k=4. Total concepts: 37 (2, 10, 10, 15, 0, 0)... 30 concepts generated, 409 pruned.
+Generating concepts for k=5. Total concepts: 67 (2, 10, 10, 15, 30, 0)... 89 concepts generated, 543 pruned.
+Total concepts: 156 (2, 10, 10, 15, 30, 89)... 
+A total of 1157 concepts were pruned
 A total of 0 features were marked as goal-identifying
 Generating cardinality features...
 Generating distance features...
-FEATURES: #features=72, #nullary=4, #boolean=17, #numerical=47, #distance=4, #conditional=0, #comparison=0
+FEATURES: #features=52, #nullary=2, #boolean=14, #numerical=30, #distance=6, #conditional=0, #comparison=0
 Printing concept, role and feature denotations to /home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/*-denotations.io.txt
 Serializing all concepts and features to:
 	/home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/serialized-concepts.io
 	/home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/serialized-features.io
-2021-05-29 20:05:41 INFO     Reading feature denotation matrix from /home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/feature-matrix.io
+2021-06-03 13:52:33 INFO     Reading feature denotation matrix from /home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/feature-matrix.io
 ------------------------------------------------
 (0) C++ CNF generation module:
 ------------------------------------------------
-2021-05-29 20:05:41 INFO     Calling C++ MaxSAT module
-2021-05-29 20:05:41 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cnfgen --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1 --v_slack 2 --distinguish-goals --initial-sample-size 50 --refinement-batch-size 10 --seed 0 --verbosity 3 --acyclicity topological --encodings_dir  --sampling_strategy full --optimal_steps 3 --consistency_bound 2 --n_features 2 --closed --maxsat_iter 3" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+2021-06-03 13:52:33 INFO     Calling C++ MaxSAT module
+2021-06-03 13:52:33 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cnfgen --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1 --v_slack 2 --distinguish-goals --initial-sample-size 50 --refinement-batch-size 10 --seed 0 --verbosity 3 --acyclicity topological --encodings_dir  --sampling_strategy full --optimal_steps 3 --consistency_bound 2 --n_features 2 --closed --maxsat_iter 3" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
 Parsing training data... 
 reading '/home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/transitions-info.io
-TransitionSample::read_dump: #states=937, #transitions=2040, #transitions (adv)=1273
+TransitionSample::read_dump: #states=177, #transitions=164, #transitions (adv)=198
 reading '/home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/feature-matrix.io
-FeatureMatrix::read_dump: #states=937, #features=72
-Done. Training sample: [states: 937, transitions: 2040 (from alive state: 2040), unsolvable: 0, goals: 25, unknowns: 0, features: 72, est. size: 0.13 MB.]
+FeatureMatrix::read_dump: #states=177, #features=52
+Done. Training sample: [states: 177, transitions: 164 (from alive state: 164), unsolvable: 0, goals: 78, unknowns: 0, features: 52, est. size: 0.02 MB.]
 Sampling 50 alive states at random
 
 
 ###  STARTING ITERATION 1  ###
-Sample [sz=937]: 936, 935, 934, 933, 932, 931, 930, 929, 928, 927, 926, 925, 924, 923, 922, 921, 920, 919, 918, 917, 916, 915, 914, 913, 912, 911, 910, 909, 908, 907, 906, 905, 904, 903, 902, 901, 900, 899, 898, 897, 896, 895, 894, 893, 892, 891, 890, 889, 888, 887, 886, 885, 884, 883, 882, 881, 880, 879, 878, 877, 876, 875, 874, 873, 872, 871, 870, 869, 868, 867, 866, 865, 864, 863, 862, 861, 860, 859, 858, 857, 856, 855, 854, 853, 852, 851, 850, 849, 848, 847, 846, 845, 844, 843, 842, 841, 840, 839, 838, 837, 836, 835, 834, 833, 832, 831, 830, 829, 828, 827, 826, 825, 824, 823, 822, 821, 820, 819, 818, 817, 816, 815, 814, 813, 812, 811, 810, 809, 808, 807, 806, 805, 804, 803, 802, 801, 800, 799, 798, 797, 796, 795, 794, 793, 792, 791, 790, 789, 788, 787, 786, 785, 784, 783, 782, 781, 780, 779, 778, 777, 776, 775, 774, 773, 772, 771, 770, 769, 768, 767, 766, 765, 764, 763, 762, 761, 760, 759, 758, 757, 756, 755, 754, 753, 752, 751, 750, 749, 748, 747, 746, 745, 744, 743, 742, 741, 740, 739, 738, 737, 736, 735, 734, 733, 732, 731, 730, 729, 728, 727, 726, 725, 724, 723, 722, 721, 720, 719, 718, 717, 716, 715, 714, 713, 712, 711, 710, 709, 708, 707, 706, 705, 704, 703, 702, 701, 700, 699, 698, 697, 696, 695, 694, 693, 692, 691, 690, 689, 688, 687, 686, 685, 684, 683, 682, 681, 680, 679, 678, 677, 676, 675, 674, 673, 672, 671, 670, 669, 668, 667, 666, 665, 664, 663, 662, 661, 660, 659, 658, 657, 656, 655, 654, 653, 652, 651, 650, 649, 648, 647, 646, 645, 644, 643, 642, 641, 640, 639, 638, 637, 636, 635, 634, 633, 632, 631, 630, 629, 628, 627, 626, 625, 624, 623, 622, 621, 620, 619, 618, 617, 616, 615, 614, 613, 612, 611, 610, 609, 608, 607, 606, 605, 604, 603, 602, 601, 600, 599, 598, 597, 596, 595, 594, 593, 592, 591, 590, 589, 588, 587, 586, 585, 584, 583, 582, 581, 580, 579, 578, 577, 576, 575, 574, 573, 572, 571, 570, 569, 568, 567, 566, 565, 564, 563, 562, 561, 560, 559, 558, 557, 556, 555, 554, 553, 552, 551, 550, 549, 548, 547, 546, 545, 544, 543, 542, 541, 540, 539, 538, 537, 536, 535, 534, 533, 532, 531, 530, 529, 528, 527, 526, 525, 524, 523, 522, 521, 520, 519, 518, 517, 516, 515, 514, 513, 512, 511, 510, 509, 508, 507, 506, 505, 504, 503, 502, 501, 500, 499, 498, 497, 496, 495, 494, 493, 492, 491, 490, 489, 488, 487, 486, 485, 484, 483, 482, 481, 480, 479, 478, 477, 476, 475, 474, 473, 472, 471, 470, 469, 468, 467, 466, 465, 464, 463, 462, 461, 460, 459, 458, 457, 456, 455, 454, 453, 452, 451, 450, 449, 448, 447, 446, 445, 444, 443, 442, 441, 440, 439, 438, 437, 436, 435, 434, 433, 432, 431, 430, 429, 428, 427, 426, 425, 424, 423, 422, 421, 420, 419, 418, 417, 416, 415, 414, 413, 412, 411, 410, 409, 408, 407, 406, 405, 404, 403, 402, 401, 400, 399, 398, 397, 396, 395, 394, 393, 392, 391, 390, 389, 388, 387, 386, 385, 384, 383, 382, 381, 380, 379, 378, 377, 376, 375, 374, 373, 372, 371, 370, 369, 368, 367, 366, 365, 364, 363, 362, 361, 360, 359, 358, 357, 356, 355, 354, 353, 352, 351, 350, 349, 348, 347, 346, 345, 344, 343, 342, 341, 340, 339, 338, 337, 336, 335, 334, 333, 332, 331, 330, 329, 328, 327, 326, 325, 324, 323, 322, 321, 320, 319, 318, 317, 316, 315, 314, 313, 312, 311, 310, 309, 308, 307, 306, 305, 304, 303, 302, 301, 300, 299, 298, 297, 296, 295, 294, 293, 292, 291, 290, 289, 288, 287, 286, 285, 284, 283, 282, 281, 280, 279, 278, 277, 276, 275, 274, 273, 272, 271, 270, 269, 268, 267, 266, 265, 264, 263, 262, 261, 260, 259, 258, 257, 256, 255, 254, 253, 252, 251, 250, 249, 248, 247, 246, 245, 244, 243, 242, 241, 240, 239, 238, 237, 236, 235, 234, 233, 232, 231, 230, 229, 228, 227, 226, 225, 224, 223, 222, 221, 220, 219, 218, 217, 216, 215, 214, 213, 212, 211, 210, 209, 208, 207, 206, 205, 204, 203, 202, 201, 200, 199, 198, 197, 196, 195, 194, 193, 192, 191, 190, 189, 188, 187, 186, 185, 184, 183, 182, 181, 180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 169, 168, 167, 166, 165, 164, 163, 162, 161, 160, 159, 158, 157, 156, 155, 154, 153, 152, 151, 150, 149, 148, 147, 146, 145, 144, 143, 142, 141, 140, 139, 138, 137, 136, 135, 134, 133, 132, 131, 130, 129, 128, 127, 126, 125, 124, 123, 122, 121, 120, 119, 118, 117, 116, 115, 114, 113, 112, 111, 110, 109, 108, 107, 106, 105, 104, 103, 102, 101, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 
+Sample [sz=177]: 176, 175, 174, 173, 172, 171, 170, 169, 168, 167, 166, 165, 164, 163, 162, 161, 160, 159, 158, 157, 156, 155, 154, 153, 152, 151, 150, 149, 148, 147, 146, 145, 144, 143, 142, 141, 140, 139, 138, 137, 136, 135, 134, 133, 132, 131, 130, 129, 128, 127, 126, 125, 124, 123, 122, 121, 120, 119, 118, 117, 116, 115, 114, 113, 112, 111, 110, 109, 108, 107, 106, 105, 104, 103, 102, 101, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 
 
-Number of transitions/equivalence classes: 2040/2040
+Number of transitions/equivalence classes: 164/164
 Number of necessarily bad transitions/classes: 0/0
-Generating CNF encoding for 912 alive states, 2040 alive-to-solvable and alive-to-dead transitions and 2040 transition equivalence classes
-A total of 11232 variables were created
-	Select(f): 72
-	Good(s, a, s'): 2040
+Generating CNF encoding for 99 alive states, 164 alive-to-solvable and alive-to-dead transitions and 164 transition equivalence classes
+A total of 1008 variables were created
+	Select(f): 52
+	Good(s, a, s'): 164
 	Bad(s): 0
-	V(s, d): 9120
+	V(s, d): 792
 Posting distinguishability constraints
-A total of 4260864 clauses were created
+A total of 39678 clauses were created
 	Policy completeness [1]: 0
-	Transition separation [5,6]: 4161600
-	V descending along good transitions [X]: 33840
-	V is total function within bounds [X]: 41952
-	Goal separation [X]: 22800
-	(Weighted) Select(f): 72
+	Transition separation [5,6]: 26896
+	V descending along good transitions [X]: 2086
+	V is total function within bounds [X]: 2871
+	Goal separation [X]: 7722
+	(Weighted) Select(f): 52
 Writing final DIMACS file...
-CNF [11232 vars, 4260864 clauses] generated in 75.19 sec.
+CNF [1008 vars, 39678 clauses] generated in 0.50 sec.
 Calling: open-wbo_static /home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/theory.wsat > /home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/maxsat_solver_run.log
 Call returned with exit code 7680
-Solution with cost 13 found in 11.17sec.
+Solution with cost 12 found in 0.04sec.
 
-Good(0, 1, 2) Good(2, 1, 18) Good(6, 0, 30) Good(9, 1, 36) Good(12, 1, 39) Good(14, 1, 40) Good(15, 0, 28) Good(20, 1, 45) Good(22, 1, 48) Good(24, 1, 64) 
-Good(26, 2, 76) Good(27, 0, 76) Good(30, 4, 101) Good(31, 1, 104) Good(36, 1, 114) Good(38, 1, 122) Good(43, 1, 135) Good(44, 4, 140) Good(45, 4, 140) Good(46, 3, 122) 
-Good(48, 1, 147) Good(51, 4, 152) Good(52, 4, 152) Good(56, 1, 159) Good(58, 4, 161) Good(59, 0, 151) Good(60, 0, 154) Good(65, 1, 166) Good(69, 0, 160) Good(77, 2, 179) 
-Good(78, 4, 29) Good(81, 1, 185) Good(85, 0, 179) Good(86, 1, 189) Good(87, 1, 190) Good(89, 4, 192) Good(94, 4, 171) Good(105, 4, 192) Good(19, 1, 44) Good(107, 0, 203) 
-Good(115, 1, 205) Good(75, 1, 178) Good(116, 4, 47) Good(117, 1, 207) Good(120, 4, 47) Good(121, 1, 210) Good(123, 3, 201) Good(130, 0, 216) Good(131, 0, 196) Good(133, 3, 202) 
-Good(137, 3, 205) Good(138, 3, 206) Good(139, 4, 220) Good(142, 0, 221) Good(143, 3, 209) Good(148, 4, 101) Good(83, 2, 184) Good(149, 2, 227) Good(150, 0, 237) Good(151, 4, 243) 
-Good(153, 0, 244) Good(154, 4, 243) Good(155, 0, 227) Good(156, 1, 255) Good(159, 1, 261) Good(160, 4, 262) Good(165, 1, 271) Good(167, 4, 134) Good(170, 3, 257) Good(173, 1, 297) 
-Good(174, 1, 301) Good(175, 2, 307) Good(178, 1, 316) Good(169, 4, 285) Good(180, 2, 321) Good(182, 4, 95) Good(74, 1, 176) Good(183, 0, 314) Good(23, 0, 49) Good(186, 4, 262) 
-Good(187, 2, 336) Good(166, 1, 272) Good(189, 1, 349) Good(70, 4, 171) Good(190, 1, 351) Good(191, 4, 134) Good(194, 0, 336) Good(196, 4, 285) Good(146, 3, 211) Good(198, 4, 243) 
-Good(201, 4, 377) Good(202, 3, 370) Good(203, 4, 262) Good(205, 4, 140) Good(206, 3, 269) Good(216, 4, 285) Good(221, 4, 402) Good(224, 1, 405) Good(225, 2, 30) Good(228, 0, 404) 
-Good(233, 4, 411) Good(234, 1, 412) Good(238, 4, 152) Good(240, 1, 417) Good(242, 4, 161) Good(157, 1, 257) Good(250, 4, 171) Good(252, 0, 410) Good(254, 1, 422) Good(256, 4, 192) 
-Good(258, 3, 417) Good(265, 0, 427) Good(37, 1, 118) Good(274, 4, 213) Good(235, 4, 411) Good(82, 2, 182) Good(90, 0, 182) Good(276, 1, 434) Good(193, 4, 134) Good(281, 3, 419) 
-Good(199, 1, 370) Good(282, 4, 437) Good(283, 0, 425) Good(284, 4, 437) Good(63, 1, 165) Good(290, 1, 439) Good(292, 1, 443) Good(294, 1, 445) Good(296, 2, 448) Good(298, 1, 450) 
-Good(229, 2, 28) Good(300, 1, 452) Good(302, 1, 453) Good(303, 4, 411) Good(184, 4, 95) Good(40, 1, 125) Good(304, 1, 455) Good(306, 1, 457) Good(318, 4, 462) Good(319, 0, 446) 
-Good(320, 0, 448) Good(323, 4, 192) Good(162, 4, 262) Good(327, 1, 467) Good(328, 4, 171) Good(226, 2, 33) Good(329, 2, 466) Good(331, 1, 470) Good(333, 4, 192) Good(338, 4, 426) 
-Good(339, 4, 426) Good(127, 3, 167) Good(340, 3, 451) Good(341, 1, 474) Good(249, 1, 419) Good(348, 0, 466) Good(354, 0, 475) Good(356, 4, 213) Good(50, 2, 148) Good(359, 2, 480) 
-Good(358, 3, 467) Good(360, 4, 437) Good(362, 4, 152) Good(366, 4, 411) Good(371, 3, 484) Good(177, 2, 314) Good(197, 4, 101) Good(373, 4, 171) Good(73, 1, 174) Good(376, 3, 488) 
-Good(381, 4, 426) Good(383, 4, 437) Good(391, 3, 430) Good(394, 4, 220) Good(395, 0, 480) Good(401, 3, 491) Good(405, 1, 497) Good(407, 2, 110) Good(659, 3, 747) Good(453, 4, 517) 
-Good(785, 3, 854) Good(460, 3, 619) Good(387, 3, 45) Good(266, 4, 426) Good(609, 3, 711) Good(389, 4, 220) Good(475, 4, 285) Good(28, 4, 95) Good(550, 3, 695) Good(685, 4, 553) 
-Good(690, 4, 325) Good(656, 0, 746) Good(450, 1, 602) Good(445, 1, 591) Good(710, 1, 801) Good(694, 3, 768) Good(695, 3, 769) Good(99, 0, 197) Good(312, 3, 457) Good(696, 3, 770) 
-Good(745, 4, 402) Good(144, 4, 220) Good(264, 4, 426) Good(699, 3, 773) Good(343, 2, 475) Good(919, 4, 377) Good(854, 4, 243) Good(705, 2, 790) Good(709, 4, 262) Good(404, 4, 243) 
-Good(615, 4, 152) Good(714, 4, 243) Good(163, 0, 247) Good(299, 1, 451) Good(350, 3, 470) Good(717, 3, 809) Good(747, 3, 845) Good(860, 3, 886) Good(273, 4, 213) Good(823, 2, 871) 
-Good(439, 1, 570) Good(721, 4, 134) Good(217, 0, 403) Good(211, 3, 375) Good(486, 4, 262) Good(722, 2, 821) Good(800, 3, 857) Good(66, 1, 167) Good(723, 3, 794) Good(726, 4, 134) 
-Good(701, 1, 782) Good(740, 2, 847) Good(606, 3, 717) Good(727, 2, 832) Good(708, 1, 798) Good(728, 3, 799) Good(868, 4, 134) Good(461, 4, 377) Good(704, 1, 789) Good(732, 3, 836) 
-Good(443, 1, 584) Good(200, 4, 95) Good(737, 3, 844) Good(448, 4, 325) Good(677, 3, 311) Good(738, 0, 841) Good(739, 4, 285) Good(128, 1, 215) Good(729, 4, 553) Good(34, 1, 112) 
-Good(741, 4, 140) Good(576, 2, 715) Good(684, 2, 403) Good(697, 4, 517) Good(870, 3, 904) Good(681, 0, 764) Good(218, 4, 402) Good(291, 1, 441) Good(103, 1, 201) Good(746, 4, 402) 
-Good(683, 3, 337) Good(743, 4, 140) Good(158, 1, 260) Good(750, 4, 687) Good(675, 4, 517) Good(742, 0, 832) Good(831, 0, 868) Good(752, 2, 425) Good(922, 3, 931) Good(755, 3, 453) 
-Good(703, 1, 788) Good(432, 0, 559) Good(756, 3, 454) Good(622, 4, 462) Good(734, 2, 841) Good(762, 4, 687) Good(172, 1, 288) Good(409, 2, 92) Good(724, 1, 828) Good(4, 1, 25) 
-Good(757, 4, 687) Good(485, 0, 661) Good(859, 2, 892) Good(369, 4, 462) Good(730, 3, 817) Good(522, 2, 688) Good(270, 3, 422) Good(346, 4, 47) Good(920, 2, 933) Good(506, 0, 675) 
-Good(638, 2, 741) Good(7, 0, 33) Good(592, 4, 171) Good(275, 3, 42) Good(495, 2, 160) Good(751, 3, 412) Good(874, 4, 402) Good(735, 3, 838) Good(878, 4, 29) Good(840, 4, 192) 
-Good(515, 3, 677) Good(678, 1, 760) Good(866, 3, 901) Good(876, 4, 152) Good(482, 2, 660) Good(628, 2, 739) Good(451, 4, 262) Good(806, 4, 152) Good(308, 4, 29) Good(1, 1, 13) 
-Good(632, 4, 47) Good(725, 4, 377) Good(869, 2, 908) Good(67, 1, 168) Good(864, 2, 902) Good(917, 3, 927) Good(895, 2, 923) Good(716, 4, 95) Good(918, 3, 928) Good(268, 4, 426) 
-Good(924, 2, 936) Good(231, 4, 161) Good(779, 1, 854) Good(208, 4, 140) Good(223, 4, 152) Good(418, 0, 535) Good(872, 2, 910) Good(440, 1, 577) Good(489, 3, 666) Good(818, 3, 865) 
-Good(35, 0, 110) Good(911, 4, 220) Good(810, 3, 862) Good(783, 4, 161) Good(863, 3, 898) Good(921, 3, 930) Good(682, 4, 553) Good(865, 3, 900) Good(414, 2, 511) Good(490, 0, 668) 
-Good(431, 3, 125) Good(444, 2, 585) Good(674, 4, 517) Good(916, 3, 926) Good(195, 4, 285) Good(353, 4, 213) Good(812, 3, 863) Good(759, 3, 460) Good(889, 3, 917) Good(914, 3, 925) 
-Good(707, 2, 796) Good(692, 4, 243) Good(713, 1, 809) Good(465, 2, 631) Good(913, 4, 101) Good(610, 4, 687) Good(736, 4, 325) Good(803, 3, 858) Good(388, 3, 46) Good(419, 4, 285) 
-Good(367, 2, 486) Good(347, 4, 47) Good(808, 4, 29) Good(871, 4, 140) Good(126, 4, 213) Good(680, 4, 517) Good(733, 4, 95) Good(693, 0, 771) Good(480, 4, 402) Good(849, 4, 220) 
-Good(706, 1, 794) Good(278, 3, 423) Good(179, 4, 325) Good(850, 0, 874) Good(923, 4, 140) Good(712, 1, 804) Good(396, 4, 220) Good(181, 0, 307) Good(513, 2, 686) Good(861, 3, 888) 
-Good(816, 2, 868) Good(428, 0, 554) Good(855, 2, 883) Good(893, 4, 47) Good(857, 3, 879) Good(55, 1, 157) Good(97, 2, 197) Good(887, 3, 916) Good(442, 1, 583) Good(753, 4, 687) 
-Good(176, 1, 311) Good(236, 2, 410) Good(468, 2, 643) Good(853, 1, 879) Good(62, 1, 164) Good(295, 2, 446) Good(421, 0, 511) Good(688, 4, 553) Good(54, 0, 148) Good(310, 4, 161) 
-Good(711, 3, 784) Good(689, 4, 101) Good(679, 2, 380) Good(833, 4, 213) Good(915, 4, 325) Good(209, 3, 349) Good(767, 4, 161) Good(827, 3, 860) Good(686, 4, 553) Good(568, 1, 709) 
-Good(467, 4, 285) Good(91, 0, 184) Good(820, 3, 866) Good(814, 4, 462) Good(210, 1, 399) Good(477, 0, 643) Good(655, 4, 220) Good(454, 3, 579) Good(488, 3, 665) Good(731, 4, 101) 
-Good(795, 3, 856) Good(548, 3, 694) Good(793, 4, 192) Good(521, 4, 687) Good(408, 0, 494) Good(719, 4, 377) Good(214, 3, 277) Good(791, 4, 462) Good(644, 4, 213) Good(700, 3, 774) 
-Good(544, 4, 437) Good(32, 0, 100) Good(781, 1, 856) Good(653, 4, 437) Good(691, 3, 765) Good(862, 4, 101) Good(882, 3, 914) Good(698, 0, 776) Good(416, 1, 531) Good(763, 2, 493) 
-Good(651, 0, 739) Good(508, 4, 426) Good(322, 2, 461) Good(119, 0, 191) Good(188, 0, 321) Good(646, 2, 746) Good(39, 1, 124) Good(897, 3, 921) Good(642, 4, 437) Good(509, 2, 216) 
-Good(11, 1, 38) Good(641, 3, 723) Good(637, 2, 743) Good(634, 0, 726) Good(603, 3, 709) Good(630, 3, 735) Good(626, 4, 171) Good(624, 0, 733) Good(463, 0, 596) Good(612, 3, 718) 
-Good(541, 3, 170) Good(502, 2, 203) Good(452, 1, 607) Good(604, 1, 729) Good(835, 2, 874) Good(676, 4, 517) Good(598, 2, 726) Good(595, 0, 715) Good(164, 1, 269) Good(215, 4, 402) 
-Good(492, 3, 671) Good(593, 1, 724) Good(212, 3, 272) Good(873, 0, 908) Good(590, 2, 720) Good(702, 1, 784) Good(589, 2, 719) Good(587, 4, 462) Good(565, 1, 706) Good(586, 4, 462) 
-Good(580, 3, 714) Good(17, 1, 43) Good(578, 4, 161) Good(574, 1, 714) Good(891, 3, 918) Good(572, 1, 712) Good(491, 3, 670) Good(566, 1, 708) Good(571, 4, 411) Good(569, 1, 710) 
-Good(21, 4, 47) Good(856, 4, 95) Good(563, 1, 704) Good(562, 1, 702) Good(560, 2, 221) Good(384, 0, 493) Good(558, 3, 699) Good(79, 4, 29) Good(552, 3, 696) Good(526, 4, 29) 
-Good(413, 2, 518) Good(436, 2, 559) Good(422, 4, 377) Good(364, 4, 29) Good(542, 4, 437) Good(473, 3, 605) Good(540, 0, 686) Good(470, 4, 377) Good(5, 4, 29) Good(230, 4, 161) 
-Good(538, 0, 697) Good(251, 4, 171) Good(207, 1, 392) Good(536, 4, 411) Good(481, 0, 652) Good(534, 3, 691) Good(93, 2, 191) Good(744, 2, 851) Good(532, 3, 690) Good(514, 3, 676) 
-Good(620, 3, 732) Good(530, 4, 462) Good(528, 0, 692) Good(519, 4, 426) Good(830, 4, 47) Good(516, 4, 687) Good(429, 0, 556) Good(715, 4, 325) Good(510, 2, 196) Good(457, 4, 243) 
-Good(649, 3, 737) Good(398, 3, 479) Good(505, 0, 680) Good(455, 1, 613) Good(500, 1, 678) Good(499, 4, 411) Good(718, 3, 811) Good(498, 1, 676) Good(496, 4, 411) Good(219, 3, 378) 
-Good(41, 0, 92) Good(487, 2, 668) Good(555, 4, 687) Good(484, 4, 325) Good(483, 2, 661) Good(406, 2, 100) Good(374, 0, 486) Good(545, 0, 688) Good(479, 3, 648) Good(42, 4, 134) 
-Good(478, 0, 639) Good(824, 4, 213) Good(476, 2, 652) Good(433, 3, 132) Good(10, 1, 37) Good(474, 4, 553) Good(434, 4, 402) Good(472, 3, 602) Good(471, 0, 625) Good(867, 0, 902) 
-Good(469, 2, 639) Good(33, 4, 101) Good(415, 0, 524) Good(466, 4, 134) Good(464, 0, 600) Good(25, 1, 68) Good(459, 2, 625) Good(458, 0, 616) Good(456, 2, 616) Good(16, 1, 42) 
-Good(720, 4, 377) Good(618, 2, 733) Good(386, 3, 44) Good(493, 4, 553) Good(449, 2, 600) Good(168, 1, 279) Good(447, 2, 596) Good(435, 3, 549) Good(185, 1, 337) Good(446, 4, 325) 
-Good(324, 4, 192) Good(885, 2, 919) Good(441, 1, 579) Good(858, 3, 881) Good(71, 1, 172) Good(880, 3, 913) Good(438, 1, 567) Good(748, 0, 847) Good(204, 0, 380) Good(430, 3, 547) 
-Good(427, 4, 517) Good(287, 3, 424) Good(379, 3, 489) Good(425, 4, 553) Good(424, 3, 533) Good(423, 3, 531) Good(420, 0, 518) Good(417, 4, 95) Good(412, 4, 517) Good(410, 4, 262) 
-Good(0, 1, 2) Good(2, 1, 18) Good(6, 0, 30) Good(9, 1, 36) Good(12, 1, 39) Good(14, 1, 40) Good(15, 0, 28) Good(20, 1, 45) Good(22, 1, 48) Good(24, 1, 64) 
-Good(26, 2, 76) Good(27, 0, 76) Good(30, 4, 101) Good(31, 1, 104) Good(36, 1, 114) Good(38, 1, 122) Good(43, 1, 135) Good(44, 4, 140) Good(45, 4, 140) Good(46, 3, 122) 
-Good(48, 1, 147) Good(51, 4, 152) Good(52, 4, 152) Good(56, 1, 159) Good(58, 4, 161) Good(59, 0, 151) Good(60, 0, 154) Good(65, 1, 166) Good(69, 0, 160) Good(77, 2, 179) 
-Good(78, 4, 29) Good(81, 1, 185) Good(85, 0, 179) Good(86, 1, 189) Good(87, 1, 190) Good(89, 4, 192) Good(94, 4, 171) Good(105, 4, 192) Good(19, 1, 44) Good(107, 0, 203) 
-Good(115, 1, 205) Good(75, 1, 178) Good(116, 4, 47) Good(117, 1, 207) Good(120, 4, 47) Good(121, 1, 210) Good(123, 3, 201) Good(130, 0, 216) Good(131, 0, 196) Good(133, 3, 202) 
-Good(137, 3, 205) Good(138, 3, 206) Good(139, 4, 220) Good(142, 0, 221) Good(143, 3, 209) Good(148, 4, 101) Good(83, 2, 184) Good(149, 2, 227) Good(150, 0, 237) Good(151, 4, 243) 
-Good(153, 0, 244) Good(154, 4, 243) Good(155, 0, 227) Good(156, 1, 255) Good(159, 1, 261) Good(160, 4, 262) Good(165, 1, 271) Good(167, 4, 134) Good(170, 3, 257) Good(173, 1, 297) 
-Good(174, 1, 301) Good(175, 2, 307) Good(178, 1, 316) Good(169, 4, 285) Good(180, 2, 321) Good(182, 4, 95) Good(74, 1, 176) Good(183, 0, 314) Good(23, 0, 49) Good(186, 4, 262) 
-Good(187, 2, 336) Good(166, 1, 272) Good(189, 1, 349) Good(70, 4, 171) Good(190, 1, 351) Good(191, 4, 134) Good(194, 0, 336) Good(196, 4, 285) Good(146, 3, 211) Good(198, 4, 243) 
-Good(201, 4, 377) Good(202, 3, 370) Good(203, 4, 262) Good(205, 4, 140) Good(206, 3, 269) Good(216, 4, 285) Good(221, 4, 402) Good(224, 1, 405) Good(225, 2, 30) Good(228, 0, 404) 
-Good(233, 4, 411) Good(234, 1, 412) Good(238, 4, 152) Good(240, 1, 417) Good(242, 4, 161) Good(157, 1, 257) Good(250, 4, 171) Good(252, 0, 410) Good(254, 1, 422) Good(256, 4, 192) 
-Good(258, 3, 417) Good(265, 0, 427) Good(37, 1, 118) Good(274, 4, 213) Good(235, 4, 411) Good(82, 2, 182) Good(90, 0, 182) Good(276, 1, 434) Good(193, 4, 134) Good(281, 3, 419) 
-Good(199, 1, 370) Good(282, 4, 437) Good(283, 0, 425) Good(284, 4, 437) Good(63, 1, 165) Good(290, 1, 439) Good(292, 1, 443) Good(294, 1, 445) Good(296, 2, 448) Good(298, 1, 450) 
-Good(229, 2, 28) Good(300, 1, 452) Good(302, 1, 453) Good(303, 4, 411) Good(184, 4, 95) Good(40, 1, 125) Good(304, 1, 455) Good(306, 1, 457) Good(318, 4, 462) Good(319, 0, 446) 
-Good(320, 0, 448) Good(323, 4, 192) Good(162, 4, 262) Good(327, 1, 467) Good(328, 4, 171) Good(226, 2, 33) Good(329, 2, 466) Good(331, 1, 470) Good(333, 4, 192) Good(338, 4, 426) 
-Good(339, 4, 426) Good(127, 3, 167) Good(340, 3, 451) Good(341, 1, 474) Good(249, 1, 419) Good(348, 0, 466) Good(354, 0, 475) Good(356, 4, 213) Good(50, 2, 148) Good(359, 2, 480) 
-Good(358, 3, 467) Good(360, 4, 437) Good(362, 4, 152) Good(366, 4, 411) Good(371, 3, 484) Good(177, 2, 314) Good(197, 4, 101) Good(373, 4, 171) Good(73, 1, 174) Good(376, 3, 488) 
-Good(381, 4, 426) Good(383, 4, 437) Good(391, 3, 430) Good(394, 4, 220) Good(395, 0, 480) Good(401, 3, 491) Good(405, 1, 497) Good(407, 2, 110) Good(659, 3, 747) Good(453, 4, 517) 
-Good(785, 3, 854) Good(460, 3, 619) Good(387, 3, 45) Good(266, 4, 426) Good(609, 3, 711) Good(389, 4, 220) Good(475, 4, 285) Good(28, 4, 95) Good(550, 3, 695) Good(685, 4, 553) 
-Good(690, 4, 325) Good(656, 0, 746) Good(450, 1, 602) Good(445, 1, 591) Good(710, 1, 801) Good(694, 3, 768) Good(695, 3, 769) Good(99, 0, 197) Good(312, 3, 457) Good(696, 3, 770) 
-Good(745, 4, 402) Good(144, 4, 220) Good(264, 4, 426) Good(699, 3, 773) Good(343, 2, 475) Good(919, 4, 377) Good(854, 4, 243) Good(705, 2, 790) Good(709, 4, 262) Good(404, 4, 243) 
-Good(615, 4, 152) Good(714, 4, 243) Good(163, 0, 247) Good(299, 1, 451) Good(350, 3, 470) Good(717, 3, 809) Good(747, 3, 845) Good(860, 3, 886) Good(273, 4, 213) Good(823, 2, 871) 
-Good(439, 1, 570) Good(721, 4, 134) Good(217, 0, 403) Good(211, 3, 375) Good(486, 4, 262) Good(722, 2, 821) Good(800, 3, 857) Good(66, 1, 167) Good(723, 3, 794) Good(726, 4, 134) 
-Good(701, 1, 782) Good(740, 2, 847) Good(606, 3, 717) Good(727, 2, 832) Good(708, 1, 798) Good(728, 3, 799) Good(868, 4, 134) Good(461, 4, 377) Good(704, 1, 789) Good(732, 3, 836) 
-Good(443, 1, 584) Good(200, 4, 95) Good(737, 3, 844) Good(448, 4, 325) Good(677, 3, 311) Good(738, 0, 841) Good(739, 4, 285) Good(128, 1, 215) Good(729, 4, 553) Good(34, 1, 112) 
-Good(741, 4, 140) Good(576, 2, 715) Good(684, 2, 403) Good(697, 4, 517) Good(870, 3, 904) Good(681, 0, 764) Good(218, 4, 402) Good(291, 1, 441) Good(103, 1, 201) Good(746, 4, 402) 
-Good(683, 3, 337) Good(743, 4, 140) Good(158, 1, 260) Good(750, 4, 687) Good(675, 4, 517) Good(742, 0, 832) Good(831, 0, 868) Good(752, 2, 425) Good(922, 3, 931) Good(755, 3, 453) 
-Good(703, 1, 788) Good(432, 0, 559) Good(756, 3, 454) Good(622, 4, 462) Good(734, 2, 841) Good(762, 4, 687) Good(172, 1, 288) Good(409, 2, 92) Good(724, 1, 828) Good(4, 1, 25) 
-Good(757, 4, 687) Good(485, 0, 661) Good(859, 2, 892) Good(369, 4, 462) Good(730, 3, 817) Good(522, 2, 688) Good(270, 3, 422) Good(346, 4, 47) Good(920, 2, 933) Good(506, 0, 675) 
-Good(638, 2, 741) Good(7, 0, 33) Good(592, 4, 171) Good(275, 3, 42) Good(495, 2, 160) Good(751, 3, 412) Good(874, 4, 402) Good(735, 3, 838) Good(878, 4, 29) Good(840, 4, 192) 
-Good(515, 3, 677) Good(678, 1, 760) Good(866, 3, 901) Good(876, 4, 152) Good(482, 2, 660) Good(628, 2, 739) Good(451, 4, 262) Good(806, 4, 152) Good(308, 4, 29) Good(1, 1, 13) 
-Good(632, 4, 47) Good(725, 4, 377) Good(869, 2, 908) Good(67, 1, 168) Good(864, 2, 902) Good(917, 3, 927) Good(895, 2, 923) Good(716, 4, 95) Good(918, 3, 928) Good(268, 4, 426) 
-Good(924, 2, 936) Good(231, 4, 161) Good(779, 1, 854) Good(208, 4, 140) Good(223, 4, 152) Good(418, 0, 535) Good(872, 2, 910) Good(440, 1, 577) Good(489, 3, 666) Good(818, 3, 865) 
-Good(35, 0, 110) Good(911, 4, 220) Good(810, 3, 862) Good(783, 4, 161) Good(863, 3, 898) Good(921, 3, 930) Good(682, 4, 553) Good(865, 3, 900) Good(414, 2, 511) Good(490, 0, 668) 
-Good(431, 3, 125) Good(444, 2, 585) Good(674, 4, 517) Good(916, 3, 926) Good(195, 4, 285) Good(353, 4, 213) Good(812, 3, 863) Good(759, 3, 460) Good(889, 3, 917) Good(914, 3, 925) 
-Good(707, 2, 796) Good(692, 4, 243) Good(713, 1, 809) Good(465, 2, 631) Good(913, 4, 101) Good(610, 4, 687) Good(736, 4, 325) Good(803, 3, 858) Good(388, 3, 46) Good(419, 4, 285) 
-Good(367, 2, 486) Good(347, 4, 47) Good(808, 4, 29) Good(871, 4, 140) Good(126, 4, 213) Good(680, 4, 517) Good(733, 4, 95) Good(693, 0, 771) Good(480, 4, 402) Good(849, 4, 220) 
-Good(706, 1, 794) Good(278, 3, 423) Good(179, 4, 325) Good(850, 0, 874) Good(923, 4, 140) Good(712, 1, 804) Good(396, 4, 220) Good(181, 0, 307) Good(513, 2, 686) Good(861, 3, 888) 
-Good(816, 2, 868) Good(428, 0, 554) Good(855, 2, 883) Good(893, 4, 47) Good(857, 3, 879) Good(55, 1, 157) Good(97, 2, 197) Good(887, 3, 916) Good(442, 1, 583) Good(753, 4, 687) 
-Good(176, 1, 311) Good(236, 2, 410) Good(468, 2, 643) Good(853, 1, 879) Good(62, 1, 164) Good(295, 2, 446) Good(421, 0, 511) Good(688, 4, 553) Good(54, 0, 148) Good(310, 4, 161) 
-Good(711, 3, 784) Good(689, 4, 101) Good(679, 2, 380) Good(833, 4, 213) Good(915, 4, 325) Good(209, 3, 349) Good(767, 4, 161) Good(827, 3, 860) Good(686, 4, 553) Good(568, 1, 709) 
-Good(467, 4, 285) Good(91, 0, 184) Good(820, 3, 866) Good(814, 4, 462) Good(210, 1, 399) Good(477, 0, 643) Good(655, 4, 220) Good(454, 3, 579) Good(488, 3, 665) Good(731, 4, 101) 
-Good(795, 3, 856) Good(548, 3, 694) Good(793, 4, 192) Good(521, 4, 687) Good(408, 0, 494) Good(719, 4, 377) Good(214, 3, 277) Good(791, 4, 462) Good(644, 4, 213) Good(700, 3, 774) 
-Good(544, 4, 437) Good(32, 0, 100) Good(781, 1, 856) Good(653, 4, 437) Good(691, 3, 765) Good(862, 4, 101) Good(882, 3, 914) Good(698, 0, 776) Good(416, 1, 531) Good(763, 2, 493) 
-Good(651, 0, 739) Good(508, 4, 426) Good(322, 2, 461) Good(119, 0, 191) Good(188, 0, 321) Good(646, 2, 746) Good(39, 1, 124) Good(897, 3, 921) Good(642, 4, 437) Good(509, 2, 216) 
-Good(11, 1, 38) Good(641, 3, 723) Good(637, 2, 743) Good(634, 0, 726) Good(603, 3, 709) Good(630, 3, 735) Good(626, 4, 171) Good(624, 0, 733) Good(463, 0, 596) Good(612, 3, 718) 
-Good(541, 3, 170) Good(502, 2, 203) Good(452, 1, 607) Good(604, 1, 729) Good(835, 2, 874) Good(676, 4, 517) Good(598, 2, 726) Good(595, 0, 715) Good(164, 1, 269) Good(215, 4, 402) 
-Good(492, 3, 671) Good(593, 1, 724) Good(212, 3, 272) Good(873, 0, 908) Good(590, 2, 720) Good(702, 1, 784) Good(589, 2, 719) Good(587, 4, 462) Good(565, 1, 706) Good(586, 4, 462) 
-Good(580, 3, 714) Good(17, 1, 43) Good(578, 4, 161) Good(574, 1, 714) Good(891, 3, 918) Good(572, 1, 712) Good(491, 3, 670) Good(566, 1, 708) Good(571, 4, 411) Good(569, 1, 710) 
-Good(21, 4, 47) Good(856, 4, 95) Good(563, 1, 704) Good(562, 1, 702) Good(560, 2, 221) Good(384, 0, 493) Good(558, 3, 699) Good(79, 4, 29) Good(552, 3, 696) Good(526, 4, 29) 
-Good(413, 2, 518) Good(436, 2, 559) Good(422, 4, 377) Good(364, 4, 29) Good(542, 4, 437) Good(473, 3, 605) Good(540, 0, 686) Good(470, 4, 377) Good(5, 4, 29) Good(230, 4, 161) 
-Good(538, 0, 697) Good(251, 4, 171) Good(207, 1, 392) Good(536, 4, 411) Good(481, 0, 652) Good(534, 3, 691) Good(93, 2, 191) Good(744, 2, 851) Good(532, 3, 690) Good(514, 3, 676) 
-Good(620, 3, 732) Good(530, 4, 462) Good(528, 0, 692) Good(519, 4, 426) Good(830, 4, 47) Good(516, 4, 687) Good(429, 0, 556) Good(715, 4, 325) Good(510, 2, 196) Good(457, 4, 243) 
-Good(649, 3, 737) Good(398, 3, 479) Good(505, 0, 680) Good(455, 1, 613) Good(500, 1, 678) Good(499, 4, 411) Good(718, 3, 811) Good(498, 1, 676) Good(496, 4, 411) Good(219, 3, 378) 
-Good(41, 0, 92) Good(487, 2, 668) Good(555, 4, 687) Good(484, 4, 325) Good(483, 2, 661) Good(406, 2, 100) Good(374, 0, 486) Good(545, 0, 688) Good(479, 3, 648) Good(42, 4, 134) 
-Good(478, 0, 639) Good(824, 4, 213) Good(476, 2, 652) Good(433, 3, 132) Good(10, 1, 37) Good(474, 4, 553) Good(434, 4, 402) Good(472, 3, 602) Good(471, 0, 625) Good(867, 0, 902) 
-Good(469, 2, 639) Good(33, 4, 101) Good(415, 0, 524) Good(466, 4, 134) Good(464, 0, 600) Good(25, 1, 68) Good(459, 2, 625) Good(458, 0, 616) Good(456, 2, 616) Good(16, 1, 42) 
-Good(720, 4, 377) Good(618, 2, 733) Good(386, 3, 44) Good(493, 4, 553) Good(449, 2, 600) Good(168, 1, 279) Good(447, 2, 596) Good(435, 3, 549) Good(185, 1, 337) Good(446, 4, 325) 
-Good(324, 4, 192) Good(885, 2, 919) Good(441, 1, 579) Good(858, 3, 881) Good(71, 1, 172) Good(880, 3, 913) Good(438, 1, 567) Good(748, 0, 847) Good(204, 0, 380) Good(430, 3, 547) 
-Good(427, 4, 517) Good(287, 3, 424) Good(379, 3, 489) Good(425, 4, 553) Good(424, 3, 533) Good(423, 3, 531) Good(420, 0, 518) Good(417, 4, 95) Good(412, 4, 517) Good(410, 4, 262) 
-Num Good(s, a, s') selected: 600 (29.41%)
+Good(2, 0, 11) Good(5, 0, 38) Good(7, 0, 18) Good(8, 0, 27) Good(12, 0, 52) Good(13, 0, 58) Good(14, 0, 66) Good(74, 1, 133) Good(75, 1, 135) Good(77, 0, 123) 
+Good(60, 1, 128) Good(87, 1, 153) Good(105, 1, 154) Good(114, 1, 158) Good(19, 0, 53) Good(138, 1, 170) Good(10, 0, 41) Good(26, 0, 90) Good(119, 0, 160) Good(57, 0, 122) 
+Good(20, 1, 78) Good(143, 1, 172) Good(3, 0, 22) Good(24, 0, 80) Good(25, 0, 85) Good(84, 0, 145) Good(137, 1, 168) Good(110, 1, 156) Good(54, 0, 112) Good(162, 1, 174) 
+Good(83, 1, 144) Good(49, 0, 96) Good(16, 0, 62) Good(115, 0, 159) Good(117, 1, 164) Good(43, 1, 103) Good(166, 1, 176) Good(33, 1, 101) Good(4, 0, 31) Good(21, 0, 69) 
+Good(61, 0, 129) Good(0, 0, 1) Good(56, 1, 121) Good(47, 1, 108) Good(30, 0, 95) Good(35, 1, 102) Good(29, 1, 94) Good(63, 1, 132) Good(45, 0, 79) Good(9, 1, 50) 
+Good(17, 0, 68) 
+Good(2, 0, 11) Good(5, 0, 38) Good(7, 0, 18) Good(8, 0, 27) Good(12, 0, 52) Good(13, 0, 58) Good(14, 0, 66) Good(74, 1, 133) Good(75, 1, 135) Good(77, 0, 123) 
+Good(60, 1, 128) Good(87, 1, 153) Good(105, 1, 154) Good(114, 1, 158) Good(19, 0, 53) Good(138, 1, 170) Good(10, 0, 41) Good(26, 0, 90) Good(119, 0, 160) Good(57, 0, 122) 
+Good(20, 1, 78) Good(143, 1, 172) Good(3, 0, 22) Good(24, 0, 80) Good(25, 0, 85) Good(84, 0, 145) Good(137, 1, 168) Good(110, 1, 156) Good(54, 0, 112) Good(162, 1, 174) 
+Good(83, 1, 144) Good(49, 0, 96) Good(16, 0, 62) Good(115, 0, 159) Good(117, 1, 164) Good(43, 1, 103) Good(166, 1, 176) Good(33, 1, 101) Good(4, 0, 31) Good(21, 0, 69) 
+Good(61, 0, 129) Good(0, 0, 1) Good(56, 1, 121) Good(47, 1, 108) Good(30, 0, 95) Good(35, 1, 102) Good(29, 1, 94) Good(63, 1, 132) Good(45, 0, 79) Good(9, 1, 50) 
+Good(17, 0, 68) 
+Num Good(s, a, s') selected: 51 (31.10%)
 Num Bad(s) selected: 0 (0.00%)
-Num selected features: 4 (5.56%)
+Num selected features: 3 (5.77%)
 Features: 
-	0: Bool[cell-has-black_king] [k=1]
-	1: Bool[And(row-has-black_king,row-has-white_king)] [k=3]
-	2: Bool[And(row-has-black_king,Exists(adjacent_row,row-has-white_king))] [k=5]
-	3: Dist[col-has-white_king;adjacent_col;col-has-black_king] [k=4]
+	0: Bool[And(col-has-black_king,col-has-white_king)] [k=3]
+	1: Bool[And(col-has-black_king,Exists(adjacent_col,col-has-white_king))] [k=5]
+	2: Dist[row-has-white_king;adjacent_row;row-has-black_king] [k=4]
 Solution found in iteration #1 is correct!
 DNF transition-classifier saved in /home/orbital/ws/research/gpl/code/gpl/workspace/shoot_1/classifier.txt
-Total times: Theory generation: 75.20, Solver: 11.17, TOTAL: 86.43
+Total times: Theory generation: 0.50, Solver: 0.04, TOTAL: 0.55
 ------------------------------------------------
 (END Episode 0)
 ------------------------------------------------
 ================================================================================
-END OF STEP #1: Train: Explore the state space of the training instances. 100.56 CPU sec - 1284.78 MB
+END OF STEP #1: Train: Explore the state space of the training instances. 15.52 CPU sec - 53.31 MB
 ================================================================================
 ================================================================================
-(pid: 8744) STARTING STEP #2: Testing of the D2L policy
+(pid: 14258) STARTING STEP #2: Testing of the D2L policy
 ================================================================================
 
 POLICY:
-Features (#: 4; total k: 13; max k = 5):
-  (A) Bool[cell-has-black_king] [k=1]
-  (B) Bool[And(row-has-black_king,row-has-white_king)] [k=3]
-  (C) Bool[And(row-has-black_king,Exists(adjacent_row,row-has-white_king))] [k=5]
-  (D) Dist[col-has-white_king;adjacent_col;col-has-black_king] [k=4]
-Invariants: A>0
+Features (#: 3; total k: 12; max k = 5):
+  (A) Bool[And(col-has-black_king,col-has-white_king)] [k=3]
+  (B) Bool[And(col-has-black_king,Exists(adjacent_col,col-has-white_king))] [k=5]
+  (C) Dist[row-has-white_king;adjacent_row;row-has-black_king] [k=4]
+Invariants: C>0,A=0
 Policy:
-  1. A>0 AND B=0 AND C=0 AND D>0 -> {A ·, B ·, C ·, D ↓}
-  2. A>0 AND B=0 AND C>0 AND D>0 -> {A ·, B ↑, C ↓, D ·}
-  3. A>0 AND B=0 AND C=0 AND D=0 -> {A ↓, B ·, C ·, D ↑}
-  4. A>0 AND B>0 AND C=0 AND D>0 -> {A ↓, B ↓, C ·, D ↑}
-  5. A>0 AND B=0 AND C>0 AND D=0 -> {A ↓, B ·, C ↓, D ↑}
+  1. A=0 AND B>0 AND C>0 -> {A ↑, B ↓, C ·}
+  2. A=0 AND B=0 AND C>0 -> {A ·, B ·, C ↓}
 
-2021-05-29 20:07:09 INFO     Testing policy in instance: shoot - 0
-A....... # .A...... # ..A..... # ..A..... # ...A.... # ....A... # ....A... # .....A.. # ......A. # ......A. # .....A.. # .....A.. # 
-........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
-........ # ........ # ........ # .....T.. # .....T.. # .....T.. # ......T. # ......T. # ......T. # .....T.. # .....T.. # ........ # 
-.....T.. # .....T.. # .....T.. # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
-1 (pl)     1 (pl)     2 (pl)     1 (pl)     1 (pl)     2 (pl)     1 (pl)     1 (pl)     2 (pl)     1 (pl)     1 (pl)     2 (pl)     
-0 (nm)     1 (nm)     2 (nm)     3 (nm)     4 (nm)     5 (nm)     6 (nm)     7 (nm)     8 (nm)     9 (nm)     10 (nm)    11 (nm)    
-1 (ne)     1 (ne)     2 (ne)     1 (ne)     1 (ne)     2 (ne)     1 (ne)     1 (ne)     2 (ne)     1 (ne)     1 (ne)     2 (ne)     
+2021-06-03 13:52:34 INFO     Testing policy in instance: shoot - 0
+A....... # ........ # ........ # ........ # 
+........ # A....... # A....... # ........ # 
+........ # ........ # .....T.. # A....T.. # 
+.....T.. # .....T.. # ........ # ........ # 
+1(pl)      2(pl)      1(pl)      2(pl)      
+0(nm)      1(nm)      2(nm)      3(nm)      
+1(ne)      2(ne)      1(ne)      2(ne)      
+0(de)      0(de)      0(de)      0(de)      
+0(go)      0(go)      0(go)      1(go)      
 
-2021-05-29 20:07:09 INFO     Goal found after expanding 8 nodes
-2021-05-29 20:07:09 INFO     The solution was: [2, 2, 2, 2, 2, 2, 3, 8]
-2021-05-29 20:07:09 INFO     Testing policy in instance: shoot - 1
-...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
-...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
-.T.... # .T.... # .T.... # ...... # ...... # ...... # ...... # ...... # ...... # 
-...... # ...... # ...... # .T.... # .T.... # .T.... # T..... # T..... # ...... # 
-...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
-...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
-...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
-.....A # ....A. # ...A.. # ...A.. # ..A... # .A.... # .A.... # A..... # A..... # 
-1 (pl)   1 (pl)   2 (pl)   1 (pl)   1 (pl)   2 (pl)   1 (pl)   1 (pl)   2 (pl)   
-0 (nm)   1 (nm)   2 (nm)   3 (nm)   4 (nm)   5 (nm)   6 (nm)   7 (nm)   8 (nm)   
-1 (ne)   1 (ne)   2 (ne)   1 (ne)   1 (ne)   2 (ne)   1 (ne)   1 (ne)   2 (ne)   
+2021-06-03 13:52:34 INFO     Goal found after expanding 2 nodes
+2021-06-03 13:52:34 INFO     The solution was: [1, 1]
+2021-06-03 13:52:34 INFO     Testing policy in instance: shoot - 1
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+.T.... # .T.... # ...... # ...... # .T.... # .T.... # ...... # ...... # 
+...... # ...... # .T.... # .T.... # ...... # ...... # .T.... # .T...A # 
+...... # ...... # ...... # ...... # ...... # .....A # .....A # ...... # 
+...... # ...... # ...... # .....A # .....A # ...... # ...... # ...... # 
+...... # .....A # .....A # ...... # ...... # ...... # ...... # ...... # 
+.....A # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+1(pl)    2(pl)    1(pl)    2(pl)    1(pl)    2(pl)    1(pl)    2(pl)    
+0(nm)    1(nm)    2(nm)    3(nm)    4(nm)    5(nm)    6(nm)    7(nm)    
+1(ne)    2(ne)    1(ne)    2(ne)    1(ne)    2(ne)    1(ne)    2(ne)    
+0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    
+0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    1(go)    
 
-2021-05-29 20:07:09 INFO     Goal found after expanding 6 nodes
-2021-05-29 20:07:09 INFO     The solution was: [3, 3, 3, 3, 3, 8]
-2021-05-29 20:07:09 INFO     Testing policy in instance: shoot - 2
-A...... # .A..... # ..A.... # ..A.... # ...A... # ....A.. # ....A.. # .....A. # ......A # ......A # .....A. # .....A. # 
-....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # 
-....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # 
-....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # 
-....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # 
-.....T. # .....T. # .....T. # ......T # ......T # ......T # ....... # ....... # ....... # ....... # ....... # ....... # 
-....... # ....... # ....... # ....... # ....... # ....... # ......T # ......T # ......T # .....T. # .....T. # ....... # 
-1 (pl)    1 (pl)    2 (pl)    1 (pl)    1 (pl)    2 (pl)    1 (pl)    1 (pl)    2 (pl)    1 (pl)    1 (pl)    2 (pl)    
-0 (nm)    1 (nm)    2 (nm)    3 (nm)    4 (nm)    5 (nm)    6 (nm)    7 (nm)    8 (nm)    9 (nm)    10 (nm)   11 (nm)   
-1 (ne)    1 (ne)    2 (ne)    1 (ne)    1 (ne)    2 (ne)    1 (ne)    1 (ne)    2 (ne)    1 (ne)    1 (ne)    2 (ne)    
+2021-06-03 13:52:34 INFO     Goal found after expanding 4 nodes
+2021-06-03 13:52:34 INFO     The solution was: [0, 0, 0, 0]
+2021-06-03 13:52:34 INFO     Testing policy in instance: shoot - 2
+A...... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # 
+....... # A...... # A...... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # 
+....... # ....... # ....... # A...... # A...... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # 
+....... # ....... # ....... # ....... # ....... # A...... # A...... # ....... # ....... # ....... # ....... # ....... # 
+....... # ....... # ....... # ....... # ......T # ......T # ....... # A...... # A...... # ....... # ....... # ....... # 
+.....T. # .....T. # ......T # ......T # ....... # ....... # ......T # ......T # ....... # A...... # A...... # ....... # 
+....... # ....... # ....... # ....... # ....... # ....... # ....... # ....... # ......T # ......T # .....T. # A....T. # 
+1(pl)     2(pl)     1(pl)     2(pl)     1(pl)     2(pl)     1(pl)     2(pl)     1(pl)     2(pl)     1(pl)     2(pl)     
+0(nm)     1(nm)     2(nm)     3(nm)     4(nm)     5(nm)     6(nm)     7(nm)     8(nm)     9(nm)     10(nm)    11(nm)    
+1(ne)     2(ne)     1(ne)     2(ne)     1(ne)     2(ne)     1(ne)     2(ne)     1(ne)     2(ne)     1(ne)     2(ne)     
+0(de)     0(de)     0(de)     0(de)     0(de)     0(de)     0(de)     0(de)     0(de)     0(de)     0(de)     0(de)     
+0(go)     0(go)     0(go)     0(go)     0(go)     0(go)     0(go)     0(go)     0(go)     0(go)     0(go)     1(go)     
 
-2021-05-29 20:07:09 INFO     Goal found after expanding 8 nodes
-2021-05-29 20:07:09 INFO     The solution was: [2, 2, 2, 2, 2, 2, 3, 8]
-2021-05-29 20:07:09 INFO     Testing policy in instance: shoot - 3
-T......... # T......... # T......... # .T........ # .T........ # .......... # 
-.......... # .......... # .......... # .......... # .......... # .......... # 
-.......... # .......... # .......... # .......... # .......... # .......... # 
-..A....... # .A........ # A......... # A......... # .A........ # .A........ # 
-.......... # .......... # .......... # .......... # .......... # .......... # 
-.......... # .......... # .......... # .......... # .......... # .......... # 
-.......... # .......... # .......... # .......... # .......... # .......... # 
-.......... # .......... # .......... # .......... # .......... # .......... # 
-.......... # .......... # .......... # .......... # .......... # .......... # 
-.......... # .......... # .......... # .......... # .......... # .......... # 
-1 (pl)       1 (pl)       2 (pl)       1 (pl)       1 (pl)       2 (pl)       
-0 (nm)       1 (nm)       2 (nm)       3 (nm)       4 (nm)       5 (nm)       
-1 (ne)       1 (ne)       2 (ne)       1 (ne)       1 (ne)       2 (ne)       
+2021-06-03 13:52:34 INFO     Goal found after expanding 6 nodes
+2021-06-03 13:52:34 INFO     The solution was: [1, 1, 1, 1, 1, 1]
+2021-06-03 13:52:34 INFO     Testing policy in instance: shoot - 3
+T......... # T......... # .T........ # .T........ # 
+.......... # .......... # .......... # .......... # 
+.......... # ..A....... # ..A....... # .A........ # 
+..A....... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # 
+1(pl)        2(pl)        1(pl)        2(pl)        
+0(nm)        1(nm)        2(nm)        3(nm)        
+1(ne)        2(ne)        1(ne)        2(ne)        
+0(de)        0(de)        0(de)        0(de)        
+0(go)        0(go)        0(go)        1(go)        
 
-2021-05-29 20:07:09 INFO     Goal found after expanding 4 nodes
-2021-05-29 20:07:09 INFO     The solution was: [3, 3, 2, 8]
-2021-05-29 20:07:09 INFO     Testing policy in instance: shoot - 4
-T... # T... # T... # .... # .... # .... # 
-.... # .... # .... # T... # T... # .... # 
+2021-06-03 13:52:34 INFO     Goal found after expanding 2 nodes
+2021-06-03 13:52:34 INFO     The solution was: [0, 3]
+2021-06-03 13:52:34 INFO     Testing policy in instance: shoot - 4
+T... # T... # .T.. # .T.. # .... # .... # 
+.... # .... # .... # .... # .T.. # .T.A # 
+.... # .... # .... # ...A # ...A # .... # 
+.... # ...A # ...A # .... # .... # .... # 
+...A # .... # .... # .... # .... # .... # 
 .... # .... # .... # .... # .... # .... # 
 .... # .... # .... # .... # .... # .... # 
-...A # ..A. # .A.. # .A.. # A... # A... # 
 .... # .... # .... # .... # .... # .... # 
 .... # .... # .... # .... # .... # .... # 
 .... # .... # .... # .... # .... # .... # 
 .... # .... # .... # .... # .... # .... # 
-.... # .... # .... # .... # .... # .... # 
-.... # .... # .... # .... # .... # .... # 
-1 (pl) 1 (pl) 2 (pl) 1 (pl) 1 (pl) 2 (pl) 
-0 (nm) 1 (nm) 2 (nm) 3 (nm) 4 (nm) 5 (nm) 
-1 (ne) 1 (ne) 2 (ne) 1 (ne) 1 (ne) 2 (ne) 
+1(pl)  2(pl)  1(pl)  2(pl)  1(pl)  2(pl)  
+0(nm)  1(nm)  2(nm)  3(nm)  4(nm)  5(nm)  
+1(ne)  2(ne)  1(ne)  2(ne)  1(ne)  2(ne)  
+0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  
+0(go)  0(go)  0(go)  0(go)  0(go)  1(go)  
 
-2021-05-29 20:07:09 INFO     Goal found after expanding 4 nodes
-2021-05-29 20:07:09 INFO     The solution was: [3, 3, 3, 8]
-2021-05-29 20:07:09 INFO     Testing policy in instance: shoot - 5
-T........ # T........ # T........ # .T....... # ......... # 
-......... # ......... # ......... # ......... # ......... # 
-......... # ......... # ......... # ......... # ......... # 
-......... # ......... # ......... # ......... # ......... # 
-......... # ......... # ......... # ......... # ......... # 
-......... # ......... # ......... # ......... # ......... # 
-...A..... # ..A...... # .A....... # .A....... # .A....... # 
-......... # ......... # ......... # ......... # ......... # 
-1 (pl)      1 (pl)      2 (pl)      1 (pl)      1 (pl)      
-0 (nm)      1 (nm)      2 (nm)      3 (nm)      4 (nm)      
-1 (ne)      1 (ne)      2 (ne)      1 (ne)      1 (ne)      
+2021-06-03 13:52:34 INFO     Goal found after expanding 3 nodes
+2021-06-03 13:52:34 INFO     The solution was: [0, 0, 0]
+2021-06-03 13:52:34 INFO     Testing policy in instance: shoot - 5
+T........ # T........ # .T....... # .T....... # ......... # ......... # ......... # ......... # 
+......... # ......... # ......... # ......... # .T....... # .T....... # ..T...... # ..T...... # 
+......... # ......... # ......... # ......... # ......... # ......... # ......... # ......... # 
+......... # ......... # ......... # ......... # ......... # ...A..... # ...A..... # ..A...... # 
+......... # ......... # ......... # ...A..... # ...A..... # ......... # ......... # ......... # 
+......... # ...A..... # ...A..... # ......... # ......... # ......... # ......... # ......... # 
+...A..... # ......... # ......... # ......... # ......... # ......... # ......... # ......... # 
+......... # ......... # ......... # ......... # ......... # ......... # ......... # ......... # 
+1(pl)       2(pl)       1(pl)       2(pl)       1(pl)       2(pl)       1(pl)       2(pl)       
+0(nm)       1(nm)       2(nm)       3(nm)       4(nm)       5(nm)       6(nm)       7(nm)       
+1(ne)       2(ne)       1(ne)       2(ne)       1(ne)       2(ne)       1(ne)       2(ne)       
+0(de)       0(de)       0(de)       0(de)       0(de)       0(de)       0(de)       0(de)       
+0(go)       0(go)       0(go)       0(go)       0(go)       0(go)       0(go)       1(go)       
 
-2021-05-29 20:07:09 INFO     Goal found after expanding 3 nodes
-2021-05-29 20:07:09 INFO     The solution was: [3, 3, 8]
-2021-05-29 20:07:09 INFO     Testing policy in instance: shoot - 6
-T... # T... # T... # .... # .... # .... # 
-.... # .... # .... # T... # TA.. # .A.. # 
-...A # ..A. # .A.. # .A.. # .... # .... # 
-.... # .... # .... # .... # .... # .... # 
-1 (pl) 1 (pl) 2 (pl) 1 (pl) 1 (pl) 2 (pl) 
-0 (nm) 1 (nm) 2 (nm) 3 (nm) 4 (nm) 5 (nm) 
-1 (ne) 1 (ne) 2 (ne) 1 (ne) 1 (ne) 2 (ne) 
+2021-06-03 13:52:34 INFO     Goal found after expanding 4 nodes
+2021-06-03 13:52:34 INFO     The solution was: [0, 0, 0, 3]
+2021-06-03 13:52:34 INFO     Testing policy in instance: shoot - 6
+T... # T... # .... # 
+.... # ...A # T..A # 
+...A # .... # .... # 
+.... # .... # .... # 
+1(pl)  2(pl)  1(pl)  
+0(nm)  1(nm)  2(nm)  
+1(ne)  2(ne)  1(ne)  
+0(de)  0(de)  0(de)  
+0(go)  0(go)  1(go)  
 
-2021-05-29 20:07:09 INFO     Goal found after expanding 4 nodes
-2021-05-29 20:07:09 INFO     The solution was: [3, 3, 0, 8]
-2021-05-29 20:07:09 INFO     Testing policy in instance: shoot - 7
-A... # .A.. # ..A. # ..A. # ..A. # 
-.... # .... # .... # .... # .... # 
-...T # ...T # ...T # ..T. # .... # 
-.... # .... # .... # .... # .... # 
-1 (pl) 1 (pl) 2 (pl) 1 (pl) 1 (pl) 
-0 (nm) 1 (nm) 2 (nm) 3 (nm) 4 (nm) 
-1 (ne) 1 (ne) 2 (ne) 1 (ne) 1 (ne) 
+2021-06-03 13:52:34 INFO     Goal found after expanding 1 nodes
+2021-06-03 13:52:34 INFO     The solution was: [0]
+2021-06-03 13:52:34 INFO     Testing policy in instance: shoot - 7
+A... # .... # .... # .... # .... # .... # 
+.... # A... # A... # .... # .... # .... # 
+...T # ...T # .... # A... # A... # .... # 
+.... # .... # ...T # ...T # ..T. # A.T. # 
+1(pl)  2(pl)  1(pl)  2(pl)  1(pl)  2(pl)  
+0(nm)  1(nm)  2(nm)  3(nm)  4(nm)  5(nm)  
+1(ne)  2(ne)  1(ne)  2(ne)  1(ne)  2(ne)  
+0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  
+0(go)  0(go)  0(go)  0(go)  0(go)  1(go)  
 
-2021-05-29 20:07:09 INFO     Goal found after expanding 3 nodes
-2021-05-29 20:07:09 INFO     The solution was: [2, 2, 8]
-2021-05-29 20:07:09 INFO     Testing policy in instance: shoot - 8
-A................... # .A.................. # ..A................. # ..A................. # ...A................ # ....A............... # ....A............... # .....A.............. # ......A............. # ......A............. # .......A............ # ........A........... # ........A........... # .........A.......... # ..........A......... # ..........A......... # ...........A........ # ............A....... # ............A....... # .............A...... # ..............A..... # ..............A..... # ...............A.... # ................A... # ................A... # .................A.. # ..................A. # ..................A. # ...................A # ...................A # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # ...................T # ...................T # ...................T # .................... # .................... # .................... # ...................T # ...................T # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # ...................T # ...................T # ...................T # .................... # .................... # .................... # ...................T # ...................T # ...................T # ..................T. # ..................T. # ..................T. # ...................T # ...................T # ...................T # .................... # .................... # .................... # ...................T # ...................T # ...................T # .................... # .................... # .................... # 
-.................... # .................... # .................... # ...................T # ...................T # ...................T # .................... # .................... # .................... # ...................T # ...................T # ...................T # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-...................T # ...................T # ...................T # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
-1 (pl)                 1 (pl)                 2 (pl)                 1 (pl)                 1 (pl)                 2 (pl)                 1 (pl)                 1 (pl)                 2 (pl)                 1 (pl)                 1 (pl)                 2 (pl)                 1 (pl)                 1 (pl)                 2 (pl)                 1 (pl)                 1 (pl)                 2 (pl)                 1 (pl)                 1 (pl)                 2 (pl)                 1 (pl)                 1 (pl)                 2 (pl)                 1 (pl)                 1 (pl)                 2 (pl)                 1 (pl)                 1 (pl)                 2 (pl)                 
-0 (nm)                 1 (nm)                 2 (nm)                 3 (nm)                 4 (nm)                 5 (nm)                 6 (nm)                 7 (nm)                 8 (nm)                 9 (nm)                 10 (nm)                11 (nm)                12 (nm)                13 (nm)                14 (nm)                15 (nm)                16 (nm)                17 (nm)                18 (nm)                19 (nm)                20 (nm)                21 (nm)                22 (nm)                23 (nm)                24 (nm)                25 (nm)                26 (nm)                27 (nm)                28 (nm)                29 (nm)                
-1 (ne)                 1 (ne)                 2 (ne)                 1 (ne)                 1 (ne)                 2 (ne)                 1 (ne)                 1 (ne)                 2 (ne)                 1 (ne)                 1 (ne)                 2 (ne)                 1 (ne)                 1 (ne)                 2 (ne)                 1 (ne)                 1 (ne)                 2 (ne)                 1 (ne)                 1 (ne)                 2 (ne)                 1 (ne)                 1 (ne)                 2 (ne)                 1 (ne)                 1 (ne)                 2 (ne)                 1 (ne)                 1 (ne)                 2 (ne)                 
+2021-06-03 13:52:34 INFO     Goal found after expanding 3 nodes
+2021-06-03 13:52:34 INFO     The solution was: [1, 1, 1]
+2021-06-03 13:52:34 INFO     Testing policy in instance: shoot - 8
+A................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # A................... # A................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # A................... # A................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # A................... # A................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # A................... # A................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # A................... # A................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # A................... # A................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+...................T # ...................T # ..................T. # ..................T. # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # ...................T # 
+.................... # .................... # .................... # .................... # ..................T. # ..................T. # ...................T # ...................T # ..................T. # ..................T. # ...................T # ...................T # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  
+0(nm)                  1(nm)                  2(nm)                  3(nm)                  4(nm)                  5(nm)                  6(nm)                  7(nm)                  8(nm)                  9(nm)                  10(nm)                 11(nm)                 12(nm)                 
+1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  
+0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  
+0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  
 
-2021-05-29 20:07:09 INFO     Goal found after expanding 20 nodes
-2021-05-29 20:07:09 INFO     The solution was: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 8]
-2021-05-29 20:07:09 INFO     Testing policy in instance: shoot - 9
-A... # .A.. # ..A. # ..A. # ...A # ...A # 
-.... # .... # .... # .... # .... # .... # 
-.... # .... # .... # ...T # ...T # .... # 
-...T # ...T # ...T # .... # .... # .... # 
-1 (pl) 1 (pl) 2 (pl) 1 (pl) 1 (pl) 2 (pl) 
-0 (nm) 1 (nm) 2 (nm) 3 (nm) 4 (nm) 5 (nm) 
-1 (ne) 1 (ne) 2 (ne) 1 (ne) 1 (ne) 2 (ne) 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+A................... # A................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # A................... # A................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # A................... # A................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # A................... # A................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # A................... # A................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # A................... # A................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # ..................T. # ..................T. # ...................T # ...................T # .................... # A................... # 
+.................... # .................... # .................... # ...................T # ...................T # ..................T. # ..................T. # .................... # .................... # .................... # .................... # ...................T # ...................T # 
+.................... # ...................T # ...................T # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+...................T # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  
+13(nm)                 14(nm)                 15(nm)                 16(nm)                 17(nm)                 18(nm)                 19(nm)                 20(nm)                 21(nm)                 22(nm)                 23(nm)                 24(nm)                 25(nm)                 
+2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  
+0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  
+0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  
 
-2021-05-29 20:07:09 INFO     Goal found after expanding 4 nodes
-2021-05-29 20:07:09 INFO     The solution was: [2, 2, 2, 8]
-2021-05-29 20:07:09 INFO     Testing policy in instance: shoot - 10
-.... # .... # .... # .... # .... # .... # 
-.T.. # .T.. # .T.. # T... # T... # .... # 
-.... # .... # .... # .... # .... # .... # 
-...A # ..A. # .A.. # .A.. # A... # A... # 
-1 (pl) 1 (pl) 2 (pl) 1 (pl) 1 (pl) 2 (pl) 
-0 (nm) 1 (nm) 2 (nm) 3 (nm) 4 (nm) 5 (nm) 
-1 (ne) 1 (ne) 2 (ne) 1 (ne) 1 (ne) 2 (ne) 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+A................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # A................... # A................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+...................T # ...................T # .................... # A................... # A................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # ...................T # ...................T # .................... # A................... # A................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # ...................T # ...................T # .................... # A................... # A................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # ...................T # ...................T # .................... # A................... # A................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # ...................T # ...................T # ..................T. # A.................T. # 
+1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  1(pl)                  2(pl)                  
+26(nm)                 27(nm)                 28(nm)                 29(nm)                 30(nm)                 31(nm)                 32(nm)                 33(nm)                 34(nm)                 35(nm)                 36(nm)                 37(nm)                 
+1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  1(ne)                  2(ne)                  
+0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  
+0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  1(go)                  
 
-2021-05-29 20:07:09 INFO     Goal found after expanding 4 nodes
-2021-05-29 20:07:09 INFO     The solution was: [3, 3, 3, 8]
-2021-05-29 20:07:09 INFO     Learnt policy solves the 100.0% of test instances: 11/11
-2021-05-29 20:07:09 INFO     Solved instances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-2021-05-29 20:07:09 INFO     Unsolved instances: []
+2021-06-03 13:52:35 INFO     Goal found after expanding 19 nodes
+2021-06-03 13:52:35 INFO     The solution was: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+2021-06-03 13:52:35 INFO     Testing policy in instance: shoot - 9
+A... # .... # .... # .... # 
+.... # A... # A... # .... # 
+.... # .... # ...T # A..T # 
+...T # ...T # .... # .... # 
+1(pl)  2(pl)  1(pl)  2(pl)  
+0(nm)  1(nm)  2(nm)  3(nm)  
+1(ne)  2(ne)  1(ne)  2(ne)  
+0(de)  0(de)  0(de)  0(de)  
+0(go)  0(go)  0(go)  1(go)  
+
+2021-06-03 13:52:35 INFO     Goal found after expanding 2 nodes
+2021-06-03 13:52:35 INFO     The solution was: [1, 1]
+2021-06-03 13:52:35 INFO     Testing policy in instance: shoot - 10
+.... # .... # .T.. # .T.. # T... # T..A # 
+.T.. # .T.. # .... # ...A # ...A # .... # 
+.... # ...A # ...A # .... # .... # .... # 
+...A # .... # .... # .... # .... # .... # 
+1(pl)  2(pl)  1(pl)  2(pl)  1(pl)  2(pl)  
+0(nm)  1(nm)  2(nm)  3(nm)  4(nm)  5(nm)  
+1(ne)  2(ne)  1(ne)  2(ne)  1(ne)  2(ne)  
+0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  
+0(go)  0(go)  0(go)  0(go)  0(go)  1(go)  
+
+2021-06-03 13:52:35 INFO     Goal found after expanding 3 nodes
+2021-06-03 13:52:35 INFO     The solution was: [0, 0, 0]
+2021-06-03 13:52:35 INFO     Learnt policy solves the 100.0% of test instances: 11/11
+2021-06-03 13:52:35 INFO     Solved instances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+2021-06-03 13:52:35 INFO     Unsolved instances: []
 ================================================================================
-END OF STEP #2: Testing of the D2L policy. 0.70 CPU sec - 1284.78 MB
+END OF STEP #2: Testing of the D2L policy. 1.31 CPU sec - 53.31 MB
 ================================================================================

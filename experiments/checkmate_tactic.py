@@ -10,17 +10,21 @@ from gpl.domains.grid_games.envs.checkmate_tactic import CHECKMATE, STALEMATE, N
 ct_params = Bunch({
     'domain_name': 'checkmate_tactic',
     'use_player_as_feature': True,
+    'use_player_to_encode': True,
     'use_next_player_as_feature': False,
+    'use_next_player_to_encode': False,
+    'use_margin_as_feature': False,
+    'objects_to_ignore': set(),
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
-    'use_margin_as_feature': True,
-    'use_adjacency': {CELL_S, COL_S, ROW_S},
+    'use_adjacency': {COL_S, ROW_S},
+    'use_distance_2': {COL_S, ROW_S},
+    'use_distance_more_than_1': {COL_S, ROW_S},
     'use_bidirectional': {},
-    'sorts_to_use': {CELL_S, COL_S, ROW_S},
-    'n_moves': 1,
+    'sorts_to_use': {COL_S, ROW_S},
+    'n_moves': 1000,
     'unary_predicates': {},
     # 'unary_predicates': {"{}_{}".format(N_MOVE, i) for i in range(CHECKMATE_IN_N + 1)},
-    # 'unary_predicates': {STALEMATE, CHECKMATE}
     'game_version': 0,
 })
 
@@ -54,12 +58,12 @@ def experiments():
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=False,
-        use_weighted_tx=False,
+        use_weighted_tx=True,
         distinguish_goals=True,
         sampling_strategy="full",
 
-        skip_train_steps=[0, 1, 2, 3],  # do not generate features twice!
-        # skip_train_steps=[],
+        # skip_train_steps=[0, 1, 2, 3],  # do not generate features twice!
+        skip_train_steps=[],
 
         # rollouts
         # num_episodes=1,
@@ -70,11 +74,13 @@ def experiments():
         max_states_expanded=math.inf,
         use_state_novelty=True,
     )
+    exps = dict()
 
     # version 1:
     # checkmate in 1 move
     # using queen
-    exps = dict()
+    ct_params_v1 = copy.deepcopy(ct_params)
+    ct_params_v1.game_version = 1
     exps["1"] = update_dict(
         base,
         # instances=[1, 9, 11, 43, 45, 47, 48, 49, 50, 56, 57, 62, 63, 65, 68, 69, 71, 77, 78, 80, 81, 83, 89, 90, 93, 98,
@@ -84,7 +90,7 @@ def experiments():
         #            403, 405, 406, 408, 415, 417],
         # test_instances=list(range(500)),
         instances=[0],
-        test_instances=[5],
+        test_instances=list(range(100)),
     )
 
     # version 2:
@@ -95,15 +101,57 @@ def experiments():
     exps["2"] = update_dict(
         exps["1"],
         domain=Domain(ct_params_v1),
+        instances=[0, 97],
+        # test_instances=[0],
+        max_concept_size=7,
+        test_instances=list(range(100)),
+        allow_bad_states=False,
     )
 
     # version 3:
     # checkmate in 1 move
-    # using two bishops
-    # ct_params.game_version = 1
+    # using tower, and predicate checkmate
+    ct_params_v3 = copy.deepcopy(ct_params)
+    ct_params_v3.game_version = 1
+    ct_params_v3.unary_predicates = {CHECKMATE}
     exps["3"] = update_dict(
         exps["1"],
+        domain=Domain(ct_params_v3),
+        instances=[22, 29],
+        # test_instances=[0],
+        test_instances=list(range(100)),
+        allow_bad_states=False,
+        feature_generator=debug_features_checkmate_tactic_rook,
+    )
 
+    # version 4:
+    # checkmate in 1 move
+    # using tower, and predicate checkmate
+    ct_params_v4 = copy.deepcopy(ct_params)
+    ct_params_v4.game_version = 1
+    ct_params_v4.unary_predicates = {CHECKMATE}
+    exps["4"] = update_dict(
+        exps["1"],
+        domain=Domain(ct_params_v4),
+        instances=[31],
+        # test_instances=[0],
+        test_instances=list(range(100)),
+        allow_bad_states=False,
+        max_concept_size=5,
+        feature_generator=debug_features_checkmate_tactic_rook,
     )
 
     return exps
+
+
+def debug_features_checkmate_tactic_rook(lang):
+    checkmate = a = "Atom[checkmate]"
+    same_col_bk_wk = b = "Bool[And(col-has-black_king,col-has-white_king)]"
+    same_row_bk_wk = c = "Bool[And(row-has-black_king,row-has-white_king)]"
+    distance_row_bk_wr = d = "Dist[row-has-black_king;adjacent_row;row-has-white_rook]"
+    distance_col_bk_wr = e = "Dist[col-has-black_king;adjacent_col;col-has-white_rook]"
+    distance_2_col_bk_wr = f = "Bool[And(col-has-black_king,Exists(distance_2_col,col-has-white_rook))]"
+    distance_2_col_bk_wk = g = "Bool[And(col-has-black_king,Exists(distance_2_col,col-has-white_king))]"
+    distance_2_row_bk_wr = h = "Bool[And(row-has-black_king,Exists(distance_2_row,col-has-white_rook))]"
+    distance_2_row_bk_wk = i = "Bool[And(row-has-black_king,Exists(distance_2_row,row-has-white_king))]"
+    return [a, b, c, d, e, f, g, h, i]
