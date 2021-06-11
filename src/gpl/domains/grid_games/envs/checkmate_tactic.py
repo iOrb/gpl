@@ -12,11 +12,11 @@ BLACK = 2
 N_MOVE = 'n_move'
 
 SIMPLIFIED_OBJECT = {
-    EMPTY:' . ',
-    BLACK_KING:' k ' ,
-    WHITE_KING:' K ',
-    WHITE_QUEEN:' Q ' ,
-    WHITE_TOWER:' R ',
+    EMPTY:'.',
+    BLACK_KING:'k' ,
+    WHITE_KING:'K',
+    WHITE_QUEEN:'Q' ,
+    WHITE_TOWER:'R',
 }
 
 ALL_TOKENS = [EMPTY, BLACK_KING, WHITE_KING]
@@ -61,6 +61,7 @@ DIRECTIONS = {
 CHECK = 'check'
 CHECKMATE = 'checkmate'
 STALEMATE = 'stalemate'
+BLACK_HAS_ACTION = 'black_has_action'
 
 # Begin Chase =================================
 
@@ -97,6 +98,13 @@ class Env(object):
             updated_rep[CHECKMATE] = checkmate(rep)
         if STALEMATE in self.params.unary_predicates:
             updated_rep[STALEMATE] = stale_mate(rep)
+        if CHECK in self.params.unary_predicates:
+            updated_rep[CHECK] = check(rep)
+        if BLACK_HAS_ACTION in self.params.unary_predicates:
+            if rep.player == BLACK:
+                updated_rep[BLACK_HAS_ACTION] = len(Env.available_actions(rep)) > 0
+            else:
+                updated_rep[BLACK_HAS_ACTION] = False
         updated_rep[f"{N_MOVE}_{rep.nmoves}"] = True
         gstatus = Env.check_game_status(rep)
         if gstatus == 1:
@@ -161,7 +169,10 @@ class Env(object):
 
     @staticmethod
     def encode_op(rep, op):
-        piece = rep.grid[op[0][0], op[0][1]]
+        try:
+            piece = rep.grid[op[0][0], op[0][1]]
+        except:
+            raise
         assert piece not in EMPTY
         o = copy.deepcopy(op)
         return "{}_{}.{}_{}.{}".format(piece, o[0][0], o[0][1], o[1][0], o[1][1])
@@ -220,12 +231,10 @@ def check(rep):
     layout = rep.grid
     assert BLACK_KING in layout
     if rep.player == BLACK:
-        king_pos = np.argwhere(layout == BLACK_KING)[0]
-        valid_moves = PIECE_VALID_MOVES[BLACK_KING](king_pos, layout)
-        if len(valid_moves) == 0:
-            attacking_mask = get_attacking_mask(layout, opposite_color(rep.player))
-            if attacking_mask[king_pos[0], king_pos[1]]:
-                return True
+        bk_pos = np.argwhere(layout == BLACK_KING)[0]
+        attacking_mask = get_attacking_mask(layout, WHITE)
+        if attacking_mask[bk_pos[0], bk_pos[1]]:
+            return True
         return False
     return False
 
@@ -424,7 +433,7 @@ LAYOUTS_TOWER = {
 }
 
 LAYOUTS_CHECK_IN_ONE_QUEEN = generate_check_in_one([(3, 3), (4, 3), (4, 4), (5, 5), (6, 6)], WHITE_QUEEN)
-LAYOUTS_CHECK_IN_ONE_TOWER = generate_check_in_one([(3, 3), (4, 3), (4, 4), (5, 5), (6, 6)], WHITE_TOWER)
+LAYOUTS_CHECK_IN_ONE_TOWER = generate_check_in_one([(3, 3), (4, 3), (3, 4), (4, 4), (5, 5), (6, 6)], WHITE_TOWER)
 
 # LAYOUTS_QUEEN_CUSTOM = {k: generate_gird_queen(k) for k in LAYOUTS_QUEEN.keys()}
 # LAYOUTS_TOWER_CUSTOM = {k: generate_gird_queen(k) for k in LAYOUTS_TOWER.keys()}

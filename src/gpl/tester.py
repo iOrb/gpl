@@ -151,9 +151,11 @@ def run_test(config, search_policy, task, instance_name, rng):
                     break
             break
         else:
-            op, _ = min(not_novelty_sp, key=not_novelty_sp.get)
-            if config.verbosity>2:
-                print("WARNING: not novel transition found")
+            exitcode = ExitCode.AbstractPolicyNotCompleteOnTestInstances
+            break
+            # op, _ = min(not_novelty_sp, key=not_novelty_sp.get)
+            # if config.verbosity>2:
+            #     print("WARNING: not novel transition found")
                 # print("WARNING: not novel transition for state:\n{}".format(task.get_printable_rep(s[0])))
             # exitcode = ExitCode.AbstractPolicyNonTerminatingOnTestInstances
             # break
@@ -173,7 +175,8 @@ def run_test(config, search_policy, task, instance_name, rng):
             exitcode = ExitCode.AbstractPolicyNonTerminatingOnTestInstances
             break
 
-        solution.append(encode_operator(s, op, task))
+        op = encode_operator(s, op, task) if not isinstance(op, str) else op
+        solution.append(op)
         s = spp
 
     return exitcode, solution, path, expanded

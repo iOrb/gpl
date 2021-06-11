@@ -1,0 +1,53 @@
+================================================================================
+SLTP v.0.2.0
+================================================================================
+================================================================================
+(pid: 161748) STARTING STEP #1: Train: Explore the state space of the training instances
+================================================================================
+------------------------------------------------
+ DOMAIN PARAMETERS: 
+------------------------------------------------
+------------------------------------------------
+domain_name: checkmate_tactic
+use_player_as_feature: True
+use_player_to_encode: True
+use_next_player_as_feature: False
+use_next_player_to_encode: False
+use_margin_as_feature: True
+use_verbose_margin_as_feature: False
+objects_to_ignore: set()
+map_cells: True
+use_diagonals_for_map_cells: True
+use_adjacency: {'cell', 'col', 'row'}
+use_distance_2: {}
+use_distance_more_than_1: {}
+use_bidirectional: {}
+sorts_to_use: {'cell', 'col', 'row'}
+n_moves: 1000
+unary_predicates: {'black_has_action', 'check'}
+game_version: 1
+------------------------------------------------
+------------------------------------------------
+(START Episode 0)
+------------------------------------------------
+------------------------------------------------
+(0) Exploration of the training sample:
+------------------------------------------------
+2021-06-09 22:06:24 INFO     Expanding train instance: checkmate_tactic - 1100
+# .  .  .  .  .  . #
+# .  .  .  .  .  . #
+# .  .  .  .  .  k #
+# .  .  .  K  .  . #
+# .  .  R  .  .  . #
+# .  .  .  .  .  . #
+
+------------------------------------------------
+(0) Generation of the training sample:
+------------------------------------------------
+2021-06-09 22:26:18 INFO     sample: #states=60604, #transition-entries=365724, #transitions=365724
+2021-06-09 22:42:07 INFO     Entire sample: roots: 1, states: 60604, transitions: 365724 (207356 optimal), goals: 112, alive: 54840, deadends: 5652
+2021-06-09 22:42:07 INFO     Printing SAT transition matrix with 60604 states, 19512 states with some outgoing transition, 580 operators, 365724 (non-det) transitions, and 126772 (adv) transitions,
+------------------------------------------------
+(0) Generate the pool of candidate features:
+------------------------------------------------
+2021-06-09 22:42:10 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 60604, transitions: 365724 (207356 optimal), goals: 112, alive: 54840, deadends: 5652

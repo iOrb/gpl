@@ -46,7 +46,10 @@ def invoke_cpp_module(config, data, validate_features=None):
 
 
 def run(config, data, rng):
-    exitcode = invoke_cpp_module(config, data)
+    try:
+        exitcode = invoke_cpp_module(config, data, config.validate_features)
+    except:
+        exitcode = invoke_cpp_module(config, data)
     if exitcode != ExitCode.Success:
         # return exitcode, dict(d2l_policy=None) # keep trying
         return ExitCode.Success, dict(d2l_policy=None) # keep trying

@@ -2,24 +2,25 @@ from .grammar.objects import PLAYER1, PLAYER2
 import numpy as np
 import json
 import os.path
+from .grammar.objects import MARGINS
 
 def identify_margin(r, c, nrows, ncols):
     if r < 0 and 0 <= c < ncols:
-        return OBJECTS.margin['m0']
+        return MARGINS['m0']
     if r == nrows and 0 <= c < ncols:
-        return OBJECTS.margin['m1']
+        return MARGINS['m1']
     if 0 <= r < nrows and c == ncols:
-        return OBJECTS.margin['m2']
+        return MARGINS['m2']
     if 0 <= r < nrows and c < 0:
-        return OBJECTS.margin['m3']
+        return MARGINS['m3']
     if r < 0 and c == ncols:
-        return OBJECTS.margin['m4']
+        return MARGINS['m4']
     if r == nrows and c == ncols:
-        return OBJECTS.margin['m5']
+        return MARGINS['m5']
     if r < 0 and c < 0:
-        return OBJECTS.margin['m6']
+        return MARGINS['m6']
     if r == nrows and c < 0:
-        return OBJECTS.margin['m7']
+        return MARGINS['m7']
 
 
 def identify_next_player(rep, params):

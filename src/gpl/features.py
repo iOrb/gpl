@@ -3,7 +3,8 @@ import logging
 import os
 from pathlib import Path
 
-from sltp.featuregen import print_sample_info, transform_generator_output, invoke_cpp_generator
+from sltp.featuregen import print_sample_info, transform_generator_output, invoke_cpp_generator, \
+    deal_with_serialized_features, generate_output_from_handcrafted_features
 from sltp.features import InstanceInformation, create_model_cache
 from sltp.returncodes import ExitCode
 from sltp.util.misc import compute_universe_from_pddl_model, state_as_atoms, types_as_atoms
@@ -19,12 +20,14 @@ def generate_feature_pool(config, sample):
 
     model_cache = prepare_generator_input(config, sample)
 
+    lang, static_predicates = config.domain.generate_language()
+
     # If user provides handcrafted features, no need to go further than here
-    # if config.feature_generator is not None:
-    #     features = deal_with_serialized_features(language, config.feature_generator, config.serialized_feature_filename)
-    #     generate_output_from_handcrafted_features(sample, config, features, model_cache)
-    #     return ExitCode.Success, dict(enforced_feature_idxs=[], in_goal_features=[],
-    #                                   model_cache=model_cache)
+    if config.feature_generator is not None:
+        features = deal_with_serialized_features(lang, config.feature_generator, config.serialized_feature_filename)
+        generate_output_from_handcrafted_features(sample, config, features, model_cache)
+        return ExitCode.Success, dict(enforced_feature_idxs=[], in_goal_features=[],
+                                      model_cache=model_cache)
 
     if invoke_cpp_generator(config) != 0:
         return ExitCode.FeatureGenerationUnknownError, dict()

@@ -1,9 +1,10 @@
-from .grammar.objects import get_domain_objects
+from .grammar.objects import get_domain_objects, MARGINS
 from gpl.domain import IDomain
 from tarski.fstrips import fstrips, create_fstrips_problem
 from .task import Task
 import copy
 from .grammar.language import *
+from .utils import identify_margin
 import importlib
 ANCHOR = 'gpl.domains.grid_games'
 OBJECTS = None
@@ -49,7 +50,7 @@ def load_general_lang(lang, statics, env):
     params = env.params
     for sort in params.sorts_to_use:
         lang.sort(sort)
-        for o in OBJECTS.general | {OBJECTS.none}:
+        for o in OBJECTS.general | {OBJECTS.none} | set(MARGINS.values()):
             lang.predicate(f'{sort}-has-{o}', sort)
         if sort in params.use_distance_2:
             lang.predicate(f'{DISTANCE_2}_{sort}', sort, sort)
@@ -95,14 +96,30 @@ def load_general_problem(problem, lang, rep, env):
         for c in range(-1, ncols + 1):
             for sort in params.sorts_to_use:
                 o = brd[r, c] if (nrows > r >= 0 and ncols > c >= 0) else OBJECTS.none
-                if o == OBJECTS.none and not params.use_margin_as_feature:
-                    continue
+                if o == OBJECTS.none:
+                    if params.use_verbose_margin_as_feature:
+                        o = identify_margin(r, c, nrows, ncols)
+                    elif params.use_margin_as_feature:
+                        pass
+                    else:
+                        continue
                 try:
                     map_sorts[(r, c, sort)] = lang.constant(CONST[sort](r, c, nrows, ncols), lang.get(sort))
                 except:
                     map_sorts[(r, c, sort)] = lang.get(CONST[sort](r, c, nrows, ncols))
                 if o not in {OBJECTS.empty} | params.objects_to_ignore:
                     problem.init.add(lang.get(f'{sort}-has-{o}'), lang.get(CONST[sort](r, c, nrows, ncols)))
+
+    # CHECKMATE TACTIC
+    from .envs.checkmate_tactic import get_attacking_mask, WHITE, BLACK, CHECKMATE
+    mask_white = get_attacking_mask(brd, WHITE)
+    mask_black = get_attacking_mask(brd, BLACK)
+    for r in range(nrows):
+        for c in range(ncols):
+            if mask_white[r, c]:
+                problem.init.add(lang.get(f'cell-has-white_attacked'), CONST[CELL_S](r, c, nrows, ncols))
+            if mask_black[r, c]:
+                problem.init.add(lang.get(f'cell-has-black_attacked'), CONST[CELL_S](r, c, nrows, ncols))
 
     # WUMPUS
     # from .envs.wumpus import AT_WUMPUS, AT_PIT, AGENT, WUMPUS
@@ -128,7 +145,7 @@ def load_general_problem(problem, lang, rep, env):
     #     r, c = np.argwhere(brd==AGENT)[0]
     #     sort = CELL_S
     #     o=PACKAGE
-    #     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
+    #     problem.init.add(lang.get(f'{sort}-has-{o}'), lang.get(CONST[sort](r, c, nrows, ncols)))
 
     def __add_direction_predicate(problem, lang, direction, sort, const, new_r, new_c):
         if (new_r<0 or new_c<0 or ncols==new_c or nrows==new_r) and not params.use_margin_as_feature:

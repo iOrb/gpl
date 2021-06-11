@@ -124,7 +124,7 @@ class Task(ITask):
             print(tmp_str)
         print("#" * ncols)
 
-    def print_path(self, reps_, divide=13):
+    def print_path(self, reps_, divide=10):
         simplified_objects = self.env.get_simplified_objects()
         nrows, ncols = reps_[0].grid.shape
         while reps_:
@@ -145,7 +145,7 @@ class Task(ITask):
                 single_rep_row += simplified_objects[o]
             size_single_row = len("{} # ".format(single_rep_row))
 
-            info_to_print = ["player", "nmoves", "last_turn", "next_player", "holding_pet", "at_destination", "deadend", "goal", "at_pet"]
+            info_to_print = ["player", "nmoves", "last_turn", "next_player", "holding_pet", "at_destination", "deadend", "goal", "at_pet", "black_has_action", "check", "stalemate"]
             for info in info_to_print:
                 try:
                     tmp_full_row = ""

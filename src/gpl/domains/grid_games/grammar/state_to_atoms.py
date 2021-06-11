@@ -4,6 +4,7 @@ import numpy as np
 
 from .language import *
 from .objects import OBJECTS
+from ..utils import identify_margin
 
 # General State to atoms
 def state_to_atoms(domain_name, state, p):
@@ -18,10 +19,26 @@ def state_to_atoms(domain_name, state, p):
         for c in range(-1, ncols + 1):
             for sort in p.sorts_to_use:
                 o = brd[r, c] if (nrows > r >= 0 and ncols > c >= 0) else OBJECTS.none
-                if o == OBJECTS.none and not p.use_margin_as_feature:
-                    continue
+                if o == OBJECTS.none:
+                    if p.use_verbose_margin_as_feature:
+                        o = identify_margin(r, c, nrows, ncols)
+                    elif p.use_margin_as_feature:
+                        pass
+                    else:
+                        continue
                 if o not in {OBJECTS.empty} | p.objects_to_ignore:
                     atoms.append((f'{sort}-has-{o}', CONST[sort](r, c, nrows, ncols)))
+
+    # CHECKMATE TACTIC
+    from ..envs.checkmate_tactic import get_attacking_mask, WHITE, BLACK
+    mask_white = get_attacking_mask(brd, WHITE)
+    mask_black = get_attacking_mask(brd, BLACK)
+    for r in range(nrows):
+        for c in range(ncols):
+            if mask_white[r, c]:
+                atoms.append((f'cell-has-white_attacked', CONST[CELL_S](r, c, nrows, ncols)))
+            if mask_black[r, c]:
+                atoms.append((f'cell-has-black_attacked', CONST[CELL_S](r, c, nrows, ncols)))
 
     # WUMPUS
     # from ..envs.wumpus import AT_WUMPUS, AT_PIT, AGENT, WUMPUS
@@ -60,6 +77,7 @@ def state_to_atoms(domain_name, state, p):
         atoms.append(('next_player-{}'.format(rep.next_player),))
 
     return atoms
+
 
 def atom_tuples_to_string(atom_tuples):
     return ' '.join(f"{a[0]}({','.join(str(var) for var in a[1:])})" for a in atom_tuples)

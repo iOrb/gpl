@@ -150,6 +150,7 @@ class Env(object):
         rep['nmoves'] = 0
         return Bunch(rep)
 
+
 # Helper mehtods =================================
 
 def terminated(rep):

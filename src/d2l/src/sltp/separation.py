@@ -465,7 +465,8 @@ class TransitionActionClassificationPolicy:
 
     def __assign_keys_to_featuers(self):
         import string
-        ASCII = string.printable[36:62] # A..Z
+        # ASCII = string.printable[36:62] # A..Z
+        ASCII = string.printable # A..Z
         for f in self.features:
             ASCII, b = ASCII[1:], ASCII[0]
             self.simplified_features[str(f)] = b

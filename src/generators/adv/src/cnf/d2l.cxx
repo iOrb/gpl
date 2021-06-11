@@ -307,33 +307,35 @@ namespace sltp::cnf {
             }
         }
 
-        // Clauses (6), (7):
-        if (options.verbosity > 0) {
-            std::cout << "Posting distinguishability constraints" << std::endl;
-        }
-        for (const auto &s:sample_.expanded_states()) {
-            for (const auto &[a, sp]:sample_.successors_a_sp(s)) {
-                tx_triple tx = std::make_tuple(s, a, sp);
-                if (is_necessarily_bad(get_class_representative(s, sp))) continue;
-                if (is_necessarily_bad_tx(tx)) continue;
-                cnfvar_t good_var = variables.goods_s_a_sp.at(tx);
-                for (const auto &t:sample_.expanded_states()) {
-                    for (const auto &[b, tp]:sample_.successors_a_sp(t)) {
-                        if (options.use_action_ids and a != b)
-                            continue; // TODO: continue or just don't add txp to the clause?
-                        tx_triple txp = std::make_tuple(t, b, tp);
-                        cnfvar_t good_var_p = variables.goods_s_a_sp.at(txp);
-                        cnfclause_t clause{Wr::lit(good_var, false)};
-                        // Compute first the Selected(f) terms
-                        for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
-                            clause.push_back(Wr::lit(variables.selecteds.at(f), true));
-                        }
-                        if (!is_necessarily_bad(get_class_representative(t, tp))) {
+        if (options.validate_features.empty()) {
+            // Clauses (6), (7):
+            if (options.verbosity > 0) {
+                std::cout << "Posting distinguishability constraints" << std::endl;
+            }
+            for (const auto &s:sample_.expanded_states()) {
+                for (const auto &[a, sp]:sample_.successors_a_sp(s)) {
+                    tx_triple tx = std::make_tuple(s, a, sp);
+                    if (is_necessarily_bad(get_class_representative(s, sp))) continue;
+                    if (is_necessarily_bad_tx(tx)) continue;
+                    cnfvar_t good_var = variables.goods_s_a_sp.at(tx);
+                    for (const auto &t:sample_.expanded_states()) {
+                        for (const auto &[b, tp]:sample_.successors_a_sp(t)) {
+                            if (options.use_action_ids and a != b)
+                                continue; // TODO: continue or just don't add txp to the clause?
+                            tx_triple txp = std::make_tuple(t, b, tp);
+                            cnfvar_t good_var_p = variables.goods_s_a_sp.at(txp);
+                            cnfclause_t clause{Wr::lit(good_var, false)};
+                            // Compute first the Selected(f) terms
+                            for (feature_t f:compute_d1d2_distinguishing_features(feature_ids, sample_, s, sp, t, tp)) {
+                                clause.push_back(Wr::lit(variables.selecteds.at(f), true));
+                            }
+                            if (!is_necessarily_bad(get_class_representative(t, tp))) {
 //                        if (!is_necessarily_bad_tx(txp)) {
-                            clause.push_back(Wr::lit(good_var_p, true));
+                                clause.push_back(Wr::lit(good_var_p, true));
+                            }
+                            wr.cl(clause);
+                            n_separation_clauses += 1;
                         }
-                        wr.cl(clause);
-                        n_separation_clauses += 1;
                     }
                 }
             }
@@ -403,7 +405,7 @@ namespace sltp::cnf {
             // plus we don't really need any soft constraints.
             //        std::cout << "Enforcing " << feature_ids.size() << " feature selections and ignoring soft constraints" << std::endl;
             for (unsigned f:feature_ids) {
-                wr.cl({Wr::lit(variables.selecteds[f], false)});
+                wr.cl({Wr::lit(variables.selecteds[f], true)});
             }
         } else {
 //        std::cout << "Posting (weighted) soft constraints for " << variables.selecteds.size() << " features" << std::endl;

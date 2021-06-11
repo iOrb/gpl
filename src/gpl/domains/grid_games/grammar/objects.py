@@ -25,6 +25,8 @@ BOTTOM_TOKEN = 'bottom_token'
 WUMPUS = 'wumpus'
 GOLD = 'gold'
 TARGET_GOLD = 'target_gold'
+WHITE_ATTACKED = 'white_attacked'
+BLACK_ATTACKED = 'black_attacked'
 
 
 OBJECTS = Bunch({
@@ -50,7 +52,9 @@ OBJECTS_CHECK = Bunch({
     'general': {BLACK_KING,
                 WHITE_KING,
                 WHITE_QUEEN,
-                WHITE_TOWER,},
+                WHITE_TOWER,
+                WHITE_ATTACKED,
+                BLACK_ATTACKED},
     'empty': EMPTY,
     'player1': PLAYER1,
     'player2': PLAYER2,
@@ -112,6 +116,16 @@ OBJECTS_DELIVERY = Bunch({
     'none': NONE,
 })
 
+MARGINS = {
+    'm0': 'margin_0',
+    'm1': 'margin_1',
+    'm2': 'margin_2',
+    'm3': 'margin_3',
+    'm4': 'margin_4',
+    'm5': 'margin_5',
+    'm6': 'margin_6',
+    'm7': 'margin_7',
+}
 
 def get_domain_objects(domain_name):
     return {

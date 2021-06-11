@@ -174,8 +174,9 @@ def generate_output_from_handcrafted_features(sample, config, features, model_ca
     nfeatures = len(names)
     complexities = [f.complexity() for f in features]
 
-    filename = compute_info_filename(config, "feature-matrix.io")
+    filename = compute_info_filename(config.to_dict(), "feature-matrix.io")
     state_ids = sample.get_sorted_state_ids()
+    models = {sid: model_cache.get_feature_model(sid) for sid in sample.states}
 
     assert nfeatures == len(complexities)
     logging.info(f"Printing feature matrix with shape ({len(state_ids)}, {nfeatures}) to '{filename}'")
@@ -193,8 +194,11 @@ def generate_output_from_handcrafted_features(sample, config, features, model_ca
         # next lines: one per each state with format: <state-index> <#features-in-state> <list-features>
         # each feature has format: <feature-index>:<value>
         for s in state_ids:
+            # val = models[s].denotation(f)
+            # print(" ".join(str(cast_feature_value(val)) for x in features), file=f)
+
             model = model_cache.get_feature_model(s)
-            print(" ".join(str(cast_feature_value(int(model.denotation(f)))) for x in features), file=f)
+            print(" ".join(str(cast_feature_value(int(model.denotation(x)))) for x in features), file=f)
 
     return [], len(names)
 
@@ -285,7 +289,7 @@ def invoke_cpp_generator(config):
 
 def deal_with_serialized_features(language, feature_generator, serialized_feature_filename):
     logging.info('Skipping automatic feature generation: User provided set of handcrafted features')
-    features = feature_generator(language)
+    features = feature_generator
     if features and isinstance(features[0], str):  # Features given as strings, unserialize them
         features = [unserialize_feature(language, f) for f in features]
 

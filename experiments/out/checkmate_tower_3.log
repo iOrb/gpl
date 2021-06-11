@@ -1,4 +1,102 @@
 ================================================================================
 SLTP v.0.2.0
 ================================================================================
-2021-06-08 14:28:26 ERROR    (<gpl.pipeline_steps.TrainStep object at 0x7fc7afcf8f40>, 'Critical error processing step "Train: Explore the state space of the training instances". Error message: Can\'t pickle <function debug_features_checkmate_tactic_rook at 0x7fc7afd00670>: import of module \'imported\' failed')
+================================================================================
+(pid: 62669) STARTING STEP #1: Train: Explore the state space of the training instances
+================================================================================
+------------------------------------------------
+ DOMAIN PARAMETERS: 
+------------------------------------------------
+------------------------------------------------
+domain_name: checkmate_tactic
+use_player_as_feature: True
+use_player_to_encode: True
+use_next_player_as_feature: False
+use_next_player_to_encode: False
+use_margin_as_feature: False
+objects_to_ignore: set()
+map_cells: True
+use_diagonals_for_map_cells: True
+use_adjacency: {'row', 'col'}
+use_distance_2: {'row', 'col'}
+use_distance_more_than_1: {'row', 'col'}
+use_bidirectional: {}
+sorts_to_use: {'row', 'col'}
+n_moves: 1000
+unary_predicates: {'checkmate'}
+game_version: 1
+------------------------------------------------
+------------------------------------------------
+(START Episode 0)
+------------------------------------------------
+------------------------------------------------
+(0) Exploration of the training sample:
+------------------------------------------------
+2021-06-08 15:49:55 INFO     Expanding train instance: checkmate_tactic - 22
+# .  R  .  . #
+# .  .  .  . #
+# k  .  K  . #
+
+2021-06-08 15:50:00 INFO     Expanding train instance: checkmate_tactic - 29
+# R  .  . #
+# .  .  K #
+# .  .  . #
+# .  .  k #
+
+Process ForkPoolWorker-1:
+Traceback (most recent call last):
+  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 44, in <module>
+    do(args.exp_id, args.steps, args.workspace, args.show)
+  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 40, in do
+    experiment.run(steps)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 204, in run
+    run_and_check_output(step, stepnum, SubprocessStepRunner)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 213, in run_and_check_output
+    exitcode = runner.run(config=Bunch(step.config))
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 136, in run
+    exitcode = self._run(config)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 179, in _run
+    exitcode = result.get()
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 765, in get
+    self.wait(timeout)
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 762, in wait
+    self._event.wait(timeout)
+  File "/usr/lib/python3.8/threading.py", line 558, in wait
+    signaled = self._cond.wait(timeout)
+  File "/usr/lib/python3.8/threading.py", line 302, in wait
+    waiter.acquire()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.8/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 160, in _run
+    exitcode, output = self.target(config=config, data=data, rng=rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/train.py", line 15, in run
+    exitcode, output = train(config, data, rng, train_steps=[], show_steps_only=False)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/train.py", line 42, in train
+    exitcode, config, data = run_step(step, config, data, rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/train.py", line 58, in run_step
+    exitcode, data_ = step.get_step_runner(config)(config, data, rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/search.py", line 195, in run
+    res = rollout(config, data, get_policy, rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/search.py", line 69, in rollout
+    bfs(config, data, search_policy, task, instance_name, rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/search.py", line 144, in bfs
+    succcessors = task.get_successor_states(s)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/task.py", line 82, in get_successor_states
+    ava_actions_1 = self.env.available_actions(s2_[0])
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/envs/checkmate_tactic.py", line 137, in available_actions
+    actions += [(c0, c1) for c1 in PIECE_VALID_MOVES[BLACK_KING](c0, layout)]
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/envs/checkmate_tactic.py", line 35, in <lambda>
+    BLACK_KING: lambda pos, layout: king_valid_moves(pos, layout, BLACK),
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/envs/checkmate_tactic.py", line 250, in king_valid_moves
+    attacking_mask = get_attacking_mask(layout, opposite_color(color))
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/envs/checkmate_tactic.py", line 280, in get_attacking_mask
+    attacked_spaces = get_king_attacking_spaces(pos, layout)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/envs/checkmate_tactic.py", line 297, in get_king_attacking_spaces
+    next_cell = layout[running_pos[0], running_pos[1]]
+KeyboardInterrupt
