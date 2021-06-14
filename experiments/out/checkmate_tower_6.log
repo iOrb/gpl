@@ -51,3 +51,42 @@ game_version: 1
 (0) Generate the pool of candidate features:
 ------------------------------------------------
 2021-06-09 22:42:10 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 60604, transitions: 365724 (207356 optimal), goals: 112, alive: 54840, deadends: 5652
+Process ForkPoolWorker-2:
+Traceback (most recent call last):
+  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 44, in <module>
+    do(args.exp_id, args.steps, args.workspace, args.show)
+  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 40, in do
+    experiment.run(steps)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 204, in run
+    run_and_check_output(step, stepnum, SubprocessStepRunner)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 213, in run_and_check_output
+    exitcode = runner.run(config=Bunch(step.config))
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 136, in run
+    exitcode = self._run(config)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 179, in _run
+    exitcode = result.get()
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 765, in get
+    self.wait(timeout)
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 762, in wait
+    self._event.wait(timeout)
+  File "/usr/lib/python3.8/threading.py", line 558, in wait
+    signaled = self._cond.wait(timeout)
+  File "/usr/lib/python3.8/threading.py", line 302, in wait
+    waiter.acquire()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.8/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/usr/lib/python3.8/multiprocessing/queues.py", line 356, in get
+    res = self._reader.recv_bytes()
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 216, in recv_bytes
+    buf = self._recv_bytes(maxlength)
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 414, in _recv_bytes
+    buf = self._recv(4)
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 379, in _recv
+    chunk = read(handle, remaining)
+KeyboardInterrupt

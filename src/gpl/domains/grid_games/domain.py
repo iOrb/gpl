@@ -75,6 +75,11 @@ def load_general_lang(lang, statics, env):
     if params.use_next_player_as_feature:
         _ = [lang.predicate('next_player-{}'.format(p),) for p in {OBJECTS.player1, OBJECTS.player2}]
 
+    # CHECKMATE TACTIC
+    for predicate in {'cell-has-white_attacked',
+                      'cell-has-black_attacked'}:
+        lang.predicate(predicate, CELL_S)
+
     return lang, statics
 
 
