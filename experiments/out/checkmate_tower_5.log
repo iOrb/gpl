@@ -2,7 +2,7 @@
 SLTP v.0.2.0
 ================================================================================
 ================================================================================
-(pid: 12346) STARTING STEP #1: Train: Explore the state space of the training instances
+(pid: 13387) STARTING STEP #1: Train: Explore the state space of the training instances
 ================================================================================
 ------------------------------------------------
  DOMAIN PARAMETERS: 
@@ -18,11 +18,11 @@ use_verbose_margin_as_feature: False
 objects_to_ignore: set()
 map_cells: True
 use_diagonals_for_map_cells: True
-use_adjacency: {'col', 'row', 'cell'}
+use_adjacency: {'row', 'cell', 'col'}
 use_distance_2: {}
 use_distance_more_than_1: {}
 use_bidirectional: {}
-sorts_to_use: {'col', 'row', 'cell'}
+sorts_to_use: {'row', 'cell', 'col'}
 n_moves: 1000
 unary_predicates: {'check', 'black_has_action'}
 game_version: 1
@@ -33,33 +33,42 @@ game_version: 1
 ------------------------------------------------
 (0) Exploration of the training sample:
 ------------------------------------------------
-2021-06-14 11:51:02 INFO     Expanding train instance: checkmate_tactic - 300
-#....k#
-#.R...#
-#....K#
-#.....#
-#.....#
-
-Process ForkPoolWorker-1:
+2021-06-14 12:05:05 ERROR    Critical error in the pipeline
+2021-06-14 12:05:05 ERROR    (<gpl.pipeline_steps.TrainStep object at 0x7f1fab52b730>, 'Critical error processing step "Train: Explore the state space of the training instances". Error message: Error: Duplicate definition of element "cell-has-white_attacked"')
 Traceback (most recent call last):
-  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 44, in <module>
-    do(args.exp_id, args.steps, args.workspace, args.show)
-  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 40, in do
-    experiment.run(steps)
-  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 204, in run
-    run_and_check_output(step, stepnum, SubprocessStepRunner)
-  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 213, in run_and_check_output
-    exitcode = runner.run(config=Bunch(step.config))
-  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 136, in run
-    exitcode = self._run(config)
-  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 179, in _run
-    exitcode = result.get()
-  File "/usr/lib/python3.8/multiprocessing/pool.py", line 765, in get
-    self.wait(timeout)
-  File "/usr/lib/python3.8/multiprocessing/pool.py", line 762, in wait
-    self._event.wait(timeout)
-  File "/usr/lib/python3.8/threading.py", line 558, in wait
-    signaled = self._cond.wait(timeout)
-  File "/usr/lib/python3.8/threading.py", line 302, in wait
-    waiter.acquire()
-KeyboardInterrupt
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 160, in _run
+    exitcode, output = self.target(config=config, data=data, rng=rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/train.py", line 15, in run
+    exitcode, output = train(config, data, rng, train_steps=[], show_steps_only=False)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/train.py", line 42, in train
+    exitcode, config, data = run_step(step, config, data, rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/train.py", line 58, in run_step
+    exitcode, data_ = step.get_step_runner(config)(config, data, rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/search.py", line 195, in run
+    res = rollout(config, data, get_policy, rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/search.py", line 37, in rollout
+    lang, static_predicates = config.domain.generate_language()
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/domain.py", line 34, in generate_language
+    return generate_lang(self._domain_name, self.env)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/domain.py", line 239, in generate_lang
+    load_general_lang(lang, statics, env)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/domain.py", line 81, in load_general_lang
+    lang.predicate(predicate, CELL_S)
+  File "/home/orbital/ws/research/gpl/code/gpl/venv/lib/python3.8/site-packages/tarski/fol.py", line 254, in predicate
+    self._check_name_not_defined(name, self._predicates, err.DuplicatePredicateDefinition)
+  File "/home/orbital/ws/research/gpl/code/gpl/venv/lib/python3.8/site-packages/tarski/fol.py", line 248, in _check_name_not_defined
+    raise exception(name, where[name])
+tarski.errors.DuplicatePredicateDefinition: Duplicate definition of element "cell-has-white_attacked"
+Exception ignored in: <function Pool.__del__ at 0x7f1fab04ddc0>
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 268, in __del__
+    self._change_notifier.put(None)
+  File "/usr/lib/python3.8/multiprocessing/queues.py", line 368, in put
+    self._writer.send_bytes(obj)
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 200, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 411, in _send_bytes
+    self._send(header + buf)
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 368, in _send
+    n = write(self._handle, buf)
+OSError: [Errno 9] Bad file descriptor

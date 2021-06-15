@@ -23,6 +23,22 @@ def identify_margin(r, c, nrows, ncols):
         return MARGINS['m7']
 
 
+def in_top(r, c, nrows, ncols):
+    return r == 0
+
+
+def in_bottom(r, c, nrows, ncols):
+    return r == nrows - 1
+
+
+def in_right_most(r, c, nrows, ncols):
+    return c == ncols - 1
+
+
+def in_left_most(r, c, nrows, ncols):
+    return c == 0
+
+
 def identify_next_player(rep, params):
     opposite_player = lambda c: PLAYER2 if c == PLAYER1 else PLAYER1
     if rep.nact < params.max_actions[rep.player]:
@@ -37,3 +53,5 @@ def in_grid(r, c, nrows, ncols, use_margins=False):
         return True
     else:
         return False
+
+

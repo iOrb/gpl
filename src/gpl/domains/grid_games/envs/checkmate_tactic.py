@@ -211,7 +211,6 @@ def checkmate(rep):
         return False
     return False
 
-
 def deadend_extension(rep):
     layout = rep.grid
     assert rep.player == BLACK
@@ -294,6 +293,45 @@ def get_attacking_mask(layout, color):
     return attacking_mask
 
 
+def get_attacking_mask_from_piece(layout, piece):
+    if 'king' in piece:
+        color  = WHITE if piece in WHITE_KING else BLACK
+        mask = get_king_attacking_mask(layout, color)
+    else:
+        mask = no_king_piece_attaking_mask(layout, piece)
+    return mask
+
+
+def get_king_attacking_mask(layout, color):
+    attacking_mask = np.zeros(layout.shape, dtype=bool)
+    piece = WHITE_KING if color == WHITE else BLACK_KING
+    try:
+        pos = np.argwhere(layout == piece)[0]
+    except:
+        raise
+    attacking_mask = get_king_attacking_spaces(pos, layout, get_mask=True)
+    return attacking_mask
+
+
+def no_king_piece_attaking_mask(layout, piece):
+    mask = np.zeros(layout.shape, dtype=bool)
+    pos = np.argwhere(layout == piece)[0]
+    for direction in DIRECTIONS[piece]:
+        running_pos = np.array(pos)
+        while True:
+            running_pos += direction
+            if np.any(running_pos < 0):
+                break
+            try:
+                next_cell = layout[running_pos[0], running_pos[1]]
+            except IndexError:
+                break
+            if next_cell in EMPTY or BLACK_KING in next_cell:
+                mask[running_pos[0], running_pos[1]] = True
+    mask[pos[0], pos[1]] = True
+    return mask
+
+
 def get_king_attacking_spaces(pos, layout, get_mask=False):
     attacking_spaces = list()
     attacking_mask = np.zeros(layout.shape, dtype=bool)
@@ -308,8 +346,53 @@ def get_king_attacking_spaces(pos, layout, get_mask=False):
             continue
         attacking_spaces.append(running_pos)
         attacking_mask[running_pos[0], running_pos[1]] = True
+    attacking_mask[pos[0], pos[1]] = True
     return attacking_mask if get_mask else attacking_spaces
 
+
+def get_mask_quadrant_black_king(layout):
+    """ just for the ROOK version """
+    mask = np.zeros(layout.shape, dtype=bool)
+    nrows, ncols = layout.shape
+    r_bk, c_bk = np.argwhere(layout == BLACK_KING)[0]
+    r_wr, c_wr = np.argwhere(layout == WHITE_TOWER)[0]
+    if r_bk == r_wr or c_bk == c_wr:
+        return np.ones(layout.shape, dtype=bool)
+
+    corner0, corner1 = identify_quadrant_corners(layout, r_bk, c_bk, r_wr, c_wr, nrows, ncols)
+
+    for r in range(corner0[0], corner1[0] + 1):
+        for c in range(corner0[1], corner1[1] + 1):
+            mask[r, c] = True
+    mask[r_bk, c_bk] = False
+
+    return mask
+
+
+def identify_quadrant_corners(layout, r_bk, c_bk, r_wr, c_wr, nrows, ncols):
+    mask_king = get_king_attacking_mask(layout, WHITE)
+
+    # q1 (left, up)
+    if r_bk < r_wr and c_bk < c_wr:
+        corner0 = (0, 0)
+        corner1 = (r_wr - 1, c_wr - 1)
+
+    # q2 (right, up)
+    if r_bk < r_wr and c_bk > c_wr:
+        corner0 = (0, c_wr + 1)
+        corner1 = (r_wr - 1, ncols - 1)
+
+    # q3 (left, down)
+    if r_bk > r_wr and c_bk < c_wr:
+        corner0 = (r_wr + 1, 0)
+        corner1 = (nrows - 1, c_wr - 1)
+
+    # q4 (right, down)
+    if r_bk > r_wr and c_bk > c_wr:
+        corner0 = (r_wr + 1, c_wr + 1)
+        corner1 = (nrows - 1, ncols - 1)
+
+    return corner0, corner1
 
 def cool_piece_valid_moves(pos, layout, color, piece):
     valid_moves = []
@@ -335,7 +418,6 @@ def cool_piece_valid_moves(pos, layout, color, piece):
 
 
 ### Instances
-
 
 def generate_gird(key, params):
     return LAYOUTS[params.game_version][key]
@@ -401,9 +483,9 @@ def generate_check_in_one(shapes, piece):
     return {i: g for i, g in enumerate(grids)}
 
 
-def generate_gird_queen(key):
+def generate_test_gird(key):
     height, width, cell_white_king, cell_black_king, cell_white_queen, cell_white_tower = \
-        LAYOUTS_TOWER[key]
+        TEST_LAYOUTS_TOWER[key]
     grid = np.full((height, width), EMPTY, dtype=object)
     grid[cell_white_king] = WHITE_KING
     grid[cell_black_king] = BLACK_KING
@@ -414,29 +496,22 @@ def generate_gird_queen(key):
     return grid
 
 
-LAYOUTS_QUEEN = {
-    0: (4, 4, (1, 1), (1, 3), (0, 1), None),
-    1: (4, 3, (1, 1), (3, 1), (1, 2), None),
-    2: (3, 3, (0, 0), (1, 2), (2, 0), None),
-    3: (3, 2, (0, 1), (2, 1), (0, 0), None),
-    5: (12, 10, (3, 7), (4, 9), (10, 2), None),
-    6: (3, 2, (0, 1), (2, 1), (0, 0), None),
-    7: (3, 2, (0, 1), (2, 1), (0, 0), None),
-}
-
-LAYOUTS_TOWER = {
-    0: (4, 4, (1, 1), (1, 3), None, (3, 2)),
-    1: (4, 3, (2, 0), (0, 0), None, (3, 2)),
-    2: (3, 3, (0, 0), (2, 0), None, (1, 2)),
-    3: (5, 5, (4, 0), (0, 4), None, (4, 2)),
-    4: (12, 10, (4, 7), (4, 9), None, (10, 2)),
+TEST_LAYOUTS_TOWER = {
+    -1: (4, 4, (3, 2), (0, 2), None, (3, 1)),
+    -2: (3, 4, (1, 1), (1, 3), None, (1, 0)),
+    -3: (5, 5, (0, 0), (4, 4), None, (1, 2)),
+    -4: (6, 6, (0, 0), (3, 3), None, (5, 1)),
+    -5: (7, 7, (1, 1), (1, 3), None, (1, 0)),
+    -6: (8, 8, (1, 1), (1, 3), None, (1, 0)),
+    -7: (9, 9, (1, 1), (1, 3), None, (1, 0)),
+    -8: (10, 10, (1, 1), (1, 3), None, (1, 0)),
 }
 
 LAYOUTS_CHECK_IN_ONE_QUEEN = generate_check_in_one([(3, 3), (4, 3), (4, 4), (5, 5), (6, 6)], WHITE_QUEEN)
-LAYOUTS_CHECK_IN_ONE_TOWER = generate_check_in_one([(3, 3), (4, 3), (3, 4), (4, 4), (5, 5), (6, 6)], WHITE_TOWER)
+LAYOUTS_CHECK_IN_ONE_TOWER = generate_check_in_one([(3, 3), (4, 3), (3, 4), (4, 4), (4, 5), (5, 4), (5, 5), (6, 6)], WHITE_TOWER)
 
-# LAYOUTS_QUEEN_CUSTOM = {k: generate_gird_queen(k) for k in LAYOUTS_QUEEN.keys()}
-# LAYOUTS_TOWER_CUSTOM = {k: generate_gird_queen(k) for k in LAYOUTS_TOWER.keys()}
+for k in TEST_LAYOUTS_TOWER.keys():
+    LAYOUTS_CHECK_IN_ONE_TOWER[k] = generate_test_gird(k)
 
 LAYOUTS = {
     0: LAYOUTS_CHECK_IN_ONE_QUEEN,

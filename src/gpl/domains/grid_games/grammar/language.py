@@ -19,6 +19,10 @@ UP, RIGHTUP, RIGHT, RIGHTDOWN, DOWN, LEFTDOWN, LEFT, LEFTUP = [d for d in ALL_GR
 ADJACENT = 'adjacent'
 DISTANCE_2 ='distance_2'
 DISTANCE_MORE_THAN_1 ='distance_more_than_1'
+CELL_HAS = lambda sort, object: f'{sort}-has-{object}'
+CELL_HAS_PIECE_ATTAKED_BY = lambda piece: f'cell-attaked-by-{piece}'
+CELL_HAS_COLOR_ATTAKED_BY = lambda color: f'cell-attaked-by-{color}'
+CELL_IS_IN = lambda where: f'cell-is-in-{where}'
 
 GRID_DIRECTIONS = {
     CELL_S: ALL_GRID_DIRECTIONS,
@@ -27,3 +31,8 @@ GRID_DIRECTIONS = {
     D1_S: [RIGHT, LEFT],
     D2_S: [RIGHT, LEFT],
 }
+
+# TEMPORAL, TODO: remove them:
+BLACK_KING_AVAILABLE_QUADRANT = 'black_king_available_quadrant'
+TOP = 'top'
+BOTTOM = 'bottom'

@@ -4,7 +4,7 @@ from tarski.fstrips import fstrips, create_fstrips_problem
 from .task import Task
 import copy
 from .grammar.language import *
-from .utils import identify_margin
+from .utils import identify_margin, in_bottom, in_top, in_left_most, in_right_most
 import importlib
 ANCHOR = 'gpl.domains.grid_games'
 OBJECTS = None
@@ -51,7 +51,7 @@ def load_general_lang(lang, statics, env):
     for sort in params.sorts_to_use:
         lang.sort(sort)
         for o in OBJECTS.general | {OBJECTS.none} | set(MARGINS.values()):
-            lang.predicate(f'{sort}-has-{o}', sort)
+            lang.predicate(CELL_HAS(sort, o), sort)
         if sort in params.use_distance_2:
             lang.predicate(f'{DISTANCE_2}_{sort}', sort, sort)
             statics.add(f'{DISTANCE_2}_{sort}')
@@ -76,9 +76,15 @@ def load_general_lang(lang, statics, env):
         _ = [lang.predicate('next_player-{}'.format(p),) for p in {OBJECTS.player1, OBJECTS.player2}]
 
     # CHECKMATE TACTIC
-    for predicate in {'cell-has-white_attacked',
-                      'cell-has-black_attacked'}:
-        lang.predicate(predicate, CELL_S)
+    from .envs.checkmate_tactic import WHITE_KING, WHITE_TOWER, BLACK_KING, WHITE, BLACK
+    for pred in {CELL_HAS_COLOR_ATTAKED_BY(WHITE),
+                 CELL_HAS_COLOR_ATTAKED_BY(BLACK),
+                 CELL_HAS_PIECE_ATTAKED_BY(WHITE_TOWER),
+                 CELL_HAS_PIECE_ATTAKED_BY(WHITE_KING),
+                 CELL_HAS_PIECE_ATTAKED_BY(BLACK_KING),
+                 CELL_IS_IN(TOP), CELL_IS_IN(RIGHT), CELL_IS_IN(LEFT), CELL_IS_IN(BOTTOM),
+                 CELL_IS_IN(BLACK_KING_AVAILABLE_QUADRANT)}:
+        lang.predicate(pred, CELL_S)
 
     return lang, statics
 
@@ -113,18 +119,40 @@ def load_general_problem(problem, lang, rep, env):
                 except:
                     map_sorts[(r, c, sort)] = lang.get(CONST[sort](r, c, nrows, ncols))
                 if o not in {OBJECTS.empty} | params.objects_to_ignore:
-                    problem.init.add(lang.get(f'{sort}-has-{o}'), lang.get(CONST[sort](r, c, nrows, ncols)))
+                    problem.init.add(lang.get(CELL_HAS(sort, o)), lang.get(CONST[sort](r, c, nrows, ncols)))
 
     # CHECKMATE TACTIC
-    from .envs.checkmate_tactic import get_attacking_mask, WHITE, BLACK, CHECKMATE
+    from .envs.checkmate_tactic import get_attacking_mask_from_piece, get_mask_quadrant_black_king, get_attacking_mask, WHITE, BLACK, WHITE_KING, \
+        WHITE_TOWER, BLACK_KING, CHECKMATE
     mask_white = get_attacking_mask(brd, WHITE)
     mask_black = get_attacking_mask(brd, BLACK)
+    mask_bk = get_attacking_mask_from_piece(brd, BLACK_KING)
+    mask_wk = get_attacking_mask_from_piece(brd, WHITE_KING)
+    mask_wr = get_attacking_mask_from_piece(brd, WHITE_TOWER)
+    mask_quadrant_bk = get_mask_quadrant_black_king(brd)
     for r in range(nrows):
         for c in range(ncols):
+            cell = lang.get(CONST[CELL_S](r, c, nrows, ncols))
+            if mask_wk[r, c]:
+                problem.init.add(lang.get(CELL_HAS_PIECE_ATTAKED_BY(WHITE_KING)), cell)
+            if mask_wr[r, c]:
+                problem.init.add(lang.get(CELL_HAS_PIECE_ATTAKED_BY(WHITE_TOWER)), cell)
+            if mask_bk[r, c]:
+                problem.init.add(lang.get(CELL_HAS_PIECE_ATTAKED_BY(BLACK_KING)), cell)
             if mask_white[r, c]:
-                problem.init.add(lang.get(f'cell-has-white_attacked'), CONST[CELL_S](r, c, nrows, ncols))
+                problem.init.add(lang.get(CELL_HAS_COLOR_ATTAKED_BY(WHITE)), cell)
             if mask_black[r, c]:
-                problem.init.add(lang.get(f'cell-has-black_attacked'), CONST[CELL_S](r, c, nrows, ncols))
+                problem.init.add(lang.get(CELL_HAS_COLOR_ATTAKED_BY(BLACK)), cell)
+            if mask_quadrant_bk[r, c] and not mask_white[r, c] and not getattr(rep, CHECKMATE):
+                problem.init.add(lang.get(CELL_IS_IN(BLACK_KING_AVAILABLE_QUADRANT)), cell)
+            if in_top(r, c, nrows, ncols):
+                problem.init.add(lang.get(CELL_IS_IN(TOP)), cell)
+            if in_bottom(r, c, nrows, ncols):
+                problem.init.add(lang.get(CELL_IS_IN(BOTTOM)), cell)
+            if in_left_most(r, c, nrows, ncols):
+                problem.init.add(lang.get(CELL_IS_IN(LEFT)), cell)
+            if in_right_most(r, c, nrows, ncols):
+                problem.init.add(lang.get(CELL_IS_IN(RIGHT)), cell)
 
     # WUMPUS
     # from .envs.wumpus import AT_WUMPUS, AT_PIT, AGENT, WUMPUS
