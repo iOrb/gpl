@@ -96,7 +96,7 @@ def experiments():
 
     exps["2"] = update_dict(
         exps["1"],
-        instances=[70],
+        instances=[0],
     )
 
     return exps
@@ -143,11 +143,11 @@ LessThan = lambda elem0, elem1: 'LessThan{' + elem0 + elem1 + '}'
 
 def debug_features_checkmate_tactic_rook():
     return [
-        # "Atom[checkmate]",
         Atom(CHECK),
-        # "Atom[player-1]",
-        # "Atom[stalemate]",
-        Atom(BLACK_HAS_ACTION),
+        # Atom(CHECKMATE),
+        # Atom('player-1'),
+        # Atom(STALEMATE),
+        # Atom(BLACK_HAS_ACTION),
 
         # Num(cell_h_c_bk_ava_q),
         # "Num[cell-has-black_attacked]",
@@ -173,6 +173,14 @@ def debug_features_checkmate_tactic_rook():
         # Bool(f"And({cell_h_c_att_by_wr},{cell_is_in_right_most})"),
         # Bool(f"And({cell_h_c_att_by_wr},{cell_is_in_left_most})"),
 
+        # Bool(And(cell_h_bk, cell_is_in_top)),
+        # Bool(And(cell_h_bk, cell_is_in_bottom)),
+        # Bool(And(cell_h_bk, cell_is_in_right_most)),
+        # Bool(And(cell_h_bk, cell_is_in_left_most)),
+
+        Bool(And(col_h_bk, col_h_wk)),
+        Bool(And(col_h_bk, col_h_wr)),
+
         # "Bool[And(cell-has-white_attacked,cell-has-black_king)]",
         # "Num[And(Not(cell-has-black_attacked),cell-has-white_rook)]",
         # "Num[And(cell-has-white_attacked,cell-has-black_king)]",
@@ -189,8 +197,8 @@ def debug_features_checkmate_tactic_rook():
         # Dist(f"{cell_h_bk};{adj_cell};{cell_is_in_left_most}"),
         # Dist(f"{cell_h_bk};{adj_cell};{cell_is_in_right_most}"),
 
-        # Dist(row_h_bk, adj_row, row_h_wr),
-        # Dist(row_h_bk, adj_row, row_h_wk),
+        Dist(row_h_bk, adj_row, row_h_wr),
+        Dist(row_h_bk, adj_row, row_h_wk),
         # Dist(col_h_bk, adj_col, col_h_wr),
         # Dist(col_h_bk, adj_col, col_h_wk),
         # Dist(col_h_bk, adj_cell, col_h_wr),
@@ -208,8 +216,13 @@ def debug_features_checkmate_tactic_rook():
         # "Bool[And(col-has-black_king,Exists(adjacent_col,col-has-none))]",
         Bool(And(cell_h_bk, Exists(adj_cell, cell_h_wr))),
         Bool(And(cell_h_wk, Exists(adj_cell, cell_h_wr))),
-        # Num(And(cell_h_c_att_by_w, Exists(adj_cell, cell_h_bk))),
-        Num(And(Not(cell_h_c_att_by_w), Exists(adj_cell, cell_h_bk))),
+        # Bool(And(cell_h_c_att_by_w, Exists(adj_cell, cell_h_bk))),
+        Bool(And(cell_h_bk, Exists(adj_cell, Not(cell_h_c_att_by_w)))),
+
+        # Bool(And(row_h_bk, Exists(adj_row, row_h_wr))),
+        # Bool(And(row_h_bk, Exists(adj_row, row_h_wk))),
+        # Bool(And(col_h_bk, Exists(adj_col, col_h_wr))),
+        # Bool(And(col_h_bk, Exists(adj_row, col_h_wk))),
 
         # Bool(f"And({cell_h_bk},Exists({adj_cell},{cell_h_wr}))"),
 
