@@ -62,6 +62,7 @@ CHECK = 'check'
 CHECKMATE = 'checkmate'
 STALEMATE = 'stalemate'
 BLACK_HAS_ACTION = 'black_has_action'
+ROOK_ATTACKED_WHITOUT_PROTECTION = 'rook_attaked_without_protection'
 
 # Begin Chase =================================
 
@@ -100,6 +101,8 @@ class Env(object):
             updated_rep[STALEMATE] = stale_mate(rep)
         if CHECK in self.params.unary_predicates:
             updated_rep[CHECK] = check(rep)
+        if ROOK_ATTACKED_WHITOUT_PROTECTION in self.params.unary_predicates:
+            updated_rep[ROOK_ATTACKED_WHITOUT_PROTECTION] = deadend_extension(rep)
         if BLACK_HAS_ACTION in self.params.unary_predicates:
             if rep.player == BLACK:
                 updated_rep[BLACK_HAS_ACTION] = len(Env.available_actions(rep)) > 0
@@ -213,7 +216,8 @@ def checkmate(rep):
 
 def deadend_extension(rep):
     layout = rep.grid
-    assert rep.player == BLACK
+    if rep.player == WHITE:
+        return False
     bk_mask = get_attacking_mask(layout, BLACK)
     wk_mask = get_king_attacking_spaces(np.argwhere(layout==WHITE_KING)[0], layout, get_mask=True)
     if WHITE_QUEEN in layout:

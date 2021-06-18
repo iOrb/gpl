@@ -5,7 +5,8 @@ from gpl.domains.grid_games.domain import Domain
 from gpl.utils import Bunch
 from gpl.domains.grid_games.grammar.language import *
 from gpl.domains.grid_games.envs.checkmate_tactic import \
-    CHECKMATE, STALEMATE, N_MOVE, CHECK, BLACK_HAS_ACTION, WHITE_KING, WHITE_TOWER, BLACK_KING, WHITE, BLACK
+    CHECKMATE, STALEMATE, N_MOVE, CHECK, BLACK_HAS_ACTION, WHITE_KING, WHITE_TOWER, BLACK_KING, WHITE, BLACK, \
+    ROOK_ATTACKED_WHITOUT_PROTECTION
 
 
 ct_params = Bunch({
@@ -25,7 +26,7 @@ ct_params = Bunch({
     'use_bidirectional': {},
     'sorts_to_use': {COL_S, ROW_S, CELL_S},
     'n_moves': 10000,
-    'unary_predicates': {CHECKMATE, STALEMATE, CHECK, BLACK_HAS_ACTION, 'deadend'},
+    'unary_predicates': {CHECKMATE, STALEMATE, CHECK, BLACK_HAS_ACTION, 'deadend', ROOK_ATTACKED_WHITOUT_PROTECTION},
     'game_version': 0,
 })
 
@@ -84,13 +85,15 @@ def experiments():
     exps["1"] = update_dict(
         base,
         domain=Domain(ct_params_v1),
-        instances=[70, 150],
+        instances=[0],
+        # instances=[70, 150],
         # test_instances=[0],
-        allow_bad_states=True,
+        allow_bad_states=False,
         test_instances=list(range(0, -1000, -1)),  # using negative keys for test instances
         # test_instances=[-1, -2, -3],
         feature_generator=debug_features_checkmate_tactic_rook(),
         validate_features=debug_validate_features(),
+        d2l_policy=debug_policy(),
         # skip_train_steps=[0, 1, 2, 3],
     )
 
@@ -149,6 +152,7 @@ def debug_features_checkmate_tactic_rook():
         # Atom('player-1'),
         # Atom(STALEMATE),
         Atom(BLACK_HAS_ACTION),
+        Atom(ROOK_ATTACKED_WHITOUT_PROTECTION),
 
         # Num(cell_h_c_bk_ava_q),
         # "Num[cell-has-black_attacked]",
@@ -217,8 +221,8 @@ def debug_features_checkmate_tactic_rook():
         # # "Bool[And(row-has-black_king,Exists(adjacent_row,row-has-none))]",
         # # "Bool[And(col-has-black_king,Exists(adjacent_col,col-has-white_rook))]",
         # # "Bool[And(col-has-black_king,Exists(adjacent_col,col-has-none))]",
-        Bool(And(cell_h_bk, Exists(adj_cell, cell_h_wr))),
-        Bool(And(cell_h_wk, Exists(adj_cell, cell_h_wr))),
+        # Bool(And(cell_h_bk, Exists(adj_cell, cell_h_wr))),
+        # Bool(And(cell_h_wk, Exists(adj_cell, cell_h_wr))),
         # # Bool(And(cell_h_c_att_by_w, Exists(adj_cell, cell_h_bk))),
         # # Bool(And(cell_h_bk, Exists(adj_cell, Not(cell_h_c_att_by_w)))),
         #
@@ -259,3 +263,45 @@ def debug_features_checkmate_tactic_queen():
 
 def debug_validate_features():
     return list(range(len(debug_features_checkmate_tactic_rook())))
+
+
+# % % % % % % % % %
+#    POLICY
+# % % % % % % % % %
+
+def debug_policy():
+    bk_adj_wr = Bool(And(cell_h_bk, Exists(adj_cell, cell_h_wr)))
+    wk_adj_wr = Bool(And(cell_h_wk, Exists(adj_cell, cell_h_wr)))
+    check = Atom(CHECK)
+    bk_h_a = Atom(CHECK)
+    wr_a = Atom(ROOK_ATTACKED_WHITOUT_PROTECTION)
+
+    rules_0 = [
+        [(check, '=0'), (bk_h_a, '=0'), (check, 'INC'), (bk_h_a, 'NIL')],
+        [(check, '=0'), (bk_h_a, '=0'), (check, 'NIL'), (bk_h_a, 'INC')],
+        [(check, '=0'), (bk_h_a, '=0'), (check, 'INC'), (bk_h_a, 'INC')],
+        # [(bk_adj_wr, '=0'), (wk_adj_wr, '=0'), (bk_adj_wr, 'NIL'), (wk_adj_wr, 'INC')],
+        # [(bk_adj_wr, '=0'), (wk_adj_wr, '=0'), (bk_adj_wr, 'INC'), (wk_adj_wr, 'INC')],
+        # [(bk_adj_wr, '=0'), (wk_adj_wr, '=0'), (bk_adj_wr, 'NIL'), (wk_adj_wr, 'NIL')],
+        # [(bk_adj_wr, '>0'), (wk_adj_wr, '=0'), (bk_adj_wr, 'DEC'), (wk_adj_wr, 'NIL')],
+        # [(bk_adj_wr, '>0'), (wk_adj_wr, '=0'), (bk_adj_wr, 'NIL'), (wk_adj_wr, 'INC')],
+        # [(bk_adj_wr, '>0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'DEC'), (wk_adj_wr, 'DEC')],
+        # [(bk_adj_wr, '>0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'DEC'), (wk_adj_wr, 'NIL')],
+        # [(bk_adj_wr, '>0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'DEC'), (wk_adj_wr, 'NIL')],
+        # [(bk_adj_wr, '=0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'INC'), (wk_adj_wr, 'NIL')],
+        # [(bk_adj_wr, '=0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'NIL')],
+        # [(bk_adj_wr, '=0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'NIL'), (bk_adj_wr, 'DEC')],
+    ]
+
+    rules_1 = [
+        [(wr_a, '=0'), (wr_a, 'NIL')],
+    ]
+
+    return combined_rules(rules_0, rules_1)
+
+def combined_rules(rules_0, rules_1):
+    rules = list()
+    for r0 in rules_0:
+        for r1 in rules_1:
+            rules.append(r0 + r1)
+    rules

@@ -37,6 +37,8 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
 
     solved_instances, unsolved_instances = list(), list()
 
+    count_instances = 0
+
     for instance_name in config.test_instances:
 
         try:
@@ -58,6 +60,8 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
                 problem = config.domain.generate_problem(pl, instance_name)
             except:
                 break
+
+            count_instances += 1
 
             # Compute the universe of each instance: a set with all objects in the universe
             universe = compute_universe_from_pddl_model(problem.language)
@@ -98,8 +102,8 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
             return e.code
 
     logging.info("Learnt policy solves the {}% of test instances: {}/{}"
-                 .format(round(len(solved_instances) / len(config.test_instances) * 100, 2),
-                         len(solved_instances), len(config.test_instances)))
+                 .format(round(len(solved_instances) / count_instances * 100, 2),
+                         len(solved_instances), count_instances))
     logging.info("Solved instances: {}".format(solved_instances))
     logging.info("Unsolved instances: {}".format(unsolved_instances))
     return ExitCode.Success
@@ -222,6 +226,8 @@ def run(config, data, rng):
         logging.info("No test instances were specified")
         return ExitCode.NotTestInstancesSpecified, dict()
 
+    if config.d2l_policy is not None:
+        data.d2l_policy = generate_user_provided_policy(config)
     if data.d2l_policy is None:
         return ExitCode.NotPolicySpecified, dict()
     else:

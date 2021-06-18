@@ -89,9 +89,9 @@ def extract_features_from_sat_solution(config, solution):
 
 
 def generate_user_provided_policy(config):
-    rules = config.d2l_policy()
-    _, language, _ = parse_pddl(config.domain)
-    policy = TransitionClassificationPolicy.parse(rules, language, config.feature_namer)
+    rules = config.d2l_policy
+    lang, _ = config.domain.generate_language()
+    policy = TransitionActionClassificationPolicy.parse(rules, lang, config.feature_namer)
     return policy
 
 
@@ -303,7 +303,17 @@ class TransitionClassificationPolicy:
     @staticmethod
     def parse(rules, language, feature_namer):
         """ Create a classification policy from a set of strings representing the clauses """
-        policy = TransitionClassificationPolicy(features=[])
+        allfeatures = dict()
+
+        for clause in rules:
+            atoms = []
+            for feature_str, value in clause:
+                f = allfeatures.get(feature_str)
+                if f is None:
+                    f = unserialize_feature(language, feature_str)
+                    allfeatures[feature_str] = f = IdentifiedFeature(f, len(allfeatures), feature_namer(str(f)))
+
+        policy = TransitionClassificationPolicy(features=list(allfeatures.values()))
 
         allfeatures = dict()
 
@@ -494,7 +504,17 @@ class TransitionActionClassificationPolicy:
     @staticmethod
     def parse(rules, language, feature_namer):
         """ Create a classification policy from a set of strings representing the clauses """
-        policy = TransitionClassificationPolicy(features=[])
+        allfeatures = dict()
+
+        for clause in rules:
+            atoms = []
+            for feature_str, value in clause:
+                f = allfeatures.get(feature_str)
+                if f is None:
+                    f = unserialize_feature(language, feature_str)
+                    allfeatures[feature_str] = f = IdentifiedFeature(f, len(allfeatures), feature_namer(str(f)))
+
+        policy = TransitionActionClassificationPolicy(features=list(allfeatures.values()))
 
         allfeatures = dict()
 
@@ -519,7 +539,8 @@ class TransitionActionClassificationPolicy:
 
                 atoms.append(DNFAtom(f, value))
 
-            policy.add_clause(frozenset(atoms))
+            # TODO: allow the uesr to chose the action, right now it is fixed to a dumy action 0
+            policy.add_clause(frozenset(atoms), 0)
 
         return policy
 
@@ -607,7 +628,17 @@ class StateActionClassificationPolicy:
     @staticmethod
     def parse(rules, language, feature_namer):
         """ Create a classification policy from a set of strings representing the clauses """
-        policy = TransitionClassificationPolicy(features=[])
+        allfeatures = dict()
+
+        for clause in rules:
+            atoms = []
+            for feature_str, value in clause:
+                f = allfeatures.get(feature_str)
+                if f is None:
+                    f = unserialize_feature(language, feature_str)
+                    allfeatures[feature_str] = f = IdentifiedFeature(f, len(allfeatures), feature_namer(str(f)))
+
+        policy = TransitionClassificationPolicy(features=list(allfeatures.values()))
 
         allfeatures = dict()
 

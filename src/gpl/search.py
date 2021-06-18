@@ -163,7 +163,7 @@ def generate_model_from_state(task, model_factory, state, static_atoms):
 
 
 def create_action_selection_function_from_transition_policy(config, model_factory, static_atoms, policy):
-    assert isinstance(policy, TransitionClassificationPolicy)
+    # assert isinstance(policy, TransitionClassificationPolicy)
 
     def _policy(task, state, successors):
         m0 = generate_model_from_state(task, model_factory, state, static_atoms)

@@ -37,6 +37,8 @@ def train(config, data, rng, train_steps=[], show_steps_only=False):
 
             if i in config.skip_train_steps:
                 continue
+            if i == 3 and config.d2l_policy is not None:
+                continue
 
             # Run the trainnin step
             exitcode, config, data = run_step(step, config, data, rng)
