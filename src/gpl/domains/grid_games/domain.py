@@ -76,12 +76,13 @@ def load_general_lang(lang, statics, env):
         _ = [lang.predicate('next_player-{}'.format(p),) for p in {OBJECTS.player1, OBJECTS.player2}]
 
     # CHECKMATE TACTIC
-    from .envs.checkmate_tactic import WHITE_KING, WHITE_TOWER, BLACK_KING, WHITE, BLACK
+    from .envs.checkmate_tactic import WHITE_KING, WHITE_TOWER, BLACK_KING, WHITE, BLACK, WHITE_QUEEN
     for pred in {CELL_HAS_COLOR_ATTAKED_BY(WHITE),
                  CELL_HAS_COLOR_ATTAKED_BY(BLACK),
                  CELL_HAS_PIECE_ATTAKED_BY(WHITE_TOWER),
                  CELL_HAS_PIECE_ATTAKED_BY(WHITE_KING),
                  CELL_HAS_PIECE_ATTAKED_BY(BLACK_KING),
+                 CELL_HAS_PIECE_ATTAKED_BY(WHITE_QUEEN),
                  CELL_IS_IN(TOP), CELL_IS_IN(RIGHT), CELL_IS_IN(LEFT), CELL_IS_IN(BOTTOM),
                  CELL_IS_IN(BLACK_KING_AVAILABLE_QUADRANT)}:
         lang.predicate(pred, CELL_S)
@@ -122,29 +123,32 @@ def load_general_problem(problem, lang, rep, env):
                     problem.init.add(lang.get(CELL_HAS(sort, o)), lang.get(CONST[sort](r, c, nrows, ncols)))
 
     # CHECKMATE TACTIC
-    from .envs.checkmate_tactic import get_attacking_mask_from_piece, get_mask_quadrant_black_king, get_attacking_mask, WHITE, BLACK, WHITE_KING, \
-        WHITE_TOWER, BLACK_KING, CHECKMATE
+    from .envs.checkmate_tactic import get_attacking_mask_from_piece, get_attacking_mask, WHITE, BLACK, WHITE_KING, \
+        WHITE_TOWER, BLACK_KING, CHECKMATE, WHITE_QUEEN
     mask_white = get_attacking_mask(brd, WHITE)
     mask_black = get_attacking_mask(brd, BLACK)
     mask_bk = get_attacking_mask_from_piece(brd, BLACK_KING)
     mask_wk = get_attacking_mask_from_piece(brd, WHITE_KING)
-    mask_wr = get_attacking_mask_from_piece(brd, WHITE_TOWER)
-    mask_quadrant_bk = get_mask_quadrant_black_king(brd)
+    # mask_wr = get_attacking_mask_from_piece(brd, WHITE_TOWER)
+    mask_wq = get_attacking_mask_from_piece(brd, WHITE_QUEEN)
+    # mask_quadrant_bk = get_mask_quadrant_black_king(brd)
     for r in range(nrows):
         for c in range(ncols):
             cell = lang.get(CONST[CELL_S](r, c, nrows, ncols))
             if mask_wk[r, c]:
                 problem.init.add(lang.get(CELL_HAS_PIECE_ATTAKED_BY(WHITE_KING)), cell)
-            if mask_wr[r, c]:
-                problem.init.add(lang.get(CELL_HAS_PIECE_ATTAKED_BY(WHITE_TOWER)), cell)
+            # if mask_wr[r, c]:
+            #     problem.init.add(lang.get(CELL_HAS_PIECE_ATTAKED_BY(WHITE_TOWER)), cell)
             if mask_bk[r, c]:
                 problem.init.add(lang.get(CELL_HAS_PIECE_ATTAKED_BY(BLACK_KING)), cell)
+            if mask_wq[r, c]:
+                problem.init.add(lang.get(CELL_HAS_PIECE_ATTAKED_BY(WHITE_QUEEN)), cell)
             if mask_white[r, c]:
                 problem.init.add(lang.get(CELL_HAS_COLOR_ATTAKED_BY(WHITE)), cell)
             if mask_black[r, c]:
                 problem.init.add(lang.get(CELL_HAS_COLOR_ATTAKED_BY(BLACK)), cell)
-            if mask_quadrant_bk[r, c] and not mask_white[r, c] and not getattr(rep, CHECKMATE):
-                problem.init.add(lang.get(CELL_IS_IN(BLACK_KING_AVAILABLE_QUADRANT)), cell)
+            # if mask_quadrant_bk[r, c] and not mask_white[r, c] and not getattr(rep, CHECKMATE):
+            #     problem.init.add(lang.get(CELL_IS_IN(BLACK_KING_AVAILABLE_QUADRANT)), cell)
             if in_top(r, c, nrows, ncols):
                 problem.init.add(lang.get(CELL_IS_IN(TOP)), cell)
             if in_bottom(r, c, nrows, ncols):

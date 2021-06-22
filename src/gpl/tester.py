@@ -192,6 +192,9 @@ def create_action_selection_function_from_transition_policy(config, model_factor
         m0 = generate_model_from_state(task, model_factory, state, static_atoms)
         goods = list()
         for op, sp in successors:
+            # if sp[0].goal:
+            #     goods = [(op, sp)]
+            #     break
             m1 = generate_model_from_state(task, model_factory, sp, static_atoms)
             # if policy.transition_is_good(m0, op):
             tx = (m0, m1, op) if config.use_action_ids else (m0, m1)

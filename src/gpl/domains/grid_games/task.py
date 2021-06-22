@@ -88,8 +88,14 @@ class Task(ITask):
                             if s2[1] not in vistited_s2:
                                 queue.append(s2)
 
+        from .envs.checkmate_tactic import CHECKMATE, STALEMATE, CHECK, QUEEN_ATTACKED_WHITOUT_PROTECTION, \
+            BLACK_KING_CLOSED_IN_EDGE_BY_WHITE_QUEEN, BLACK
+
         # succs_reps.append(r0)
         # for _, sp, spp in succs:
+        #     # rep = sp[0]
+        #     # if getattr(rep, QUEEN_ATTACKED_WHITOUT_PROTECTION) and rep.player == BLACK and not rep.deadend:
+        #     #     raise
         #     succs_reps.append(sp[0])
         #     if sp[1] != spp[1]:
         #         succs_reps.append(spp[0])
@@ -145,7 +151,19 @@ class Task(ITask):
                 single_rep_row += simplified_objects[o]
             size_single_row = len("{} # ".format(single_rep_row))
 
-            info_to_print = ["player", "nmoves", "last_turn", "next_player", "holding_pet", "at_destination", "deadend", "goal", "at_pet", "black_has_action", "check", "stalemate"]
+            from .envs.checkmate_tactic import  CHECKMATE, STALEMATE, \
+                CHECK,QUEEN_ATTACKED_WHITOUT_PROTECTION, BLACK_KING_CLOSED_IN_EDGE_BY_WHITE_QUEEN, \
+                WHITE_QUEEN_AND_BLACK_KING_IN_ADJACENT_EDGE, BLACK_KING_IN_CORNER, \
+                BLACK_KING_AND_WHITE_KING_IN_SAME_EDGE, WHITE_KING_IN_EDGE, BLACK_KING_AND_WHITE_KING_IN_SAME_QUEEN_QUADRANT
+
+            info_to_print = ["player", "deadend", "goal", CHECKMATE,
+                             STALEMATE, CHECK, QUEEN_ATTACKED_WHITOUT_PROTECTION,
+                             BLACK_KING_CLOSED_IN_EDGE_BY_WHITE_QUEEN,
+                             WHITE_QUEEN_AND_BLACK_KING_IN_ADJACENT_EDGE,
+                             BLACK_KING_IN_CORNER,
+                             BLACK_KING_AND_WHITE_KING_IN_SAME_EDGE,
+                             WHITE_KING_IN_EDGE, BLACK_KING_AND_WHITE_KING_IN_SAME_QUEEN_QUADRANT]
+            # info_to_print = ["player", "nmoves", "last_turn", "next_player", "holding_pet", "at_destination", "deadend", "goal", "at_pet", "black_has_action", "check", "stalemate"]
             for info in info_to_print:
                 try:
                     tmp_full_row = ""

@@ -63,6 +63,17 @@ CHECKMATE = 'checkmate'
 STALEMATE = 'stalemate'
 BLACK_HAS_ACTION = 'black_has_action'
 ROOK_ATTACKED_WHITOUT_PROTECTION = 'rook_attaked_without_protection'
+QUEEN_ATTACKED_WHITOUT_PROTECTION = 'queen_attaked_without_protection'
+BLACK_KING_CLOSED_IN_EDGE_BY_WHITE_QUEEN = 'black_king_closed_in_edge_by_white_queen'
+WHITE_QUEEN_AND_BLACK_KING_IN_ADJACENT_EDGE = 'white_queen_and_black_king_in_adjacent_edge'
+WHITE_QUEEN_AND_WHITE_KING_IN_ADJACENT_EDGE = 'white_queen_and_white_king_in_adjacent_edge'
+WHITE_QUEEN_AND_BLACK_KING_IN_SAME_EDGE = 'white_queen_and_black_king_in_same_edge'
+WHITE_QUEEN_AND_WHITE_KING_IN_SAME_EDGE = 'white_queen_and_white_king_in_same_edge'
+BLACK_KING_AND_WHITE_KING_IN_SAME_EDGE = 'black_king_and_white_king_in_same_edge'
+BLACK_KING_AND_WHITE_KING_IN_SAME_QUEEN_QUADRANT = 'black_king_and_white_king_same_queen_quadrant'
+WHITE_QUEEN_IN_EDGE = 'white_queen_in_edge'
+WHITE_KING_IN_EDGE = 'white_king_in_edge'
+BLACK_KING_IN_CORNER = 'black_king_in_corner'
 
 # Begin Chase =================================
 
@@ -81,7 +92,11 @@ class Env(object):
         except IndexError:
             print("Index error")
             sys.exit(1)
-        assert 'king' not in next_cell
+        assert not (getattr(rep, CHECK) and rep.player == WHITE)
+        try:
+            assert 'king' not in next_cell
+        except:
+            raise
         assert next_cell not in COLOR_TO_PIECES[rep.player]
         piece = l[pos[0], pos[1]]
         l[running_pos[0], running_pos[1]] = piece
@@ -103,11 +118,36 @@ class Env(object):
             updated_rep[CHECK] = check(rep)
         if ROOK_ATTACKED_WHITOUT_PROTECTION in self.params.unary_predicates:
             updated_rep[ROOK_ATTACKED_WHITOUT_PROTECTION] = deadend_extension(rep)
+        if QUEEN_ATTACKED_WHITOUT_PROTECTION in self.params.unary_predicates:
+            updated_rep[QUEEN_ATTACKED_WHITOUT_PROTECTION] = deadend_extension(rep)
+        if BLACK_KING_CLOSED_IN_EDGE_BY_WHITE_QUEEN in self.params.unary_predicates:
+            updated_rep[BLACK_KING_CLOSED_IN_EDGE_BY_WHITE_QUEEN] = black_king_closed_in_edge_by_white_queen(rep)
+        if WHITE_QUEEN_AND_BLACK_KING_IN_ADJACENT_EDGE in self.params.unary_predicates:
+            updated_rep[WHITE_QUEEN_AND_BLACK_KING_IN_ADJACENT_EDGE] = white_queen_and_black_king_adjacent_edge(rep)
+        if WHITE_QUEEN_AND_WHITE_KING_IN_ADJACENT_EDGE in self.params.unary_predicates:
+            updated_rep[WHITE_QUEEN_AND_WHITE_KING_IN_ADJACENT_EDGE] = white_queen_and_white_king_adjacent_edge(rep)
+        if WHITE_QUEEN_AND_BLACK_KING_IN_SAME_EDGE in self.params.unary_predicates:
+            updated_rep[WHITE_QUEEN_AND_BLACK_KING_IN_SAME_EDGE] = white_queen_and_black_king_same_edge(rep)
+        if WHITE_QUEEN_AND_WHITE_KING_IN_SAME_EDGE in self.params.unary_predicates:
+            updated_rep[WHITE_QUEEN_AND_WHITE_KING_IN_SAME_EDGE] = white_queen_and_white_king_same_edge(rep)
+        if BLACK_KING_AND_WHITE_KING_IN_SAME_EDGE in self.params.unary_predicates:
+            updated_rep[BLACK_KING_AND_WHITE_KING_IN_SAME_EDGE] = black_king_and_white_king_same_edge(rep)
+        if BLACK_KING_AND_WHITE_KING_IN_SAME_QUEEN_QUADRANT in self.params.unary_predicates:
+            updated_rep[BLACK_KING_AND_WHITE_KING_IN_SAME_QUEEN_QUADRANT] = black_king_and_white_king_same_queen_quadrant(rep)
+        if WHITE_QUEEN_IN_EDGE in self.params.unary_predicates:
+            updated_rep[WHITE_QUEEN_IN_EDGE] = white_queen_in_edge(rep)
+        if WHITE_KING_IN_EDGE in self.params.unary_predicates:
+            updated_rep[WHITE_KING_IN_EDGE] = white_king_in_edge(rep)
         if BLACK_HAS_ACTION in self.params.unary_predicates:
-            if rep.player == BLACK:
-                updated_rep[BLACK_HAS_ACTION] = len(Env.available_actions(rep)) > 0
-            else:
-                updated_rep[BLACK_HAS_ACTION] = False
+            new_rep = copy.deepcopy(rep)
+            new_rep.player = BLACK
+            updated_rep[BLACK_HAS_ACTION] = len(Env.available_actions(new_rep)) > 0
+        if BLACK_KING_IN_CORNER in self.params.unary_predicates:
+            updated_rep[BLACK_KING_IN_CORNER] = black_king_in_corner(rep)
+            # if rep.player == BLACK:
+            #     updated_rep[BLACK_HAS_ACTION] = len(Env.available_actions(rep)) > 0
+            # else:
+            #     updated_rep[BLACK_HAS_ACTION] = False
         updated_rep[f"{N_MOVE}_{rep.nmoves}"] = True
         gstatus = Env.check_game_status(rep)
         if gstatus == 1:
@@ -132,6 +172,7 @@ class Env(object):
     @staticmethod
     def available_actions(rep):
         layout = rep.grid
+        assert not rep.goal and not rep.deadend
         actions = []
         if rep.player == WHITE:
             if WHITE_QUEEN in layout:
@@ -189,7 +230,7 @@ class Env(object):
         rep['next_player'] = BLACK
         rep['goal'] = False
         rep['deadend'] = False
-        return Bunch(rep)
+        return self.__update_rep(Bunch(rep))
 
 
 # Helper mehtods =================================
@@ -213,6 +254,7 @@ def checkmate(rep):
                 return True
         return False
     return False
+
 
 def deadend_extension(rep):
     layout = rep.grid
@@ -252,6 +294,138 @@ def stale_mate(rep):
         if not bk_valid_moves:
             return True
     elif not WHITE_QUEEN in layout and not WHITE_TOWER in layout:
+        return True
+    else:
+        return False
+
+
+def black_king_closed_in_edge_by_white_queen(rep):
+    """ El rey negro está "encerrado" por la reina en un edge del tablero, file or rank, no importa. """
+    layout = rep.grid
+    assert BLACK_KING in layout and WHITE_QUEEN in layout
+    nrows, ncols = layout.shape
+    r_bk, c_bk = np.argwhere(layout == BLACK_KING)[0]
+    r_wq, c_wq = np.argwhere(layout == WHITE_QUEEN)[0]
+    if (r_bk == 0 or r_bk == nrows - 1) and abs(r_bk - r_wq) ==  1:
+        if abs(c_bk - c_wq) == 3 and black_king_in_corner(rep):
+            return True
+        if abs(c_bk - c_wq) == 2 and (c_bk == 1 or c_bk == ncols - 2):
+            return True
+    elif (c_bk == 0 or c_bk == ncols - 1) and abs(c_bk - c_wq) ==  1:
+        if abs(r_bk - r_wq) == 3 and black_king_in_corner(rep):
+            return True
+        if abs(r_bk - r_wq) == 2 and (r_bk == 1 or r_bk == ncols - 2):
+            return True
+    return False
+
+
+def white_queen_and_black_king_adjacent_edge(rep):
+    layout = rep.grid
+    assert BLACK_KING in layout and WHITE_QUEEN in layout
+    nrows, ncols = layout.shape
+    r_bk, c_bk = np.argwhere(layout == BLACK_KING)[0]
+    r_wq, c_wq = np.argwhere(layout == WHITE_QUEEN)[0]
+    if abs(r_bk - r_wq) == 1 or abs(c_bk - c_wq) == 1:
+        return True
+    else:
+        return False
+
+def white_queen_and_white_king_adjacent_edge(rep):
+    layout = rep.grid
+    assert WHITE_KING in layout and WHITE_QUEEN in layout
+    nrows, ncols = layout.shape
+    r_bk, c_bk = np.argwhere(layout == WHITE_KING)[0]
+    r_wq, c_wq = np.argwhere(layout == WHITE_QUEEN)[0]
+    if abs(r_bk - r_wq) == 1 or abs(c_bk - c_wq) == 1:
+        return True
+    else:
+        return False
+
+def white_queen_and_black_king_same_edge(rep):
+    layout = rep.grid
+    assert BLACK_KING in layout and WHITE_QUEEN in layout
+    nrows, ncols = layout.shape
+    r_bk, c_bk = np.argwhere(layout == BLACK_KING)[0]
+    r_wq, c_wq = np.argwhere(layout == WHITE_QUEEN)[0]
+    if r_bk == r_wq or c_bk - c_wq:
+        return True
+    else:
+        return False
+
+def white_queen_and_white_king_same_edge(rep):
+    layout = rep.grid
+    assert WHITE_KING in layout and WHITE_QUEEN in layout
+    nrows, ncols = layout.shape
+    r_bk, c_bk = np.argwhere(layout == WHITE_KING)[0]
+    r_wq, c_wq = np.argwhere(layout == WHITE_QUEEN)[0]
+    if r_bk == r_wq or c_bk == c_wq:
+        return True
+    else:
+        return False
+
+
+def black_king_and_white_king_same_edge(rep):
+    layout = rep.grid
+    assert WHITE_KING in layout and BLACK_KING in layout
+    nrows, ncols = layout.shape
+    r_bk, c_bk = np.argwhere(layout == BLACK_KING)[0]
+    r_wq, c_wq = np.argwhere(layout == WHITE_KING)[0]
+    if r_bk == r_wq or c_bk == c_wq:
+        return True
+    else:
+        return False
+
+def black_king_and_white_king_same_queen_quadrant(rep):
+    layout = rep.grid
+    assert WHITE_KING in layout and BLACK_KING in layout
+    nrows, ncols = layout.shape
+    r_bk, c_bk = np.argwhere(layout == BLACK_KING)[0]
+    r_wk, c_wk = np.argwhere(layout == WHITE_KING)[0]
+    r_wq, c_wq = np.argwhere(layout == WHITE_QUEEN)[0]
+
+    if (r_wk <= r_wq and r_bk <= r_wq):
+        if (c_wk <= c_wq and c_bk <= c_wq):
+            # q1
+            return True
+        if (c_wk >= c_wq and c_bk >= c_wq):
+            # q2
+            return True
+    if r_wk >= r_wq and r_bk >= r_wq:
+        if c_wk <= c_wq and c_bk <= c_wq:
+            # q3
+            return True
+        if c_wk >= c_wq and c_bk >= c_wq:
+            # q4
+            return True
+
+    return False
+
+def white_queen_in_edge(rep):
+    layout = rep.grid
+    assert WHITE_QUEEN in layout
+    nrows, ncols = layout.shape
+    r, c = np.argwhere(layout == WHITE_QUEEN)[0]
+    if (r == 0 or r == nrows - 1 or c == 0 or c == ncols - 1):
+        return True
+    else:
+        return False
+
+def white_king_in_edge(rep):
+    layout = rep.grid
+    assert WHITE_KING in layout
+    nrows, ncols = layout.shape
+    r, c = np.argwhere(layout == WHITE_KING)[0]
+    if (r == 0 or r == nrows - 1 or c == 0 or c == ncols - 1):
+        return True
+    else:
+        return False
+
+
+def black_king_in_corner(rep):
+    layout = rep.grid
+    r_bk, c_bk = np.argwhere(layout == BLACK_KING)[0]
+    nrows, ncols = layout.shape
+    if (r_bk == 0 or r_bk == nrows - 1) and (c_bk == 0 or c_bk == ncols -1):
         return True
     else:
         return False
@@ -309,10 +483,7 @@ def get_attacking_mask_from_piece(layout, piece):
 def get_king_attacking_mask(layout, color):
     attacking_mask = np.zeros(layout.shape, dtype=bool)
     piece = WHITE_KING if color == WHITE else BLACK_KING
-    try:
-        pos = np.argwhere(layout == piece)[0]
-    except:
-        raise
+    pos = np.argwhere(layout == piece)[0]
     attacking_mask = get_king_attacking_spaces(pos, layout, get_mask=True)
     return attacking_mask
 
@@ -329,6 +500,8 @@ def no_king_piece_attaking_mask(layout, piece):
             try:
                 next_cell = layout[running_pos[0], running_pos[1]]
             except IndexError:
+                break
+            if WHITE_KING in next_cell:
                 break
             if next_cell in EMPTY or BLACK_KING in next_cell:
                 mask[running_pos[0], running_pos[1]] = True
@@ -353,50 +526,6 @@ def get_king_attacking_spaces(pos, layout, get_mask=False):
     attacking_mask[pos[0], pos[1]] = True
     return attacking_mask if get_mask else attacking_spaces
 
-
-def get_mask_quadrant_black_king(layout):
-    """ just for the ROOK version """
-    mask = np.zeros(layout.shape, dtype=bool)
-    nrows, ncols = layout.shape
-    r_bk, c_bk = np.argwhere(layout == BLACK_KING)[0]
-    r_wr, c_wr = np.argwhere(layout == WHITE_TOWER)[0]
-    if r_bk == r_wr or c_bk == c_wr:
-        return np.ones(layout.shape, dtype=bool)
-
-    corner0, corner1 = identify_quadrant_corners(layout, r_bk, c_bk, r_wr, c_wr, nrows, ncols)
-
-    for r in range(corner0[0], corner1[0] + 1):
-        for c in range(corner0[1], corner1[1] + 1):
-            mask[r, c] = True
-    mask[r_bk, c_bk] = False
-
-    return mask
-
-
-def identify_quadrant_corners(layout, r_bk, c_bk, r_wr, c_wr, nrows, ncols):
-    mask_king = get_king_attacking_mask(layout, WHITE)
-
-    # q1 (left, up)
-    if r_bk < r_wr and c_bk < c_wr:
-        corner0 = (0, 0)
-        corner1 = (r_wr - 1, c_wr - 1)
-
-    # q2 (right, up)
-    if r_bk < r_wr and c_bk > c_wr:
-        corner0 = (0, c_wr + 1)
-        corner1 = (r_wr - 1, ncols - 1)
-
-    # q3 (left, down)
-    if r_bk > r_wr and c_bk < c_wr:
-        corner0 = (r_wr + 1, 0)
-        corner1 = (nrows - 1, c_wr - 1)
-
-    # q4 (right, down)
-    if r_bk > r_wr and c_bk > c_wr:
-        corner0 = (r_wr + 1, c_wr + 1)
-        corner1 = (nrows - 1, ncols - 1)
-
-    return corner0, corner1
 
 def cool_piece_valid_moves(pos, layout, color, piece):
     valid_moves = []
@@ -489,7 +618,7 @@ def generate_check_in_one(shapes, piece):
 
 def generate_test_gird(key):
     height, width, cell_white_king, cell_black_king, cell_white_queen, cell_white_tower = \
-        TEST_LAYOUTS_TOWER[key]
+        TEST_LAYOUTS_QUEEN[key]
     grid = np.full((height, width), EMPTY, dtype=object)
     grid[cell_white_king] = WHITE_KING
     grid[cell_black_king] = BLACK_KING
@@ -511,15 +640,29 @@ TEST_LAYOUTS_TOWER = {
     -8: (10, 10, (1, 1), (1, 3), None, (1, 0)),
 }
 
+TEST_LAYOUTS_QUEEN = {
+    -1: (4, 4, (3, 2), (0, 2), (3, 1), None),
+    -2: (4, 4, (1, 1), (1, 3), (1, 0), None),
+    -3: (5, 5, (0, 0), (4, 4), (1, 2), None),
+    -4: (6, 6, (0, 0), (3, 3), (5, 2), None),
+    -5: (7, 7, (1, 1), (1, 3), (1, 0), None),
+    -6: (8, 8, (1, 1), (1, 3), (1, 0), None),
+    -7: (9, 9, (1, 1), (1, 3), (1, 0), None),
+    -8: (10, 10, (1, 1), (1, 3), (1, 0), None),
+    -9: (7, 7, (0, 3), (1, 6), (0, 4), None),
+    -10: (15, 15, (6, 6), (9, 9), (0, 0), None),
+}
+
 LAYOUTS_CHECK_IN_ONE_QUEEN = generate_check_in_one([(3, 3), (4, 3), (4, 4), (5, 5), (6, 6)], WHITE_QUEEN)
 LAYOUTS_CHECK_IN_ONE_TOWER = generate_check_in_one([(3, 3), (4, 3), (3, 4), (4, 4), (4, 5), (5, 4), (5, 5), (6, 6)], WHITE_TOWER)
 
 for k in TEST_LAYOUTS_TOWER.keys():
     LAYOUTS_CHECK_IN_ONE_TOWER[k] = generate_test_gird(k)
 
+for k in TEST_LAYOUTS_QUEEN.keys():
+    LAYOUTS_CHECK_IN_ONE_QUEEN[k] = generate_test_gird(k)
+
 LAYOUTS = {
     0: LAYOUTS_CHECK_IN_ONE_QUEEN,
-    # 0: LAYOUTS_QUEEN_CUSTOM,
     1: LAYOUTS_CHECK_IN_ONE_TOWER,
-    # 1: LAYOUTS_TOWER_CUSTOM,
 }

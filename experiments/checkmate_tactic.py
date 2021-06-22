@@ -5,9 +5,17 @@ from gpl.domains.grid_games.domain import Domain
 from gpl.utils import Bunch
 from gpl.domains.grid_games.grammar.language import *
 from gpl.domains.grid_games.envs.checkmate_tactic import \
-    CHECKMATE, STALEMATE, N_MOVE, CHECK, BLACK_HAS_ACTION, WHITE_KING, WHITE_TOWER, BLACK_KING, WHITE, BLACK, \
-    ROOK_ATTACKED_WHITOUT_PROTECTION
+    CHECKMATE, STALEMATE, CHECK, BLACK_HAS_ACTION, WHITE_KING, BLACK_KING, \
+    WHITE, BLACK, QUEEN_ATTACKED_WHITOUT_PROTECTION, WHITE_QUEEN, \
+    BLACK_KING_CLOSED_IN_EDGE_BY_WHITE_QUEEN, \
+    WHITE_QUEEN_AND_BLACK_KING_IN_ADJACENT_EDGE, BLACK_KING_IN_CORNER, \
+    WHITE_QUEEN_AND_WHITE_KING_IN_ADJACENT_EDGE, \
+    WHITE_QUEEN_AND_WHITE_KING_IN_SAME_EDGE, \
+    WHITE_QUEEN_AND_BLACK_KING_IN_SAME_EDGE, \
+    BLACK_KING_AND_WHITE_KING_IN_SAME_EDGE, \
+    WHITE_QUEEN_IN_EDGE, WHITE_KING_IN_EDGE, BLACK_KING_AND_WHITE_KING_IN_SAME_QUEEN_QUADRANT
 
+DEADEND = 'deadend'
 
 ct_params = Bunch({
     'domain_name': 'checkmate_tactic',
@@ -20,13 +28,23 @@ ct_params = Bunch({
     'objects_to_ignore': set(),
     'map_cells': True,
     'use_diagonals_for_map_cells': True,
-    'use_adjacency': {COL_S, ROW_S, CELL_S},
-    'use_distance_2': {COL_S, ROW_S, CELL_S},
-    'use_distance_more_than_1': {COL_S, ROW_S, CELL_S},
+    'use_adjacency': {CELL_S, ROW_S , COL_S},
+    'use_distance_2': {},
+    'use_distance_more_than_1': {},
     'use_bidirectional': {},
-    'sorts_to_use': {COL_S, ROW_S, CELL_S},
+    'sorts_to_use': {CELL_S, ROW_S , COL_S},
     'n_moves': 10000,
-    'unary_predicates': {CHECKMATE, STALEMATE, CHECK, BLACK_HAS_ACTION, 'deadend', ROOK_ATTACKED_WHITOUT_PROTECTION},
+    'unary_predicates': {CHECKMATE, STALEMATE, CHECK,
+                         QUEEN_ATTACKED_WHITOUT_PROTECTION,
+                         BLACK_KING_CLOSED_IN_EDGE_BY_WHITE_QUEEN,
+                         WHITE_QUEEN_AND_BLACK_KING_IN_ADJACENT_EDGE,
+                         WHITE_QUEEN_AND_WHITE_KING_IN_ADJACENT_EDGE,
+                         WHITE_QUEEN_AND_BLACK_KING_IN_SAME_EDGE,
+                         WHITE_QUEEN_AND_WHITE_KING_IN_SAME_EDGE,
+                         BLACK_KING_AND_WHITE_KING_IN_SAME_EDGE,
+                         BLACK_HAS_ACTION, BLACK_KING_IN_CORNER,
+                         WHITE_QUEEN_IN_EDGE, WHITE_KING_IN_EDGE,
+                         BLACK_KING_AND_WHITE_KING_IN_SAME_QUEEN_QUADRANT},
     'game_version': 0,
 })
 
@@ -60,7 +78,7 @@ def experiments():
         decreasing_transitions_must_be_good=False,
         allow_cycles=False,
         use_action_ids=False,
-        use_weighted_tx=True,
+        use_weighted_tx=False,
         distinguish_goals=True,
         sampling_strategy="full",
 
@@ -71,7 +89,7 @@ def experiments():
         # num_episodes=1,
         # num_rollouts=1,
         # rollout_depth=2,
-        # train_instances_to_expand=[],
+        # train_instances_to_expand=[],0
         train_instances_to_expand=list(range(1000)),
         max_states_expanded=math.inf,
         use_state_novelty=True,
@@ -79,27 +97,28 @@ def experiments():
     exps = dict()
 
     # version 1:
-    # using tower
+    # using queen
     ct_params_v1 = copy.deepcopy(ct_params)
-    ct_params_v1.game_version = 1
+    ct_params_v1.game_version = 0
     exps["1"] = update_dict(
         base,
         domain=Domain(ct_params_v1),
         instances=[0],
         # instances=[70, 150],
         # test_instances=[0],
-        allow_bad_states=False,
+        allow_bad_states=True,
         test_instances=list(range(0, -1000, -1)),  # using negative keys for test instances
         # test_instances=[-1, -2, -3],
-        feature_generator=debug_features_checkmate_tactic_rook(),
-        validate_features=debug_validate_features(),
-        d2l_policy=debug_policy(),
+        feature_generator=debug_features_checkmate_tactic_queen(),
+        validate_features=debug_validate_features_queen(),
+        d2l_policy=debug_policy_queen(),
         # skip_train_steps=[0, 1, 2, 3],
     )
 
     exps["2"] = update_dict(
         exps["1"],
-        instances=[70, 150],
+        instances=[300, ],
+        feature_generator=debug_features_checkmate_tactic_queen(),
     )
 
     return exps
@@ -110,28 +129,26 @@ def experiments():
 # % % % % % % % % %
 
 col_h_wk = 'col-has-white_king'
-col_h_wr = 'col-has-white_rook'
+col_h_wq = 'col-has-white_queen'
 col_h_bk = 'col-has-black_king'
 row_h_wk = 'row-has-white_king'
-row_h_wr = 'row-has-white_rook'
+row_h_wq = 'row-has-white_queen'
 row_h_bk = 'row-has-black_king'
 cell_h_wk = 'cell-has-white_king'
-cell_h_wr = 'cell-has-white_rook'
+cell_h_wq = 'cell-has-white_queen'
 cell_h_bk = 'cell-has-black_king'
 adj_cell = 'adjacent_cell'
 adj_col = 'adjacent_col'
 adj_row = 'adjacent_row'
 cell_h_c_att_by_w = CELL_HAS_COLOR_ATTAKED_BY(WHITE)
 cell_h_c_att_by_b = CELL_HAS_COLOR_ATTAKED_BY(BLACK)
-cell_h_c_att_by_wr = CELL_HAS_PIECE_ATTAKED_BY(WHITE_TOWER)
+cell_h_c_att_by_wq = CELL_HAS_PIECE_ATTAKED_BY(WHITE_QUEEN)
 cell_h_c_att_by_wk = CELL_HAS_PIECE_ATTAKED_BY(WHITE_KING)
 cell_h_c_att_by_bk = CELL_HAS_PIECE_ATTAKED_BY(BLACK_KING)
 cell_is_in_top = CELL_IS_IN(TOP)
 cell_is_in_right_most = CELL_IS_IN(RIGHT)
 cell_is_in_left_most = CELL_IS_IN(LEFT)
 cell_is_in_bottom = CELL_IS_IN(BOTTOM)
-cell_h_c_bk_ava_q = CELL_IS_IN(BLACK_KING_AVAILABLE_QUADRANT)
-
 
 Atom = lambda what: f'Atom[{what}]'
 Num = lambda what: f'Num[{what}]'
@@ -141,167 +158,182 @@ Not = lambda what: f'Not({what})'
 Exists = lambda sep, elem: f'Exists({sep},{elem})'
 Forall = lambda sep, elem: f'Forall({sep},{elem})'
 And = lambda elem0, elem1: f'And({elem0},{elem1})'
-LessThan = lambda elem0, elem1: 'LessThan{' + elem0 + elem1 + '}'
+LessThan = lambda elem0, elem1: 'LessThan{' + elem0 + ',' + elem1 + '}'
 
+"""
+Las features serían:
+(A) Número de celdas que son reachable desde la posición del rey negro sin cruzar ninguna línea de jaque de la reina blanca.
+(CM) La posición es un jaque mate
+(C) La posición es un jaque 
+(P1) White turn
+(WQABK) = Atom(WHITE_QUEEN_AND_BLACK_KING_IN_ADJACENT_EDGE)
+(KE) El rey negro está "encerrado" por la reina en un edge del tablero, file or rank, no importa.
+(QA) = Atom(QUEEN_ATTACKED_WHITOUT_PROTECTION)
+(KD) manhattan distance entre los dos reyes.
+(SM) La posición es un stalemate   [esta la usaremos solo implícitamente en las reglas, para indicar que nunca se pone a cierto]
+(BM) La posición es un jaque de negra-a-blanca. También la usaremos solo implícitamente para indicar que eso nunca ocurre.
 
-def debug_features_checkmate_tactic_rook():
+Las reglas:
+R1.  not KE, A>0  --> A dec | A dec, KE
+R2. KE, KD>0  --> KD dec
+R3. True --> CM 
+"""
+
+# P1 = Atom("player-1")
+# BKHA = Atom(BLACK_HAS_ACTION)
+A = Num(And(cell_h_c_att_by_bk, Not(cell_h_c_att_by_wq)))
+# AWK = Num(And(cell_h_c_att_by_bk, Not(cell_h_c_att_by_wk)))
+# AW = Num(And(cell_h_c_att_by_bk, Not(cell_h_c_att_by_w)))
+# WQAdjBK = Atom(WHITE_QUEEN_AND_BLACK_KING_IN_ADJACENT_EDGE)
+# WQAdjWK = Atom(WHITE_QUEEN_AND_WHITE_KING_IN_ADJACENT_EDGE)
+CM = Atom(CHECKMATE)
+KE = Atom(BLACK_KING_CLOSED_IN_EDGE_BY_WHITE_QUEEN)
+QA = Atom(QUEEN_ATTACKED_WHITOUT_PROTECTION)
+SAME_QUADRANT = Atom(BLACK_KING_AND_WHITE_KING_IN_SAME_QUEEN_QUADRANT)
+#
+KRD = Dist(row_h_wk, adj_row, row_h_bk)
+KCD = Dist(col_h_wk, adj_col, col_h_bk)
+# KD = Dist(cell_h_wk, adj_cell, cell_h_bk)
+#
+# KQRD = Dist(row_h_wq, adj_row, row_h_bk)
+# KQCD = Dist(col_h_wq, adj_col, col_h_bk)
+# WKD = Dist(cell_h_wq, adj_cell, cell_h_bk)
+SM = Atom(STALEMATE)
+C = Atom(CHECK)
+#
+# BKinC = Atom(BLACK_KING_IN_CORNER)
+
+# BK_WK_same_row = Bool(And(row_h_bk, row_h_wk))
+# BK_WK_same_col = Bool(And(col_h_bk, col_h_wk))
+# BK_WQ_same_row = Bool(And(row_h_bk, row_h_wq))
+# BK_WQ_same_col = Bool(And(col_h_bk, col_h_wq))
+# WK_WQ_same_row = Bool(And(row_h_wk, row_h_wq))
+# WK_WQ_same_col = Bool(And(col_h_wk, col_h_wq))
+
+# BK_WK_same_edge = Atom(BLACK_KING_AND_WHITE_KING_IN_SAME_EDGE)
+WQ_WK_same_edge = Atom(WHITE_QUEEN_AND_WHITE_KING_IN_SAME_EDGE)
+# WQ_BK_same_edge = Atom(WHITE_QUEEN_AND_BLACK_KING_IN_SAME_EDGE)
+#
+WQ_in_edge = Atom(WHITE_QUEEN_IN_EDGE)
+WK_in_edge = Atom(WHITE_KING_IN_EDGE)
+
+# TODO: BM (not necessary for now)
+
+def debug_features_checkmate_tactic_queen():
     return [
-        Atom(CHECK),
-        # Atom('deadend'),
-        # Atom(CHECKMATE),
-        # Atom('player-1'),
-        # Atom(STALEMATE),
-        Atom(BLACK_HAS_ACTION),
-        Atom(ROOK_ATTACKED_WHITOUT_PROTECTION),
-
-        # Num(cell_h_c_bk_ava_q),
-        # "Num[cell-has-black_attacked]",
-        # "Num[cell-has-white_attacked]",
-        # "Bool[And(col-has-black_king,col-has-white_king)]",
-        # "Bool[And(col-has-black_king,col-has-white_rook)]",
-        # "Bool[And(row-has-black_king,row-has-white_king)]",
-        # "Bool[And(row-has-black_king,row-has-white_rook)]",
-
-        # "Bool[And(cell-has-black_attacked,cell-has-white_rook)]",
-
-        # Num(And(cell_h_c_att_by_b, cell_h_c_att_by_w)),
-        # Bool(f"And({cell_h_c_att_by_w},{cell_h_bk})"),
-        # Bool(f"And({cell_is_in_top},{cell_h_bk})"),
-        # Bool(f"And({cell_is_in_bottom},{cell_h_bk})"),
-        # Bool(f"And({cell_is_in_left_most},{cell_h_bk})"),
-        # Bool(f"And({cell_is_in_right_most},{cell_h_bk})"),
-        # Bool(f"And({col_h_wk},{col_h_wr})"),
-        # Bool(f"And({row_h_wk},{row_h_wr})"),
-
-        # Bool(f"And({cell_h_c_att_by_wr},{cell_is_in_top})"),
-        # Bool(f"And({cell_h_c_att_by_wr},{cell_is_in_bottom})"),
-        # Bool(f"And({cell_h_c_att_by_wr},{cell_is_in_right_most})"),
-        # Bool(f"And({cell_h_c_att_by_wr},{cell_is_in_left_most})"),
-
-        # Bool(And(cell_h_bk, cell_is_in_top)),
-        # Bool(And(cell_h_bk, cell_is_in_bottom)),
-        # Bool(And(cell_h_bk, cell_is_in_right_most)),
-        # Bool(And(cell_h_bk, cell_is_in_left_most)),
-
-        # Bool(And(col_h_bk, col_h_wk)),
-        # Bool(And(col_h_bk, col_h_wr)),
-        # Bool(And(row_h_bk, row_h_wr)),
-        # Bool(And(row_h_bk, row_h_wr)),
-        #
-        # # "Bool[And(cell-has-white_attacked,cell-has-black_king)]",
-        # # "Num[And(Not(cell-has-black_attacked),cell-has-white_rook)]",
-        # # "Num[And(cell-has-white_attacked,cell-has-black_king)]",
-        # # "Num[And(Not(cell-has-white_attacked),cell-has-black_king)]",
-        # #
-        # # "Dist[row-has-black_king;adjacent_row;row-has-white_rook]",
-        # # "Dist[row-has-black_king;adjacent_row;row-has-white_king]",
-        # # "Dist[col-has-black_king;adjacent_col;col-has-white_rook]",
-        # # "Dist[col-has-black_king;adjacent_col;col-has-white_king]",
-        # # "Dist[cell-has-black_king;adjacent_cell;cell-has-white_rook]",
-        #
-        # # Dist(f"{cell_h_bk};{adj_cell};{cell_is_in_top}"),
-        # # Dist(f"{cell_h_bk};{adj_cell};{cell_is_in_bottom}"),
-        # # Dist(f"{cell_h_bk};{adj_cell};{cell_is_in_left_most}"),
-        # # Dist(f"{cell_h_bk};{adj_cell};{cell_is_in_right_most}"),
-        #
-        # Dist(row_h_bk, adj_row, row_h_wr),
-        # Dist(row_h_bk, adj_row, row_h_wk),
-        # Dist(col_h_bk, adj_col, col_h_wr),
-        # Dist(col_h_bk, adj_col, col_h_wk),
-        # Dist(cell_h_bk, adj_cell, cell_h_wr),
-        # Dist(cell_h_bk, adj_cell, cell_h_wk),
-        #
-        # # "Bool[And(col-has-black_king,Exists(distance_2_col,col-has-white_rook))]",
-        # # "Bool[And(col-has-black_king,Exists(distance_2_col,col-has-white_king))]",
-        # # "Bool[And(row-has-black_king,Exists(distance_2_row,col-has-white_rook))]",
-        # # "Bool[And(row-has-black_king,Exists(distance_2_row,row-has-white_king))]",
-        # # "Bool[And(cell-has-black_king,Exists(distance_2_cell,cell-has-white_king))]",
-        # # "Bool[And(cell-has-black_king,Exists(distance_2_cell,cell-has-white_rook))]",
-        # # Bool(And(row_h_bk, Exists(adj_row, row_h_wr))),
-        # # "Bool[And(row-has-black_king,Exists(adjacent_row,row-has-none))]",
-        # # "Bool[And(col-has-black_king,Exists(adjacent_col,col-has-white_rook))]",
-        # # "Bool[And(col-has-black_king,Exists(adjacent_col,col-has-none))]",
-        # Bool(And(cell_h_bk, Exists(adj_cell, cell_h_wr))),
-        # Bool(And(cell_h_wk, Exists(adj_cell, cell_h_wr))),
-        # # Bool(And(cell_h_c_att_by_w, Exists(adj_cell, cell_h_bk))),
-        # # Bool(And(cell_h_bk, Exists(adj_cell, Not(cell_h_c_att_by_w)))),
-        #
-        # Bool(And(row_h_bk, Exists(adj_row, row_h_wr))),
-        # Bool(And(row_h_bk, Exists(adj_row, row_h_wk))),
-        # Bool(And(col_h_bk, Exists(adj_col, col_h_wr))),
-        # Bool(And(col_h_bk, Exists(adj_col, col_h_wk))),
-
-        # Bool(f"And({cell_h_bk},Exists({adj_cell},{cell_h_wr}))"),
-
-        # "Bool[And(cell-has-white_king,Exists(adjacent_cell,cell-has-white_rook))]",
-        # "Bool[And(cell-has-black_attacked,Exists(adjacent_cell,cell-has-white_king))]",
-        # "Num[And(cell-has-white_attacked,Exists(adjacent_cell,cell-has-black_king))]",
-        #
-        # "Num[And(cell-has-black_attacked,Exists(adjacent_cell,cell-has-white_rook))]",
-        # "Num[And(Not(cell-has-black_attacked),Exists(adjacent_cell,cell-has-white_rook))]",
-        # "Num[And(cell-has-white_attacked,Exists(adjacent_cell,cell-has-black_king))]",
-        # "Num[And(Not(cell-has-white_attacked),Exists(adjacent_cell,cell-has-black_king))]",
-        #
-        # "Num[Forall(adjacent_col,col-has-white_rook)]",
-        # "Num[Forall(adjacent_col,col-has-white_king)]",
-        # "Num[Forall(adjacent_col,col-has-black_king)]",
-        # "Num[Forall(adjacent_row,row-has-white_rook)]",
-        # "Num[Forall(adjacent_row,row-has-white_king)]",
-        # "Num[Forall(adjacent_row,row-has-black_king)]",
-        # "Num[Forall(adjacent_cell,cell-has-white_rook)]",
-        # "Num[Forall(adjacent_cell,cell-has-white_rook)]",
-        # "Num[Forall(adjacent_cell,cell-has-white_rook)]",
+        SM, CM, QA, KE, A, KRD, KCD,
+        C, WQ_WK_same_edge, WQ_in_edge,
+        WK_in_edge, SAME_QUADRANT
     ]
 
 
-def debug_features_checkmate_tactic_queen():
-    features = list()
-    for s in debug_features_checkmate_tactic_rook():
-        features.append(s.replace("rook", "queen"))
-    return features
-
-
-def debug_validate_features():
-    return list(range(len(debug_features_checkmate_tactic_rook())))
+def debug_validate_features_queen():
+    return list(range(len(debug_features_checkmate_tactic_queen())))
 
 
 # % % % % % % % % %
 #    POLICY
 # % % % % % % % % %
 
-def debug_policy():
-    bk_adj_wr = Bool(And(cell_h_bk, Exists(adj_cell, cell_h_wr)))
-    wk_adj_wr = Bool(And(cell_h_wk, Exists(adj_cell, cell_h_wr)))
-    check = Atom(CHECK)
-    bk_h_a = Atom(CHECK)
-    wr_a = Atom(ROOK_ATTACKED_WHITOUT_PROTECTION)
+NIL = 'NIL'
+INC= 'INC'
+DEC = 'DEC'
+e0 = '=0'
+mt0 = '>0'
 
-    rules_0 = [
-        [(check, '=0'), (bk_h_a, '=0'), (check, 'INC'), (bk_h_a, 'NIL')],
-        [(check, '=0'), (bk_h_a, '=0'), (check, 'NIL'), (bk_h_a, 'INC')],
-        [(check, '=0'), (bk_h_a, '=0'), (check, 'INC'), (bk_h_a, 'INC')],
-        # [(bk_adj_wr, '=0'), (wk_adj_wr, '=0'), (bk_adj_wr, 'NIL'), (wk_adj_wr, 'INC')],
-        # [(bk_adj_wr, '=0'), (wk_adj_wr, '=0'), (bk_adj_wr, 'INC'), (wk_adj_wr, 'INC')],
-        # [(bk_adj_wr, '=0'), (wk_adj_wr, '=0'), (bk_adj_wr, 'NIL'), (wk_adj_wr, 'NIL')],
-        # [(bk_adj_wr, '>0'), (wk_adj_wr, '=0'), (bk_adj_wr, 'DEC'), (wk_adj_wr, 'NIL')],
-        # [(bk_adj_wr, '>0'), (wk_adj_wr, '=0'), (bk_adj_wr, 'NIL'), (wk_adj_wr, 'INC')],
-        # [(bk_adj_wr, '>0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'DEC'), (wk_adj_wr, 'DEC')],
-        # [(bk_adj_wr, '>0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'DEC'), (wk_adj_wr, 'NIL')],
-        # [(bk_adj_wr, '>0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'DEC'), (wk_adj_wr, 'NIL')],
-        # [(bk_adj_wr, '=0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'INC'), (wk_adj_wr, 'NIL')],
-        # [(bk_adj_wr, '=0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'NIL')],
-        # [(bk_adj_wr, '=0'), (wk_adj_wr, '>0'), (bk_adj_wr, 'NIL'), (bk_adj_wr, 'DEC')],
+def debug_policy_queen():
+
+    rules = [
+        [(CM, e0), (CM, INC)],
+        # [(KE, e0), (A, DEC)],
+        [(KE, e0), (KE, INC)],
+        [(KE, e0), (A, DEC), (SAME_QUADRANT, e0), (SAME_QUADRANT, NIL), (WQ_in_edge, mt0), (WQ_in_edge, DEC), (C, NIL)],
+        [(KE, e0), (A, NIL), (SAME_QUADRANT, e0), (SAME_QUADRANT, NIL), (WQ_in_edge, mt0), (WQ_in_edge, DEC), (C, NIL)],
+        [(KE, e0), (A, DEC), (SAME_QUADRANT, e0), (SAME_QUADRANT, NIL), (WQ_in_edge, e0), (WQ_in_edge, NIL), (C, NIL)],
+        [(KE, e0), (A, NIL), (SAME_QUADRANT, e0), (SAME_QUADRANT, NIL), (WQ_in_edge, e0), (WQ_in_edge, NIL), (C, NIL)],
+        [(KE, e0), (SAME_QUADRANT, mt0), (SAME_QUADRANT, DEC)],
+
+        # [(KE, e0), (A, INC)],
+        # [(WQ_in_edge, mt0), (KE, e0), (WQ_in_edge, DEC), (A, DEC)],
+        # [(WQ_in_edge, e0), (KE, e0), (WQ_in_edge, NIL), (A, DEC)],
+        # [(KE, mt0), (A, DEC), (KE, NIL)],
+        # [(KE, e0), (WQAdjBK, e0), (WQAdjBK, INC), (A, NIL),],
+        # [(KE, e0), (WQAdjBK, mt0), (WQAdjBK, NIL), (A, NIL),],
+        # [(KE, e0), (WQAdjBK, e0), (WQAdjBK, INC), (A, DEC)],
+        # [(KE, e0), (WQAdjBK, mt0), (WQAdjBK, NIL), (A, DEC)],
+        # [(KE, e0), (KE, INC)],
+        # [(KE, e0), (AWK, mt0), (AWK, INC),],
+        # [(KE, e0), (AWK, mt0), (AWK, NIL),],
+        # [(BKHA, e0), (KE, mt0), (KE, NIL), (A, INC)],
+        # [(A, e0), (A, INC), (C, INC)],
+        # [(KE, e0), (AWK, DEC)],
+        # [(KE, e0), (WQAdjBK, mt0), (WQAdjBK, NIL), (A, DEC)],
+        # [(KE, e0), (WQAdjBK, mt0), (WQAdjBK, NIL), (A, NIL), (KD, DEC)],
+
+        # [(KE, mt0), (BK_WK_same_edge, mt0), (WQ_WK_same_edge, mt0), (WQ_WK_same_edge, DEC), (WQ_BK_same_edge, INC)],
+        # [(KE, mt0), (BK_WK_same_edge, mt0), (WQ_WK_same_edge, e0), (WQ_WK_same_edge, NIL), (WQ_BK_same_edge, INC)],
+
+        # [(WQAdjBK, mt0), (WQAdjBK, NIL), (A, DEC)],
+        # [(WQAdjBK, e0), (WQAdjBK, INC), (A, DEC)],
+        # [(WQAdjBK, mt0), (WQAdjWK, mt0), (KE, mt0)],
+        # [(WQAdjBK, mt0), (WQAdjWK, mt0), (KE, mt0), (WQAdjBK, NIL)],
+        # [(WQAdjBK, mt0), (WQAdjWK, mt0), (BKinC, mt0), (KE, mt0), (KE, NIL), (WQAdjWK, DEC)],
+        # [(WQABK, more_than_0),  (A, equal_0), (A, INC), (WQABK, NIL)],
+        # [(WQABK, more_than_0),  (A, more_than_0), (A, NIL), (WQABK, NIL)],
+        # [(KE, equal_0), (BKHA, equal_0), (BKHA, INC), (A, DEC)],
+        # [(KE, equal_0), (BKHA, equal_0), (BKHA, INC), (A, DEC), (KE, NIL)],
+        # [(KE, equal_0), (BKHA, equal_0), (BKHA, INC), (KE, INC)],
+        # [(BKHA, equal_0), ],
+        # [(KE, equal_0), (KE, NIL)],
+        # [(KE, equal_0), (WQABK, more_than_0), (KCD, DEC)],
+        # [(KE, equal_0), (WQABK, more_than_0), (KRD, DEC)],
+        # [(EWQ, more_than_0), (C, INC)],
+        # [(A, equal_0), (A, INC)],
+        # [(A, equal_0), (A, INC), (KE, NIL)],
+        # [(A, equal_0), (A, INC), (KE, INC)],
+        # [(KE, equal_0), (A, NIL)],
+        # [(KE, equal_0), (A, NIL)],
+        # [(KE, more_than_0), (KE, NIL)],
+        # [(KE, equal_0), (A, NIL)],
+        # [(KE, equal_0), (KD, DEC)],
+        # [(KE, equal_0), (A, DEC), (KE, NIL)],
+        # [(KE, equal_0), (A, NIL)],
+
+        # [(KE, more_than_0), (KCD, DEC), (KRD, NIL), (KE, NIL), (A, NIL)],
+        # [(KE, more_than_0), (KCD, NIL), (KRD, DEC), (KE, NIL), (A, NIL)],
+        # [(KE, more_than_0), (KE, NIL), (KCD, DEC), (KRD, DEC), (A, NIL)],
+        # [(KE, equal_0), (WQABK, more_than_0), (WQABK, NIL), (KE, NIL), (KCD, NIL), (KRD, NIL), (A, NIL)],
+
+        # [(KE, mt0), (KD, DEC)],
+        # [(WQAdjBK, mt0), (KD, DEC)]
+        # [(KE, equal_0), (WQABK, more_than_0), (WQABK, NIL), (KD, DEC)],
+
+        [(KE, mt0), (KE, NIL), (WQ_WK_same_edge, mt0)],
+        # [(KE, mt0), (KE, NIL), (WQ_WK_same_edge, mt0), (WK_in_edge, mt0), (BK_WK_same_edge, mt0), (BK_WK_same_edge, DEC)],
+        # [(KE, mt0), (KE, NIL), (WQ_WK_same_edge, mt0), (WQ_WK_same_edge, DEC)],
+        # [(KE, mt0), (KE, NIL), (WK_in_edge, mt0), (BK_WK_same_edge, mt0), (BK_WK_same_edge, DEC)],
+
+        [(KE, mt0), (WQ_WK_same_edge, e0), (KE, NIL), (KCD, DEC), (KRD, NIL)],
+        [(KE, mt0), (WQ_WK_same_edge, e0), (KE, NIL), (KCD, NIL), (KRD, DEC)],
+        [(KE, mt0), (WQ_WK_same_edge, e0), (KE, NIL), (KCD, DEC), (KRD, DEC)],
+
+        # [(WQAdjBK, mt0), (KE, INC)],
+        # [(KE, mt0), (KCD, DEC), (KRD, DEC)],
+
+        # [(KE, more_than_0), (KD, more_than_0), (C, INC)],
     ]
 
     rules_1 = [
-        [(wr_a, '=0'), (wr_a, 'NIL')],
+        [(SM, e0), (SM, NIL), (QA, e0), (QA, NIL)],
+        [(SM, e0), (SM, NIL), (QA, mt0), (QA, DEC)],
     ]
 
-    return combined_rules(rules_0, rules_1)
+    return combined_rules(rules, rules_1)
+
 
 def combined_rules(rules_0, rules_1):
     rules = list()
     for r0 in rules_0:
         for r1 in rules_1:
             rules.append(r0 + r1)
-    rules
+    return rules
