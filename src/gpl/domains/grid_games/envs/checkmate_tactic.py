@@ -653,7 +653,7 @@ TEST_LAYOUTS_QUEEN = {
     -10: (15, 15, (6, 6), (9, 9), (0, 0), None),
 }
 
-LAYOUTS_CHECK_IN_ONE_QUEEN = generate_check_in_one([(3, 3), (4, 3), (4, 4), (5, 5), (6, 6)], WHITE_QUEEN)
+LAYOUTS_CHECK_IN_ONE_QUEEN = generate_check_in_one([(3, 3), (4, 3), (4, 4), (4, 4), (4, 5), (5, 5), (6, 6)], WHITE_QUEEN)
 LAYOUTS_CHECK_IN_ONE_TOWER = generate_check_in_one([(3, 3), (4, 3), (3, 4), (4, 4), (4, 5), (5, 4), (5, 5), (6, 6)], WHITE_TOWER)
 
 for k in TEST_LAYOUTS_TOWER.keys():

@@ -2,7 +2,7 @@
 SLTP v.0.2.0
 ================================================================================
 ================================================================================
-(pid: 108832) STARTING STEP #1: Train: Explore the state space of the training instances
+(pid: 138341) STARTING STEP #1: Train: Explore the state space of the training instances
 ================================================================================
 ------------------------------------------------
  DOMAIN PARAMETERS: 
@@ -19,11 +19,11 @@ use_target_margin: False
 objects_to_ignore: set()
 map_cells: True
 use_diagonals_for_map_cells: False
-use_adjacency: {'row', 'col'}
+use_adjacency: {'col', 'row'}
 use_bidirectional: {}
 use_distance_2: {}
 use_distance_more_than_1: {}
-sorts_to_use: {'row', 'cell', 'col'}
+sorts_to_use: {'col', 'cell', 'row'}
 unary_predicates: {}
 agent_has_to_shoot: True
 adv_can_move_down: True
@@ -38,7 +38,7 @@ target_columns: False
 ------------------------------------------------
 (0) Exploration of the training sample:
 ------------------------------------------------
-2021-06-09 12:27:16 INFO     Expanding train instance: space_invaders - 0
+2021-06-30 12:33:04 INFO     Expanding train instance: space_invaders - 0
 #m.mm#
 #....#
 #....#
@@ -46,14 +46,14 @@ target_columns: False
 #....#
 #..A.#
 
-2021-06-09 12:27:16 INFO     Expanding train instance: space_invaders - 17
+2021-06-30 12:33:04 INFO     Expanding train instance: space_invaders - 17
 #m..m#
 #m..m#
 #....#
 #....#
 #..A.#
 
-2021-06-09 12:27:17 INFO     Expanding train instance: space_invaders - 18
+2021-06-30 12:33:04 INFO     Expanding train instance: space_invaders - 18
 #m...m#
 #m...m#
 #.....#
@@ -62,18 +62,18 @@ target_columns: False
 ------------------------------------------------
 (0) Generation of the training sample:
 ------------------------------------------------
-2021-06-09 12:27:17 INFO     sample: #states=347, #transition-entries=611, #transitions=611
-2021-06-09 12:27:17 INFO     Entire sample: roots: 3, states: 347, transitions: 611 (443 optimal), goals: 13, alive: 334, deadends: 0
-2021-06-09 12:27:17 INFO     Printing SAT transition matrix with 347 states, 312 states with some outgoing transition, 9 operators, 611 (non-det) transitions, and 476 (adv) transitions,
+2021-06-30 12:33:04 INFO     sample: #states=347, #transition-entries=611, #transitions=611
+2021-06-30 12:33:04 INFO     Entire sample: roots: 3, states: 347, transitions: 611 (443 optimal), goals: 13, alive: 334, deadends: 0
+2021-06-30 12:33:04 INFO     Printing SAT transition matrix with 347 states, 312 states with some outgoing transition, 9 operators, 611 (non-det) transitions, and 476 (adv) transitions,
 ------------------------------------------------
 (0) Generate the pool of candidate features:
 ------------------------------------------------
-2021-06-09 12:27:17 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 3, states: 347, transitions: 611 (443 optimal), goals: 13, alive: 334, deadends: 0
-2021-06-09 12:27:17 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1/sample.io'
-2021-06-09 12:27:17 INFO     Invoking C++ feature generation module
-2021-06-09 12:27:17 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 5 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --comparison-features --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+2021-06-30 12:33:04 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 3, states: 347, transitions: 611 (443 optimal), goals: 13, alive: 334, deadends: 0
+2021-06-30 12:33:05 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1/sample.io'
+2021-06-30 12:33:05 INFO     Invoking C++ feature generation module
+2021-06-30 12:33:05 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 5 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --comparison-features --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
 reading '/home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1/transitions-info.io
-BASIS: #concepts=41, #roles=2
+BASIS: #concepts=52, #roles=2
 ROLES: #roles=4
 Generating concepts for k=1. Total concepts: 11 (2, 9, 0, 0, 0, 0)... 0 concepts generated, 3 pruned.
 Generating concepts for k=2. Total concepts: 11 (2, 9, 0, 0, 0, 0)... 9 concepts generated, 44 pruned.
@@ -91,12 +91,12 @@ Printing concept, role and feature denotations to /home/orbital/ws/research/gpl/
 Serializing all concepts and features to:
 	/home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1/serialized-concepts.io
 	/home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1/serialized-features.io
-2021-06-09 12:27:21 INFO     Reading feature denotation matrix from /home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1/feature-matrix.io
+2021-06-30 12:33:09 INFO     Reading feature denotation matrix from /home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1/feature-matrix.io
 ------------------------------------------------
 (0) C++ CNF generation module:
 ------------------------------------------------
-2021-06-09 12:27:21 INFO     Calling C++ MaxSAT module
-2021-06-09 12:27:21 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cnfgen --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1 --v_slack 2 --initial-sample-size 100 --refinement-batch-size 200 --seed 0 --verbosity 3 --acyclicity topological --encodings_dir  --sampling_strategy full --optimal_steps 3 --consistency_bound 2 --n_features 2 --closed --maxsat_iter 20" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+2021-06-30 12:33:09 INFO     Calling C++ MaxSAT module
+2021-06-30 12:33:09 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cnfgen --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1 --v_slack 2 --initial-sample-size 100 --refinement-batch-size 200 --seed 0 --verbosity 3 --acyclicity topological --encodings_dir  --sampling_strategy full --optimal_steps 3 --consistency_bound 2 --n_features 2 --closed --maxsat_iter 20" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
 Parsing training data... 
 reading '/home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1/transitions-info.io
 TransitionSample::read_dump: #states=347, #transitions=611, #transitions (adv)=476
@@ -126,30 +126,713 @@ A total of 452825 clauses were created
 	Goal separation [X]: 0
 	(Weighted) Select(f): 90
 Writing final DIMACS file...
-CNF [7381 vars, 452825 clauses] generated in 8.42 sec.
+CNF [7381 vars, 452825 clauses] generated in 8.14 sec.
 Calling: open-wbo_static /home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1/theory.wsat > /home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1/maxsat_solver_run.log
-Traceback (most recent call last):
-  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 44, in <module>
-    do(args.exp_id, args.steps, args.workspace, args.show)
-  File "/home/orbital/ws/research/gpl/code/gpl/experiments/run.py", line 40, in do
-    experiment.run(steps)
-  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 204, in run
-    run_and_check_output(step, stepnum, SubprocessStepRunner)
-  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 213, in run_and_check_output
-    exitcode = runner.run(config=Bunch(step.config))
-  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 136, in run
-    exitcode = self._run(config)
-  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 179, in _run
-    exitcode = result.get()
-  File "/usr/lib/python3.8/multiprocessing/pool.py", line 765, in get
-    self.wait(timeout)
-  File "/usr/lib/python3.8/multiprocessing/pool.py", line 762, in wait
-    self._event.wait(timeout)
-  File "/usr/lib/python3.8/threading.py", line 558, in wait
-    signaled = self._cond.wait(timeout)
-  File "/usr/lib/python3.8/threading.py", line 302, in wait
-    waiter.acquire()
-KeyboardInterrupt
-Call returned with exit code 2
-Theory detected as UNSAT by solver.
-Total times: Theory generation: 8.42, Solver: 0.21, TOTAL: 8.65
+Call returned with exit code 7680
+Solution with cost 5 found in 0.92sec.
+
+Good(0, 2, 3) Good(1, 2, 5) Good(4, 2, 16) Good(5, 1, 55) Good(6, 2, 18) Good(9, 2, 20) Good(11, 2, 21) Good(13, 1, 22) Good(14, 2, 7) Good(15, 0, 4) 
+Good(16, 0, 11) Good(18, 1, 32) Good(19, 2, 38) Good(20, 0, 40) Good(23, 2, 48) Good(24, 2, 50) Good(26, 2, 52) Good(28, 1, 54) Good(29, 2, 132) Good(30, 1, 56) 
+Good(30, 0, 55) Good(31, 2, 58) Good(32, 1, 133) Good(35, 1, 64) Good(17, 1, 29) Good(25, 1, 51) Good(36, 1, 119) Good(36, 0, 19) Good(195, 5, 207) Good(292, 7, 278) 
+Good(160, 0, 148) Good(200, 5, 213) Good(238, 3, 196) Good(207, 5, 226) Good(208, 4, 197) Good(210, 4, 199) Good(198, 3, 206) Good(48, 0, 27) Good(76, 2, 117) Good(125, 1, 100) 
+Good(320, 7, 335) Good(159, 2, 147) Good(123, 2, 97) Good(222, 4, 233) Good(228, 4, 240) Good(15, 1, 9) Good(231, 5, 237) Good(218, 3, 233) Good(233, 5, 224) Good(217, 3, 242) 
+Good(27, 2, 53) Good(244, 8, 246) Good(245, 7, 247) Good(245, 6, 243) Good(235, 4, 196) Good(246, 8, 249) Good(223, 3, 236) Good(240, 4, 225) Good(254, 8, 259) Good(178, 4, 181) 
+Good(177, 3, 172) Good(256, 7, 253) Good(319, 7, 299) Good(138, 1, 105) Good(202, 4, 192) Good(263, 7, 272) Good(265, 7, 258) Good(273, 6, 264) Good(267, 6, 275) Good(268, 8, 279) 
+Good(180, 4, 186) Good(265, 6, 274) Good(269, 7, 263) Good(206, 5, 224) Good(250, 8, 254) Good(57, 0, 31) Good(197, 4, 207) Good(17, 0, 6) Good(225, 4, 241) Good(261, 7, 271) 
+Good(209, 3, 198) Good(262, 8, 297) Good(103, 2, 122) Good(339, 8, 323) Good(298, 7, 282) Good(342, 7, 316) Good(295, 6, 314) Good(321, 8, 344) Good(133, 2, 97) Good(117, 1, 82) 
+Good(345, 7, 329) Good(83, 2, 128) Good(314, 6, 346) Good(130, 0, 109) Good(204, 4, 195) Good(312, 6, 339) Good(283, 8, 303) Good(324, 7, 300) Good(329, 7, 304) Good(203, 3, 217) 
+Good(328, 6, 302) Good(337, 6, 321) Good(251, 6, 248) Good(111, 0, 72) Good(61, 1, 34) Good(199, 5, 212) Good(332, 8, 344) Good(47, 0, 23) Good(251, 7, 255) Good(136, 2, 154) 
+Good(310, 6, 334) Good(340, 7, 315) Good(236, 3, 221) Good(270, 7, 261) Good(205, 4, 193) Good(271, 8, 283) Good(43, 0, 58) Good(334, 6, 312) Good(315, 7, 341) Good(249, 7, 252) 
+Good(290, 8, 306) Good(346, 6, 332) Good(252, 7, 269) Good(317, 6, 343) Good(279, 6, 338) Good(215, 3, 201) Good(266, 6, 308) Good(301, 7, 286) Good(258, 7, 254) Good(71, 0, 91) 
+Good(343, 8, 318) Good(81, 0, 115) Good(22, 2, 43) Good(264, 6, 271) Good(55, 2, 33) Good(141, 2, 154) Good(311, 6, 337) Good(116, 0, 84) Good(326, 7, 342) Good(333, 8, 331) 
+Good(194, 3, 188) Good(239, 3, 223) Good(286, 8, 303) Good(285, 6, 299) Good(336, 6, 283) Good(172, 5, 178) Good(253, 7, 257) Good(309, 6, 333) Good(221, 5, 237) Good(313, 6, 336) 
+Good(229, 4, 210) Good(272, 8, 287) Good(292, 6, 309) Good(299, 8, 323) Good(37, 1, 65) Good(155, 0, 145) Good(331, 7, 345) Good(219, 4, 206) Good(242, 3, 231) Good(168, 5, 171) 
+Good(325, 7, 340) Good(341, 7, 287) Good(99, 2, 135) Good(185, 3, 190) Good(293, 8, 281) Good(307, 8, 321) Good(275, 6, 282) Good(302, 6, 286) Good(33, 1, 60) Good(300, 7, 284) 
+Good(322, 7, 339) Good(282, 8, 299) Good(81, 1, 124) Good(34, 2, 63) Good(79, 2, 63) Good(241, 5, 226) Good(165, 1, 164) Good(193, 5, 206) Good(296, 6, 262) Good(162, 2, 96) 
+Good(124, 2, 98) Good(287, 8, 305) Good(257, 7, 262) Good(2, 1, 8) Good(129, 2, 109) Good(291, 6, 307) Good(152, 2, 66) Good(338, 6, 311) Good(21, 1, 38) Good(306, 8, 325) 
+Good(288, 6, 297) Good(280, 6, 294) Good(243, 6, 244) Good(234, 3, 218) Good(2, 0, 0) Good(278, 7, 293) Good(274, 6, 290) Good(190, 3, 193) Good(327, 7, 301) Good(189, 3, 200) 
+Good(68, 0, 41) Good(188, 5, 196) Good(187, 4, 182) Good(192, 5, 203) Good(316, 7, 343) Good(186, 5, 191) Good(184, 3, 215) Good(183, 4, 179) Good(211, 3, 199) Good(248, 6, 246) 
+Good(182, 4, 188) Good(232, 5, 228) Good(179, 5, 184) Good(304, 7, 289) Good(174, 5, 179) Good(158, 2, 97) Good(170, 3, 175) Good(73, 2, 114) Good(148, 2, 137) Good(113, 0, 73) 
+Good(3, 0, 10) Good(169, 4, 173) Good(157, 0, 146) Good(167, 3, 168) Good(216, 3, 232) Good(166, 2, 149) Good(164, 2, 125) Good(175, 5, 172) Good(60, 1, 92) Good(163, 1, 165) 
+Good(161, 1, 152) Good(156, 1, 147) Good(284, 7, 297) Good(155, 1, 146) Good(86, 0, 130) Good(176, 4, 174) Good(74, 1, 115) Good(289, 8, 305) Good(153, 2, 63) Good(151, 1, 159) 
+Good(150, 1, 161) Good(149, 0, 158) Good(85, 0, 128) Good(255, 7, 260) Good(7, 1, 19) Good(227, 4, 208) Good(41, 2, 69) Good(147, 1, 158) Good(146, 2, 130) Good(96, 0, 123) 
+Good(145, 2, 156) Good(114, 1, 80) Good(144, 2, 154) Good(143, 1, 153) Good(142, 1, 106) Good(54, 2, 45) Good(196, 5, 212) Good(297, 8, 318) Good(140, 2, 95) Good(139, 2, 90) 
+Good(59, 1, 33) Good(134, 2, 154) Good(132, 0, 94) Good(181, 4, 204) Good(118, 2, 86) Good(131, 0, 29) Good(128, 0, 106) Good(105, 2, 121) Good(127, 0, 83) Good(49, 1, 31) 
+Good(56, 2, 87) Good(126, 2, 80) Good(308, 6, 291) Good(107, 2, 142) Good(121, 1, 93) Good(120, 0, 78) Good(119, 2, 44) Good(115, 2, 82) Good(62, 0, 34) Good(113, 1, 78) 
+Good(112, 0, 76) Good(201, 3, 214) Good(110, 2, 74) Good(109, 0, 144) Good(108, 2, 143) Good(106, 2, 63) Good(104, 1, 126) Good(67, 2, 35) Good(88, 0, 133) Good(102, 1, 138) 
+Good(101, 1, 67) Good(87, 0, 62) Good(47, 1, 26) Good(98, 0, 137) Good(95, 0, 64) Good(94, 0, 136) Good(122, 1, 79) Good(93, 2, 135) Good(92, 2, 135) Good(90, 0, 141) 
+Good(89, 0, 132) Good(84, 0, 129) Good(38, 1, 121) Good(82, 1, 125) Good(80, 1, 123) Good(247, 7, 250) Good(111, 1, 75) Good(78, 2, 71) Good(260, 8, 268) Good(77, 1, 118) 
+Good(294, 6, 285) Good(100, 2, 135) Good(91, 0, 134) Good(70, 2, 91) Good(259, 6, 266) Good(220, 4, 235) Good(335, 7, 283) Good(281, 6, 295) Good(72, 2, 112) Good(52, 0, 42) 
+Good(137, 0, 153) Good(213, 5, 227) Good(66, 1, 99) Good(65, 2, 85) Good(64, 2, 97) Good(58, 0, 90) Good(53, 1, 39) Good(51, 2, 39) Good(50, 1, 35) Good(49, 0, 24) 
+Good(46, 2, 25) Good(45, 0, 71) Good(75, 2, 116) Good(44, 0, 69) Good(276, 6, 267) Good(42, 0, 70) Good(69, 0, 79) Good(40, 0, 139) Good(39, 1, 66) Good(214, 5, 221) 
+Good(37, 0, 51) 
+Good(0, 2, 3) Good(1, 2, 5) Good(4, 2, 16) Good(5, 1, 55) Good(6, 2, 18) Good(9, 2, 20) Good(11, 2, 21) Good(13, 1, 22) Good(14, 2, 7) Good(15, 0, 4) 
+Good(16, 0, 11) Good(18, 1, 32) Good(19, 2, 38) Good(20, 0, 40) Good(23, 2, 48) Good(24, 2, 50) Good(26, 2, 52) Good(28, 1, 54) Good(29, 2, 132) Good(30, 1, 56) 
+Good(30, 0, 55) Good(31, 2, 58) Good(32, 1, 133) Good(35, 1, 64) Good(17, 1, 29) Good(25, 1, 51) Good(36, 1, 119) Good(36, 0, 19) Good(195, 5, 207) Good(292, 7, 278) 
+Good(160, 0, 148) Good(200, 5, 213) Good(238, 3, 196) Good(207, 5, 226) Good(208, 4, 197) Good(210, 4, 199) Good(198, 3, 206) Good(48, 0, 27) Good(76, 2, 117) Good(125, 1, 100) 
+Good(320, 7, 335) Good(159, 2, 147) Good(123, 2, 97) Good(222, 4, 233) Good(228, 4, 240) Good(15, 1, 9) Good(231, 5, 237) Good(218, 3, 233) Good(233, 5, 224) Good(217, 3, 242) 
+Good(27, 2, 53) Good(244, 8, 246) Good(245, 7, 247) Good(245, 6, 243) Good(235, 4, 196) Good(246, 8, 249) Good(223, 3, 236) Good(240, 4, 225) Good(254, 8, 259) Good(178, 4, 181) 
+Good(177, 3, 172) Good(256, 7, 253) Good(319, 7, 299) Good(138, 1, 105) Good(202, 4, 192) Good(263, 7, 272) Good(265, 7, 258) Good(273, 6, 264) Good(267, 6, 275) Good(268, 8, 279) 
+Good(180, 4, 186) Good(265, 6, 274) Good(269, 7, 263) Good(206, 5, 224) Good(250, 8, 254) Good(57, 0, 31) Good(197, 4, 207) Good(17, 0, 6) Good(225, 4, 241) Good(261, 7, 271) 
+Good(209, 3, 198) Good(262, 8, 297) Good(103, 2, 122) Good(339, 8, 323) Good(298, 7, 282) Good(342, 7, 316) Good(295, 6, 314) Good(321, 8, 344) Good(133, 2, 97) Good(117, 1, 82) 
+Good(345, 7, 329) Good(83, 2, 128) Good(314, 6, 346) Good(130, 0, 109) Good(204, 4, 195) Good(312, 6, 339) Good(283, 8, 303) Good(324, 7, 300) Good(329, 7, 304) Good(203, 3, 217) 
+Good(328, 6, 302) Good(337, 6, 321) Good(251, 6, 248) Good(111, 0, 72) Good(61, 1, 34) Good(199, 5, 212) Good(332, 8, 344) Good(47, 0, 23) Good(251, 7, 255) Good(136, 2, 154) 
+Good(310, 6, 334) Good(340, 7, 315) Good(236, 3, 221) Good(270, 7, 261) Good(205, 4, 193) Good(271, 8, 283) Good(43, 0, 58) Good(334, 6, 312) Good(315, 7, 341) Good(249, 7, 252) 
+Good(290, 8, 306) Good(346, 6, 332) Good(252, 7, 269) Good(317, 6, 343) Good(279, 6, 338) Good(215, 3, 201) Good(266, 6, 308) Good(301, 7, 286) Good(258, 7, 254) Good(71, 0, 91) 
+Good(343, 8, 318) Good(81, 0, 115) Good(22, 2, 43) Good(264, 6, 271) Good(55, 2, 33) Good(141, 2, 154) Good(311, 6, 337) Good(116, 0, 84) Good(326, 7, 342) Good(333, 8, 331) 
+Good(194, 3, 188) Good(239, 3, 223) Good(286, 8, 303) Good(285, 6, 299) Good(336, 6, 283) Good(172, 5, 178) Good(253, 7, 257) Good(309, 6, 333) Good(221, 5, 237) Good(313, 6, 336) 
+Good(229, 4, 210) Good(272, 8, 287) Good(292, 6, 309) Good(299, 8, 323) Good(37, 1, 65) Good(155, 0, 145) Good(331, 7, 345) Good(219, 4, 206) Good(242, 3, 231) Good(168, 5, 171) 
+Good(325, 7, 340) Good(341, 7, 287) Good(99, 2, 135) Good(185, 3, 190) Good(293, 8, 281) Good(307, 8, 321) Good(275, 6, 282) Good(302, 6, 286) Good(33, 1, 60) Good(300, 7, 284) 
+Good(322, 7, 339) Good(282, 8, 299) Good(81, 1, 124) Good(34, 2, 63) Good(79, 2, 63) Good(241, 5, 226) Good(165, 1, 164) Good(193, 5, 206) Good(296, 6, 262) Good(162, 2, 96) 
+Good(124, 2, 98) Good(287, 8, 305) Good(257, 7, 262) Good(2, 1, 8) Good(129, 2, 109) Good(291, 6, 307) Good(152, 2, 66) Good(338, 6, 311) Good(21, 1, 38) Good(306, 8, 325) 
+Good(288, 6, 297) Good(280, 6, 294) Good(243, 6, 244) Good(234, 3, 218) Good(2, 0, 0) Good(278, 7, 293) Good(274, 6, 290) Good(190, 3, 193) Good(327, 7, 301) Good(189, 3, 200) 
+Good(68, 0, 41) Good(188, 5, 196) Good(187, 4, 182) Good(192, 5, 203) Good(316, 7, 343) Good(186, 5, 191) Good(184, 3, 215) Good(183, 4, 179) Good(211, 3, 199) Good(248, 6, 246) 
+Good(182, 4, 188) Good(232, 5, 228) Good(179, 5, 184) Good(304, 7, 289) Good(174, 5, 179) Good(158, 2, 97) Good(170, 3, 175) Good(73, 2, 114) Good(148, 2, 137) Good(113, 0, 73) 
+Good(3, 0, 10) Good(169, 4, 173) Good(157, 0, 146) Good(167, 3, 168) Good(216, 3, 232) Good(166, 2, 149) Good(164, 2, 125) Good(175, 5, 172) Good(60, 1, 92) Good(163, 1, 165) 
+Good(161, 1, 152) Good(156, 1, 147) Good(284, 7, 297) Good(155, 1, 146) Good(86, 0, 130) Good(176, 4, 174) Good(74, 1, 115) Good(289, 8, 305) Good(153, 2, 63) Good(151, 1, 159) 
+Good(150, 1, 161) Good(149, 0, 158) Good(85, 0, 128) Good(255, 7, 260) Good(7, 1, 19) Good(227, 4, 208) Good(41, 2, 69) Good(147, 1, 158) Good(146, 2, 130) Good(96, 0, 123) 
+Good(145, 2, 156) Good(114, 1, 80) Good(144, 2, 154) Good(143, 1, 153) Good(142, 1, 106) Good(54, 2, 45) Good(196, 5, 212) Good(297, 8, 318) Good(140, 2, 95) Good(139, 2, 90) 
+Good(59, 1, 33) Good(134, 2, 154) Good(132, 0, 94) Good(181, 4, 204) Good(118, 2, 86) Good(131, 0, 29) Good(128, 0, 106) Good(105, 2, 121) Good(127, 0, 83) Good(49, 1, 31) 
+Good(56, 2, 87) Good(126, 2, 80) Good(308, 6, 291) Good(107, 2, 142) Good(121, 1, 93) Good(120, 0, 78) Good(119, 2, 44) Good(115, 2, 82) Good(62, 0, 34) Good(113, 1, 78) 
+Good(112, 0, 76) Good(201, 3, 214) Good(110, 2, 74) Good(109, 0, 144) Good(108, 2, 143) Good(106, 2, 63) Good(104, 1, 126) Good(67, 2, 35) Good(88, 0, 133) Good(102, 1, 138) 
+Good(101, 1, 67) Good(87, 0, 62) Good(47, 1, 26) Good(98, 0, 137) Good(95, 0, 64) Good(94, 0, 136) Good(122, 1, 79) Good(93, 2, 135) Good(92, 2, 135) Good(90, 0, 141) 
+Good(89, 0, 132) Good(84, 0, 129) Good(38, 1, 121) Good(82, 1, 125) Good(80, 1, 123) Good(247, 7, 250) Good(111, 1, 75) Good(78, 2, 71) Good(260, 8, 268) Good(77, 1, 118) 
+Good(294, 6, 285) Good(100, 2, 135) Good(91, 0, 134) Good(70, 2, 91) Good(259, 6, 266) Good(220, 4, 235) Good(335, 7, 283) Good(281, 6, 295) Good(72, 2, 112) Good(52, 0, 42) 
+Good(137, 0, 153) Good(213, 5, 227) Good(66, 1, 99) Good(65, 2, 85) Good(64, 2, 97) Good(58, 0, 90) Good(53, 1, 39) Good(51, 2, 39) Good(50, 1, 35) Good(49, 0, 24) 
+Good(46, 2, 25) Good(45, 0, 71) Good(75, 2, 116) Good(44, 0, 69) Good(276, 6, 267) Good(42, 0, 70) Good(69, 0, 79) Good(40, 0, 139) Good(39, 1, 66) Good(214, 5, 221) 
+Good(37, 0, 51) 
+Num Good(s, a, s') selected: 341 (55.81%)
+Num Bad(s) selected: 0 (0.00%)
+Num selected features: 2 (2.22%)
+Features: 
+	0: Num[cell-has-martian] [k=1]
+	1: Dist[col-has-agent;adjacent_col;col-has-martian] [k=4]
+Solution found in iteration #1 is correct!
+DNF transition-classifier saved in /home/orbital/ws/research/gpl/code/gpl/workspace/space_invaders_1/classifier.txt
+Total times: Theory generation: 8.14, Solver: 0.92, TOTAL: 9.09
+------------------------------------------------
+(END Episode 0)
+------------------------------------------------
+================================================================================
+END OF STEP #1: Train: Explore the state space of the training instances. 14.14 CPU sec - 147.39 MB
+================================================================================
+================================================================================
+(pid: 138375) STARTING STEP #2: Testing of the D2L policy
+================================================================================
+
+POLICY:
+Features (#: 2; total k: 5; max k = 4):
+  (a) Num[cell-has-martian] [k=1]
+  (b) Dist[col-has-agent;adjacent_col;col-has-martian] [k=4]
+Invariants: a>0
+Policy:
+  1. a>0 AND b=0 -> {a ↓, b ·}, {a ↓, b ↑}
+  2. a>0 AND b>0 -> {a ·, b ↓}
+
+2021-06-30 12:33:18 INFO     Testing policy in instance: space_invaders - 0
+m.mm # m..m # m..m # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # m..m # m... # m... # .m.. # .m.. # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # .... # 
+..A. # ..A. # ...A # ...A # ...A # ..A. # ..A. # .A.. # .A.. # 
+1(pl)  1(pl)  2(pl)  1(pl)  1(pl)  2(pl)  1(pl)  1(pl)  2(pl)  
+0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  
+0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  1(go)  
+
+2021-06-30 12:33:18 INFO     Goal found after expanding 6 nodes
+2021-06-30 12:33:18 INFO     The solution was: [0, 2, 0, 1, 1, 0]
+2021-06-30 12:33:18 INFO     Testing policy in instance: space_invaders - 1
+m.mm # m.mm # m..m # .... # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # m..m # m..m # m... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # m... # m... # m... # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # .... # m... # 
+.... # .... # .... # .... # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # .... # .... # 
+.A.. # ..A. # ..A. # ..A. # ...A # ...A # ...A # ..A. # .A.. # .A.. # 
+1(pl)  1(pl)  2(pl)  1(pl)  1(pl)  2(pl)  1(pl)  1(pl)  2(pl)  1(pl)  
+0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  
+0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  
+
+.... # .... # 
+.... # .... # 
+.... # .... # 
+m... # .... # 
+.... # .... # 
+.... # .... # 
+.... # .... # 
+.... # .... # 
+.... # .... # 
+A... # A... # 
+1(pl)  2(pl)  
+0(de)  0(de)  
+0(go)  1(go)  
+
+2021-06-30 12:33:18 INFO     Goal found after expanding 8 nodes
+2021-06-30 12:33:18 INFO     The solution was: [2, 0, 2, 0, 1, 1, 1, 0]
+2021-06-30 12:33:18 INFO     Testing policy in instance: space_invaders - 2
+m.mm...... # m.mm...... # m..m...... # .m..m..... # .m..m..... # ....m..... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # ....m..... # ....m..... # ....m..... # .....m.... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.A........ # ..A....... # ..A....... # ..A....... # .A........ # .A........ # .A........ # ..A....... # ...A...... # ...A...... # 
+1(pl)        1(pl)        2(pl)        1(pl)        1(pl)        2(pl)        1(pl)        1(pl)        2(pl)        1(pl)        
+0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        
+0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        
+
+.......... # .......... # .......... # .......... # .......... # 
+.....m.... # .....m.... # ....m..... # ....m..... # .......... # 
+.......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # 
+....A..... # .....A.... # .....A.... # ....A..... # ....A..... # 
+1(pl)        2(pl)        1(pl)        1(pl)        2(pl)        
+0(de)        0(de)        0(de)        0(de)        0(de)        
+0(go)        0(go)        0(go)        0(go)        1(go)        
+
+2021-06-30 12:33:18 INFO     Goal found after expanding 10 nodes
+2021-06-30 12:33:18 INFO     The solution was: [2, 0, 1, 0, 2, 2, 2, 2, 1, 0]
+2021-06-30 12:33:18 INFO     Testing policy in instance: space_invaders - 3
+m.mm. # m..m. # m..m. # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
+..... # ..... # ..... # m..m. # m.... # m.... # ..... # ..... # ..... # ..... # 
+..... # ..... # ..... # ..... # ..... # ..... # m.... # m.... # m.... # ..... # 
+..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # m.... # 
+..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
+..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
+..A.. # ..A.. # ...A. # ...A. # ...A. # ..A.. # ..A.. # .A... # A.... # A.... # 
+1(pl)   1(pl)   2(pl)   1(pl)   1(pl)   2(pl)   1(pl)   1(pl)   2(pl)   1(pl)   
+0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   
+0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   
+
+..... # 
+..... # 
+..... # 
+..... # 
+..... # 
+..... # 
+A.... # 
+1(pl)   
+0(de)   
+1(go)   
+
+2021-06-30 12:33:18 INFO     Goal found after expanding 7 nodes
+2021-06-30 12:33:18 INFO     The solution was: [0, 2, 0, 1, 1, 1, 0]
+2021-06-30 12:33:18 INFO     Testing policy in instance: space_invaders - 4
+m..m. # m..m. # ...m. # ..m.. # ..m.. # ..m.. # .m... # .m... # .m... # ..... # 
+m..m. # ...m. # ...m. # ..m.. # ..m.. # ..m.. # .m... # .m... # ..... # .m... # 
+..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
+..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
+..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
+..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
+..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
+..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
+A.... # A.... # A.... # A.... # .A... # ..A.. # ..A.. # .A... # .A... # .A... # 
+1(pl)   1(pl)   2(pl)   1(pl)   1(pl)   2(pl)   1(pl)   1(pl)   2(pl)   1(pl)   
+0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   
+0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   
+
+..... # 
+..... # 
+..... # 
+..... # 
+..... # 
+..... # 
+..... # 
+..... # 
+.A... # 
+1(pl)   
+0(de)   
+1(go)   
+
+2021-06-30 12:33:18 INFO     Goal found after expanding 7 nodes
+2021-06-30 12:33:18 INFO     The solution was: [0, 0, 2, 2, 1, 0, 0]
+2021-06-30 12:33:18 INFO     Testing policy in instance: space_invaders - 5
+m.mm.... # m.mm.... # m.mm.... # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+m.mm.... # m.mm.... # m.mm.... # m.mm.... # m.mm.... # m.mm.... # .m.mm... # .m.mm... # .m.mm... # ..m.mm.. # 
+m.mm.... # m.mm.... # m.mm.... # m.mm.... # m.mm.... # m.mm.... # .m.mm... # .m.mm... # .m.mm... # ..m.mm.. # 
+m.mm.... # m.mm.... # m.mm.... # m.mm.... # m.mm.... # m.mm.... # .m.mm... # .m.mm... # .m.mm... # ..m.mm.. # 
+m.mm.... # m.mm.... # m.mm.... # m.mm.... # m.mm.... # m.m..... # .m.m.... # .m.m.... # .m.m.... # ..m.m... # 
+m.mm.... # m.mm.... # m.m..... # m.mm.... # m.m..... # m.m..... # .m.m.... # .m.m.... # .m...... # ..m..... # 
+........ # ........ # ........ # m.m..... # m.m..... # m.m..... # .m.m.... # .m...... # .m...... # ..m..... # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+....A... # ...A.... # ...A.... # ...A.... # ...A.... # ...A.... # ...A.... # ...A.... # ...A.... # ...A.... # 
+1(pl)      1(pl)      2(pl)      1(pl)      1(pl)      2(pl)      1(pl)      1(pl)      2(pl)      1(pl)      
+0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      
+0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      
+
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+..m.mm.. # ..m.mm.. # ...m.mm. # ...m.mm. # ...m.mm. # ....m.mm # ....m.mm # ....m.mm # ...m.mm. # ...m.mm. # 
+..m.mm.. # ..m.mm.. # ...m.mm. # ...m.mm. # ...m.mm. # ....m.mm # ....m.mm # ....m..m # ...m..m. # ...m..m. # 
+..m.mm.. # ..m.mm.. # ...m.mm. # ...m.mm. # ...m..m. # ....m..m # ....m..m # ....m..m # ...m..m. # ...m.... # 
+..m.m... # ..m..... # ...m.... # ...m.... # ...m.... # ....m... # ....m... # ....m... # ...m.... # ...m.... # 
+..m..... # ..m..... # ...m.... # ...m.... # ...m.... # ....m... # ....m... # ....m... # ...m.... # ...m.... # 
+..m..... # ..m..... # ...m.... # ...m.... # ...m.... # ....m... # ....m... # ....m... # ...m.... # ...m.... # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+....A... # ....A... # ....A... # .....A.. # .....A.. # .....A.. # ......A. # ......A. # ......A. # ......A. # 
+1(pl)      2(pl)      1(pl)      1(pl)      2(pl)      1(pl)      1(pl)      2(pl)      1(pl)      1(pl)      
+0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      
+0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      
+
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+...m.mm. # ....m.mm # ....m..m # ....m..m # ........ # ........ # ........ # ........ # ........ # ........ # 
+...m.... # ....m... # ....m... # ....m... # ....m..m # ....m... # ....m... # ........ # ........ # ........ # 
+...m.... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # 
+...m.... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # 
+...m.... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # 
+...m.... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # 
+........ # ........ # ........ # ........ # ....m... # ....m... # ....m... # ....m... # ....m... # ....m... # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ....m... # ....m... # ....m... # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+......A. # ......A. # ......A. # .......A # .......A # .......A # ......A. # ......A. # .....A.. # ....A... # 
+2(pl)      1(pl)      1(pl)      2(pl)      1(pl)      1(pl)      2(pl)      1(pl)      1(pl)      2(pl)      
+0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      
+0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      
+
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+...m.... # ...m.... # ...m.... # ....m... # ....m... # ....m... # .....m.. # .....m.. # .....m.. # ......m. # 
+...m.... # ...m.... # ...m.... # ....m... # ....m... # ....m... # .....m.. # .....m.. # .....m.. # ......m. # 
+...m.... # ...m.... # ...m.... # ....m... # ....m... # ....m... # .....m.. # .....m.. # .....m.. # ......m. # 
+...m.... # ...m.... # ...m.... # ....m... # ....m... # ....m... # .....m.. # .....m.. # ........ # ........ # 
+...m.... # ...m.... # ...m.... # ....m... # ....m... # ........ # ........ # ........ # ........ # ........ # 
+...m.... # ...m.... # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+....A... # ...A.... # ...A.... # ...A.... # ....A... # ....A... # ....A... # .....A.. # .....A.. # .....A.. # 
+1(pl)      1(pl)      2(pl)      1(pl)      1(pl)      2(pl)      1(pl)      1(pl)      2(pl)      1(pl)      
+0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      
+0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      
+
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+......m. # ......m. # .....m.. # .....m.. # .....m.. # ......m. # ......m. # ........ # 
+......m. # ......m. # .....m.. # .....m.. # ........ # ........ # ........ # ........ # 
+......m. # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+........ # ........ # ........ # ........ # ........ # ........ # ........ # ........ # 
+......A. # ......A. # ......A. # .....A.. # .....A.. # .....A.. # ......A. # ......A. # 
+1(pl)      2(pl)      1(pl)      1(pl)      2(pl)      1(pl)      1(pl)      2(pl)      
+0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      0(de)      
+0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      0(go)      1(go)      
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 32 nodes
+2021-06-30 12:33:19 INFO     The solution was: [1, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 2, 0, 1, 1, 1, 1, 0, 2, 0, 2, 0, 2, 0, 1, 0, 2, 0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 6
+m.mm...... # ..mm...... # ..mm...... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # ..mm...... # ..mm...... # ...m...... # ..m....... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+A......... # A......... # .A........ # .A........ # ..A....... # ..A....... # ..A....... # ..A....... # 
+1(pl)        1(pl)        2(pl)        1(pl)        1(pl)        2(pl)        1(pl)        1(pl)        
+0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        
+0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        1(go)        
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 5 nodes
+2021-06-30 12:33:19 INFO     The solution was: [0, 2, 2, 0, 0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 7
+m..................m # m..................m # m..................m # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # m..................m # m..................m # m..................m # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # m..................m # ...................m # ...................m # ..................m. # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+....A............... # ...A................ # ..A................. # ..A................. # .A.................. # A................... # A................... # A................... # .A.................. # .A.................. # 
+1(pl)                  1(pl)                  2(pl)                  1(pl)                  1(pl)                  2(pl)                  1(pl)                  1(pl)                  2(pl)                  1(pl)                  
+0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  
+0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  
+
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+..................m. # ..................m. # .................m.. # .................m.. # .................m.. # ................m... # ................m... # ................m... # ...............m.... # ...............m.... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+..A................. # ...A................ # ...A................ # ....A............... # .....A.............. # .....A.............. # ......A............. # .......A............ # .......A............ # ........A........... # 
+1(pl)                  2(pl)                  1(pl)                  1(pl)                  2(pl)                  1(pl)                  1(pl)                  2(pl)                  1(pl)                  1(pl)                  
+0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  
+0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  
+
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+...............m.... # ................m... # ................m... # ................m... # .................m.. # .................m.. # .................m.. # ..................m. # ..................m. # ..................m. # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.........A.......... # .........A.......... # ..........A......... # ...........A........ # ...........A........ # ............A....... # .............A...... # .............A...... # ..............A..... # ...............A.... # 
+2(pl)                  1(pl)                  1(pl)                  2(pl)                  1(pl)                  1(pl)                  2(pl)                  1(pl)                  1(pl)                  2(pl)                  
+0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  
+0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  
+
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+...................m # ...................m # ...................m # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # ...................m # ...................m # ...................m # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # ...................m # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+.................... # .................... # .................... # .................... # .................... # .................... # .................... # .................... # 
+...............A.... # ................A... # .................A.. # .................A.. # ..................A. # ...................A # ...................A # ...................A # 
+1(pl)                  1(pl)                  2(pl)                  1(pl)                  1(pl)                  2(pl)                  1(pl)                  1(pl)                  
+0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  0(de)                  
+0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  0(go)                  1(go)                  
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 25 nodes
+2021-06-30 12:33:19 INFO     The solution was: [1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 8
+m.m.m. # m.m.m. # m.m... # .m.m.. # .m.m.. # .m.m.. # ...... # ...... # ...... # ...... # 
+m.m.m. # m.m... # m.m... # .m.m.. # .m.m.. # .m.... # .m.m.. # .m.... # .m.... # m..... # 
+...... # ...... # ...... # ...... # ...... # ...... # .m.... # .m.... # .m.... # m..... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+....A. # ....A. # ....A. # ....A. # ...A.. # ...A.. # ...A.. # ...A.. # ..A... # ..A... # 
+1(pl)    1(pl)    2(pl)    1(pl)    1(pl)    2(pl)    1(pl)    1(pl)    2(pl)    1(pl)    
+0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    
+0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    
+
+...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+m..... # m..... # .m.... # .m.... # .m.... # ...... # ...... # 
+m..... # m..... # .m.... # .m.... # ...... # .m.... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+.A.... # A..... # A..... # .A.... # .A.... # .A.... # .A.... # 
+1(pl)    2(pl)    1(pl)    1(pl)    2(pl)    1(pl)    1(pl)    
+0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    
+0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    1(go)    
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 11 nodes
+2021-06-30 12:33:19 INFO     The solution was: [0, 0, 1, 0, 0, 1, 1, 1, 2, 0, 0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 9
+.....m.... # .......... # 
+.......... # .......... # 
+.......... # .......... # 
+.......... # .......... # 
+.......... # .......... # 
+.....A.... # .....A.... # 
+1(pl)        1(pl)        
+0(de)        0(de)        
+0(go)        1(go)        
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 1 nodes
+2021-06-30 12:33:19 INFO     The solution was: [0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 10
+.m.......m # .m.......m # .m.......m # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .m.......m # .m.......m # .m.......m # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .m.......m # .m........ # .m........ # ..m....... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.....A.... # ......A... # .......A.. # .......A.. # ........A. # .........A # .........A # .........A # ........A. # ........A. # 
+1(pl)        1(pl)        2(pl)        1(pl)        1(pl)        2(pl)        1(pl)        1(pl)        2(pl)        1(pl)        
+0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        
+0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        
+
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+..m....... # ..m....... # .m........ # .m........ # .m........ # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .m........ # .m........ # .m........ # ..m....... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......A.. # ......A... # ......A... # .....A.... # ....A..... # ....A..... # ...A...... # ..A....... # ..A....... # ..A....... # 
+1(pl)        2(pl)        1(pl)        1(pl)        2(pl)        1(pl)        1(pl)        2(pl)        1(pl)        1(pl)        
+0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        
+0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        1(go)        
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 13 nodes
+2021-06-30 12:33:19 INFO     The solution was: [2, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1, 1, 0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 11
+.m........ # .m........ # .m........ # ..m....... # ..m....... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # 
+.....A.... # ....A..... # ...A...... # ...A...... # ..A....... # ..A....... # 
+1(pl)        1(pl)        2(pl)        1(pl)        1(pl)        2(pl)        
+0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        
+0(go)        0(go)        0(go)        0(go)        0(go)        1(go)        
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 4 nodes
+2021-06-30 12:33:19 INFO     The solution was: [1, 1, 1, 0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 12
+.........m # .........m # .........m # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .........m # .........m # .........m # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .........m # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.......... # .......... # .......... # .......... # .......... # .......... # .......... # .......... # 
+.....A.... # ......A... # .......A.. # .......A.. # ........A. # .........A # .........A # .........A # 
+1(pl)        1(pl)        2(pl)        1(pl)        1(pl)        2(pl)        1(pl)        1(pl)        
+0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        0(de)        
+0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        0(go)        1(go)        
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 5 nodes
+2021-06-30 12:33:19 INFO     The solution was: [2, 2, 2, 2, 0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 13
+...m # ...m # ...m # ..m. # ..m. # .... # 
+.... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # 
+.A.. # ..A. # ...A # ...A # ..A. # ..A. # 
+1(pl)  1(pl)  2(pl)  1(pl)  1(pl)  2(pl)  
+0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  
+0(go)  0(go)  0(go)  0(go)  0(go)  1(go)  
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 4 nodes
+2021-06-30 12:33:19 INFO     The solution was: [2, 2, 1, 0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 17
+m..m # m..m # m..m # .... # .... # .... # .... # .... # .... # .... # 
+m..m # m..m # m... # m..m # m... # m... # .m.. # .m.. # .m.. # .... # 
+.... # .... # .... # m... # m... # m... # .m.. # .m.. # .... # .m.. # 
+.... # .... # .... # .... # .... # .... # .... # .... # .... # .... # 
+..A. # ...A # ...A # ...A # ...A # ..A. # ..A. # .A.. # .A.. # .A.. # 
+1(pl)  1(pl)  2(pl)  1(pl)  1(pl)  2(pl)  1(pl)  1(pl)  2(pl)  1(pl)  
+0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  
+0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  
+
+.... # 
+.... # 
+.... # 
+.... # 
+.A.. # 
+1(pl)  
+0(de)  
+1(go)  
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 7 nodes
+2021-06-30 12:33:19 INFO     The solution was: [2, 0, 0, 1, 1, 0, 0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 18
+m...m # m...m # m...m # m.... # m.... # .m... # .m... # .m... # m.... # m.... # 
+m...m # m...m # m.... # m.... # m.... # .m... # .m... # .m... # m.... # m.... # 
+..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
+...A. # ....A # ....A # ....A # ...A. # ...A. # ..A.. # .A... # .A... # A.... # 
+1(pl)   1(pl)   2(pl)   1(pl)   2(pl)   1(pl)   1(pl)   2(pl)   1(pl)   1(pl)   
+0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   0(de)   
+0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   0(go)   
+
+m.... # .m... # .m... # ..... # 
+..... # ..... # ..... # ..... # 
+..... # ..... # ..... # ..... # 
+A.... # A.... # .A... # .A... # 
+2(pl)   1(pl)   1(pl)   2(pl)   
+0(de)   0(de)   0(de)   0(de)   
+0(go)   0(go)   0(go)   1(go)   
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 10 nodes
+2021-06-30 12:33:19 INFO     The solution was: [2, 0, 0, 1, 1, 1, 1, 0, 2, 0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 19
+m..m # m..m # m... # .... # .... # .... # .... # .... # 
+.... # .... # .... # m... # m... # m... # .m.. # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # 
+.... # .... # .... # .... # .... # .... # .... # .... # 
+..A. # ...A # ...A # ...A # ..A. # .A.. # .A.. # .A.. # 
+1(pl)  1(pl)  2(pl)  1(pl)  1(pl)  2(pl)  1(pl)  1(pl)  
+0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  0(de)  
+0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  0(go)  1(go)  
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 5 nodes
+2021-06-30 12:33:19 INFO     The solution was: [2, 0, 1, 1, 0]
+2021-06-30 12:33:19 INFO     Testing policy in instance: space_invaders - 20
+m.mm.m # m.mm.m # m.mm.m # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+m.mm.m # m.mm.m # m.mm.. # m.mm.m # m.mm.. # m.mm.. # .m.mm. # .m.mm. # .m.mm. # ...... # 
+m.mm.m # m.mm.. # m.mm.. # m.mm.. # m.mm.. # m.mm.. # .m.mm. # .m.mm. # .m.m.. # .m.mm. # 
+...... # ...... # ...... # m.mm.. # m.mm.. # m.mm.. # .m.mm. # .m.m.. # .m.m.. # .m.m.. # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # .m.m.. # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+.....A # .....A # .....A # .....A # .....A # ....A. # ....A. # ....A. # ....A. # ....A. # 
+1(pl)    1(pl)    2(pl)    1(pl)    1(pl)    2(pl)    1(pl)    1(pl)    2(pl)    1(pl)    
+0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    
+0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    
+
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+.m.m.. # .m.m.. # ..m.m. # ..m.m. # ..m.m. # ...m.m # ...m.m # ...m.m # ...... # ...... # 
+.m.m.. # .m.m.. # ..m.m. # ..m.m. # ..m.m. # ...m.m # ...m.m # ...m.. # ...m.m # ...m.. # 
+.m.m.. # .m.m.. # ..m.m. # ..m.m. # ..m... # ...m.. # ...m.. # ...m.. # ...m.. # ...m.. # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...m.. # ...m.. # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+....A. # ...A.. # ...A.. # ....A. # ....A. # ....A. # .....A # .....A # .....A # .....A # 
+1(pl)    2(pl)    1(pl)    1(pl)    2(pl)    1(pl)    1(pl)    2(pl)    1(pl)    1(pl)    
+0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    
+0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    
+
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...m.. # ..m... # ..m... # ..m... # .m.... # .m.... # .m.... # ..m... # ..m... # ..m... # 
+...m.. # ..m... # ..m... # ..m... # .m.... # .m.... # .m.... # ..m... # ..m... # ...... # 
+...m.. # ..m... # ..m... # ..m... # .m.... # .m.... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # ...... # 
+....A. # ....A. # ...A.. # ..A... # ..A... # .A.... # .A.... # .A.... # ..A... # ..A... # 
+2(pl)    1(pl)    1(pl)    2(pl)    1(pl)    1(pl)    2(pl)    1(pl)    1(pl)    2(pl)    
+0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    0(de)    
+0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    0(go)    
+
+...... # ...... # ...... # 
+...... # ...... # ...... # 
+...... # ...... # ...... # 
+...m.. # ...m.. # ...... # 
+...... # ...... # ...... # 
+...... # ...... # ...... # 
+...... # ...... # ...... # 
+...... # ...... # ...... # 
+...... # ...... # ...... # 
+..A... # ...A.. # ...A.. # 
+1(pl)    1(pl)    2(pl)    
+0(de)    0(de)    0(de)    
+0(go)    0(go)    1(go)    
+
+2021-06-30 12:33:19 INFO     Goal found after expanding 22 nodes
+2021-06-30 12:33:19 INFO     The solution was: [0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2, 0, 0, 1, 1, 1, 1, 0, 2, 0, 2, 0]
+2021-06-30 12:33:19 INFO     Learnt policy solves the 100.0% of test instances: 18/18
+2021-06-30 12:33:19 INFO     Solved instances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 20]
+2021-06-30 12:33:19 INFO     Unsolved instances: []
+================================================================================
+END OF STEP #2: Testing of the D2L policy. 1.55 CPU sec - 147.39 MB
+================================================================================

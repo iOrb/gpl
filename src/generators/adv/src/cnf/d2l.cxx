@@ -267,6 +267,7 @@ namespace sltp::cnf {
 //                if (is_necessarily_good_tx(tx))
 //                    wr.cl({Wr::lit(good_s_a_sp_var, true)});
                 clause.push_back(Wr::lit(good_s_a_sp_var, true));
+//                wr.cl({Wr::lit(good_s_a_sp_var, true)}, 1);
             }
 
             wr.cl(clause);

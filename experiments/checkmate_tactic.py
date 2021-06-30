@@ -1,4 +1,5 @@
 import copy
+import itertools
 import math
 from sltp.util.misc import update_dict
 from gpl.domains.grid_games.domain import Domain
@@ -31,7 +32,7 @@ ct_params = Bunch({
     'use_adjacency': {CELL_S, ROW_S , COL_S},
     'use_distance_2': {},
     'use_distance_more_than_1': {},
-    'use_bidirectional': {},
+    'use_bidirectional': {CELL_S, ROW_S , COL_S},
     'sorts_to_use': {CELL_S, ROW_S , COL_S},
     'n_moves': 10000,
     'unary_predicates': {CHECKMATE, STALEMATE, CHECK,
@@ -64,7 +65,7 @@ def experiments():
         distance_feature_max_complexity=4,
         concept_generation_timeout=15000,
         cond_feature_max_complexity=0,
-        comparison_features=False,
+        comparison_features=True,
         generate_goal_concepts=False,
         print_denotations=True,
         print_hstar_in_feature_matrix=False,
@@ -117,8 +118,19 @@ def experiments():
 
     exps["2"] = update_dict(
         exps["1"],
-        instances=[300, ],
-        feature_generator=debug_features_checkmate_tactic_queen(),
+        validate_features=debug_validate_features_queen(),
+    )
+
+    exps["3"] = update_dict(
+        exps["1"],
+        instances=[1500],
+        validate_features=debug_validate_features_queen(),
+    )
+
+    exps["4"] = update_dict(
+        exps["1"],
+        instances=[1500],
+        validate_features=debug_validate_features_queen(),
     )
 
     return exps
@@ -137,9 +149,17 @@ row_h_bk = 'row-has-black_king'
 cell_h_wk = 'cell-has-white_king'
 cell_h_wq = 'cell-has-white_queen'
 cell_h_bk = 'cell-has-black_king'
-adj_cell = 'adjacent_cell'
+cell_in_bottom = CELL_IS_IN(BOTTOM)
+cell_in_top = CELL_IS_IN(TOP)
+cell_in_left = CELL_IS_IN(LEFT)
+cell_in_right = CELL_IS_IN(RIGHT)
 adj_col = 'adjacent_col'
 adj_row = 'adjacent_row'
+adj_cell = 'adjacent_cell'
+left_cell = 'left_cell'
+right_cell = 'right_cell'
+up_cell = 'up_cell'
+down_cell = 'down_cell'
 cell_h_c_att_by_w = CELL_HAS_COLOR_ATTAKED_BY(WHITE)
 cell_h_c_att_by_b = CELL_HAS_COLOR_ATTAKED_BY(BLACK)
 cell_h_c_att_by_wq = CELL_HAS_PIECE_ATTAKED_BY(WHITE_QUEEN)
@@ -158,7 +178,9 @@ Not = lambda what: f'Not({what})'
 Exists = lambda sep, elem: f'Exists({sep},{elem})'
 Forall = lambda sep, elem: f'Forall({sep},{elem})'
 And = lambda elem0, elem1: f'And({elem0},{elem1})'
-LessThan = lambda elem0, elem1: 'LessThan{' + elem0 + ',' + elem1 + '}'
+LessThan = lambda elem0, elem1: 'LessThan{' + elem0 + '}{' + elem1 + '}'
+Star = lambda what: f'Star({what})'
+Inverse = lambda what: f'Inverse({what})'
 
 """
 Las features serían:
@@ -182,49 +204,82 @@ R3. True --> CM
 # P1 = Atom("player-1")
 # BKHA = Atom(BLACK_HAS_ACTION)
 A = Num(And(cell_h_c_att_by_bk, Not(cell_h_c_att_by_wq)))
-# AWK = Num(And(cell_h_c_att_by_bk, Not(cell_h_c_att_by_wk)))
-# AW = Num(And(cell_h_c_att_by_bk, Not(cell_h_c_att_by_w)))
-# WQAdjBK = Atom(WHITE_QUEEN_AND_BLACK_KING_IN_ADJACENT_EDGE)
-# WQAdjWK = Atom(WHITE_QUEEN_AND_WHITE_KING_IN_ADJACENT_EDGE)
+AWK = Num(And(cell_h_c_att_by_bk, Not(cell_h_c_att_by_wk)))
+AW = Num(And(cell_h_c_att_by_bk, Not(cell_h_c_att_by_w)))
+WQAdjBK = Atom(WHITE_QUEEN_AND_BLACK_KING_IN_ADJACENT_EDGE)
+WQAdjWK = Atom(WHITE_QUEEN_AND_WHITE_KING_IN_ADJACENT_EDGE)
 CM = Atom(CHECKMATE)
 KE = Atom(BLACK_KING_CLOSED_IN_EDGE_BY_WHITE_QUEEN)
-QA = Atom(QUEEN_ATTACKED_WHITOUT_PROTECTION)
+QA = Bool(And(And(cell_h_wq,Not(Exists(adj_cell, cell_h_wk))),And(cell_h_wk,Exists(adj_cell, cell_h_bk))))
+# QA = Atom(QUEEN_ATTACKED_WHITOUT_PROTECTION)
 SAME_QUADRANT = Atom(BLACK_KING_AND_WHITE_KING_IN_SAME_QUEEN_QUADRANT)
 #
 KRD = Dist(row_h_wk, adj_row, row_h_bk)
 KCD = Dist(col_h_wk, adj_col, col_h_bk)
-# KD = Dist(cell_h_wk, adj_cell, cell_h_bk)
+KD = Dist(cell_h_wk, adj_cell, cell_h_bk)
 #
-# KQRD = Dist(row_h_wq, adj_row, row_h_bk)
-# KQCD = Dist(col_h_wq, adj_col, col_h_bk)
-# WKD = Dist(cell_h_wq, adj_cell, cell_h_bk)
+KQRD = Dist(row_h_wq, adj_row, row_h_bk)
+KQCD = Dist(col_h_wq, adj_col, col_h_bk)
+WKD = Dist(cell_h_wq, adj_cell, cell_h_bk)
 SM = Atom(STALEMATE)
 C = Atom(CHECK)
 #
 # BKinC = Atom(BLACK_KING_IN_CORNER)
 
-# BK_WK_same_row = Bool(And(row_h_bk, row_h_wk))
-# BK_WK_same_col = Bool(And(col_h_bk, col_h_wk))
-# BK_WQ_same_row = Bool(And(row_h_bk, row_h_wq))
-# BK_WQ_same_col = Bool(And(col_h_bk, col_h_wq))
-# WK_WQ_same_row = Bool(And(row_h_wk, row_h_wq))
-# WK_WQ_same_col = Bool(And(col_h_wk, col_h_wq))
+BK_WK_same_row = Bool(And(row_h_bk, row_h_wk))
+BK_WK_same_col = Bool(And(col_h_bk, col_h_wk))
+BK_WQ_same_row = Bool(And(row_h_bk, row_h_wq))
+BK_WQ_same_col = Bool(And(col_h_bk, col_h_wq))
+WK_WQ_same_row = Bool(And(row_h_wk, row_h_wq))
+WK_WQ_same_col = Bool(And(col_h_wk, col_h_wq))
 
-# BK_WK_same_edge = Atom(BLACK_KING_AND_WHITE_KING_IN_SAME_EDGE)
+BK_WK_same_edge = Atom(BLACK_KING_AND_WHITE_KING_IN_SAME_EDGE)
 WQ_WK_same_edge = Atom(WHITE_QUEEN_AND_WHITE_KING_IN_SAME_EDGE)
-# WQ_BK_same_edge = Atom(WHITE_QUEEN_AND_BLACK_KING_IN_SAME_EDGE)
+WQ_BK_same_edge = Atom(WHITE_QUEEN_AND_BLACK_KING_IN_SAME_EDGE)
 #
 WQ_in_edge = Atom(WHITE_QUEEN_IN_EDGE)
 WK_in_edge = Atom(WHITE_KING_IN_EDGE)
 
-# TODO: BM (not necessary for now)
+dist_WK_left = Num(Exists(Inverse(Star(left_cell)),cell_h_wk))
+dist_WK_right = Num(Exists(Inverse(Star(right_cell)),cell_h_wk))
+dist_WK_up = Num(Exists(Inverse(Star(up_cell)),cell_h_wk))
+dist_WK_down = Num(Exists(Inverse(Star(down_cell)),cell_h_wk))
+
+dist_WQ_left = Num(Exists(Inverse(Star(left_cell)),cell_h_wq))
+dist_WQ_right = Num(Exists(Inverse(Star(right_cell)),cell_h_wq))
+dist_WQ_up = Num(Exists(Inverse(Star(up_cell)),cell_h_wq))
+dist_WQ_down = Num(Exists(Inverse(Star(down_cell)),cell_h_wq))
+
+dist_BK_left = Num(Exists(Inverse(Star(left_cell)),cell_h_bk))
+dist_BK_right = Num(Exists(Inverse(Star(right_cell)),cell_h_bk))
+dist_BK_up = Num(Exists(Inverse(Star(up_cell)),cell_h_bk))
+dist_BK_down = Num(Exists(Inverse(Star(down_cell)),cell_h_bk))
+
+
+LTs = list()
+for wk_, wq_, bk_ in zip([dist_WK_left, dist_WK_down, dist_WK_right, dist_WK_up,],
+                         [dist_WQ_left, dist_WQ_down, dist_WQ_right, dist_WQ_up,],
+                         [dist_BK_left, dist_BK_down, dist_BK_right, dist_BK_up,]):
+    LTs.append(LessThan(wk_, wq_))
+    LTs.append(LessThan(wk_, bk_))
+    LTs.append(LessThan(wq_, bk_))
+
+OTHER_FEATURES = [
+    WQ_BK_same_edge, BK_WK_same_row, BK_WK_same_row, BK_WK_same_col,
+    BK_WQ_same_row, BK_WQ_same_col, WK_WQ_same_row, WK_WQ_same_col,
+    KD, BK_WK_same_edge, KQRD,KQCD, WKD, AWK, AW, WQAdjBK, WQAdjWK,
+    # dist_WK_left, dist_WK_down, dist_WK_right, dist_WK_up,
+    # dist_WQ_left, dist_WQ_down, dist_WQ_right, dist_WQ_up,
+    # dist_BK_left, dist_BK_down, dist_BK_right, dist_BK_up,
+]
+
+RIGHT_FEATURES = [
+        C, CM, SM, KE, WK_in_edge,
+        WQ_WK_same_edge, WQ_in_edge, SAME_QUADRANT, KRD, KCD, QA,
+    ]
 
 def debug_features_checkmate_tactic_queen():
-    return [
-        SM, CM, QA, KE, A, KRD, KCD,
-        C, WQ_WK_same_edge, WQ_in_edge,
-        WK_in_edge, SAME_QUADRANT
-    ]
+    return RIGHT_FEATURES
 
 
 def debug_validate_features_queen():

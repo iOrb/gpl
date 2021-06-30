@@ -133,15 +133,17 @@ def run_test(config, search_policy, task, instance_name, rng):
 
         exitcode, goods = run_policy_based_search(config, search_policy, task, s, successors)
         if exitcode == ExitCode.AbstractPolicyNotCompleteOnTestInstances:
-            if config.allow_bad_states:
-                # we know we are not complete
-                # TODO: take bad states into account
-                goods = successors
-                if (config.verbosity>2):
-                    logging.info("WARNING: Policy not complete in state:\n{}".format(task.get_printable_rep(s[0])))
-            else:
-                exitcode = ExitCode.AbstractPolicyNotCompleteOnTestInstances
-                break
+            if (config.verbosity > 2):
+                logging.info("WARNING: Policy not complete in state:\n{}".format(task.get_printable_rep(s[0])))
+            exitcode = ExitCode.AbstractPolicyNotCompleteOnTestInstances
+            break
+            # if config.allow_bad_states:
+            #     # we know we are not complete
+            #     # TODO: take bad states into account
+            #     goods = successors
+            # else:
+            #     exitcode = ExitCode.AbstractPolicyNotCompleteOnTestInstances
+            #     break
 
         not_novelty_sp = dict()
         for op, sp in goods:

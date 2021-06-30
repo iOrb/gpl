@@ -2,7 +2,7 @@
 SLTP v.0.2.0
 ================================================================================
 ================================================================================
-(pid: 44970) STARTING STEP #1: Train: Explore the state space of the training instances
+(pid: 130489) STARTING STEP #1: Train: Explore the state space of the training instances
 ================================================================================
 ------------------------------------------------
  DOMAIN PARAMETERS: 
@@ -18,13 +18,13 @@ use_verbose_margin_as_feature: False
 objects_to_ignore: set()
 map_cells: True
 use_diagonals_for_map_cells: True
-use_adjacency: {'row', 'cell', 'col'}
+use_adjacency: {'cell', 'row', 'col'}
 use_distance_2: {}
 use_distance_more_than_1: {}
-use_bidirectional: {}
-sorts_to_use: {'row', 'cell', 'col'}
+use_bidirectional: {'cell', 'row', 'col'}
+sorts_to_use: {'cell', 'row', 'col'}
 n_moves: 10000
-unary_predicates: {'white_queen_and_black_king_in_adjacent_edge', 'black_king_closed_in_edge_by_white_queen', 'white_queen_and_white_king_in_same_edge', 'white_king_in_edge', 'white_queen_and_black_king_in_same_edge', 'black_has_action', 'white_queen_in_edge', 'black_king_and_white_king_same_queen_quadrant', 'queen_attaked_without_protection', 'white_queen_and_white_king_in_adjacent_edge', 'check', 'checkmate', 'stalemate', 'black_king_and_white_king_in_same_edge', 'black_king_in_corner'}
+unary_predicates: {'checkmate', 'white_king_in_edge', 'black_king_closed_in_edge_by_white_queen', 'white_queen_and_white_king_in_same_edge', 'stalemate', 'black_king_and_white_king_same_queen_quadrant', 'white_queen_and_white_king_in_adjacent_edge', 'white_queen_in_edge', 'queen_attaked_without_protection', 'black_has_action', 'white_queen_and_black_king_in_same_edge', 'black_king_in_corner', 'check', 'white_queen_and_black_king_in_adjacent_edge', 'black_king_and_white_king_in_same_edge'}
 game_version: 0
 ------------------------------------------------
 ------------------------------------------------
@@ -33,7 +33,7 @@ game_version: 0
 ------------------------------------------------
 (0) Exploration of the training sample:
 ------------------------------------------------
-2021-06-22 20:03:53 INFO     Expanding train instance: checkmate_tactic - 0
+2021-06-30 10:42:27 INFO     Expanding train instance: checkmate_tactic - 0
 #k..#
 #..Q#
 #K..#
@@ -41,17 +41,17 @@ game_version: 0
 ------------------------------------------------
 (0) Generation of the training sample:
 ------------------------------------------------
-2021-06-22 20:03:54 INFO     sample: #states=24, #transition-entries=24, #transitions=24
-2021-06-22 20:03:54 INFO     Entire sample: roots: 1, states: 24, transitions: 24 (11 optimal), goals: 5, alive: 7, deadends: 12
-2021-06-22 20:03:54 INFO     Printing SAT transition matrix with 24 states, -13 states with some outgoing transition, 18 operators, 24 (non-det) transitions, and 21 (adv) transitions,
+2021-06-30 10:42:28 INFO     sample: #states=24, #transition-entries=24, #transitions=24
+2021-06-30 10:42:28 INFO     Entire sample: roots: 1, states: 24, transitions: 24 (11 optimal), goals: 5, alive: 7, deadends: 12
+2021-06-30 10:42:28 INFO     Printing SAT transition matrix with 24 states, -13 states with some outgoing transition, 18 operators, 24 (non-det) transitions, and 21 (adv) transitions,
 ------------------------------------------------
 (0) Generate the pool of candidate features:
 ------------------------------------------------
-2021-06-22 20:03:54 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 24, transitions: 24 (11 optimal), goals: 5, alive: 7, deadends: 12
-2021-06-22 20:03:54 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_1/sample.io'
-2021-06-22 20:03:54 INFO     Skipping automatic feature generation: User provided set of handcrafted features
-2021-06-22 20:03:54 INFO     Logged feature denotations at '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_1/feature-denotations.txt'
-2021-06-22 20:03:54 INFO     Printing feature matrix with shape (24, 13) to '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_1/feature-matrix.io'
+2021-06-30 10:42:28 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 24, transitions: 24 (11 optimal), goals: 5, alive: 7, deadends: 12
+2021-06-30 10:42:28 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_1/sample.io'
+2021-06-30 10:42:28 INFO     Skipping automatic feature generation: User provided set of handcrafted features
+2021-06-30 10:42:28 INFO     Logged feature denotations at '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_1/feature-denotations.txt'
+2021-06-30 10:42:28 INFO     Printing feature matrix with shape (24, 11) to '/home/orbital/ws/research/gpl/code/gpl/workspace/checkmate_tactic_1/feature-matrix.io'
 ------------------------------------------------
 (0) C++ CNF generation module:
 ------------------------------------------------
@@ -59,43 +59,43 @@ game_version: 0
 (END Episode 0)
 ------------------------------------------------
 ================================================================================
-END OF STEP #1: Train: Explore the state space of the training instances. 0.18 CPU sec - 43.84 MB
+END OF STEP #1: Train: Explore the state space of the training instances. 0.19 CPU sec - 44.20 MB
 ================================================================================
 ================================================================================
-(pid: 44974) STARTING STEP #2: Testing of the D2L policy
+(pid: 130493) STARTING STEP #2: Testing of the D2L policy
 ================================================================================
 
 POLICY:
-Features (#: 11; total k: 20; max k = 4):
-  (0) Atom[checkmate] [k=1]
-  (1) Atom[stalemate] [k=1]
-  (2) Atom[queen_attaked_without_protection] [k=1]
-  (3) Atom[black_king_closed_in_edge_by_white_queen] [k=1]
-  (4) Num[And(cell-attaked-by-black_king,Not(cell-attaked-by-white_queen))] [k=4]
-  (5) Atom[black_king_and_white_king_same_queen_quadrant] [k=1]
-  (6) Atom[white_queen_in_edge] [k=1]
-  (7) Atom[check] [k=1]
-  (8) Atom[white_queen_and_white_king_in_same_edge] [k=1]
-  (9) Dist[col-has-white_king;adjacent_col;col-has-black_king] [k=4]
-  (a) Dist[row-has-white_king;adjacent_row;row-has-black_king] [k=4]
-Invariants: 1=0,0=0
+Features (#: 11; total k: 31; max k = 12):
+  (a) Atom[checkmate] [k=1]
+  (b) Atom[stalemate] [k=1]
+  (c) Bool[And(And(cell-has-white_queen,Not(Exists(adjacent_cell,cell-has-white_king))),And(cell-has-white_king,Exists(adjacent_cell,cell-has-black_king)))] [k=12]
+  (d) Atom[black_king_closed_in_edge_by_white_queen] [k=1]
+  (e) Num[And(cell-attaked-by-black_king,Not(cell-attaked-by-white_queen))] [k=4]
+  (f) Atom[black_king_and_white_king_same_queen_quadrant] [k=1]
+  (g) Atom[white_queen_in_edge] [k=1]
+  (h) Atom[check] [k=1]
+  (i) Atom[white_queen_and_white_king_in_same_edge] [k=1]
+  (j) Dist[col-has-white_king;adjacent_col;col-has-black_king] [k=4]
+  (k) Dist[row-has-white_king;adjacent_row;row-has-black_king] [k=4]
+Invariants: b=0,a=0
 Policy:
-  1. 1=0 AND 2=0 AND 3=0 AND 5=0 AND 6=0 -> {1 ·, 2 ·, 4 ·, 5 ·, 6 ·, 7 ·}, {1 ·, 2 ·, 4 ↓, 5 ·, 6 ·, 7 ·}
-  2. 1=0 AND 2>0 AND 3=0 AND 5=0 AND 6>0 -> {1 ·, 2 ↓, 4 ↓, 5 ·, 6 ↓, 7 ·}, {1 ·, 2 ↓, 4 ·, 5 ·, 6 ↓, 7 ·}
-  3. 1=0 AND 2>0 AND 3=0 AND 5=0 AND 6=0 -> {1 ·, 2 ↓, 4 ↓, 5 ·, 6 ·, 7 ·}, {1 ·, 2 ↓, 4 ·, 5 ·, 6 ·, 7 ·}
-  4. 1=0 AND 2=0 AND 3>0 AND 8=0 -> {1 ·, 2 ·, 3 ·, 9 ·, a ↓}, {1 ·, 2 ·, 3 ·, 9 ↓, a ↓}, {1 ·, 2 ·, 3 ·, 9 ↓, a ·}
-  5. 1=0 AND 2=0 AND 3=0 AND 5=0 AND 6>0 -> {1 ·, 2 ·, 4 ↓, 5 ·, 6 ↓, 7 ·}, {1 ·, 2 ·, 4 ·, 5 ·, 6 ↓, 7 ·}
-  6. 1=0 AND 2=0 AND 3=0 AND 5>0 -> {1 ·, 2 ·, 5 ↓}
-  7. 1=0 AND 2>0 AND 3>0 AND 8>0 -> {1 ·, 2 ↓, 3 ·}
-  8. 1=0 AND 2>0 AND 3=0 -> {1 ·, 2 ↓, 3 ↑}
-  9. 0=0 AND 1=0 AND 2=0 -> {0 ↑, 1 ·, 2 ·}
-  10. 1=0 AND 2>0 AND 3>0 AND 8=0 -> {1 ·, 2 ↓, 3 ·, 9 ↓, a ↓}, {1 ·, 2 ↓, 3 ·, 9 ·, a ↓}, {1 ·, 2 ↓, 3 ·, 9 ↓, a ·}
-  11. 0=0 AND 1=0 AND 2>0 -> {0 ↑, 1 ·, 2 ↓}
-  12. 1=0 AND 2=0 AND 3=0 -> {1 ·, 2 ·, 3 ↑}
-  13. 1=0 AND 2=0 AND 3>0 AND 8>0 -> {1 ·, 2 ·, 3 ·}
-  14. 1=0 AND 2>0 AND 3=0 AND 5>0 -> {1 ·, 2 ↓, 5 ↓}
+  1. a=0 AND b=0 AND c>0 -> {a ↑, b ·, c ↓}
+  2. a=0 AND b=0 AND c=0 -> {a ↑, b ·, c ·}
+  3. b=0 AND c=0 AND d>0 AND i=0 -> {b ·, c ·, d ·, j ↓, k ·}, {b ·, c ·, d ·, j ↓, k ↓}, {b ·, c ·, d ·, j ·, k ↓}
+  4. b=0 AND c>0 AND d=0 AND f=0 AND g=0 -> {b ·, c ↓, e ·, f ·, g ·, h ·}, {b ·, c ↓, e ↓, f ·, g ·, h ·}
+  5. b=0 AND c>0 AND d=0 AND f=0 AND g>0 -> {b ·, c ↓, e ·, f ·, g ↓, h ·}, {b ·, c ↓, e ↓, f ·, g ↓, h ·}
+  6. b=0 AND c=0 AND d=0 AND f>0 -> {b ·, c ·, f ↓}
+  7. b=0 AND c>0 AND d=0 AND f>0 -> {b ·, c ↓, f ↓}
+  8. b=0 AND c=0 AND d=0 AND f=0 AND g=0 -> {b ·, c ·, e ↓, f ·, g ·, h ·}, {b ·, c ·, e ·, f ·, g ·, h ·}
+  9. b=0 AND c>0 AND d>0 AND i=0 -> {b ·, c ↓, d ·, j ↓, k ·}, {b ·, c ↓, d ·, j ·, k ↓}, {b ·, c ↓, d ·, j ↓, k ↓}
+  10. b=0 AND c=0 AND d=0 AND f=0 AND g>0 -> {b ·, c ·, e ↓, f ·, g ↓, h ·}, {b ·, c ·, e ·, f ·, g ↓, h ·}
+  11. b=0 AND c>0 AND d>0 AND i>0 -> {b ·, c ↓, d ·}
+  12. b=0 AND c=0 AND d=0 -> {b ·, c ·, d ↑}
+  13. b=0 AND c=0 AND d>0 AND i>0 -> {b ·, c ·, d ·}
+  14. b=0 AND c>0 AND d=0 -> {b ·, c ↓, d ↑}
 
-2021-06-22 20:03:54 INFO     Testing policy in instance: checkmate_tactic - 0
+2021-06-30 10:42:28 INFO     Testing policy in instance: checkmate_tactic - 0
 k.. # k.Q # 
 ..Q # ... # 
 K.. # K.. # 
@@ -113,9 +113,9 @@ K.. # K.. #
 1(wh) 1(wh) 
 0(bl) 1(bl) 
 
-2021-06-22 20:03:54 INFO     Goal found after expanding 1 nodes
-2021-06-22 20:03:54 INFO     The solution was: ['white_queen_1.2_0.2']
-2021-06-22 20:03:54 INFO     Testing policy in instance: checkmate_tactic - -1
+2021-06-30 10:42:28 INFO     Goal found after expanding 1 nodes
+2021-06-30 10:42:28 INFO     The solution was: ['white_queen_1.2_0.2']
+2021-06-30 10:42:28 INFO     Testing policy in instance: checkmate_tactic - -1
 ..k. # ..k. # .k.. # .k.. # .... # .... # k... # k... # .k.. # .k.. # 
 .... # .... # .... # .... # k... # k... # .... # ...Q # ...Q # ...Q # 
 .... # Q... # Q... # ..Q. # ..Q. # .... # .... # .... # .... # .K.. # 
@@ -151,9 +151,9 @@ k... # k.Q. #
 0(wh)  0(wh)  
 0(bl)  1(bl)  
 
-2021-06-22 20:03:54 INFO     Goal found after expanding 6 nodes
-2021-06-22 20:03:54 INFO     The solution was: ['white_queen_3.1_2.0', 'white_queen_2.0_2.2', 'white_queen_2.2_3.1', 'white_queen_3.1_1.3', 'white_king_3.2_2.1', 'white_queen_1.3_0.2']
-2021-06-22 20:03:54 INFO     Testing policy in instance: checkmate_tactic - -2
+2021-06-30 10:42:28 INFO     Goal found after expanding 6 nodes
+2021-06-30 10:42:28 INFO     The solution was: ['white_queen_3.1_2.0', 'white_queen_2.0_2.2', 'white_queen_2.2_3.1', 'white_queen_3.1_1.3', 'white_king_3.2_2.1', 'white_queen_1.3_0.2']
+2021-06-30 10:42:28 INFO     Testing policy in instance: checkmate_tactic - -2
 .... # .... # ...k # ...k # 
 QK.k # .K.k # .K.. # .KQ. # 
 .... # .... # .... # .... # 
@@ -171,9 +171,9 @@ QK.k # .K.k # .K.. # .KQ. #
 0(wh)  0(wh)  0(wh)  0(wh)  
 1(bl)  0(bl)  0(bl)  0(bl)  
 
-2021-06-22 20:03:54 INFO     Goal found after expanding 2 nodes
-2021-06-22 20:03:54 INFO     The solution was: ['white_queen_1.0_3.2', 'white_queen_3.2_1.2']
-2021-06-22 20:03:54 INFO     Testing policy in instance: checkmate_tactic - -3
+2021-06-30 10:42:28 INFO     Goal found after expanding 2 nodes
+2021-06-30 10:42:28 INFO     The solution was: ['white_queen_1.0_3.2', 'white_queen_3.2_1.2']
+2021-06-30 10:42:28 INFO     Testing policy in instance: checkmate_tactic - -3
 K.... # K.... # K.... # .K... # .K... # ..K.. # ..K.. # ...K. # ...K. # ...K. # 
 ..Q.. # ...Q. # ...Q. # ...Q. # ...Q. # ...Q. # ...Q. # ...Q. # ...Q. # ..... # 
 ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # ..... # 
@@ -210,9 +210,9 @@ K.... # K.... # K.... # .K... # .K... # ..K.. # ..K.. # ...K. # ...K. # ...K. #
 1(wh)   0(wh)   0(wh)   1(wh)   1(wh)   0(wh)   0(wh)   0(wh)   
 0(bl)   0(bl)   0(bl)   0(bl)   0(bl)   0(bl)   0(bl)   0(bl)   
 
-2021-06-22 20:03:56 INFO     Goal found after expanding 9 nodes
-2021-06-22 20:03:56 INFO     The solution was: ['white_queen_1.2_1.3', 'white_king_0.0_0.1', 'white_king_0.1_0.2', 'white_king_0.2_0.3', 'white_queen_1.3_3.1', 'white_king_0.3_1.3', 'white_king_1.3_1.4', 'white_king_1.4_2.3', 'white_queen_3.1_3.3']
-2021-06-22 20:03:56 INFO     Testing policy in instance: checkmate_tactic - -4
+2021-06-30 10:42:30 INFO     Goal found after expanding 9 nodes
+2021-06-30 10:42:30 INFO     The solution was: ['white_queen_1.2_1.3', 'white_king_0.0_0.1', 'white_king_0.1_0.2', 'white_king_0.2_0.3', 'white_queen_1.3_3.1', 'white_king_0.3_1.3', 'white_king_1.3_1.4', 'white_king_1.4_2.3', 'white_queen_3.1_3.3']
+2021-06-30 10:42:30 INFO     Testing policy in instance: checkmate_tactic - -4
 K..... # K..... # K..... # K..... # K..... # K..... # K..... # K..... # K..... # K..... # 
 ...... # ...... # ...... # ....Q. # ....Q. # ...Q.. # ...Q.. # ..Q... # ..Q... # ...... # 
 ...... # ...... # ..k... # ..k... # .k.... # .k.... # k..... # k..... # ...... # ...Q.. # 
@@ -290,9 +290,9 @@ K..... # K..... #
 1(wh)    1(wh)    
 0(bl)    0(bl)    
 
-2021-06-22 20:03:59 INFO     Goal found after expanding 16 nodes
-2021-06-22 20:03:59 INFO     The solution was: ['white_queen_5.2_4.1', 'white_queen_4.1_1.4', 'white_queen_1.4_1.3', 'white_queen_1.3_1.2', 'white_queen_1.2_2.3', 'white_queen_2.3_2.2', 'white_queen_2.2_3.3', 'white_queen_3.3_1.1', 'white_king_0.0_0.1', 'white_queen_1.1_2.1', 'white_queen_2.1_4.3', 'white_king_0.1_1.1', 'white_king_1.1_1.0', 'white_king_1.0_2.0', 'white_king_2.0_3.0', 'white_queen_4.3_4.1']
-2021-06-22 20:03:59 INFO     Testing policy in instance: checkmate_tactic - -5
+2021-06-30 10:42:33 INFO     Goal found after expanding 16 nodes
+2021-06-30 10:42:33 INFO     The solution was: ['white_queen_5.2_4.1', 'white_queen_4.1_1.4', 'white_queen_1.4_1.3', 'white_queen_1.3_1.2', 'white_queen_1.2_2.3', 'white_queen_2.3_2.2', 'white_queen_2.2_3.3', 'white_queen_3.3_1.1', 'white_king_0.0_0.1', 'white_queen_1.1_2.1', 'white_queen_2.1_4.3', 'white_king_0.1_1.1', 'white_king_1.1_1.0', 'white_king_1.0_2.0', 'white_king_2.0_3.0', 'white_queen_4.3_4.1']
+2021-06-30 10:42:33 INFO     Testing policy in instance: checkmate_tactic - -5
 ....... # ....... # ...k... # ...k... # ....... # ....... # ....k.. # ....k.. # ....... # ....... # 
 QK.k... # .K.k... # .K..... # .K..... # .K..k.. # .K..k.. # .K..... # .K..... # .K...k. # .K...k. # 
 ....... # ....... # ....... # ..Q.... # ..Q.... # ....... # ....... # ...Q... # ...Q... # ....... # 
@@ -373,9 +373,9 @@ K.....k # .K....k # .K...k. # ..K..k. # ..K...k # ...K..k # ...K.k. # .....k. # 
 0(wh)     0(wh)     0(wh)     1(wh)     1(wh)     1(wh)     1(wh)     1(wh)     
 0(bl)     0(bl)     0(bl)     0(bl)     0(bl)     0(bl)     0(bl)     0(bl)     
 
-2021-06-22 20:04:03 INFO     Goal found after expanding 19 nodes
-2021-06-22 20:04:03 INFO     The solution was: ['white_queen_1.0_3.2', 'white_queen_3.2_2.2', 'white_queen_2.2_3.3', 'white_queen_3.3_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_1.2', 'white_king_1.1_0.0', 'white_queen_1.2_1.1', 'white_queen_1.1_3.3', 'white_queen_3.3_1.3', 'white_king_0.0_0.1', 'white_king_0.1_0.2', 'white_king_0.2_0.3', 'white_king_0.3_1.2', 'white_queen_1.3_3.5', 'white_king_1.2_1.3', 'white_king_1.3_0.3', 'white_king_0.3_0.4', 'white_queen_3.5_1.5']
-2021-06-22 20:04:03 INFO     Testing policy in instance: checkmate_tactic - -6
+2021-06-30 10:42:37 INFO     Goal found after expanding 19 nodes
+2021-06-30 10:42:37 INFO     The solution was: ['white_queen_1.0_3.2', 'white_queen_3.2_2.2', 'white_queen_2.2_3.3', 'white_queen_3.3_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_1.2', 'white_king_1.1_0.0', 'white_queen_1.2_1.1', 'white_queen_1.1_3.3', 'white_queen_3.3_1.3', 'white_king_0.0_0.1', 'white_king_0.1_0.2', 'white_king_0.2_0.3', 'white_king_0.3_1.2', 'white_queen_1.3_3.5', 'white_king_1.2_1.3', 'white_king_1.3_0.3', 'white_king_0.3_0.4', 'white_queen_3.5_1.5']
+2021-06-30 10:42:37 INFO     Testing policy in instance: checkmate_tactic - -6
 ........ # ........ # ...k.... # ...k.... # ........ # ........ # ....k... # ....k... # ........ # ........ # 
 QK.k.... # .K.k.... # .K...... # .K...... # .K..k... # .K..k... # .K...... # .K...... # .K...k.. # .K...k.. # 
 ........ # ........ # ........ # ..Q..... # ..Q..... # ........ # ........ # ...Q.... # ...Q.... # ........ # 
@@ -460,9 +460,9 @@ K.....k. # K.....k. # K....k.. # K....k.. # K.....k. # K.....k. # K......k # .K.
 1(wh)      1(wh)      1(wh)      1(wh)      1(wh)      1(wh)      1(wh)      1(wh)      1(wh)      1(wh)      
 0(bl)      0(bl)      0(bl)      1(bl)      1(bl)      0(bl)      0(bl)      0(bl)      0(bl)      0(bl)      
 
-2021-06-22 20:04:09 INFO     Goal found after expanding 20 nodes
-2021-06-22 20:04:09 INFO     The solution was: ['white_queen_1.0_3.2', 'white_queen_3.2_2.2', 'white_queen_2.2_3.3', 'white_queen_3.3_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_1.2', 'white_king_1.1_0.0', 'white_queen_1.2_1.1', 'white_queen_1.1_3.3', 'white_queen_3.3_1.3', 'white_queen_1.3_1.2', 'white_queen_1.2_3.4', 'white_queen_3.4_1.4', 'white_king_0.0_0.1', 'white_king_0.1_0.2', 'white_king_0.2_0.3', 'white_king_0.3_0.4', 'white_queen_1.4_3.6', 'white_king_0.4_0.5', 'white_queen_3.6_1.6']
-2021-06-22 20:04:09 INFO     Testing policy in instance: checkmate_tactic - -7
+2021-06-30 10:42:42 INFO     Goal found after expanding 20 nodes
+2021-06-30 10:42:42 INFO     The solution was: ['white_queen_1.0_3.2', 'white_queen_3.2_2.2', 'white_queen_2.2_3.3', 'white_queen_3.3_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_1.2', 'white_king_1.1_0.0', 'white_queen_1.2_1.1', 'white_queen_1.1_3.3', 'white_queen_3.3_1.3', 'white_queen_1.3_1.2', 'white_queen_1.2_3.4', 'white_queen_3.4_1.4', 'white_king_0.0_0.1', 'white_king_0.1_0.2', 'white_king_0.2_0.3', 'white_king_0.3_0.4', 'white_queen_1.4_3.6', 'white_king_0.4_0.5', 'white_queen_3.6_1.6']
+2021-06-30 10:42:42 INFO     Testing policy in instance: checkmate_tactic - -7
 ......... # ......... # ...k..... # ...k..... # ......... # ......... # ....k.... # ....k.... # ......... # ......... # 
 QK.k..... # .K.k..... # .K....... # .K....... # .K..k.... # .K..k.... # .K....... # .K....... # .K...k... # .K...k... # 
 ......... # ......... # ......... # ..Q...... # ..Q...... # ......... # ......... # ...Q..... # ...Q..... # ......... # 
@@ -617,9 +617,9 @@ K.....k.. # K.....k.. # K....k... # .K...k... # .K....k.. # .K....k.. # .K...k..
 1(wh)       1(wh)       1(wh)       1(wh)       1(wh)       1(wh)       1(wh)       1(wh)       1(wh)       1(wh)       
 0(bl)       0(bl)       0(bl)       1(bl)       1(bl)       0(bl)       0(bl)       0(bl)       0(bl)       0(bl)       
 
-2021-06-22 20:04:22 INFO     Goal found after expanding 35 nodes
-2021-06-22 20:04:22 INFO     The solution was: ['white_queen_1.0_3.2', 'white_queen_3.2_2.2', 'white_queen_2.2_3.3', 'white_queen_3.3_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_1.2', 'white_king_1.1_0.0', 'white_queen_1.2_1.1', 'white_queen_1.1_3.3', 'white_queen_3.3_1.3', 'white_queen_1.3_1.2', 'white_queen_1.2_3.4', 'white_queen_3.4_1.4', 'white_queen_1.4_1.3', 'white_queen_1.3_1.1', 'white_queen_1.1_1.2', 'white_queen_1.2_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_2.4', 'white_queen_2.4_3.5', 'white_queen_3.5_1.3', 'white_king_0.0_0.1', 'white_queen_1.3_1.2', 'white_queen_1.2_3.4', 'white_queen_3.4_1.4', 'white_queen_1.4_1.3', 'white_queen_1.3_3.5', 'white_queen_3.5_1.5', 'white_king_0.1_0.2', 'white_king_0.2_0.3', 'white_king_0.3_0.4', 'white_king_0.4_0.5', 'white_queen_1.5_3.7', 'white_king_0.5_0.6', 'white_queen_3.7_1.7']
-2021-06-22 20:04:22 INFO     Testing policy in instance: checkmate_tactic - -8
+2021-06-30 10:42:54 INFO     Goal found after expanding 35 nodes
+2021-06-30 10:42:54 INFO     The solution was: ['white_queen_1.0_3.2', 'white_queen_3.2_2.2', 'white_queen_2.2_3.3', 'white_queen_3.3_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_1.2', 'white_king_1.1_0.0', 'white_queen_1.2_1.1', 'white_queen_1.1_3.3', 'white_queen_3.3_1.3', 'white_queen_1.3_1.2', 'white_queen_1.2_3.4', 'white_queen_3.4_1.4', 'white_queen_1.4_1.3', 'white_queen_1.3_1.1', 'white_queen_1.1_1.2', 'white_queen_1.2_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_2.4', 'white_queen_2.4_3.5', 'white_queen_3.5_1.3', 'white_king_0.0_0.1', 'white_queen_1.3_1.2', 'white_queen_1.2_3.4', 'white_queen_3.4_1.4', 'white_queen_1.4_1.3', 'white_queen_1.3_3.5', 'white_queen_3.5_1.5', 'white_king_0.1_0.2', 'white_king_0.2_0.3', 'white_king_0.3_0.4', 'white_king_0.4_0.5', 'white_queen_1.5_3.7', 'white_king_0.5_0.6', 'white_queen_3.7_1.7']
+2021-06-30 10:42:54 INFO     Testing policy in instance: checkmate_tactic - -8
 .......... # .......... # ...k...... # ...k...... # .......... # .......... # ....k..... # ....k..... # .......... # .......... # 
 QK.k...... # .K.k...... # .K........ # .K........ # .K..k..... # .K..k..... # .K........ # .K........ # .K...k.... # .K...k.... # 
 .......... # .......... # .......... # ..Q....... # ..Q....... # .......... # .......... # ...Q...... # ...Q...... # .......... # 
@@ -850,9 +850,9 @@ K.....k... # K.....k... # K....k.... # .K...k.... # .K....k... # .K....k... # .K
 1(wh)        1(wh)        1(wh)        1(wh)        1(wh)        1(wh)        1(wh)        1(wh)        1(wh)        1(wh)        
 0(bl)        0(bl)        0(bl)        1(bl)        1(bl)        0(bl)        0(bl)        0(bl)        0(bl)        0(bl)        
 
-2021-06-22 20:04:44 INFO     Goal found after expanding 50 nodes
-2021-06-22 20:04:44 INFO     The solution was: ['white_queen_1.0_3.2', 'white_queen_3.2_2.2', 'white_queen_2.2_3.3', 'white_queen_3.3_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_1.2', 'white_king_1.1_0.0', 'white_queen_1.2_1.1', 'white_queen_1.1_3.3', 'white_queen_3.3_1.3', 'white_queen_1.3_1.2', 'white_queen_1.2_3.4', 'white_queen_3.4_1.4', 'white_queen_1.4_1.3', 'white_queen_1.3_1.1', 'white_queen_1.1_1.2', 'white_queen_1.2_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_2.4', 'white_queen_2.4_3.5', 'white_queen_3.5_1.3', 'white_king_0.0_0.1', 'white_queen_1.3_1.2', 'white_queen_1.2_3.4', 'white_queen_3.4_1.4', 'white_queen_1.4_1.3', 'white_queen_1.3_3.5', 'white_queen_3.5_1.5', 'white_queen_1.5_1.4', 'white_queen_1.4_1.2', 'white_queen_1.2_1.3', 'white_queen_1.3_2.4', 'white_queen_2.4_3.5', 'white_queen_3.5_2.5', 'white_queen_2.5_3.6', 'white_queen_3.6_1.4', 'white_king_0.1_0.2', 'white_queen_1.4_1.3', 'white_queen_1.3_3.5', 'white_queen_3.5_1.5', 'white_queen_1.5_1.4', 'white_queen_1.4_3.6', 'white_queen_3.6_1.6', 'white_king_0.2_0.3', 'white_king_0.3_0.4', 'white_king_0.4_0.5', 'white_king_0.5_0.6', 'white_queen_1.6_3.8', 'white_king_0.6_0.7', 'white_queen_3.8_1.8']
-2021-06-22 20:04:44 INFO     Testing policy in instance: checkmate_tactic - -9
+2021-06-30 10:43:15 INFO     Goal found after expanding 50 nodes
+2021-06-30 10:43:15 INFO     The solution was: ['white_queen_1.0_3.2', 'white_queen_3.2_2.2', 'white_queen_2.2_3.3', 'white_queen_3.3_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_1.2', 'white_king_1.1_0.0', 'white_queen_1.2_1.1', 'white_queen_1.1_3.3', 'white_queen_3.3_1.3', 'white_queen_1.3_1.2', 'white_queen_1.2_3.4', 'white_queen_3.4_1.4', 'white_queen_1.4_1.3', 'white_queen_1.3_1.1', 'white_queen_1.1_1.2', 'white_queen_1.2_2.3', 'white_queen_2.3_3.4', 'white_queen_3.4_2.4', 'white_queen_2.4_3.5', 'white_queen_3.5_1.3', 'white_king_0.0_0.1', 'white_queen_1.3_1.2', 'white_queen_1.2_3.4', 'white_queen_3.4_1.4', 'white_queen_1.4_1.3', 'white_queen_1.3_3.5', 'white_queen_3.5_1.5', 'white_queen_1.5_1.4', 'white_queen_1.4_1.2', 'white_queen_1.2_1.3', 'white_queen_1.3_2.4', 'white_queen_2.4_3.5', 'white_queen_3.5_2.5', 'white_queen_2.5_3.6', 'white_queen_3.6_1.4', 'white_king_0.1_0.2', 'white_queen_1.4_1.3', 'white_queen_1.3_3.5', 'white_queen_3.5_1.5', 'white_queen_1.5_1.4', 'white_queen_1.4_3.6', 'white_queen_3.6_1.6', 'white_king_0.2_0.3', 'white_king_0.3_0.4', 'white_king_0.4_0.5', 'white_king_0.5_0.6', 'white_queen_1.6_3.8', 'white_king_0.6_0.7', 'white_queen_3.8_1.8']
+2021-06-30 10:43:15 INFO     Testing policy in instance: checkmate_tactic - -9
 ...KQ.. # ...K... # ...K.k. # ...K.k. # ...K..k # ...K..k # ...K... # ....K.. # ....K.k # ....K.k # 
 ......k # ......k # ....... # ...Q... # ...Q... # ....... # ......k # ......k # ....... # .....Q. # 
 ....... # ....Q.. # ....Q.. # ....... # ....... # ....... # ....... # ....... # ....... # ....... # 
@@ -873,9 +873,9 @@ K.....k... # K.....k... # K....k.... # .K...k.... # .K....k... # .K....k... # .K
 1(wh)     1(wh)     1(wh)     1(wh)     1(wh)     1(wh)     1(wh)     1(wh)     1(wh)     1(wh)     
 0(bl)     0(bl)     0(bl)     1(bl)     1(bl)     0(bl)     0(bl)     0(bl)     0(bl)     0(bl)     
 
-2021-06-22 20:04:45 INFO     Goal found after expanding 5 nodes
-2021-06-22 20:04:45 INFO     The solution was: ['white_queen_0.4_2.4', 'white_queen_2.4_1.3', 'white_queen_1.3_3.5', 'white_king_0.3_0.4', 'white_queen_3.5_1.5']
-2021-06-22 20:04:45 INFO     Testing policy in instance: checkmate_tactic - -10
+2021-06-30 10:43:16 INFO     Goal found after expanding 5 nodes
+2021-06-30 10:43:16 INFO     The solution was: ['white_queen_0.4_2.4', 'white_queen_2.4_1.3', 'white_queen_1.3_3.5', 'white_king_0.3_0.4', 'white_queen_3.5_1.5']
+2021-06-30 10:43:16 INFO     Testing policy in instance: checkmate_tactic - -10
 Q.............. # .......Q....... # .......Q....... # ............... # ............... # ............... # ............... # ............... # ............... # ............... # 
 ............... # ............... # ............... # .......Q....... # .......Q....... # ............... # ............... # .......Q....... # .......Q....... # ............... # 
 ............... # ............... # ............... # ............... # ............... # .......Q....... # .......Q....... # ............... # ............... # .......Q....... # 
@@ -1016,11 +1016,11 @@ Q.............. # .......Q....... # .......Q....... # ............... # ........
 0(wh)             0(wh)             0(wh)             0(wh)             0(wh)             0(wh)             0(wh)             0(wh)             
 0(bl)             0(bl)             0(bl)             0(bl)             0(bl)             0(bl)             0(bl)             0(bl)             
 
-2021-06-22 20:05:07 INFO     Goal found after expanding 24 nodes
-2021-06-22 20:05:07 INFO     The solution was: ['white_queen_0.0_0.7', 'white_queen_0.7_1.7', 'white_queen_1.7_2.7', 'white_queen_2.7_1.7', 'white_queen_1.7_2.7', 'white_queen_2.7_6.7', 'white_queen_6.7_4.5', 'white_queen_4.5_3.4', 'white_queen_3.4_2.3', 'white_queen_2.3_1.2', 'white_queen_1.2_1.1', 'white_queen_1.1_1.2', 'white_queen_1.2_1.3', 'white_queen_1.3_1.1', 'white_queen_1.1_1.2', 'white_queen_1.2_1.6', 'white_queen_1.6_1.5', 'white_queen_1.5_1.4', 'white_queen_1.4_1.3', 'white_king_6.6_5.5', 'white_king_5.5_4.4', 'white_king_4.4_3.3', 'white_king_3.3_2.2', 'white_queen_1.3_1.1']
-2021-06-22 20:05:07 INFO     Learnt policy solves the 100.0% of test instances: 11/11
-2021-06-22 20:05:07 INFO     Solved instances: [0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10]
-2021-06-22 20:05:07 INFO     Unsolved instances: []
+2021-06-30 10:43:37 INFO     Goal found after expanding 24 nodes
+2021-06-30 10:43:37 INFO     The solution was: ['white_queen_0.0_0.7', 'white_queen_0.7_1.7', 'white_queen_1.7_2.7', 'white_queen_2.7_1.7', 'white_queen_1.7_2.7', 'white_queen_2.7_6.7', 'white_queen_6.7_4.5', 'white_queen_4.5_3.4', 'white_queen_3.4_2.3', 'white_queen_2.3_1.2', 'white_queen_1.2_1.1', 'white_queen_1.1_1.2', 'white_queen_1.2_1.3', 'white_queen_1.3_1.1', 'white_queen_1.1_1.2', 'white_queen_1.2_1.6', 'white_queen_1.6_1.5', 'white_queen_1.5_1.4', 'white_queen_1.4_1.3', 'white_king_6.6_5.5', 'white_king_5.5_4.4', 'white_king_4.4_3.3', 'white_king_3.3_2.2', 'white_queen_1.3_1.1']
+2021-06-30 10:43:37 INFO     Learnt policy solves the 100.0% of test instances: 11/11
+2021-06-30 10:43:37 INFO     Solved instances: [0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10]
+2021-06-30 10:43:37 INFO     Unsolved instances: []
 ================================================================================
-END OF STEP #2: Testing of the D2L policy. 72.97 CPU sec - 46.38 MB
+END OF STEP #2: Testing of the D2L policy. 69.58 CPU sec - 48.19 MB
 ================================================================================
