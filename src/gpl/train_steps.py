@@ -1,8 +1,5 @@
-import os
-
 from sltp.driver import check_int_parameter, InvalidConfigParameter
-from sltp.returncodes import ExitCode
-from sltp.util.naming import compute_sample_filenames, compute_test_sample_filenames, compute_info_filename, compute_maxsat_filename
+from sltp.util.naming import compute_info_filename, compute_maxsat_filename
 
 
 class StateSpaceExplorationStep:
@@ -63,7 +60,7 @@ class TransitionSamplingStep:
 
     def get_step_runner(self, config):
         if config.domain.type == 'adv':
-            from .sampling.adv import run
+            from gpl.sampling import run
         else:
             raise RuntimeError("Wrong mode provided: {}".format(config.mode))
         return run

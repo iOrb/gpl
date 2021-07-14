@@ -6,6 +6,7 @@ import random
 from .grammar.grammar import Grammar
 from .grammar.objects import get_domain_objects
 from collections import defaultdict
+import pygame
 
 # State: (representation, state_encoded)
 
@@ -36,17 +37,42 @@ class Task(ITask):
     def state_to_atoms_string(self, state,):
         return self.grammar.atom_tuples_to_string(self.state_to_atom_tuples(state,))
 
-    def transition_env(self, state1):  # s' -> a -> s"
+    def transition_env(self, state1, interactive=False):  # s' -> a -> s"
         r1=state1[0]
+        print(self.get_printable_rep(r1))
         if r1.goal or r1.deadend or r1.player == self.objects.player1:
             return self.colapse_state(r1)
-        op = self.env.player2_policy(r1)
+        if interactive:
+            op = None
+            while not isinstance(op, int):
+                for event in pygame.event.get():
+                    # print(event)
+                    if event.type == pygame.QUIT:
+                        self.end_interactive_screen()
+                        sys.exit()
+                    if event.type == pygame.KEYDOWN:
+                        op = self.env.event_to_op(r1, event)
+                        break
+        else:
+            op = self.env.player2_policy(r1)
         r2 = self.env.act(r1, op)  # adversary move
+
+        print(self.get_printable_rep(r2))
+
         s2 = self.colapse_state(r2)
         if r2.player != self.objects.player1:
             return self.transition_env(s2)
         else:
             return s2
+
+    def init_interacive_screen(self, s):
+        r=s[0]
+        nrows, ncols = r.grid.shape
+        screen = pygame.display.set_mode((nrows*10, ncols*10))
+        pygame.init()
+
+    def end_interactive_screen(self):
+        pygame.quit()
 
     def colapse_state(self, rep):
         s_encoded = self.encode_state(rep)
@@ -185,7 +211,7 @@ class Task(ITask):
             tmp_row = ""
             for o in layout[row, :]:
                 tmp_row += simplified_objects[o]
-            total_rep += "#{}#\n".format(tmp_row)
+            total_rep += "{}. #{}#\n".format(row, tmp_row)
         return total_rep
 
     def encode_op(self, s, op):

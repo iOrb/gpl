@@ -5,7 +5,7 @@ import math
 import sys
 from collections import defaultdict, OrderedDict, deque
 
-from ..utils import encode_operator
+from gpl.utils import encode_operator
 
 from sltp.returncodes import ExitCode
 from sltp.util.command import read_file

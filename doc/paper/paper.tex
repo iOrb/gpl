@@ -592,7 +592,7 @@ According to the fourth rule of the policy, if the agent is in the same column a
   (KD) Dist[cell-has-white_king;adjacent_cell;cell-has-black_king] [k=4]
   (BKhA) Bool[And(cell-attaked-by-black_king,Not(cell-attaked-by-white))] [k=4]
   (A) Num[And(cell-attaked-by-black_king,Not(cell-attaked-by-white_queen))] [k=4]
-  () Bool[And(row-has-white_queen,Exists(adjacent_row,row-has-black_king)))] [k=6]
+  (WQadjBK_row) Bool[And(row-has-white_queen,Exists(adjacent_row,row-has-black_king)))] [k=6]
   (WQadjBK_col) Bool[And(col-has-white_queen,Exists(adjacent_col,col-has-black_king)))] [k=6]
   (WQadjBK) Bool[And(cell-has-white_queen,Exists(adjacent_cell,cell-has-black_king)))] [k=6]
   (WQadjWK) Bool[And(cell-has-white_queen,Exists(adjacent_cell,cell-has-white_king)))] [k=6]
@@ -614,8 +614,8 @@ $KE$. Black king is closed in an edge of the table by the white queen\\
 $QbK$. White queen is somewhere between kings, rows or columns\\
 $A$. The number of cells attaked by black king and not attacked by white queen\\
 $BKhA$. Exist a cell attaked by Black king and no attacked by white pieces\\
-$Qaw$. White queen is attaked and without protection, i.e. $WQadjBK AND WQadjWK$\\
-$WQadjBK_line$. White queen is in an adjacent line to the black king, i.e. $WQadjBK_row OR WQadjWK_col$\\
+$Qaw$. White queen is attaked and without protection, i.e. $WQadjBK$ AND $WQadjWK$\\
+$WQadjBK_line$. White queen is in an adjacent line to the black king, i.e. $WQadjBK_row$ OR $WQadjWK_col$\\
 $CA$. It is possible to decrease the number of cells attaked by black king and not attacked by white queen\\
 $CCM$. It is possible to do checkmate in the current state
 
@@ -650,6 +650,87 @@ Rules 1 and 2 cover the cases in which the king is not enclosed in an edge of th
   ....k # ....k # ...k. # ...k. # ..k.. # ...k. # ...k. # ....k # ....k #
 \end{Verbatim}
 
+
+\subsection{Checkmate in n with Rook}
+\subsubsection{Description}
+
+
+\subsubsection{Training instances}
+\begin{Verbatim}[fontsize=\footnotesize]
+  # .  k  .  .  K #
+  # .  .  .  .  . #
+  # .  .  .  .  . #
+  # R  .  .  .  . #
+  # .  .  .  .  . #
+\end{Verbatim}
+
+
+\subsubsection{Features}
+\begin{Verbatim}[fontsize=\footnotesize]
+  (CM) Atom[checkmate] [k=1]
+  (SM) Atom[stalemate] [k=1]
+  (QbK) Atom[white_rook_between_kings] [k=1]
+  (KE) Atom[black_king_closed_in_edge_by_white_rook] [k=1]
+  (KD) Dist[cell-has-white_king;adjacent_cell;cell-has-black_king] [k=4]
+  (BKhA) Bool[And(cell-attaked-by-black_king,Not(cell-attaked-by-white))] [k=4]
+  (A) Num[And(cell-attaked-by-black_king,Not(cell-attaked-by-white_rook))] [k=4]
+  (WQadjBK_row) Bool[And(row-has-white_rook,Exists(adjacent_row,row-has-black_king)))] [k=6]
+  (WQadjBK_col) Bool[And(col-has-white_rook,Exists(adjacent_col,col-has-black_king)))] [k=6]
+  (WQadjBK) Bool[And(cell-has-white_rook,Exists(adjacent_cell,cell-has-black_king)))] [k=6]
+  (WQadjWK) Bool[And(cell-has-white_rook,Exists(adjacent_cell,cell-has-white_king)))] [k=6]
+\end{Verbatim}
+
+
+\subsubsection{All Transition Features}
+This features reason about how the value of the features can change in all possible successors.
+\begin{Verbatim}[fontsize=\footnotesize]
+  (CA) Bool[can(A, DEC)] [k=2]
+  (CCM) bool[can(CM, INC)] [k=2]
+\end{Verbatim}
+
+
+\subsubsection{Feature Description}
+$CM$. Checkmate\\
+$SM$. Stalemate\\
+$KE$. Black king is closed in an edge of the table by the white queen\\
+$QbK$. White queen is somewhere between kings, rows or columns\\
+$A$. The number of cells attaked by black king and not attacked by white queen\\
+$BKhA$. Exist a cell attaked by Black king and no attacked by white pieces\\
+$Qaw$. White queen is attaked and without protection, i.e. $WQadjBK$ AND $WQadjWK$\\
+$WQadjBK_line$. White queen is in an adjacent line to the black king, i.e. $WQadjBK_row$ OR $WQadjWK_col$\\
+$CA$. It is possible to decrease the number of cells attaked by black king and not attacked by white queen\\
+$CCM$. It is possible to do checkmate in the current state
+
+
+\subsubsection{Policy}
+  \begin{Verbatim}[fontsize=\footnotesize]
+   1. KE=0, CA>0 -> {A ↓}
+   2. KE=0, CA=0 -> {A ·, KD ·}
+   3. BKhA=0, WQadjBK_line>0 -> {KD ·, WQadjBK_line ·}
+   4. CCM=0, KE>0 -> {KD ↓}
+   5. CCM=1 -> {CM ↑}
+  \end{Verbatim}
+
+
+\subsubsection{Policy Implicits}
+The next features has to be in that certain value after the transition for classifing the transition as good, taking into account the policy rules.
+  \begin{Verbatim}[fontsize=\footnotesize]
+   Qaw=0, Qbk>0, SM=0
+  \end{Verbatim}
+
+
+\subsubsection{Policy description}
+Rules 1 and 2 cover the cases in which the king is not enclosed in an edge of the file. The first rule states that it is good to take transitions that decrease the number of squares available to the black king by using the queen. The second rule says that if the first rule is not applicable it is good to take transitions that do not alter the number of squares available to the black king, without moving the white king. The third rule refers to those cases where the black king had moved to its only free square, and classifies as good those transitions in which the queen is moved so that it is not stalemate and remains on the line adjacent to the black king. Rule four covers cases in which the black king is locked on an edge by the queen, and it is good to move the white king closer. finally, rule 5 says that if it is possible to checkmate it is good to do so. It should be noted that thanks to the implicit parts of the policy the king will never be left tied up and unprotected, stalemate will never occur and the white king will always be placed and remain in a line that is between the lines of the kings, whether rows or columns.
+
+
+\subsubsection{Example of Game}
+\begin{Verbatim}[fontsize=\footnotesize]
+  K.... # K.... # K.... # ..... # ..... # ..... # ..... # ..... # ..... #
+  ..Q.. # ..... # ..... # ..K.. # ..K.. # ..K.. # ..... # ..... # ..... #
+  ..... # ..... # ..... # ..... # ..... # ..... # ..K.. # ..K.. # ..K.. #
+  ..... # Q.... # Q.... # Q.... # Q.... # Q.... # Q.... # Q.... # ...Q. #
+  ....k # ....k # ...k. # ...k. # ..k.. # ...k. # ...k. # ....k # ....k #
+\end{Verbatim}
 
 \subsection{Checkmate in one with Queen}
 \subsubsection{Description}

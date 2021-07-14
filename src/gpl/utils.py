@@ -1,6 +1,3 @@
-import pickle
-import sys
-
 import dill
 
 def _create_exception_msg(step, e):
@@ -46,7 +43,7 @@ def encode_operator(s, op, task):
     return o
 
 def get_sampling_class(config):
-    from .sampling.adv import TransitionSampleADV
+    from gpl.sampling import TransitionSampleADV
     sampling_class = {
         'adv': TransitionSampleADV(),
     }[config.domain.type]

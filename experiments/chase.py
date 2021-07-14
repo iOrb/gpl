@@ -22,6 +22,9 @@ chase_params = Bunch({
     'sorts_to_use': {COL_S, ROW_S, CELL_S},
     'unary_predicates': {},
     'can_build_walls': False,
+    'use_distance_2': {},
+    'use_distance_more_than_1': {},
+    'use_verbose_margin_as_feature': False,
     'ava_actions': {
         PLAYER1: {RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP},
         # PLAYER1: {UP, DOWN, RIGHT, LEFT},
@@ -86,7 +89,9 @@ def experiments():
         base,
         instances=[0],
         # instances=[0, 15],
-        test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        skip_train_steps=[0, 1, 2, 3],
+        test_instances=[12],
+        # test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
 
     )
 

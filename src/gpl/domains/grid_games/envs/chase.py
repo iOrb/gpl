@@ -3,6 +3,7 @@ import sys
 import numpy as np
 from gpl.utils import Bunch
 import copy
+import pygame
 
 from ..grammar.objects import WHITE_KING, WALL, EMPTY, BLACK_KING
 
@@ -175,6 +176,21 @@ class Env(object):
             c0 = np.argwhere(layout == BLACK_KING)[0]
             actions += PIECE_VALID_ACTIONS[BLACK_KING](c0, layout, self.params)
         return actions
+
+    def event_to_op(self, rep, event):
+        valid_actions = self.available_actions(rep)
+        if event.key == pygame.K_LEFT:
+            op = LEFT
+        elif event.key == pygame.K_RIGHT:
+            op = RIGHT
+        elif event.key == pygame.K_UP:
+            op = UP
+        elif event.key == pygame.K_DOWN:
+            op = DOWN
+        if op not in valid_actions:
+            return None
+        else:
+            return op
 
     def player2_policy(self, rep):
         assert (BLACK_KING in rep.grid)

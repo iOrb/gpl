@@ -52,7 +52,8 @@ class PolicyTesting(Step):
         return "Testing of the D2L policy"
 
     def get_step_runner(self):
-        from .tester import run
+        from .demo import run
+        # from .tester import run
         return run
 
 
