@@ -91,15 +91,47 @@
 \maketitle
 
 
+\abstract
+
+Generalized planning is concerned with the computation of general policies that solve multiple instances of a planning domain all at once. It has been recently shown that these policies can be computed in two steps: first, a suitable abstraction in the form of a qualitative numerical planning problem (QNP) is learned from sample plans, then the general policies are obtained from the learned QNP using a planner. In this work, we introduce an alternative approach for computing more expressive general policies which does not require sample plans or a QNP planner. The new formulation is very simple and can be cast in terms that are more standard in machine learning: a large but finite pool of features is defined from the predicates in the planning examples using a general grammar, and a small subset of features is sought for separating “good” from “bad” state transitions, and goals from non-goals. The problems of finding such a “separating surface” while labeling the transitions as “good” or “bad” are
+jointly addressed as a single combinatorial optimization problem expressed as a Weighted Max-SAT problem. The advantage of looking for the simplest policy in the given feature space that solves the given examples, possibly non-optimally, is that many domains have no general, compact policies that are optimal. The approach yields general policies for a number of benchmark adversarial domains, even when non-determinism exists in the adverary turn. We use a uniform grammar for all the grid domains capable of capturing the domain representations. These policies can be interpreted qualitatively, explained, and it can be shown mathematically that they will solve all possible instances within a class of problems. This is an advantage when making manual policy changes. We also show an example of how the explainable policies produced by our algorithms can be applied to real robots.
+
+\section{Introduction}
+
+Generalized planning is concerned with the computation of general policies or plans that solve multiple instances of a given planning domain all at once (Srivastava, Immerman, and Zilberstein 2008; Bonet, Palacios, and Geffner 2009; Huand De Giacomo 2011; Belle and Levesque 2016; Segovia, Jim´enez, and Jonsson 2016). If the instances share the same strategy, it doesn't matter how different they are. For example, in an environment where an agent has to pick up a key and then approach a door and it will open, the strategy is to approach the key, pick it up, and then approach the door in order to open it. In this example it does not matter how large the environment is and how many actions the agent has to take, since the strategy does not change.
+
+The key question in generalized planning is how to represent and compute such general plans from the domain representation. This was solved by [], for non-adversarial and deterministic domains but not for adversarial domains, where you cannot control what the adversary will do during his turn. However, there are adversarial domains where the agent can take actions that no matter what happens in the environment the agent wins. For instance, if we are in a domain where an agent must chase an adversary, and the adversary can run slower than the agent, the strategy will be to decrease the distance between them until the agent can catch him. This we know is a winning strategy where it does not matter what the adversary does.
+
+This was solved by [], for non-adversarial and deterministic domains but not for adversarial domains, where you cannot control what the adversary will do during his turn. However, there are adversarial domains where you can take actions that no matter what happens in the environment you win. For example, if we are in a domain where an agent must chase an adversary, and the adversary can run slower than the agent, the strategy will be to decrease the distance between them until the agent can catch him. This we know is a winning strategy where it does not matter what the adversary does. Nor will the size of the environment, the distance or the position of the agent and the adversary matter.
+
+In one of the most general formulations, general policies are obtained from an abstract planning model expressed as a qualitative numerical planning problem or QNP (Srivastava et al. 2011). A QNP is a standard STRIPS planning model extended with non-negative numerical variables that can be decreased or increased “qualitatively”; i.e., by uncertain positive amounts, short of making the variables negative. Unlike standard planning with numerical variables (Helmert 2002), QNP planning is decidable, and QNPs can be compiled in polynomial time into fully observable non-deterministic (FOND) problems (Bonet and Geffner 2020)
+
+The main advantage of the formulation of generalized planning based on QNPs is that it applies to standard relational domains where the pool of (ground) actions change from instance to instance. On the other hand, while the planning domain is assumed to be given, the QNP abstraction is not, and hence it has to be written by hand or learned. This is the approach of Bonet, Franc`es, and Geffner (2019) where generalized plans are obtained by learning the QNP abstraction from the domain representation and sample plans, and then solving the abstraction with a QNP planner.
+
+In this work, we build on this thread but introduce an alternative approach for computing general policies that is simpler, yet more powerful. The learning problem is cast as a self-supervised classification problem where (1) a pool of features is automatically generated from a uniform grammar applied to the domain predicates, and (2) a small subset of features is sought for separating “good” from “bad” state transitions, and goals from non-goals. The problems of finding the “separating surface” while labeling the transitions as “good” or “bad” are addressed jointly as a single combinatorial optimization task solved with a Weighted Max-SAT solver. The approach yields general policies for a number of benchmark domains.
+
+One of the advantages of having explainable policies is that it gives the engineer or researcher the possibility to modify them easily if necessary. For instance, if there are known exceptions within the domain. Although this has not been necessary in the domains discussed in this paper.
+
+The paper is organized as follows. We first review related work. Then we introduce a SAT encoding and the variables, where we see what the input of our algorithm consists of. We then present the learning task, the computational approach for solving it, and the experimental results. Then we describe the grammar used in all the domains. Then we describe each of the domains, and interpret the features and policies found with our approach. These explainable policies will be the output of the algorithm. Then we show how it is possible to use our framework to introduce policies or modify them after the training process. The use case is checkamate in chess in n-moves and any board size, with two kings and a queen. Finally, we show how it is possible to use the policies with robots, both in simulators and in the real world.
+
+\subsection{Related Work}
+
+% XRL
+% Planning, and explainable reinforcement learning (XRL)
+
+\subsection{Generalized Planning}
+
+A key question in generalized planning is how to represent general plans or policies when the different instances to be solved have different sets of objects and ground actions. One solution is to work with general features (functions) that have well defined values over any state of any possible domain instance, and think of general policies π as mappings from feature valuations into abstract actions that denote changes in the feature values (Bonet and Geffner 2018). In this work, we build on this intuition but avoid the introduction of abstract actions (Bonet and Geffner 2021).
+
 \subsection{SAT Encoding}
 
 Our encoding is parametrized by
 \begin{itemize}
  \item Pool $F$ of description logic features $f$, each with given feature complexity $\mathcal{K}(f)$.
- \item \newcontent{} A (training) set $T$ of transitions $(s, a, s') \in T$ from a number of instances of the same domain.
+ \item A (training) set $T$ of transitions $(s, a, s') \in T$ from a number of instances of the same domain.
        We assume $T$ is \emph{closed}: if $s$ appears in the first position of a transition, then all possible
        transitions starting in $s$ in that instance appear in $T$ too.
- \item \newcontent{} A set $adv(s)$ of all possible moves by the adversary on state $s$.
+ \item A set $adv(s)$ of all possible moves by the adversary on state $s$.
 
  \item For each state $s$ appearing in some transition, full information on whether $s$
        is a goal, unsolvable, or alive.
@@ -107,9 +139,9 @@ Our encoding is parametrized by
  \item A parameter $\delta$ which is a ``slack'' value to determine the maximum deviation from the optimal $V^*(s)$
  what we will allow in our policy. This will be made clearer in the encoding below.
 
- \item \newcontent{} A Boolean parameter \texttt{allow\_bad\_states} with intended meaning ``allow the policy
+ \item A Boolean parameter \texttt{allow\_bad\_states} with intended meaning ``allow the policy
         to remain undefined for some of the states in the training set''.
- \item \newcontent{} A parameter \texttt{action\_labels} with possible values:
+ \item A parameter \texttt{action\_labels} with possible values:
  \begin{itemize}
    \item \texttt{ignore}: Don't exploit the info on what action induced what transition. This is necessary
   when the set of actions changes over different instances of the domain.
@@ -862,16 +894,24 @@ To generate all the possible states from which the rook can checkmate the black 
 
 \newpage
 
-\paragraph{Bullet points}
-\begin{itemize}
-\item Learning generalized policies in unsupervised FOND domains from small examples.
-\item FOND encoding, introducing Good(s, a) features to deal with non-determinism. Where $a \in A$, and $A$ is not required to be fixed. However, if $A$ is fixed we show a way to exploit it reducing the number of transitions to distinguish.
-\item Being complete in domains where not all states have a good transition, with the optional constraint Bad(s).
-\item Empirical results with six different domains: Chase, Shoot, Space Invaders, Delivery, Checkmate with Queen, Checkmate with Rook.
-\item Incremental policy learning, to address the scalability problem. First a random sample is taken from the whole graph and the policy is then refined incrementally by iteratively increasing the sample size. The strategy for increasing the size of the sample can be goal-directed or random.
-%\item Introducing the sort of novelty to choose between the different successors classified as good by our policy
-\item Use of a uniform grammar for the different grid domains.
-\end{itemize}
+\subsection{Conclusions}
+
+\subsection{Discussoin of Results}
+
+
+\subsection{Discussoin of Results}
+
+
+%\paragraph{Bullet points}
+%\begin{itemize}
+%\item Learning generalized policies in unsupervised FOND domains from small examples.
+%\item FOND encoding, introducing Good(s, a) features to deal with non-determinism. Where $a \in A$, and $A$ is not required to be fixed. However, if $A$ is fixed we show a way to exploit it reducing the number of transitions to distinguish.
+%\item Being complete in domains where not all states have a good transition, with the optional constraint Bad(s).
+%\item Empirical results with six different domains: Chase, Shoot, Space Invaders, Delivery, Checkmate with Queen, Checkmate with Rook.
+%\item Incremental policy learning, to address the scalability problem. First a random sample is taken from the whole graph and the policy is then refined incrementally by iteratively increasing the sample size. The strategy for increasing the size of the sample can be goal-directed or random.
+%%\item Introducing the sort of novelty to choose between the different successors classified as good by our policy
+%\item Use of a uniform grammar for the different grid domains.
+%\end{itemize}
 
 
 \bibliographystyle{plain}

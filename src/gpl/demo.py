@@ -67,7 +67,6 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
 
             # init inteactive screen
             task.init_interacive_screen(task.initial_state)
-            task.end_inteactive_screen()
 
             # And now we inject our desired search and heuristic functions
             exitcode, solution, path, expanded = run_test(config, search_policy, task, instance_name, rng)
@@ -81,7 +80,7 @@ def test_d2l_policy_on_gym_env(config, data, get_policy, rng):
                 logging.info(f"Goal found after expanding {expanded} nodes")
                 logging.info(f"The solution was: {solution}")
             else:
-                logging.warning(f"Testing of policy failed with code: {exitcode}")
+                logging.warnieng(f"Testing of policy failed with code: {exitcode}")
                 unsolved_instances.append(instance_name)
                 continue
 

@@ -1,3 +1,4 @@
+import os.path
 import sys
 
 import numpy as np
@@ -26,6 +27,14 @@ COLOR_TO_PIECES = {
 
 opposite_color = lambda c: BLACK if c == WHITE else WHITE
 
+def load_image(image_name, scale):
+    images_path = '/home/orbital/ws/research/gpl/code/gpl/src/gpl/domains/grid_games/envs/images'
+    return pygame.transform.scale(pygame.image.load(os.path.join(images_path, image_name)), scale)
+
+IMAGE_OBJECT = {
+    BLACK_KING: load_image('adv.jpeg', (100, 100)),
+    WHITE_KING: load_image('agent.jpg', (60, 60)),
+}
 
 PIECE_VALID_ACTIONS = {
     WHITE_KING: lambda pos, layout, params: king_valid_actions(pos, layout, WHITE, params),
@@ -177,20 +186,37 @@ class Env(object):
             actions += PIECE_VALID_ACTIONS[BLACK_KING](c0, layout, self.params)
         return actions
 
+    def init_interacive_screen(self, r):
+        nrows, ncols = r.grid.shape
+        self.screen = pygame.display.set_mode((nrows * 20, ncols * 20))
+        clock = pygame.time.Clock()
+        pygame.display.set_caption("chase")
+        self.screen.fill((255, 255, 255))
+        self.update(r)
+
+    def update(self, r):
+        self.screen.fill((255, 255, 255))
+        agent_r, agent_c = np.argwhere(r.grid == WHITE_KING)[0]
+        adv_r, adv_c = np.argwhere(r.grid == BLACK_KING)[0]
+        self.screen.blit(IMAGE_OBJECT[BLACK_KING], (adv_r * 20, adv_c * 20))
+        self.screen.blit(IMAGE_OBJECT[WHITE_KING], (agent_r * 20, agent_c * 20))
+        pygame.display.flip()
+
     def event_to_op(self, rep, event):
+        recognized_op = False; op = None
         valid_actions = self.available_actions(rep)
         if event.key == pygame.K_LEFT:
-            op = LEFT
-        elif event.key == pygame.K_RIGHT:
-            op = RIGHT
-        elif event.key == pygame.K_UP:
             op = UP
-        elif event.key == pygame.K_DOWN:
+        elif event.key == pygame.K_RIGHT:
             op = DOWN
+        elif event.key == pygame.K_UP:
+            op = LEFT
+        elif event.key == pygame.K_DOWN:
+            op = RIGHT
         if op not in valid_actions:
-            return None
+            return False, None
         else:
-            return op
+            return True, op
 
     def player2_policy(self, rep):
         assert (BLACK_KING in rep.grid)
@@ -333,7 +359,7 @@ LAYOUTS = {
     9: (4, 4, (3, 3), (0, 0)),
     10: (20, 21, (0, 0), (3, 3)),
     11: (20, 20, (0, 1), (3, 3)),
-    12: (40, 40, (0, 1), (30, 30)),
+    12: (50, 50, (0, 1), (40, 40)),
     13: (40, 40, (30, 30), (0, 1)),
     14: (3, 3, (0, 0), (2, 2)),
     15: (4, 6, (3, 5), (1, 1)),

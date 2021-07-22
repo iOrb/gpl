@@ -3,6 +3,7 @@ import copy
 from gpl.task import ITask
 from gpl.utils import Bunch
 import random
+import sys
 from .grammar.grammar import Grammar
 from .grammar.objects import get_domain_objects
 from collections import defaultdict
@@ -39,37 +40,36 @@ class Task(ITask):
 
     def transition_env(self, state1, interactive=False):  # s' -> a -> s"
         r1=state1[0]
-        print(self.get_printable_rep(r1))
+
+        self.env.update(r1)
+
         if r1.goal or r1.deadend or r1.player == self.objects.player1:
             return self.colapse_state(r1)
+
         if interactive:
-            op = None
-            while not isinstance(op, int):
+            recognized_op = False; op = None
+            while not recognized_op:
                 for event in pygame.event.get():
-                    # print(event)
                     if event.type == pygame.QUIT:
                         self.end_interactive_screen()
-                        sys.exit()
-                    if event.type == pygame.KEYDOWN:
-                        op = self.env.event_to_op(r1, event)
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            self.end_interactive_screen()
+                        recognized_op, op = self.env.event_to_op(r1, event)
+                    if recognized_op:
                         break
         else:
             op = self.env.player2_policy(r1)
-        r2 = self.env.act(r1, op)  # adversary move
 
-        print(self.get_printable_rep(r2))
+        # adversary move
+        r2 = self.env.act(r1, op)
+        self.env.update(r2)
 
         s2 = self.colapse_state(r2)
-        if r2.player != self.objects.player1:
-            return self.transition_env(s2)
-        else:
-            return s2
+        return self.transition_env(s2) if r2.player != self.objects.player1 else s2
 
     def init_interacive_screen(self, s):
-        r=s[0]
-        nrows, ncols = r.grid.shape
-        screen = pygame.display.set_mode((nrows*10, ncols*10))
-        pygame.init()
+        self.env.init_interacive_screen(s[0])
 
     def end_interactive_screen(self):
         pygame.quit()

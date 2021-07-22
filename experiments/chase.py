@@ -4,8 +4,8 @@ from sltp.util.misc import update_dict
 from gpl.domains.grid_games.domain import Domain
 from gpl.utils import Bunch
 from gpl.domains.grid_games.grammar.language import CELL_S, COL_S, ROW_S
-from gpl.domains.grid_games.envs.chase import RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP, UP, DOWN, RIGHT, LEFT
 from gpl.domains.grid_games.grammar.objects import PLAYER1, PLAYER2
+from gpl.domains.grid_games.envs.chase import RIGHTUP, RIGHTDOWN, LEFTDOWN, LEFTUP, UP, DOWN, RIGHT, LEFT
 
 chase_params = Bunch({
     'domain_name': 'chase',
@@ -89,7 +89,8 @@ def experiments():
         base,
         instances=[0],
         # instances=[0, 15],
-        skip_train_steps=[0, 1, 2, 3],
+        skip_train_steps=[],
+        # skip_train_steps=[0, 1, 2, 3],
         test_instances=[12],
         # test_instances=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
 
