@@ -80,6 +80,7 @@ def experiments():
         # train_instances_to_expand=[],
         train_instances_to_expand=list(range(1000)),
         max_states_expanded=math.inf,
+        interactive_demo=False,
     )
     exps = dict()
 

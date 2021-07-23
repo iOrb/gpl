@@ -179,45 +179,6 @@ def default_feature_namer(s):
     return str(s)
 
 
-def rfts_names(feature):
-    base = {
-        'Forall(down,Exists(hv,Nominal(empty)))': 'if-below-exists-empty',
-    }
-    base.update({f'Exists(hv,Nominal({t}))': f'num-{t}s' for t in rfts.ALL_TOKENS})
-    base.update({
-        'Exists(hv,Nominal(star))': 'star-unreached',
-        'Exists(hv,Nominal(agent))': 'agent-exists',
-    })
-
-    s = str(feature)
-    return extend_namer_to_all_features(base).get(s, s)
-
-
-def stf_names(feature):
-    base = {f'Exists(hv,Nominal({t}))': f'cell-with-{t}' for t in stf.ALL_TOKENS}
-    s = str(feature)
-    return extend_namer_to_all_features(base).get(s, s)
-
-
-def ec_names(feature):
-    base = {f'Exists(hv,Nominal({t}))': f'cell-with-{t}' for t in ec.ALL_TOKENS}
-    s = str(feature)
-    return extend_namer_to_all_features(base).get(s, s)
-
-
-def tpn_names(feature):
-    base = {f'Exists(hv,Nominal({t}))': f'cell-with-{t}' for t in tpn.ALL_TOKENS}
-    s = str(feature)
-    return extend_namer_to_all_features(base).get(s, s)
-
-
-def ct_names(feature):
-    from generalization_grid_games_2.envs.checkmate_tactic import ALL_TOKENS
-    base = {f'Exists(hv,Nominal({t}))': f'cell-with-{t}' for t in ALL_TOKENS}
-    s = str(feature)
-    return extend_namer_to_all_features(base).get(s, s)
-
-
 def programmatic_language_creator(config):
     lang, _ = config.domain.generate_language()
     return lang

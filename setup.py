@@ -59,10 +59,8 @@ def main():
             'wheel',
             'gym',
             'matplotlib',
-            'imageio',
             'tqdm',
             'dill',
-            'stockfish',
             'ipython',
 
             # 'generalization_grid_games@git+git://github.com/iOrb/generalization_grid_games_2#egg==generalization_grid_games',

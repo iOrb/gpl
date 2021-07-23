@@ -43,7 +43,8 @@ class PolicyTesting(Step):
     def process_config(self, config):
         # if any(not os.path.isfile(i) for i in config["test_instances"]):
         #     raise InvalidConfigParameter('"test_instances" must point to existing files')
-        return config
+        self.config = config
+        return self.config
 
     def get_required_data(self):
         return ["d2l_policy"]
@@ -52,8 +53,10 @@ class PolicyTesting(Step):
         return "Testing of the D2L policy"
 
     def get_step_runner(self):
-        from .demo import run
-        # from .tester import run
+        if self.config['interactive_demo']:
+            from .demo import run
+        else:
+            from .tester import run
         return run
 
 

@@ -40,13 +40,10 @@ class Task(ITask):
 
     def transition_env(self, state1, interactive=False):  # s' -> a -> s"
         r1=state1[0]
-
-        self.env.update(r1)
-
-        if r1.goal or r1.deadend or r1.player == self.objects.player1:
-            return self.colapse_state(r1)
-
         if interactive:
+            self.env.update(r1)
+            if r1.goal or r1.deadend or r1.player == self.objects.player1:
+                return self.colapse_state(r1)
             recognized_op = False; op = None
             while not recognized_op:
                 for event in pygame.event.get():
@@ -58,15 +55,19 @@ class Task(ITask):
                         recognized_op, op = self.env.event_to_op(r1, event)
                     if recognized_op:
                         break
+            # adversary move
+            r2 = self.env.act(r1, op)
+            self.env.update(r2)
+            s2 = self.colapse_state(r2)
+            return self.transition_env(s2) if r2.player != self.objects.player1 else s2
         else:
+            if r1.goal or r1.deadend or r1.player == self.objects.player1:
+                return self.colapse_state(r1)
             op = self.env.player2_policy(r1)
-
-        # adversary move
-        r2 = self.env.act(r1, op)
-        self.env.update(r2)
-
-        s2 = self.colapse_state(r2)
-        return self.transition_env(s2) if r2.player != self.objects.player1 else s2
+            # adversary move
+            r2 = self.env.act(r1, op)
+            s2 = self.colapse_state(r2)
+            return self.transition_env(s2) if r2.player != self.objects.player1 else s2
 
     def init_interacive_screen(self, s):
         self.env.init_interacive_screen(s[0])

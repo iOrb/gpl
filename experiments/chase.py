@@ -79,6 +79,7 @@ def experiments():
         train_instances_to_expand=list(range(1000)),
         max_states_expanded=math.inf,
         use_state_novelty=True,
+        interactive_demo=True,
     )
 
     # version 1:

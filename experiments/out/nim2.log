@@ -1,8 +1,10 @@
+pygame 2.0.1 (SDL 2.0.14, Python 3.8.10)
+Hello from the pygame community. https://www.pygame.org/contribute.html
 ================================================================================
 SLTP v.0.2.0
 ================================================================================
 ================================================================================
-(pid: 12152) STARTING STEP #1: Train: Explore the state space of the training instances
+(pid: 20205) STARTING STEP #1: Train: Explore the state space of the training instances
 ================================================================================
 ------------------------------------------------
  DOMAIN PARAMETERS: 
@@ -10,14 +12,22 @@ SLTP v.0.2.0
 ------------------------------------------------
 domain_name: nim
 use_player_as_feature: True
+use_player_to_encode: False
+use_next_player_as_feature: False
+use_next_player_to_encode: False
 map_cells: True
 use_diagonals_for_map_cells: True
+use_margin_as_feature: False
+use_verbose_margin_as_feature: False
+objects_to_ignore: set()
 use_adjacency: {'cell'}
 use_bidirectional: {'cell'}
 sorts_to_use: {'cell'}
 last_player_win: True
 unary_predicates: {}
 predicates_arity_1: {}
+use_distance_2: {}
+use_distance_more_than_1: {}
 mark_top_token: True
 mark_bottom_token: True
 game_version: 1
@@ -28,26 +38,26 @@ game_version: 1
 ------------------------------------------------
 (0) Exploration of the training sample:
 ------------------------------------------------
-2021-05-25 10:26:39 INFO     Expanding train instance: nim - 0
-# .  .  T #
-# T  T  t #
-# B  B  B #
+2021-07-23 10:41:35 INFO     Expanding train instance: nim - 0
+0. # .  .  T #
+1. # T  T  t #
+2. # B  B  B #
 
 ------------------------------------------------
 (0) Generation of the training sample:
 ------------------------------------------------
-2021-05-25 10:26:39 INFO     sample: #states=64, #transition-entries=104, #transitions=104
-2021-05-25 10:26:39 INFO     Entire sample: roots: 1, states: 64, transitions: 104 (140 optimal), goals: 1, alive: 55, deadends: 1
-2021-05-25 10:26:39 INFO     Printing SAT transition matrix with 64 states, 29 states with some outgoing transition, 7 operators, 104 (non-det) transitions, and 105 (adv) transitions,
+2021-07-23 10:41:35 INFO     sample: #states=36, #transition-entries=104, #transitions=104
+2021-07-23 10:41:35 INFO     Entire sample: roots: 1, states: 36, transitions: 104 (75 optimal), goals: 1, alive: 35, deadends: 1
+2021-07-23 10:41:35 INFO     Printing SAT transition matrix with 36 states, 29 states with some outgoing transition, 7 operators, 104 (non-det) transitions, and 105 (adv) transitions,
 ------------------------------------------------
 (0) Generate the pool of candidate features:
 ------------------------------------------------
-2021-05-25 10:26:39 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 64, transitions: 104 (140 optimal), goals: 1, alive: 55, deadends: 1
-2021-05-25 10:26:39 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/sample.io'
-2021-05-25 10:26:39 INFO     Invoking C++ feature generation module
-2021-05-25 10:26:39 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 8 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --comparison-features --generate-goal-concepts --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+2021-07-23 10:41:35 INFO     Starting generation of feature pool. State sample used to detect redundancies: roots: 1, states: 36, transitions: 104 (75 optimal), goals: 1, alive: 35, deadends: 1
+2021-07-23 10:41:35 INFO     Printing sample information to '/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/sample.io'
+2021-07-23 10:41:35 INFO     Invoking C++ feature generation module
+2021-07-23 10:41:35 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/featuregen --complexity-bound 8 --timeout 15000 --dist-complexity-bound 4 --cond-complexity-bound 0 --comparison-features --generate-goal-concepts --print-denotations --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
 reading '/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/transitions-info.io
-BASIS: #concepts=15, #roles=9
+BASIS: #concepts=35, #roles=9
 ROLES: #roles=18
 Generating concepts for k=1. Total concepts: 5 (2, 3, 0, 0, 0, 0, 0, 0, 0)... 0 concepts generated, 3 pruned.
 Generating concepts for k=2. Total concepts: 5 (2, 3, 0, 0, 0, 0, 0, 0, 0)... 19 concepts generated, 32 pruned.
@@ -220,323 +230,106 @@ warning: Feature 7.LessThan{Num[And(Not(cell-has-token),Forall(right_cell,<empty
 warning: Feature 7.LessThan{Num[And(Not(cell-has-top_token),Forall(left_cell,<empty>))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Forall(left_cell,Forall(left_cell,cell-has-top_token))]}
 warning: Feature 7.LessThan{Num[And(Not(cell-has-top_token),Forall(right_cell,<empty>))]}{Num[cell-has-bottom_token]} has been pruned in favor of more complex 8.LessThan{Num[Not(cell-has-bottom_token)]}{Num[Forall(right_cell,Forall(right_cell,cell-has-top_token))]}
 Generating distance features...
-FEATURES: #features=5290, #nullary=2, #boolean=137, #numerical=4450, #distance=0, #conditional=0, #comparison=701
+FEATURES: #features=5291, #nullary=2, #boolean=137, #numerical=4451, #distance=0, #conditional=0, #comparison=701
 Printing concept, role and feature denotations to /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/*-denotations.io.txt
 Serializing all concepts and features to:
 	/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/serialized-concepts.io
 	/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/serialized-features.io
-2021-05-25 10:27:09 INFO     Reading feature denotation matrix from /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/feature-matrix.io
+2021-07-23 10:41:48 INFO     Reading feature denotation matrix from /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/feature-matrix.io
 ------------------------------------------------
 (0) C++ CNF generation module:
 ------------------------------------------------
-2021-05-25 10:27:09 INFO     Calling C++ MaxSAT module
-2021-05-25 10:27:09 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cnfgen --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2 --v_slack 2 --distinguish-goals --initial-sample-size 50 --refinement-batch-size 10 --seed 0 --verbosity 2 --acyclicity topological --encodings_dir  --sampling_strategy full --optimal_steps 3 --consistency_bound 2 --n_features 2 --closed --maxsat_iter 3 --allow_bad_states" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
+2021-07-23 10:41:48 INFO     Calling C++ MaxSAT module
+2021-07-23 10:41:48 INFO     Executing "/home/orbital/ws/research/gpl/code/gpl/src/generators/adv/cnfgen --workspace /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2 --v_slack 2 --initial-sample-size 50 --refinement-batch-size 10 --seed 0 --verbosity 2 --acyclicity topological --encodings_dir  --sampling_strategy full --optimal_steps 3 --consistency_bound 2 --n_features 2 --closed --maxsat_iter 3 --allow_bad_states" on directory "/home/orbital/ws/research/gpl/code/gpl/experiments"
 Parsing training data... 
 reading '/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/transitions-info.io
-TransitionSample::read_dump: #states=64, #transitions=104, #transitions (adv)=105
+TransitionSample::read_dump: #states=36, #transitions=104, #transitions (adv)=105
 reading '/home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/feature-matrix.io
-FeatureMatrix::read_dump: #states=64, #features=5290
-Done. Training sample: [states: 64, transitions: 104 (from alive state: 98), unsolvable: 8, goals: 1, unknowns: 0, features: 5290, est. size: 0.65 MB.]
+FeatureMatrix::read_dump: #states=36, #features=5291
+Done. Training sample: [states: 36, transitions: 104 (from alive state: 104), unsolvable: 0, goals: 1, unknowns: 0, features: 5291, est. size: 0.36 MB.]
 Sampling 50 alive states at random
 
 
 ###  STARTING ITERATION 1  ###
-Sample [sz=64]: 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 
+Sample [sz=36]: 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 
 
 Number of transitions/equivalence classes: 104/104
-Number of necessarily bad transitions/classes: 21/21
-Generating CNF encoding for 55 alive states, 104 alive-to-solvable and alive-to-dead transitions and 104 transition equivalence classes
-A total of 5865 variables were created
-	Select(f): 5290
+Number of necessarily bad transitions/classes: 0/0
+Generating CNF encoding for 35 alive states, 104 alive-to-solvable and alive-to-dead transitions and 104 transition equivalence classes
+A total of 5636 variables were created
+	Select(f): 5291
 	Good(s, a, s'): 104
 	Bad(s): 31
-	V(s, d): 440
+	V(s, d): 210
 Posting distinguishability constraints
-A total of 11100 clauses were created
+A total of 17834 clauses were created
 	Policy completeness [1]: 0
-	Transition separation [5,6]: 3432
-	V descending along good transitions [X]: 595
-	V is total function within bounds [X]: 1595
-	Goal separation [X]: 55
-	(Weighted) Select(f): 5290
+	Transition separation [5,6]: 10816
+	V descending along good transitions [X]: 1105
+	V is total function within bounds [X]: 560
+	Goal separation [X]: 0
+	(Weighted) Select(f): 5291
 Writing final DIMACS file...
-CNF [5865 vars, 11100 clauses] generated in 7.99 sec.
+CNF [5636 vars, 17834 clauses] generated in 16.61 sec.
 Calling: open-wbo_static /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/theory.wsat > /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/maxsat_solver_run.log
 Call returned with exit code 7680
-Solution with cost 20 found in 349.18sec.
+Solution with cost 0 found in 17.27sec.
 
-Good(0, 0, 1) Good(2, 4, 35) Good(4, 6, 27) Good(9, 6, 56) Good(3, 5, 44) Good(13, 2, 56) Good(31, 3, 57) Good(29, 4, 60) Good(21, 1, 57) Good(26, 4, 63) 
-Good(30, 3, 60) Good(15, 4, 60) Good(47, 6, 63) Good(36, 6, 63) Good(18, 1, 56) Good(12, 3, 57) Good(0, 6, 27) Good(43, 5, 63) Good(24, 5, 63) Good(0, 4, 22) 
-Good(38, 4, 63) Good(23, 6, 63) Good(20, 2, 60) Good(17, 0, 44) Good(16, 3, 60) Good(11, 0, 35) Good(29, 6, 56) 
-Good(0, 0, 1) Good(2, 4, 35) Good(4, 6, 27) Good(9, 6, 56) Good(3, 5, 44) Good(13, 2, 56) Good(31, 3, 57) Good(29, 4, 60) Good(21, 1, 57) Good(26, 4, 63) 
-Good(30, 3, 60) Good(15, 4, 60) Good(47, 6, 63) Good(36, 6, 63) Good(18, 1, 56) Good(12, 3, 57) Good(0, 6, 27) Good(43, 5, 63) Good(24, 5, 63) Good(0, 4, 22) 
-Good(38, 4, 63) Good(23, 6, 63) Good(20, 2, 60) Good(17, 0, 44) Good(16, 3, 60) Good(11, 0, 35) Good(29, 6, 56) Bad(32) Bad(7) Bad(41) Bad(34) Bad(5) Bad(10) Bad(6) 
-Num Good(s, a, s') selected: 27 (25.96%)
-Num Bad(s) selected: 7 (22.58%)
-Num selected features: 3 (0.06%)
+Good(0, 3, 4) Good(0, 2, 14) Good(2, 6, 13) Good(0, 6, 7) Good(2, 5, 27) Good(3, 6, 18) Good(3, 1, 24) Good(4, 6, 7) Good(4, 5, 20) Good(4, 1, 10) 
+Good(5, 6, 22) Good(2, 4, 5) Good(3, 5, 6) Good(5, 5, 30) Good(5, 3, 19) Good(0, 1, 8) Good(5, 2, 26) Good(6, 3, 20) Good(6, 1, 27) Good(7, 1, 13) 
+Good(0, 0, 1) Good(9, 6, 28) Good(9, 5, 12) Good(9, 4, 16) Good(9, 0, 24) Good(10, 6, 13) Good(10, 5, 29) Good(10, 4, 19) Good(11, 5, 21) Good(20, 4, 34) 
+Good(21, 6, 35) Good(6, 4, 30) Good(19, 2, 32) Good(21, 0, 30) Good(32, 6, 33) Good(4, 4, 19) Good(16, 6, 33) Good(22, 2, 33) Good(28, 5, 31) Good(13, 2, 28) 
+Good(25, 5, 29) Good(23, 4, 35) Good(25, 4, 32) Good(10, 2, 25) Good(15, 5, 20) Good(6, 6, 23) Good(18, 4, 33) Good(26, 5, 30) Good(2, 2, 24) Good(25, 6, 28) 
+Good(26, 3, 32) Good(15, 1, 25) Good(34, 6, 35) Good(30, 3, 34) Good(3, 4, 26) Good(29, 4, 34) Good(27, 3, 29) Good(32, 5, 34) Good(22, 5, 35) Good(31, 4, 35) 
+Good(30, 6, 35) Good(7, 2, 18) Good(19, 5, 34) Good(20, 1, 29) Good(23, 1, 31) Good(13, 5, 31) Good(27, 4, 30) Good(33, 5, 35) Good(28, 4, 33) Good(19, 6, 22) 
+Good(16, 5, 21) Good(11, 3, 19) Good(27, 6, 31) Good(18, 1, 28) Good(2, 3, 10) Good(9, 3, 25) Good(18, 5, 23) Good(26, 6, 33) Good(17, 0, 6) Good(17, 1, 12) 
+Good(15, 6, 18) Good(0, 4, 11) Good(17, 4, 21) Good(11, 6, 22) Good(20, 6, 23) Good(17, 6, 23) Good(29, 6, 31) Good(16, 0, 26) Good(3, 3, 15) Good(7, 4, 22) 
+Good(16, 3, 32) Good(17, 3, 20) Good(15, 4, 32) Good(11, 0, 5) Good(13, 4, 22) Good(0, 5, 17) Good(7, 5, 23) Good(12, 0, 27) Good(12, 3, 29) Good(4, 2, 15) 
+Good(12, 4, 21) Good(12, 6, 31) Good(21, 3, 34) Good(11, 2, 16) 
+Good(0, 3, 4) Good(0, 2, 14) Good(2, 6, 13) Good(0, 6, 7) Good(2, 5, 27) Good(3, 6, 18) Good(3, 1, 24) Good(4, 6, 7) Good(4, 5, 20) Good(4, 1, 10) 
+Good(5, 6, 22) Good(2, 4, 5) Good(3, 5, 6) Good(5, 5, 30) Good(5, 3, 19) Good(0, 1, 8) Good(5, 2, 26) Good(6, 3, 20) Good(6, 1, 27) Good(7, 1, 13) 
+Good(0, 0, 1) Good(9, 6, 28) Good(9, 5, 12) Good(9, 4, 16) Good(9, 0, 24) Good(10, 6, 13) Good(10, 5, 29) Good(10, 4, 19) Good(11, 5, 21) Good(20, 4, 34) 
+Good(21, 6, 35) Good(6, 4, 30) Good(19, 2, 32) Good(21, 0, 30) Good(32, 6, 33) Good(4, 4, 19) Good(16, 6, 33) Good(22, 2, 33) Good(28, 5, 31) Good(13, 2, 28) 
+Good(25, 5, 29) Good(23, 4, 35) Good(25, 4, 32) Good(10, 2, 25) Good(15, 5, 20) Good(6, 6, 23) Good(18, 4, 33) Good(26, 5, 30) Good(2, 2, 24) Good(25, 6, 28) 
+Good(26, 3, 32) Good(15, 1, 25) Good(34, 6, 35) Good(30, 3, 34) Good(3, 4, 26) Good(29, 4, 34) Good(27, 3, 29) Good(32, 5, 34) Good(22, 5, 35) Good(31, 4, 35) 
+Good(30, 6, 35) Good(7, 2, 18) Good(19, 5, 34) Good(20, 1, 29) Good(23, 1, 31) Good(13, 5, 31) Good(27, 4, 30) Good(33, 5, 35) Good(28, 4, 33) Good(19, 6, 22) 
+Good(16, 5, 21) Good(11, 3, 19) Good(27, 6, 31) Good(18, 1, 28) Good(2, 3, 10) Good(9, 3, 25) Good(18, 5, 23) Good(26, 6, 33) Good(17, 0, 6) Good(17, 1, 12) 
+Good(15, 6, 18) Good(0, 4, 11) Good(17, 4, 21) Good(11, 6, 22) Good(20, 6, 23) Good(17, 6, 23) Good(29, 6, 31) Good(16, 0, 26) Good(3, 3, 15) Good(7, 4, 22) 
+Good(16, 3, 32) Good(17, 3, 20) Good(15, 4, 32) Good(11, 0, 5) Good(13, 4, 22) Good(0, 5, 17) Good(7, 5, 23) Good(12, 0, 27) Good(12, 3, 29) Good(4, 2, 15) 
+Good(12, 4, 21) Good(12, 6, 31) Good(21, 3, 34) Good(11, 2, 16) 
+Num Good(s, a, s') selected: 104 (100.00%)
+Num Bad(s) selected: 0 (0.00%)
+Num selected features: 0 (0.00%)
 Features: 
-	0: Num[Exists(adjacent_cell,cell-has-bottom_token)] [k=3]
-	1: LessThan{Num[cell-has-top_token]}{Num[cell-has-bottom_token]} [k=3]
-	2: LessThan{Num[cell-has-top_token]}{Num[And(Not(cell-has-bottom_token),Forall(down_cell,<empty>))]} [k=7]
 Solution found in iteration #1 is correct!
 DNF transition-classifier saved in /home/orbital/ws/research/gpl/code/gpl/workspace/nim_2/classifier.txt
-Total times: Theory generation: 7.99, Solver: 349.18, TOTAL: 357.43
-------------------------------------------------
-(END Episode 0)
-------------------------------------------------
-================================================================================
-END OF STEP #1: Train: Explore the state space of the training instances. 386.69 CPU sec - 463.46 MB
-================================================================================
-================================================================================
-(pid: 12751) STARTING STEP #2: Testing of the D2L policy
-================================================================================
-
-POLICY:
-Features (#: 3; total k: 3; max k = 3):
-  (A) Num[Exists(adjacent_cell,cell-has-bottom_token)] [k=3]
-  (B) LessThan{Num[cell-has-top_token]}{Num[cell-has-bottom_token]} [k=0]
-  (C) LessThan{Num[cell-has-top_token]}{Num[And(Not(cell-has-bottom_token),Forall(down_cell,<empty>))]} [k=0]
-Invariants: A>0
-Policy:
-  1. C=0 AND B>0 AND A>0 -> {A ·, B ·, C ↑}, {A ·, B ↓, C ·}
-  2. C>0 AND B=0 AND A>0 -> {A ↓, B ·, C ·}
-  3. C=0 AND B=0 AND A>0 -> {A ·, B ·, C ·}
-  4. C>0 AND B>0 AND A>0 -> {A ↓, B ↓, C ·}
-  5. B>0 AND A>0 -> {A ↓, B ↓, C ·}
-
-2021-05-25 10:33:07 INFO     Testing policy in instance: nim - 0
- .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- T  T  t  #  T  T  T  #  T  T  .  #  T  T  .  #  .  T  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  .  B  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       
-
-2021-05-25 10:33:07 INFO     Goal found after expanding 3 nodes
-2021-05-25 10:33:07 INFO     The solution was: ['0.2', '2.2', '2.1']
-2021-05-25 10:33:07 INFO     Testing policy in instance: nim - 1
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  t  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- T  T  t  #  T  T  t  #  T  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  T  t  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  T  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  T  .  #  t  T  .  #  t  .  .  #  T  .  .  #  T  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  T  #  t  t  T  #  t  t  T  #  t  t  T  #  t  .  T  #  t  .  T  #  t  .  .  #  t  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  .  t  #  t  .  t  #  t  .  .  #  t  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  T  t  #  t  T  t  #  t  T  .  #  t  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  T  t  .  #  T  T  .  #  .  T  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  .  t  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  B  .  #  .  B  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       10 (n)      11 (n)      12 (n)      13 (n)      
-
-2021-05-25 10:33:07 INFO     Goal found after expanding 7 nodes
-2021-05-25 10:33:07 INFO     The solution was: ['8.2', '10.0', '11.0', '12.0', '19.2', '16.1', '19.1']
-2021-05-25 10:33:07 INFO     Testing policy in instance: nim - 2
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  t  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  t  #  .  .  t  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- T  T  t  #  T  T  t  #  T  T  .  #  T  T  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  t  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  t  .  .  #  t  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  t  .  .  #  t  .  .  #  t  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  .  .  #  t  .  .  #  t  .  .  #  t  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  T  .  #  t  T  .  #  t  T  .  #  t  T  .  #  t  T  .  #  T  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  .  t  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  .  t  .  #  .  t  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  .  t  .  #  .  t  .  #  .  t  .  #  .  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  T  t  .  #  T  t  .  #  T  t  .  #  T  t  .  #  .  t  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  .  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       10 (n)      11 (n)      12 (n)      13 (n)      14 (n)      15 (n)      16 (n)      17 (n)      
-
-2021-05-25 10:33:08 INFO     Goal found after expanding 9 nodes
-2021-05-25 10:33:08 INFO     The solution was: ['5.2', '19.2', '8.0', '10.0', '13.0', '14.1', '16.1', '18.1', '19.0']
-2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 3
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  t  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- T  T  t  #  T  T  t  #  .  T  t  #  .  T  T  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  T  t  t  #  T  t  t  #  T  t  T  #  T  T  T  #  T  T  .  #  .  T  .  #  .  .  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  .  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
-
-2021-05-25 10:33:08 INFO     Goal found after expanding 5 nodes
-2021-05-25 10:33:08 INFO     The solution was: ['15.2', '16.2', '17.1', '18.0', '19.0']
-2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 4
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- T  T  t  #  T  T  T  #  T  T  .  #  T  T  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  T  .  #  T  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  .  #  t  t  .  #  t  t  .  #  t  t  .  #  .  t  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  .  B  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
-
-2021-05-25 10:33:08 INFO     Goal found after expanding 5 nodes
-2021-05-25 10:33:08 INFO     The solution was: ['15.2', '19.2', '16.0', '18.1', '19.1']
-2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 5
- T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  .  .  #  T  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  T  T  #  t  T  T  #  t  .  T  #  T  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  T  t  #  t  T  t  #  .  T  t  #  .  T  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  .  t  t  #  .  t  t  #  .  T  t  #  .  T  T  #  .  .  T  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  .  B  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
-
-2021-05-25 10:33:08 INFO     Goal found after expanding 5 nodes
-2021-05-25 10:33:08 INFO     The solution was: ['0.0', '1.0', '2.2', '3.2', '5.2']
-2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 6
- T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  .  .  #  T  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  T  T  #  t  T  T  #  t  T  .  #  T  T  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  T  #  t  t  T  #  t  .  T  #  T  .  T  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  t  T  t  #  t  T  t  #  .  T  t  #  .  T  t  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  .  B  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       10 (n)      11 (n)      
-
-2021-05-25 10:33:08 INFO     Goal found after expanding 6 nodes
-2021-05-25 10:33:08 INFO     The solution was: ['0.0', '1.0', '2.0', '5.0', '4.1', '5.2']
-2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 7
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- T  T  T  #  .  T  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  T  t  t  #  T  .  t  #  T  .  T  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  T  t  #  t  T  t  #  t  T  .  #  T  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  B  .  #  B  B  .  #  B  .  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
-
-2021-05-25 10:33:08 INFO     Goal found after expanding 5 nodes
-2021-05-25 10:33:08 INFO     The solution was: ['2.0', '2.2', '3.0', '4.1', '5.0']
-2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 8
- .  T  T  #  .  .  T  #  .  .  T  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  t  t  #  .  T  t  #  .  T  t  #  .  T  t  #  .  .  t  #  .  .  T  #  .  .  .  #  .  .  .  # 
- T  t  t  #  T  t  t  #  .  t  t  #  .  t  t  #  .  T  t  #  .  T  t  #  .  T  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  B  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       
-
-2021-05-25 10:33:08 INFO     Goal found after expanding 4 nodes
-2021-05-25 10:33:08 INFO     The solution was: ['0.1', '3.0', '0.2', '3.1']
-2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 9
- T  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  .  t  #  T  .  t  #  T  .  T  #  .  .  T  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  T  t  #  t  T  t  #  t  T  t  #  T  T  t  #  .  T  t  #  .  T  t  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  B  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
-
-2021-05-25 10:33:08 INFO     Goal found after expanding 5 nodes
-2021-05-25 10:33:08 INFO     The solution was: ['0.0', '1.0', '3.0', '2.1', '3.1']
-2021-05-25 10:33:08 INFO     Testing policy in instance: nim - 10
- T  T  .  #  .  T  .  #  .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  .  #  T  t  .  #  .  t  .  #  .  T  .  #  .  T  .  #  .  .  .  # 
- t  t  T  #  t  t  T  #  .  t  T  #  .  t  T  #  .  t  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       
-
-2021-05-25 10:33:08 INFO     Goal found after expanding 3 nodes
-2021-05-25 10:33:08 INFO     The solution was: ['0.0', '0.1', '3.1']
-2021-05-25 10:33:09 INFO     Testing policy in instance: nim - 11
- .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  .  t  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  # 
- T  T  t  #  T  T  t  #  T  .  t  #  T  .  T  #  T  .  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  .  B  #  B  .  B  #  B  .  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       
-
-2021-05-25 10:33:09 INFO     Goal found after expanding 3 nodes
-2021-05-25 10:33:09 INFO     The solution was: ['0.2', '1.2', '3.0']
-2021-05-25 10:33:09 INFO     Testing policy in instance: nim - 12
- .  T  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- .  t  .  #  .  T  .  #  .  T  .  #  .  T  .  #  .  T  .  #  .  .  .  # 
- T  t  T  #  T  t  T  #  T  t  .  #  T  t  .  #  .  t  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  .  B  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       
-
-2021-05-25 10:33:09 INFO     Goal found after expanding 3 nodes
-2021-05-25 10:33:09 INFO     The solution was: ['0.1', '3.2', '3.1']
-2021-05-25 10:33:09 INFO     Testing policy in instance: nim - 13
- T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  .  .  #  T  .  .  #  T  .  .  #  T  .  .  #  T  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  T  T  #  t  T  T  #  t  T  .  #  t  T  .  #  t  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  .  #  B  B  .  #  B  B  .  #  .  B  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       
-
-2021-05-25 10:33:09 INFO     Goal found after expanding 4 nodes
-2021-05-25 10:33:09 INFO     The solution was: ['0.0', '3.2', '2.0', '3.1']
-2021-05-25 10:33:09 INFO     Testing policy in instance: nim - 14
- T  T  T  #  .  T  T  #  .  T  T  #  .  .  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  T  t  t  #  .  t  t  #  .  T  t  #  .  T  t  #  .  T  T  #  .  T  T  #  .  T  T  #  .  .  T  #  .  .  .  # 
- t  t  t  #  t  t  t  #  T  t  t  #  T  t  t  #  .  t  t  #  .  t  t  #  .  t  t  #  .  t  t  #  .  .  t  #  .  .  .  # 
- t  t  t  #  t  t  t  #  t  t  t  #  t  t  t  #  T  t  t  #  T  t  t  #  .  t  t  #  .  t  t  #  .  .  t  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  .  B  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       8 (n)       9 (n)       
-
-2021-05-25 10:33:09 INFO     Goal found after expanding 5 nodes
-2021-05-25 10:33:09 INFO     The solution was: ['0.0', '0.1', '0.2', '4.0', '4.2']
-2021-05-25 10:33:09 INFO     Testing policy in instance: nim - 15
- T  T  T  #  .  T  T  #  .  T  T  #  .  T  T  #  .  .  T  #  .  .  .  #  .  .  .  #  .  .  .  # 
- t  t  t  #  T  t  t  #  .  t  t  #  .  t  t  #  .  .  t  #  .  .  T  #  .  .  .  #  .  .  .  # 
- t  t  t  #  t  t  t  #  .  t  t  #  .  t  t  #  .  T  t  #  .  T  t  #  .  T  .  #  .  .  .  # 
- B  B  B  #  B  B  B  #  B  B  B  #  .  B  B  #  .  B  B  #  .  B  B  #  .  B  .  #  .  .  .  # 
-1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       1 (p)       2 (p)       
-0 (n)       1 (n)       2 (n)       3 (n)       4 (n)       5 (n)       6 (n)       7 (n)       
-
-2021-05-25 10:33:09 INFO     Goal found after expanding 4 nodes
-2021-05-25 10:33:09 INFO     The solution was: ['0.0', '3.0', '0.2', '3.1']
-2021-05-25 10:33:09 INFO     Learnt policy solves the 100.0% of test instances: 16/16
-2021-05-25 10:33:09 INFO     Solved instances: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-2021-05-25 10:33:09 INFO     Unsolved instances: []
-================================================================================
-END OF STEP #2: Testing of the D2L policy. 1.76 CPU sec - 463.46 MB
-================================================================================
+Total times: Theory generation: 16.61, Solver: 17.27, TOTAL: 34.01
+2021-07-23 10:42:22 ERROR    Critical error in the pipeline
+2021-07-23 10:42:22 ERROR    (<gpl.pipeline_steps.TrainStep object at 0x7f257d148940>, 'Critical error processing step "Train: Explore the state space of the training instances". Error message: Error: not enough values to unpack (expected 2, got 1)')
+Traceback (most recent call last):
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/driver.py", line 160, in _run
+    exitcode, output = self.target(config=config, data=data, rng=rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/train.py", line 15, in run
+    exitcode, output = train(config, data, rng, train_steps=[], show_steps_only=False)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/train.py", line 44, in train
+    exitcode, config, data = run_step(step, config, data, rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/gpl/train.py", line 60, in run_step
+    exitcode, data_ = step.get_step_runner(config)(config, data, rng)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/cnfgen.py", line 59, in run
+    policy = parse_dnfa_policy(config)
+  File "/home/orbital/ws/research/gpl/code/gpl/src/d2l/src/sltp/cnfgen.py", line 125, in parse_dnfa_policy
+    f, val = lit.split(' ')
+ValueError: not enough values to unpack (expected 2, got 1)
+Exception ignored in: <function Pool.__del__ at 0x7f25775bd940>
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 268, in __del__
+    self._change_notifier.put(None)
+  File "/usr/lib/python3.8/multiprocessing/queues.py", line 368, in put
+    self._writer.send_bytes(obj)
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 200, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 411, in _send_bytes
+    self._send(header + buf)
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 368, in _send
+    n = write(self._handle, buf)
+OSError: [Errno 9] Bad file descriptor
