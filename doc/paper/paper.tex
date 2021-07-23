@@ -94,7 +94,7 @@
 \abstract
 
 Generalized planning is concerned with the computation of general policies that solve multiple instances of a planning domain all at once. It has been recently shown that these policies can be computed in two steps: first, a suitable abstraction in the form of a qualitative numerical planning problem (QNP) is learned from sample plans, then the general policies are obtained from the learned QNP using a planner. In this work, we introduce an alternative approach for computing more expressive general policies which does not require sample plans or a QNP planner. The new formulation is very simple and can be cast in terms that are more standard in machine learning: a large but finite pool of features is defined from the predicates in the planning examples using a general grammar, and a small subset of features is sought for separating “good” from “bad” state transitions, and goals from non-goals. The problems of finding such a “separating surface” while labeling the transitions as “good” or “bad” are
-jointly addressed as a single combinatorial optimization problem expressed as a Weighted Max-SAT problem. The advantage of looking for the simplest policy in the given feature space that solves the given examples, possibly non-optimally, is that many domains have no general, compact policies that are optimal. The approach yields general policies for a number of benchmark adversarial domains, even when non-determinism exists in the adverary turn. We use a uniform grammar for all the grid domains capable of capturing the domain representations. These policies can be interpreted qualitatively, explained, and it can be shown mathematically that they will solve all possible instances within a class of problems. This is an advantage when making manual policy changes. We also show an example of how the explainable policies produced by our algorithms can be applied to real robots.
+jointly addressed as a single combinatorial optimization problem expressed as a Weighted Max-SAT problem. The advantage of looking for the simplest policy in the given feature space that solves the given examples, possibly non-optimally, is that many domains have no general, compact policies that are optimal. The approach yields general policies for a number of benchmark adversarial domains, even when non-determinism exists in the adverary turn. We use a uniform grammar for all the grid domains capable of capturing the domain representations. These policies can be interpreted qualitatively, explained, and it can be shown mathematically that they will solve all possible instances within a class of problems. This is an advantage when making manual policy changes. We also show an example of how the explainable policies produced by our algorithm can be applied to real robots.
 
 \section{Introduction}
 
@@ -106,11 +106,9 @@ This was solved by [], for non-adversarial and deterministic domains but not for
 
 In one of the most general formulations, general policies are obtained from an abstract planning model expressed as a qualitative numerical planning problem or QNP (Srivastava et al. 2011). A QNP is a standard STRIPS planning model extended with non-negative numerical variables that can be decreased or increased “qualitatively”; i.e., by uncertain positive amounts, short of making the variables negative. Unlike standard planning with numerical variables (Helmert 2002), QNP planning is decidable, and QNPs can be compiled in polynomial time into fully observable non-deterministic (FOND) problems (Bonet and Geffner 2020)
 
-The main advantage of the formulation of generalized planning based on QNPs is that it applies to standard relational domains where the pool of (ground) actions change from instance to instance. On the other hand, while the planning domain is assumed to be given, the QNP abstraction is not, and hence it has to be written by hand or learned. This is the approach of Bonet, Franc`es, and Geffner (2019) where generalized plans are obtained by learning the QNP abstraction from the domain representation and sample plans, and then solving the abstraction with a QNP planner.
+The main advantage of the formulation of generalized planning based on QNPs is that it applies to standard relational domains where the pool of (ground) actions change from instance to instance. On the other hand, while the planning domain is assumed to be given, the QNP abstraction is not, and hence it has to be written by hand or learned. This is the approach of Bonet, Francés, and Geffner (2019) where generalized plans are obtained by learning the QNP abstraction from the domain representation and sample plans, and then solving the abstraction with a QNP planner.
 
-In this work, we build on this thread but introduce an alternative approach for computing general policies that is simpler, yet more powerful. The learning problem is cast as a self-supervised classification problem where (1) a pool of features is automatically generated from a uniform grammar applied to the domain predicates, and (2) a small subset of features is sought for separating “good” from “bad” state transitions, and goals from non-goals. The problems of finding the “separating surface” while labeling the transitions as “good” or “bad” are addressed jointly as a single combinatorial optimization task solved with a Weighted Max-SAT solver. The approach yields general policies for a number of benchmark domains.
-
-One of the advantages of having explainable policies is that it gives the engineer or researcher the possibility to modify them easily if necessary. For instance, if there are known exceptions within the domain. Although this has not been necessary in the domains discussed in this paper.
+In this work, we build on this thread but introduce an alternative approach for computing general policies that is simpler, yet more powerful. The learning problem is cast as a self-supervised classification problem where (1) a pool of features is automatically generated from a uniform grammar applied to the domain predicates, and (2) a small subset of features is sought for separating “good” from “bad” state transitions, and goals from non-goals. The problems of finding the “separating surface” while labeling the transitions as “good” or “bad” are addressed jointly as a single combinatorial optimization task solved with a Weighted Max-SAT solver. The approach yields general policies for a number of benchmark domains. One of the advantages of having explainable policies is that it gives the engineer the possibility to modify them easily if is necessary. For instance, if there are known exceptions within the domain.
 
 The paper is organized as follows. We first review related work. Then we introduce a SAT encoding and the variables, where we see what the input of our algorithm consists of. We then present the learning task, the computational approach for solving it, and the experimental results. Then we describe the grammar used in all the domains. Then we describe each of the domains, and interpret the features and policies found with our approach. These explainable policies will be the output of the algorithm. Then we show how it is possible to use our framework to introduce policies or modify them after the training process. The use case is checkamate in chess in n-moves and any board size, with two kings and a queen. Finally, we show how it is possible to use the policies with robots, both in simulators and in the real world.
 
@@ -121,7 +119,7 @@ The paper is organized as follows. We first review related work. Then we introdu
 
 \subsection{Generalized Planning}
 
-A key question in generalized planning is how to represent general plans or policies when the different instances to be solved have different sets of objects and ground actions. One solution is to work with general features (functions) that have well defined values over any state of any possible domain instance, and think of general policies π as mappings from feature valuations into abstract actions that denote changes in the feature values (Bonet and Geffner 2018). In this work, we build on this intuition but avoid the introduction of abstract actions (Bonet and Geffner 2021).
+A key question in generalized planning is how to represent general plans or policies when the different instances to be solved have different sets of objects and ground actions. One solution is to work with general features (functions) that have well defined values over any state of any possible domain instance, and think of general policies $\pi$ as mappings from feature valuations into abstract actions that denote changes in the feature values (Bonet and Geffner 2018). In this work, we build on this intuition but avoid the introduction of abstract actions (Bonet and Geffner 2021).
 
 \subsection{SAT Encoding}
 
@@ -302,8 +300,6 @@ We use \badtx{} to denote the set of transitions that have been determined at pr
 At the moment, this set contains all transitions that go from an alive to an unsolvable state and, if using
 equivalence relations, all those other transitions in whose equivalence class there is some other ``bad'' transition.
 
-\newpage
-
 \section{Grammar}
 
 The sorts used are: $cell$, $row$, $column$ and . The constants for the sort $cell$ have the form $cell.r\_c$, this constant refers to the cell that is at the same time in the row $r$ and in the column $c$. The constants for sort $row$ are $row.r$, and this constant refers to the row $r$. The constants for sort $column$ are $column.c$, and this constant refers to column $c$. Each sort can be linked to an object, using a one-arity predicate, depending on the objects of the domain, given by a predicate of arity one with any variable belonging to the sorts $cell$, $row$ or $column$. An example for the sort $cell$ would be $cell\_has\_v(cell)$, where the variable of type $cell$ can take the value of $cell.r\_c$, and this predicate would indicate that the cell $cell.r\_c$ has an object with value $v$, which is the name of the object currently in $cell.r\_c$. To map the relative position between constants of the same sort, we use two-arity predicates, which have as variables these constants belonging to the same sort. For example, $adjacent\_cell(cell, cell)$ takes two constants of the sort $cell$, and means that the two cells are adjacent. The same philosophy would apply to the predicates $adjacent\_col(column, column)$ or $adjacent\_row(row, row)$.
@@ -332,6 +328,7 @@ Layouts have been created to show the problems and examples of game traces. The 
 \end{Verbatim}
 
 \subsection{Space Invaders}
+
 \subsubsection{Description}
 This domain is a simplified version of the original Space Invaders in which the Martians cannot shoot and cannot move below the penultimate row. In this domain the agent can $shoot$, move to the $right$ or to the $left$. The agent during his turn can do two actions, while the Martians can do one. Note that if the Martians and the agent have only one action per turn the agent cannot win from all possible states in the game, this is because of the situation where the agent stands in the Martian's column to shoot him on his next turn, but the next turn (the Martian's turn) the Martian can move away, this leads to an infinite loop if both are playing perfectly. That is, the agent must be able to move to the agent's column and then shoot. To win the agent has to kill all the martians, for this he must shoot each of them. The agent kills an opponent if he shoots while being in the same column, and he can only kill one for each shoot. The martians has three possible actions $left$, $right$, and $down$. All the adversaries move in the same direction. The agent cannot be destroyed in any way by the Martians, they can go down to the row above the agent. The agent cannot collide with the Martians as they cannot descend to the row above it. Note that the policy found is optimal and will solve all possible instances of the game. The policy is also optimal for a version of the game where the Martians destroy the agent when they reach the row above him.
 
@@ -601,169 +598,6 @@ According to the fourth rule of the policy, if the agent is in the same column a
 \end{Verbatim}
 
 
-\subsection{Checkmate in n with Queen}
-\subsubsection{Description}
-
-
-\subsubsection{Training instances}
-\begin{Verbatim}[fontsize=\footnotesize]
-  # .  k  .  .  K #
-  # .  .  .  .  . #
-  # .  .  .  .  . #
-  # Q  .  .  .  . #
-  # .  .  .  .  . #
-\end{Verbatim}
-
-
-\subsubsection{Features}
-\begin{Verbatim}[fontsize=\footnotesize]
-  (CM) Atom[checkmate] [k=1]
-  (SM) Atom[stalemate] [k=1]
-  (QbK) Atom[white_queen_between_kings] [k=1]
-  (KE) Atom[black_king_closed_in_edge_by_white_queen] [k=1]
-  (KD) Dist[cell-has-white_king;adjacent_cell;cell-has-black_king] [k=4]
-  (BKhA) Bool[And(cell-attaked-by-black_king,Not(cell-attaked-by-white))] [k=4]
-  (A) Num[And(cell-attaked-by-black_king,Not(cell-attaked-by-white_queen))] [k=4]
-  (WQadjBK_row) Bool[And(row-has-white_queen,Exists(adjacent_row,row-has-black_king)))] [k=6]
-  (WQadjBK_col) Bool[And(col-has-white_queen,Exists(adjacent_col,col-has-black_king)))] [k=6]
-  (WQadjBK) Bool[And(cell-has-white_queen,Exists(adjacent_cell,cell-has-black_king)))] [k=6]
-  (WQadjWK) Bool[And(cell-has-white_queen,Exists(adjacent_cell,cell-has-white_king)))] [k=6]
-\end{Verbatim}
-
-
-\subsubsection{All Transition Features}
-This features reason about how the value of the features can change in all possible successors.
-\begin{Verbatim}[fontsize=\footnotesize]
-  (CA) Bool[can(A, DEC)] [k=2]
-  (CCM) bool[can(CM, INC)] [k=2]
-\end{Verbatim}
-
-
-\subsubsection{Feature Description}
-$CM$. Checkmate\\
-$SM$. Stalemate\\
-$KE$. Black king is closed in an edge of the table by the white queen\\
-$QbK$. White queen is somewhere between kings, rows or columns\\
-$A$. The number of cells attaked by black king and not attacked by white queen\\
-$BKhA$. Exist a cell attaked by Black king and no attacked by white pieces\\
-$Qaw$. White queen is attaked and without protection, i.e. $WQadjBK$ AND $WQadjWK$\\
-$WQadjBK_line$. White queen is in an adjacent line to the black king, i.e. $WQadjBK_row$ OR $WQadjWK_col$\\
-$CA$. It is possible to decrease the number of cells attaked by black king and not attacked by white queen\\
-$CCM$. It is possible to do checkmate in the current state
-
-
-\subsubsection{Policy}
-  \begin{Verbatim}[fontsize=\footnotesize]
-   1. KE=0, CA>0 -> {A ↓}
-   2. KE=0, CA=0 -> {A ·, KD ·}
-   3. BKhA=0, WQadjBK_line>0 -> {KD ·, WQadjBK_line ·}
-   4. CCM=0, KE>0 -> {KD ↓}
-   5. CCM=1 -> {CM ↑}
-  \end{Verbatim}
-
-
-\subsubsection{Policy Implicits}
-The next features has to be in that certain value after the transition for classifing the transition as good, taking into account the policy rules.
-  \begin{Verbatim}[fontsize=\footnotesize]
-   Qaw=0, Qbk>0, SM=0
-  \end{Verbatim}
-
-
-\subsubsection{Policy description}
-Rules 1 and 2 cover the cases in which the king is not enclosed in an edge of the file. The first rule states that it is good to take transitions that decrease the number of squares available to the black king by using the queen. The second rule says that if the first rule is not applicable it is good to take transitions that do not alter the number of squares available to the black king, without moving the white king. The third rule refers to those cases where the black king had moved to its only free square, and classifies as good those transitions in which the queen is moved so that it is not stalemate and remains on the line adjacent to the black king. Rule four covers cases in which the black king is locked on an edge by the queen, and it is good to move the white king closer. finally, rule 5 says that if it is possible to checkmate it is good to do so. It should be noted that thanks to the implicit parts of the policy the king will never be left tied up and unprotected, stalemate will never occur and the white king will always be placed and remain in a line that is between the lines of the kings, whether rows or columns.
-
-
-\subsubsection{Example of Game}
-\begin{Verbatim}[fontsize=\footnotesize]
-  K.... # K.... # K.... # ..... # ..... # ..... # ..... # ..... # ..... #
-  ..Q.. # ..... # ..... # ..K.. # ..K.. # ..K.. # ..... # ..... # ..... #
-  ..... # ..... # ..... # ..... # ..... # ..... # ..K.. # ..K.. # ..K.. #
-  ..... # Q.... # Q.... # Q.... # Q.... # Q.... # Q.... # Q.... # ...Q. #
-  ....k # ....k # ...k. # ...k. # ..k.. # ...k. # ...k. # ....k # ....k #
-\end{Verbatim}
-
-
-\subsection{Checkmate in n with Rook}
-\subsubsection{Description}
-
-
-\subsubsection{Training instances}
-\begin{Verbatim}[fontsize=\footnotesize]
-  # .  k  .  .  K #
-  # .  .  .  .  . #
-  # .  .  .  .  . #
-  # R  .  .  .  . #
-  # .  .  .  .  . #
-\end{Verbatim}
-
-
-\subsubsection{Features}
-\begin{Verbatim}[fontsize=\footnotesize]
-  (CM) Atom[checkmate] [k=1]
-  (SM) Atom[stalemate] [k=1]
-  (QbK) Atom[white_rook_between_kings] [k=1]
-  (KE) Atom[black_king_closed_in_edge_by_white_rook] [k=1]
-  (KD) Dist[cell-has-white_king;adjacent_cell;cell-has-black_king] [k=4]
-  (BKhA) Bool[And(cell-attaked-by-black_king,Not(cell-attaked-by-white))] [k=4]
-  (A) Num[And(cell-attaked-by-black_king,Not(cell-attaked-by-white_rook))] [k=4]
-  (WQadjBK_row) Bool[And(row-has-white_rook,Exists(adjacent_row,row-has-black_king)))] [k=6]
-  (WQadjBK_col) Bool[And(col-has-white_rook,Exists(adjacent_col,col-has-black_king)))] [k=6]
-  (WQadjBK) Bool[And(cell-has-white_rook,Exists(adjacent_cell,cell-has-black_king)))] [k=6]
-  (WQadjWK) Bool[And(cell-has-white_rook,Exists(adjacent_cell,cell-has-white_king)))] [k=6]
-\end{Verbatim}
-
-
-\subsubsection{All Transition Features}
-This features reason about how the value of the features can change in all possible successors.
-\begin{Verbatim}[fontsize=\footnotesize]
-  (CA) Bool[can(A, DEC)] [k=2]
-  (CCM) bool[can(CM, INC)] [k=2]
-\end{Verbatim}
-
-
-\subsubsection{Feature Description}
-$CM$. Checkmate\\
-$SM$. Stalemate\\
-$KE$. Black king is closed in an edge of the table by the white queen\\
-$QbK$. White queen is somewhere between kings, rows or columns\\
-$A$. The number of cells attaked by black king and not attacked by white queen\\
-$BKhA$. Exist a cell attaked by Black king and no attacked by white pieces\\
-$Qaw$. White queen is attaked and without protection, i.e. $WQadjBK$ AND $WQadjWK$\\
-$WQadjBK_line$. White queen is in an adjacent line to the black king, i.e. $WQadjBK_row$ OR $WQadjWK_col$\\
-$CA$. It is possible to decrease the number of cells attaked by black king and not attacked by white queen\\
-$CCM$. It is possible to do checkmate in the current state
-
-
-\subsubsection{Policy}
-  \begin{Verbatim}[fontsize=\footnotesize]
-   1. KE=0, CA>0 -> {A ↓}
-   2. KE=0, CA=0 -> {A ·, KD ·}
-   3. BKhA=0, WQadjBK_line>0 -> {KD ·, WQadjBK_line ·}
-   4. CCM=0, KE>0 -> {KD ↓}
-   5. CCM=1 -> {CM ↑}
-  \end{Verbatim}
-
-
-\subsubsection{Policy Implicits}
-The next features has to be in that certain value after the transition for classifing the transition as good, taking into account the policy rules.
-  \begin{Verbatim}[fontsize=\footnotesize]
-   Qaw=0, Qbk>0, SM=0
-  \end{Verbatim}
-
-
-\subsubsection{Policy description}
-Rules 1 and 2 cover the cases in which the king is not enclosed in an edge of the file. The first rule states that it is good to take transitions that decrease the number of squares available to the black king by using the queen. The second rule says that if the first rule is not applicable it is good to take transitions that do not alter the number of squares available to the black king, without moving the white king. The third rule refers to those cases where the black king had moved to its only free square, and classifies as good those transitions in which the queen is moved so that it is not stalemate and remains on the line adjacent to the black king. Rule four covers cases in which the black king is locked on an edge by the queen, and it is good to move the white king closer. finally, rule 5 says that if it is possible to checkmate it is good to do so. It should be noted that thanks to the implicit parts of the policy the king will never be left tied up and unprotected, stalemate will never occur and the white king will always be placed and remain in a line that is between the lines of the kings, whether rows or columns.
-
-
-\subsubsection{Example of Game}
-\begin{Verbatim}[fontsize=\footnotesize]
-  K.... # K.... # K.... # ..... # ..... # ..... # ..... # ..... # ..... #
-  ..Q.. # ..... # ..... # ..K.. # ..K.. # ..K.. # ..... # ..... # ..... #
-  ..... # ..... # ..... # ..... # ..... # ..... # ..K.. # ..K.. # ..K.. #
-  ..... # Q.... # Q.... # Q.... # Q.... # Q.... # Q.... # Q.... # ...Q. #
-  ....k # ....k # ...k. # ...k. # ..k.. # ...k. # ...k. # ....k # ....k #
-\end{Verbatim}
-
 \subsection{Checkmate in one with Queen}
 \subsubsection{Description}
 In this game the action space is equal to the number of cells in the grid. In order to win the white pieces has to do a checkmate in one movement. The white pieces have the white-king and the white-queen, and black pieces have the black-king.
@@ -892,14 +726,105 @@ To generate all the possible states from which the rook can checkmate the black 
   # .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  #
 \end{Verbatim}
 
+
+%\subsection{Checkmate in n with Rook}
+%\subsubsection{Description}
+
+
+%\subsubsection{Training instances}
+%\begin{Verbatim}[fontsize=\footnotesize]
+%  # .  k  .  .  K #
+%  # .  .  .  .  . #
+%  # .  .  .  .  . #
+%  # R  .  .  .  . #
+%  # .  .  .  .  . #
+%\end{Verbatim}
+
+
+%\subsubsection{Features}
+%\begin{Verbatim}[fontsize=\footnotesize]
+%  (CM) Atom[checkmate] [k=1]
+%  (SM) Atom[stalemate] [k=1]
+%  (QbK) Atom[white_rook_between_kings] [k=1]
+%  (KE) Atom[black_king_closed_in_edge_by_white_rook] [k=1]
+%  (KD) Dist[cell-has-white_king;adjacent_cell;cell-has-black_king] [k=4]
+%  (BKhA) Bool[And(cell-attaked-by-black_king,Not(cell-attaked-by-white))] [k=4]
+%  (A) Num[And(cell-attaked-by-black_king,Not(cell-attaked-by-white_rook))] [k=4]
+%  (WQadjBK_row) Bool[And(row-has-white_rook,Exists(adjacent_row,row-has-black_king)))] [k=6]
+%  (WQadjBK_col) Bool[And(col-has-white_rook,Exists(adjacent_col,col-has-black_king)))] [k=6]
+%  (WQadjBK) Bool[And(cell-has-white_rook,Exists(adjacent_cell,cell-has-black_king)))] [k=6]
+%  (WQadjWK) Bool[And(cell-has-white_rook,Exists(adjacent_cell,cell-has-white_king)))] [k=6]
+%\end{Verbatim}
+
+
+%\subsubsection{All Transition Features}
+%This features reason about how the value of the features can change in all possible successors.
+%\begin{Verbatim}[fontsize=\footnotesize]
+%  (CA) Bool[can(A, DEC)] [k=2]
+%  (CCM) bool[can(CM, INC)] [k=2]
+%\end{Verbatim}
+
+
+%\subsubsection{Feature Description}
+%$CM$. Checkmate\\
+%$SM$. Stalemate\\
+%$KE$. Black king is closed in an edge of the table by the white queen\\
+%$QbK$. White queen is somewhere between kings, rows or columns\\
+%$A$. The number of cells attaked by black king and not attacked by white queen\\
+%$BKhA$. Exist a cell attaked by Black king and no attacked by white pieces\\
+%$Qaw$. White queen is attaked and without protection, i.e. $WQadjBK$ AND $WQadjWK$\\
+%$WQadjBK_line$. White queen is in an adjacent line to the black king, i.e. $WQadjBK_row$ OR $WQadjWK_col$\\
+%$CA$. It is possible to decrease the number of cells attaked by black king and not attacked by white queen\\
+%$CCM$. It is possible to do checkmate in the current state
+
+
+%\subsubsection{Policy}
+%  \begin{Verbatim}[fontsize=\footnotesize]
+%   1. KE=0, CA>0 -> {A ↓}
+%   2. KE=0, CA=0 -> {A ·, KD ·}
+%   3. BKhA=0, WQadjBK_line>0 -> {KD ·, WQadjBK_line ·}
+%   4. CCM=0, KE>0 -> {KD ↓}
+%   5. CCM=1 -> {CM ↑}
+%  \end{Verbatim}
+
+
+%\subsubsection{Policy Implicits}
+%The next features has to be in that certain value after the transition for classifing the transition as good, taking into account the policy rules.
+%  \begin{Verbatim}[fontsize=\footnotesize]
+%   Qaw=0, Qbk>0, SM=0
+%  \end{Verbatim}
+
+
+%\subsubsection{Policy description}
+%Rules 1 and 2 cover the cases in which the king is not enclosed in an edge of the file. The first rule states that it is good to take transitions that decrease the number of squares available to the black king by using the queen. The second rule says that if the first rule is not applicable it is good to take transitions that do not alter the number of squares available to the black king, without moving the white king. The third rule refers to those cases where the black king had moved to its only free square, and classifies as good those transitions in which the queen is moved so that it is not stalemate and remains on the line adjacent to the black king. Rule four covers cases in which the black king is locked on an edge by the queen, and it is good to move the white king closer. finally, rule 5 says that if it is possible to checkmate it is good to do so. It should be noted that thanks to the implicit parts of the policy the king will never be left tied up and unprotected, stalemate will never occur and the white king will always be placed and remain in a line that is between the lines of the kings, whether rows or columns.
+
+
+%\subsubsection{Example of Game}
+%\begin{Verbatim}[fontsize=\footnotesize]
+%  K.... # K.... # K.... # ..... # ..... # ..... # ..... # ..... # ..... #
+%  ..Q.. # ..... # ..... # ..K.. # ..K.. # ..K.. # ..... # ..... # ..... #
+%  ..... # ..... # ..... # ..... # ..... # ..... # ..K.. # ..K.. # ..K.. #
+%  ..... # Q.... # Q.... # Q.... # Q.... # Q.... # Q.... # Q.... # ...Q. #
+%  ....k # ....k # ...k. # ...k. # ..k.. # ...k. # ...k. # ....k # ....k #
+%\end{Verbatim}
+
 \newpage
+
+\section{Dealing with real robots}
+
+First it is necessary to have a simulator of the robot's environment discretised. The policy would be learned with the algorithm described in the paper without involving the robot. This policy is learned from a single instance in the simulator, and can then be run on different and larger instances of the domain. Once the policy is learned with the simulator and the algorithm, it is only necessary to translate the state where the robot is into a state that can be executed by the simulator. Then a transition is selected as good using the already learned policy, and the policy returns the action executed in the simulator to take that transition. The robot controller must be able to handle executing these actions in the real world. This process is repeated until the goal is reached.
+
+So, to be able to execute the policies on real robots, it is only necessary to have a simulator and an algorithm to translate the state of the robot into a state executable by the simulator.
+
+For example, with a turtle robot that has to pick up a certain number of packages and take them to a certain place. We only need a grid simulator, where the objects "package", "agent" and "destination" exist. The simulator must be able to execute the actions to move the robot, pick and drop. The strategy that we would learn with the simulator and our algorithm would be the same as the one learned in the "Delivery" domain, in the results section. The robot controller should be able to cope with executing the actions output by the algorithm, and ideally end up in the state that the simulator expects.
+
+Of course, you could give the initial state translated to the simulator and have the learned policy execute a sequence of actions up to the goal. But this method makes us more vulnerable to the noise that the real world produces.
+
 
 \subsection{Conclusions}
 
-\subsection{Discussoin of Results}
+\subsection{Discussion}
 
-
-\subsection{Discussoin of Results}
 
 
 %\paragraph{Bullet points}
