@@ -1,4 +1,66 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
+
+\bibitem{aguas2016generalized}
+Javier~Segovia Aguas, Sergio~Jim{\'e}nez Celorrio, and Anders Jonsson.
+\newblock Generalized planning with procedural domain control knowledge.
+\newblock In {\em Twenty-Sixth International Conference on Automated Planning
+  and Scheduling}, 2016.
+
+\bibitem{bandres2018planning}
+Wilmer Bandres, Blai Bonet, and Hector Geffner.
+\newblock Planning with pixels in (almost) real time.
+\newblock In {\em Proceedings of the AAAI Conference on Artificial
+  Intelligence}, volume~32, 2018.
+
+\bibitem{belle2016foundations}
+Vaishak Belle and Hector~J Levesque.
+\newblock Foundations for generalized planning in unbounded stochastic domains.
+\newblock In {\em Fifteenth International Conference on the Principles of
+  Knowledge Representation and Reasoning}, 2016.
+
+\bibitem{bonet2020high}
+Blai Bonet, Giuseppe De~Giacomo, Hector Geffner, Fabio Patrizi, and Sasha
+  Rubin.
+\newblock High-level programming via generalized planning and ltl synthesis.
+\newblock In {\em Proceedings of the International Conference on Principles of
+  Knowledge Representation and Reasoning}, volume~17, pages 152--161, 2020.
+
+\bibitem{DBLP:conf/aaai/BonetFG19}
+Blai Bonet, Guillem Franc{\`{e}}s, and Hector Geffner.
+\newblock Learning features and abstract actions for computing generalized
+  plans.
+\newblock In {\em The Thirty-Third {AAAI} Conference on Artificial
+  Intelligence, {AAAI} 2019, The Thirty-First Innovative Applications of
+  Artificial Intelligence Conference, {IAAI} 2019, The Ninth {AAAI} Symposium
+  on Educational Advances in Artificial Intelligence, {EAAI} 2019, Honolulu,
+  Hawaii, USA, January 27 - February 1, 2019}, pages 2703--2710. {AAAI} Press,
+  2019.
+
+\bibitem{bonet2020general}
+Blai Bonet and Hector Geffner.
+\newblock General policies, serializations, and planning width.
+\newblock {\em arXiv preprint arXiv:2012.08033}, 2020.
+
+\bibitem{boutilier2001symbolic}
+Craig Boutilier, Raymond Reiter, and Bob Price.
+\newblock Symbolic dynamic programming for first-order mdps.
+\newblock In {\em IJCAI}, volume~1, pages 690--700, 2001.
+
+\bibitem{cui2019stochastic}
+Hao Cui, Thomas Keller, and Roni Khardon.
+\newblock Stochastic planning with lifted symbolic trajectory optimization.
+\newblock In {\em Proceedings of the International Conference on Automated
+  Planning and Scheduling}, volume~29, pages 119--127, 2019.
+
+\bibitem{fern2003approximate}
+Alan Fern, Sung~Wook Yoon, and Robert Givan.
+\newblock Approximate policy iteration with a policy language bias.
+\newblock In {\em NIPS}, pages 847--854. Citeseer, 2003.
+
+\bibitem{frances2021learning}
+Guillem Franc{\`e}s, Blai Bonet, and Hector Geffner.
+\newblock Learning general policies from small examples without supervision.
+\newblock {\em arXiv preprint arXiv:2101.00692}, 2021.
 
 \bibitem{frances-et-al-ijcai2019}
 Guillem Franc{\`e}s, Augusto~B. Corr\^{e}a, Cedric Geissmann, and Florian
@@ -6,11 +68,104 @@ Guillem Franc{\`e}s, Augusto~B. Corr\^{e}a, Cedric Geissmann, and Florian
 \newblock Generalized potential heuristics for classical planning.
 \newblock In {\em Proc.\ IJCAI 2019}, pages 5554--5561, 2019.
 
+\bibitem{gargmausam}
+S~Garg and A~Bajpai.
+\newblock Mausam. 2020. symbolic network: Generalized neural policies for
+  relational mdps.
+\newblock In {\em International Conference on Machine Learning (ICML)}.
+
+\bibitem{garnelo2019reconciling}
+Marta Garnelo and Murray Shanahan.
+\newblock Reconciling deep learning with symbolic artificial intelligence:
+  representing objects and relations.
+\newblock {\em Current Opinion in Behavioral Sciences}, 29:17--23, 2019.
+
+\bibitem{groshev2018learning}
+Edward Groshev, Aviv Tamar, Maxwell Goldstein, Siddharth Srivastava, and Pieter
+  Abbeel.
+\newblock Learning generalized reactive policies using deep neural networks.
+\newblock In {\em 2018 AAAI Spring Symposium Series}, 2018.
+
+\bibitem{helmert2002decidability}
+Malte Helmert.
+\newblock Decidability and undecidability results for planning with numerical
+  state variables.
+\newblock In {\em AIPS}, pages 44--53, 2002.
+
+\bibitem{hui2020babyai}
+David Yu-Tung Hui, Maxime Chevalier-Boisvert, Dzmitry Bahdanau, and Yoshua
+  Bengio.
+\newblock Babyai 1.1.
+\newblock {\em arXiv preprint arXiv:2007.12770}, 2020.
+
+\bibitem{mnih2015human}
+Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Andrei~A Rusu, Joel Veness,
+  Marc~G Bellemare, Alex Graves, Martin Riedmiller, Andreas~K Fidjeland, Georg
+  Ostrovski, et~al.
+\newblock Human-level control through deep reinforcement learning.
+\newblock {\em nature}, 518(7540):529--533, 2015.
+
+\bibitem{on2019symbolic}
+Le~{\'o}n~Illanes, Xi~Yan, Rodrigo~Toro Icarte, and Sheila~A McIlraith.
+\newblock Symbolic planning and model-free reinforcement learning: Training
+  taskable agents.
+\newblock 2019.
+
+\bibitem{ramirez2009plan}
+Miquel Ram{\'\i}rez and Hector Geffner.
+\newblock Plan recognition as planning.
+\newblock In {\em Twenty-First International Joint Conference on Artificial
+  Intelligence}, 2009.
+
+\bibitem{sanner2009practical}
+Scott Sanner and Craig Boutilier.
+\newblock Practical solution techniques for first-order mdps.
+\newblock {\em Artificial Intelligence}, 173(5-6):748--788, 2009.
+
 \bibitem{silver2020few}
 Tom Silver, Kelsey~R Allen, Alex~K Lew, Leslie~Pack Kaelbling, and Josh
   Tenenbaum.
 \newblock Few-shot bayesian imitation learning with logical program policies.
 \newblock In {\em Proceedings of the AAAI Conference on Artificial
   Intelligence}, volume~34, pages 10251--10258, 2020.
+
+\bibitem{silver2020pddlgym}
+Tom Silver and Rohan Chitnis.
+\newblock Pddlgym: Gym environments from pddl problems.
+\newblock {\em arXiv preprint arXiv:2002.06432}, 2020.
+
+\bibitem{srivastava2011environment}
+Prashant Srivastava and Gary~L Frankwick.
+\newblock Environment, management attitude, and organizational learning in
+  alliances.
+\newblock {\em Management decision}, 2011.
+
+\bibitem{srivastava2008network}
+Samir~K Srivastava.
+\newblock Network design for reverse logistics.
+\newblock volume~36, pages 535--548. Elsevier, 2008.
+
+\bibitem{subramani2020learning}
+Nishant Subramani and Delip Rao.
+\newblock Learning efficient representations for fake speech detection.
+\newblock In {\em Proceedings of the AAAI Conference on Artificial
+  Intelligence}, volume~34, pages 5859--5866, 2020.
+
+\bibitem{toyer2018action}
+Sam Toyer, Felipe Trevizan, Sylvie Thi{\'e}baux, and Lexing Xie.
+\newblock Action schema networks: Generalised policies with deep learning.
+\newblock In {\em Thirty-Second AAAI Conference on Artificial Intelligence},
+  2018.
+
+\bibitem{wang2008first}
+Chenggang Wang, Saket Joshi, and Roni Khardon.
+\newblock First order decision diagrams for relational mdps.
+\newblock {\em Journal of Artificial Intelligence Research}, 31:431--472, 2008.
+
+\bibitem{zhang2021understanding}
+Chiyuan Zhang, Samy Bengio, Moritz Hardt, Benjamin Recht, and Oriol Vinyals.
+\newblock Understanding deep learning (still) requires rethinking
+  generalization.
+\newblock {\em Communications of the ACM}, 64(3):107--115, 2021.
 
 \end{thebibliography}

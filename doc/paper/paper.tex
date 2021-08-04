@@ -93,22 +93,19 @@
 
 \abstract
 
-Generalized planning is concerned with the computation of general policies that solve multiple instances of a planning domain all at once. It has been recently shown that these policies can be computed in two steps: first, a suitable abstraction in the form of a qualitative numerical planning problem (QNP) is learned from sample plans, then the general policies are obtained from the learned QNP using a planner. In this work, we introduce an alternative approach for computing more expressive general policies which does not require sample plans or a QNP planner. The new formulation is very simple and can be cast in terms that are more standard in machine learning: a large but finite pool of features is defined from the predicates in the planning examples using a general grammar, and a small subset of features is sought for separating “good” from “bad” state transitions, and goals from non-goals. The problems of finding such a “separating surface” while labeling the transitions as “good” or “bad” are
-jointly addressed as a single combinatorial optimization problem expressed as a Weighted Max-SAT problem. The advantage of looking for the simplest policy in the given feature space that solves the given examples, possibly non-optimally, is that many domains have no general, compact policies that are optimal. The approach yields general policies for a number of benchmark adversarial domains, even when non-determinism exists in the adverary turn. We use a uniform grammar for all the grid domains capable of capturing the domain representations. These policies can be interpreted qualitatively, explained, and it can be shown mathematically that they will solve all possible instances within a class of problems. This is an advantage when making manual policy changes. We also show an example of how the explainable policies produced by our algorithm can be applied to real robots.
+Generalized planning is concerned with the computation of general policies that solve multiple instances of a planning domain all at once. It has been recently shown how these policies can be computed and we adress the problem of computing general policies for multi-agent settings. These policies can be computed in two steps: first, a suitable abstraction in the form of a qualitative numerical planning problem (QNP) is learned from sample plans, then the general policies are obtained from the learned QNP using a planner. We introduce an alternative approach for computing more expressive general policies in multi-agent settings which does not require sample plans or a QNP planner. The new formulation is very simple and can be cast in terms that are more standard in machine learning: a large but finite pool of features (functions) is defined from the predicates in the planning examples using a general grammar, and a small subset of features is sought for separating “good” from “bad” state transitions, and goals from non-goals. The problems of finding such a “separating surface” while labeling the transitions as “good” or “bad” are jointly addressed as a single combinatorial optimization problem expressed as a Weighted Max-SAT problem. The advantage of looking for the simplest policy in the given feature space that solves the given examples, possibly non-optimally, is that many domains have no general policies that are optimal. We assume that the state space is discrete and also that we know what actions the opponents can take in their turn. The approach yields general policies for a number of benchmark adversarial domains. We use a uniform grammar for all the grid domains capable of capturing the domain representations. We introduce the possibility to use actions to reduce the number of features used to distinguish one transition from another, in case the action space does not change from one instance of the domain to another. In case the action space changes from one instance to another we simply ignore the actions used. These policies can be interpreted qualitatively, explained, and it can be shown mathematically that they will solve all possible instances within a class of problems. This is an advantage when making manual policy changes.
 
 \section{Introduction}
 
-Generalized planning is concerned with the computation of general policies or plans that solve multiple instances of a given planning domain all at once (Srivastava, Immerman, and Zilberstein 2008; Bonet, Palacios, and Geffner 2009; Huand De Giacomo 2011; Belle and Levesque 2016; Segovia, Jim´enez, and Jonsson 2016). If the instances share the same strategy, it doesn't matter how different they are. For example, in an environment where an agent has to pick up a key and then approach a door and it will open, the strategy is to approach the key, pick it up, and then approach the door in order to open it. In this example it does not matter how large the environment is and how many actions the agent has to take, since the strategy does not change.
+Generalized planning is concerned with the computation of general policies or plans that solve multiple instances of a given planning domain all at once~\cite{srivastava2008network, ramirez2009plan, belle2016foundations, aguas2016generalized}. If the instances share the same strategy, it doesn't matter how different they are. For instance, in an environment where an agent has to pick up a key and then approach a door and it will open, the strategy is to approach the key, pick it up, and then approach the door in order to open it. In this example it does not matter how large the environment is and how many actions the agent has to take, since the strategy does not change.
 
-The key question in generalized planning is how to represent and compute such general plans from the domain representation. This was solved by [], for non-adversarial and deterministic domains but not for adversarial domains, where you cannot control what the adversary will do during his turn. However, there are adversarial domains where the agent can take actions that no matter what happens in the environment the agent wins. For instance, if we are in a domain where an agent must chase an adversary, and the adversary can run slower than the agent, the strategy will be to decrease the distance between them until the agent can catch him. This we know is a winning strategy where it does not matter what the adversary does.
+The key question in generalized planning is how to represent and compute such general plans from the domain representation. This was solved by \cite{frances2021learning}, for single agent settings and deterministic domains but not for multi-agent settings, where you cannot control what the other agents will do during their turn. However, we deal with adversarial domains where the agent can take actions that no matter what happens in the environment the agent can win. For instance, if we are in a domain where an agent must chase an adversary, and the adversary can run slower than the agent, the strategy will be to decrease the distance between them until the agent can catch him. We know this is a winning strategy where it does not matter what the adversary does, the agent will win
 
-This was solved by [], for non-adversarial and deterministic domains but not for adversarial domains, where you cannot control what the adversary will do during his turn. However, there are adversarial domains where you can take actions that no matter what happens in the environment you win. For example, if we are in a domain where an agent must chase an adversary, and the adversary can run slower than the agent, the strategy will be to decrease the distance between them until the agent can catch him. This we know is a winning strategy where it does not matter what the adversary does. Nor will the size of the environment, the distance or the position of the agent and the adversary matter.
+In one of the most general formulations, general policies are obtained from an abstract planning model expressed as a qualitative numerical planning problem or QNP~\cite{srivastava2008network}. A QNP is a standard STRIPS planning model extended with non-negative numerical variables that can be decreased or increased “qualitatively”; i.e., by uncertain positive amounts, short of making the variables negative. Unlike standard planning with numerical variables~\cite{helmert2002decidability}, QNP planning is decidable, and QNPs can be compiled in polynomial time into fully observable non-deterministic (FOND) problems~\cite{bonet2020high}.
 
-In one of the most general formulations, general policies are obtained from an abstract planning model expressed as a qualitative numerical planning problem or QNP (Srivastava et al. 2011). A QNP is a standard STRIPS planning model extended with non-negative numerical variables that can be decreased or increased “qualitatively”; i.e., by uncertain positive amounts, short of making the variables negative. Unlike standard planning with numerical variables (Helmert 2002), QNP planning is decidable, and QNPs can be compiled in polynomial time into fully observable non-deterministic (FOND) problems (Bonet and Geffner 2020)
+The main advantage of the formulation of generalized planning based on QNPs is that it applies to standard relational domains where the pool of (ground) actions change from instance to instance. However, in our apporach there is also the possibility to take advantage of actions if they do not change from one instance to another. On the other hand, while the planning domain is assumed to be given, the QNP abstraction is not, and hence it has to be written by hand or learned. This is the approach of~\cite{DBLP:conf/aaai/BonetFG19} where generalized plans are obtained by learning the QNP abstraction from the domain representation and sample plans, and then solving the abstraction with a QNP planner.
 
-The main advantage of the formulation of generalized planning based on QNPs is that it applies to standard relational domains where the pool of (ground) actions change from instance to instance. On the other hand, while the planning domain is assumed to be given, the QNP abstraction is not, and hence it has to be written by hand or learned. This is the approach of Bonet, Francés, and Geffner (2019) where generalized plans are obtained by learning the QNP abstraction from the domain representation and sample plans, and then solving the abstraction with a QNP planner.
-
-In this work, we build on this thread but introduce an alternative approach for computing general policies that is simpler, yet more powerful. The learning problem is cast as a self-supervised classification problem where (1) a pool of features is automatically generated from a uniform grammar applied to the domain predicates, and (2) a small subset of features is sought for separating “good” from “bad” state transitions, and goals from non-goals. The problems of finding the “separating surface” while labeling the transitions as “good” or “bad” are addressed jointly as a single combinatorial optimization task solved with a Weighted Max-SAT solver. The approach yields general policies for a number of benchmark domains. One of the advantages of having explainable policies is that it gives the engineer the possibility to modify them easily if is necessary. For instance, if there are known exceptions within the domain.
+We take inspiration from the work mentioned above, but introduce an alternative approach for computing general policies in multi-agent setting that is simpler. The learning problem is cast as a self-supervised classification problem where (1) a pool of features is automatically generated from a uniform grammar applied to the domain predicates, and (2) a small subset of features is sought for separating “good” from “bad” state transitions, and goals from non-goals. The problems of finding the “separating surface” while labeling the transitions as “good” or “bad” are addressed jointly as a single combinatorial optimization task solved with a Weighted Max-SAT solver. The approach yields general policies for a number of benchmark domains. One of the advantages of having explainable policies is that it gives the engineer the possibility to modify them easily if is necessary. For instance, if there are known exceptions within the domain.
 
 The paper is organized as follows. We first review related work. Then we introduce a SAT encoding and the variables, where we see what the input of our algorithm consists of. We then present the learning task, the computational approach for solving it, and the experimental results. Then we describe the grammar used in all the domains. Then we describe each of the domains, and interpret the features and policies found with our approach. These explainable policies will be the output of the algorithm. Then we show how it is possible to use our framework to introduce policies or modify them after the training process. The use case is checkamate in chess in n-moves and any board size, with two kings and a queen. Finally, we show how it is possible to use the policies with robots, both in simulators and in the real world.
 
@@ -117,9 +114,23 @@ The paper is organized as follows. We first review related work. Then we introdu
 % XRL
 % Planning, and explainable reinforcement learning (XRL)
 
-\subsection{Generalized Planning}
+The computation of general plans from domain encodings and sample plans has been addressed in a number of works~\cite{cui2019stochastic, fern2003approximate, silver2020pddlgym}. Generalized planning has also been formulated as a problem in first-order logic~\cite{srivastava2011environment, on2019symbolic}, and general plans over finite horizons have been derived using first-order regression~\cite{boutilier2001symbolic, wang2008first, sanner2009practical}. More recently, general policies for planning have been learned from PDDL domains and sample plans using deep learning~\cite{toyer2018action, gargmausam}. Deep reinforcement learning methods~\cite{mnih2015human} have also been used to generate general policies from images without assuming prior symbolic knowledge~\cite{groshev2018learning,hui2020babyai}, in certain cases accounting for objects and relations through the use of suitable architectures~\cite{garnelo2019reconciling}. Our work  is closest to the works of~\cite{frances2021learning}. The first provides a model-based approach to generalized planning where an abstract QNP model is learned from the domain representation and sample instances and plans, which is then solved by a QNP planner~\cite{bonet2020general}. The second learns a generalized value function in an unsupervised manner, under the assumption that this function is linear. Model-based approaches have an advantage over inductive approaches that learn generalized plans; like logical approaches, they guarantee that the resulting policies (conclusions) are correct provided that the model (set of premises) is correct. The approach developed in this work does not make use of QNPs or planners but inherits these formal properties. The problem of generalisation in adversarial domains has been studied recently in~\cite{zhang2021understanding, subramani2020learning} from the perspective of reinforcement learning, trying to address the problem of transferability.
 
-A key question in generalized planning is how to represent general plans or policies when the different instances to be solved have different sets of objects and ground actions. One solution is to work with general features (functions) that have well defined values over any state of any possible domain instance, and think of general policies $\pi$ as mappings from feature valuations into abstract actions that denote changes in the feature values (Bonet and Geffner 2018). In this work, we build on this intuition but avoid the introduction of abstract actions (Bonet and Geffner 2021).
+
+\section{Contriution: Generalized Planning in multi-agent settings}
+
+A key question in generalized planning is how to represent general plans or policies when the different instances to be solved have different sets of objects and ground actions. We take inspiration of the work of~\cite{frances2021learning} and we extend it to multi-agent domains. One solution is to work with general features (functions) that have well defined values over any state of any possible domain instance, and think of general policies $\pi$ as mappings from feature valuations into abstract actions that denote changes in the feature values~\cite{bandres2018planning}. When a transition is taken by the agent the environment or other agent changes state, so when we record the AND/OR graph of states we capture how the environment or the other agent can change each state. In this work, we use abstract actions as~\cite{frances2021learning}, in addition to the possibility of taking advantage of using an action space fixed for all instances in the domain.  The approach is SAT-based, so first we will define the variables and encoding, and then how we learn general policies.
+
+
+\section{Action Space}
+
+In the work of~\cite{frances2021learning} it was assumed that the set of actions was not fixed in all instances and abstruse actions were always used. In cases where the action set was fixed across all instances this information was simply ignored. There are some domains where it is useful to take advantage of fixed action sets, where in a certain abstract state it will always be good to do a certain action. We have implemented two ways to take advantage of a fixed set of actions. (1) Have policies where we reason about the value of features in a state, and whether at that value it is good to take an action $a$. (2) Have policies where we take into account the fixed set of actions and reason about the change of feature values in a transition, to put the two concepts together we only differentiate transitions where the actions are the same.
+
+
+\subsection{Features}
+
+Let us have a pool of features $f$. Where $f$ is a function that has as input a state and as output a numerical value. The initial feature pool is produced using the logical description language. In addition, a parameter is used to determine the maximum complexity of the features. Once the initial pool of features is produced, a pruning is performed based on the denotation of each feature with the following philosophy: if two features, $f$ and $f'$ have the same denotation in all states, it is likely that they are capturing the same information of the domain, therefore we keep the simpler of the two features. With these features you can basically create abstract states, or representations, the challenge will be to find which ones are useful to represent the strategy that solves the problem. After feature pruning, the set of features $f$ that we are left with is $F$, and it is the one that will have the SAT solver as input. Based on the encoding the SAT solver will select the features of $F$ needed to represent the policy, trying to minimize the complexity.
+
 
 \subsection{SAT Encoding}
 
@@ -129,7 +140,7 @@ Our encoding is parametrized by
  \item A (training) set $T$ of transitions $(s, a, s') \in T$ from a number of instances of the same domain.
        We assume $T$ is \emph{closed}: if $s$ appears in the first position of a transition, then all possible
        transitions starting in $s$ in that instance appear in $T$ too.
- \item A set $adv(s)$ of all possible moves by the adversary on state $s$.
+ \item A set $adv(s)$ of all possible moves by the adversary~\footnote{Second agent that plays the game} on state $s$.
 
  \item For each state $s$ appearing in some transition, full information on whether $s$
        is a goal, unsolvable, or alive.
@@ -170,7 +181,14 @@ Our encoding is parametrized by
 \end{itemize}
 
 
+\subsubsection{Terminology}
+
+A state is called \emph{reachable} if there is a path to it from $s_0$, and it is called \emph{solvable} if there is a path from it to a goal state. A state is \emph{alive} if it is solvable, reachable and not a goal state~\cite{frances-et-al-ijcai2019}. We use $T$ to denote the set of all transitions $(s, s')$ in the training sample such that $s$ is alive.
+
+
 \subsubsection{Hard Constraints}
+
+The constraints recognize good state transitions, the distance from an state to the goal, and distinguish good and bad states.
 
 \smallpar{C1 (if $\neg$\texttt{allow\_bad\_states})}
 Policy is defined in all alive states:
@@ -184,9 +202,7 @@ Policy is defined in all alive states:
 Bad(t) \lor \bigvee_{(s, a, s') \in T \text{ s.t. } s=t} Good(s, a, s'), \;\; \text{for $t$ alive in $T$.}
 \end{align*}
 
-\smallpar{C2} $V$ is always descending along Good actions, \textbf{taking into account all possible adversary responses}.
-For each $(s, a, s')$ in the set of non-deterministic transitions
-such that both $s$ and $s'$ are alive, post:
+\smallpar{C2} $V$ is always descending along Good actions, \textbf{taking into account all possible adversary responses}. For each $(s, a, s')$ in the set of non-deterministic transitions such that both $s$ and $s'$ are alive, where all possible $s''$ are alive, where $s''$ is the result of the adversary transforming $s'$ into $s''$ by executing $a'$, post:
 %Good(s, a) \land V(s, k) \rightarrow \bigvee_{1 \leq k' \leq k} V(s', k'),&\;\; \text{for } k \in [1, D].
 \begin{align*}
 Good(s, a, s') \rightarrow V(s'') < V(s)  \;\; \text{for } (s, a, s') \in T,  s'' \in adv(s').
@@ -234,13 +250,13 @@ of two different equivalence classes such with $s$, $t$ alive. Then,
 % D2(s, s', t, t'),&\;\; \text{for $s, t$ alive, $(t, t') \in \badtx$.}
 \end{align*}
 
+
 \noindent where $D2(s, s', t, t')$ is shorthand for $\bigvee_{} Select(f)$, with $f$ ranging over:
 \begin{itemize}
  \item[(a)] all features that distinguish state $s$ from $t$, if \texttt{action\_labels = use$_1$}.
  \item[(b)] all features that distinguish $s$ from $t$ \textbf{plus} all features that
  change differently along $(s, s')$ than along $(t, t')$.
 \end{itemize}
-
 Additionally, if \texttt{action\_labels = use$_1$} or \texttt{action\_labels = use$_2$}, then
 \textbf{the above constraint is only posted for transitions such that $a=b$}.
 
@@ -270,17 +286,24 @@ A constraint $\neg Select(f)$ for each feature $f$ in the pool, with weight equa
 \smallpar{C7 (if \texttt{allow\_bad\_states})}
 A constraint $\neg Bad(s)$ for each alive state $s$, with weight equal to one.
 
+
+\subsection{Constraints Description}
+
+How we arrive at these constrains has to do with the observation of adversarial domains and winning strategies. We observed that the dilemma of adversarial games meant that we were confronted with the fact that decisions were not made by a single agent, and we had to take into account that there were also other agents trying to "win". Moreover, this meant that in many domains we were faced with scalability problems.
+
+During policy learning, it does not matter which agents have been played against to learn the policy, as all their possible actions in each state will be taken into account when expanding the state space.
+
+We observed that in many domains the set of actions is fixed for all agents. In the paper~\cite{frances2021learning} there were $Good(s, s')$ variables. But these were not able to take advantage of fixed action sets, so we decided to include the information of the actions in these domains to alleviate scalability problems, for that reason we have variables such as $Good(s, a, s')$.
+ This allows us to reduce the number of C4 clauses.
+
+It was assumend by~\cite{frances2021learning} assumed that it was possible to get from any state of the problem to the objective, without entering dead ends (states where the agent has lost). However, in many multi-agent domains there are states where the agent has not lost, but no longer has the possibility of winning in that state no matter what the agent does. That is why we included the $Bad(s)$ variables, so that there could be states without any actions that lead to a path where the agent always wins. However, in our approach, if from a certain state there is a strategy that can be represented with the logic language and that always wins over the rest of the agents, we guarantee that we will find it. However, allowing the use of $Bad(s)$ variables is optional, through~$\texttt{allow\_bad\_states}$, since there are domains where we know that there is a winning strategy from any state.
+
+In C1 it can be understood that each state must have a possible transition that is good, if ~$\neg\texttt{allow\_bad\_states}$. This makes sense for many of the domains, as we want our overall strategy to be able to decide which transition to take in any given state. We then design counterin C2 to ensure that the strategy takes paths that do not fall into cycles by introducing the adversarial factor. To introduce the adversarial factor into the strategy we make sure that the number assigned to a state $s$ is greater than all the numbers assigned to the possible $s''$. The possible $s''$ are the result of the agents or the environment executing an action $a'$ on $s'$, where $s'$ is the state the agent reaches after executing $a$ on $s$. Note that adversaries will often have multiple $a'$ actions to execute on $s'$. We then design counterin C2 to ensure that the strategy takes paths that do not fall into cycles by introducing the adversarial factor. To introduce the adversarial factor into the strategy we make sure that the number assigned to a state $s$ is greater than all the numbers assigned to the possible $s''$. The possible $s''$ are the result of the agents or the environment executing an action $a'$ on $s'$, where $s'$ is the state the agent reaches after executing $a$ on $s$. Note that adversaries will often have multiple $a'$ actions to execute on $s'$, which will often result in a different set of $s"$..
+
+
+
 \pagebreak
 
-
-
-\section{Terminology}
-A state is called \emph{reachable} if there is a path to it from $s_0$, and
-it is called \emph{solvable} if there is a path from it to a goal
-state.
-A state is \emph{alive} if it is solvable, reachable and not a
-goal state~\cite{frances-et-al-ijcai2019}.
-We use $T$ to denote the set of all transitions $(s, s')$ in the training sample such that $s$ is alive.
 
 \subsection{Optimizations}
 
@@ -655,7 +678,7 @@ The policy is an abstraction of all the possible one-move checkmates that exist 
 
 \subsubsection{Task instance distribution}
 To generate all the possible states from which the queen can checkmate the black king in one, in a board of $NxM$, we follow the following procedure. We generate all the possible checkmates that can be given to the black king if it is in the first row, then we apply three rotations to each board, 90, 180 and 270 degrees. To generate the checkmate with the black king in the first row we must take into account that for each black king position in this row there are three possible positions of the white king that allow a checkmate in one. In all these possible positions of the two kings we place the king in all the squares where it can checkmate the black king, and eliminate those where it would be giving a check. For the training, one hundred random boards of five by fifty are selected. To check that the policy is complete, it is tested on all possible, for each board size $NxM$ where both $N$ and $M$ are numbers no greater than twenty randomly selected.
-v
+
 \subsubsection{Example of Game}
 \begin{Verbatim}[fontsize=\footnotesize]
 # .  .  .  .  .  .  .  .  .  .  #  .  .  .  .  .  .  .  .  .  .  #
@@ -810,7 +833,7 @@ To generate all the possible states from which the rook can checkmate the black 
 
 \newpage
 
-\section{Dealing with real robots}
+\subsection{Dealing with real robots}
 
 First it is necessary to have a simulator of the robot's environment discretised. The policy would be learned with the algorithm described in the paper without involving the robot. This policy is learned from a single instance in the simulator, and can then be run on different and larger instances of the domain. Once the policy is learned with the simulator and the algorithm, it is only necessary to translate the state where the robot is into a state that can be executed by the simulator. Then a transition is selected as good using the already learned policy, and the policy returns the action executed in the simulator to take that transition. The robot controller must be able to handle executing these actions in the real world. This process is repeated until the goal is reached.
 
@@ -820,10 +843,16 @@ For example, with a turtle robot that has to pick up a certain number of package
 
 Of course, you could give the initial state translated to the simulator and have the learned policy execute a sequence of actions up to the goal. But this method makes us more vulnerable to the noise that the real world produces.
 
+\subsection{Noisy adversaries}
+
+Note that for the algorithm to work it must be possible to win from the initial state of the problem no matter what the opponent does. So in domains where the agent has two actions per turn, which are "Space Invader" and "Delivery". If both players have one action per turn the agent's strategy does not change. Therefore in some domains the learned policy can deal with a noisy adversary even though it has not been learned by playing against him.
 
 \subsection{Conclusions}
 
-\subsection{Discussion}
+It is possible to learn policies unsupervised in small instances and transfer them to larger instances in the same domain. We can conclude from this that it is correctly learning the problem representation and a strategy capable of winning on a number of instances. Depending on the domains it is possible to create a common language for all, making the approach less domain dependent, although as we see in this work the language is focused on problems that are in two-dimensional grids. A requirement for the algorithm to work correctly is that the strategy can be described using the grammar, then in domains where the strategy is very complex it will be necessary to increase the complexity of the language. In this paper we propose a method for dealing with adversarial domains, which manages to find policies that beat the adversary from any initial state where this is possible. This approach is a step in the explainability of reinforcement-produced policies, and it is also a step towards having transferable policies that capture the representation of the problem.
+
+
+%\subsection{Discussion}
 
 
 

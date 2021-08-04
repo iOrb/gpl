@@ -5,47 +5,58 @@ The style file: plain.bst
 Database file #1: abbrv-short.bib
 Database file #2: literatur.bib
 Database file #3: references.bib
+Repeated entry---line 202 of file references.bib
+ : @inproceedings{frances2021learning
+ :                                   ,
+I'm skipping whatever remains of this entry
 Database file #4: crossref-short.bib
+Warning--can't use both volume and number fields in bandres2018planning
+Warning--can't use both volume and number fields in bonet2020high
+Warning--empty year in gargmausam
+Warning--empty journal in on2019symbolic
 Warning--can't use both volume and number fields in silver2020few
-You've used 2 entries,
+Warning--empty booktitle in srivastava2008network
+Warning--can't use both volume and number fields in srivastava2008network
+Warning--can't use both volume and number fields in subramani2020learning
+You've used 28 entries,
             2118 wiz_defined-function locations,
-            558 strings with 5099 characters,
-and the built_in function-call counts, 1207 in all, are:
-= -- 120
-> -- 51
-< -- 3
-+ -- 20
-- -- 18
-* -- 84
-:= -- 171
-add.period$ -- 6
-call.type$ -- 2
-change.case$ -- 15
+            698 strings with 10040 characters,
+and the built_in function-call counts, 10873 in all, are:
+= -- 1049
+> -- 537
+< -- 17
++ -- 210
+- -- 182
+* -- 731
+:= -- 1714
+add.period$ -- 87
+call.type$ -- 28
+change.case$ -- 174
 chr.to.int$ -- 0
-cite$ -- 3
-duplicate$ -- 52
-empty$ -- 92
-format.name$ -- 18
-if$ -- 270
+cite$ -- 36
+duplicate$ -- 450
+empty$ -- 850
+format.name$ -- 182
+if$ -- 2331
 int.to.chr$ -- 0
-int.to.str$ -- 2
-missing$ -- 2
-newline$ -- 13
-num.names$ -- 4
-pop$ -- 19
+int.to.str$ -- 28
+missing$ -- 28
+newline$ -- 143
+num.names$ -- 56
+pop$ -- 213
 preamble$ -- 1
-purify$ -- 13
+purify$ -- 146
 quote$ -- 0
-skip$ -- 50
+skip$ -- 349
 stack$ -- 0
-substring$ -- 98
-swap$ -- 30
-text.length$ -- 3
+substring$ -- 611
+swap$ -- 153
+text.length$ -- 17
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 8
-warning$ -- 1
-while$ -- 10
-width$ -- 3
-write$ -- 25
-(There was 1 warning)
+type$ -- 112
+warning$ -- 8
+while$ -- 96
+width$ -- 30
+write$ -- 304
+(There was 1 error message)
